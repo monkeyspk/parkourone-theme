@@ -12,6 +12,7 @@ class ParkourONE_GitHub_Updater {
     private $theme_slug = 'parkourone-theme';
     private $check_interval = 43200; // 12 Stunden in Sekunden
     private $transient_key = 'parkourone_github_update_check';
+    private $last_error = null;
     
     public function __construct() {
         // Nur im Admin
@@ -81,6 +82,9 @@ class ParkourONE_GitHub_Updater {
                             <?php elseif ($remote_version): ?>
                                 <span style="color: #dc3232; margin-left: 10px;">&#8593; Update verfügbar</span>
                             <?php endif; ?>
+                            <?php if (!$remote_version && $this->last_error): ?>
+                                <br><small style="color: #dc3232;">Fehler: <?php echo esc_html($this->last_error); ?></small>
+                            <?php endif; ?>
                         </td>
                     </tr>
                     <tr>
@@ -116,6 +120,25 @@ class ParkourONE_GitHub_Updater {
                 <p style="margin-top: 15px; color: #666; font-size: 13px;">
                     Das Theme prüft automatisch alle 12 Stunden auf Updates und aktualisiert sich selbst.
                 </p>
+
+                <?php if (!$remote_version): ?>
+                <hr style="margin: 20px 0;">
+                <details style="font-size: 13px; color: #666;">
+                    <summary style="cursor: pointer; font-weight: 600;">Debug-Informationen</summary>
+                    <div style="margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 4px;">
+                        <p><strong>GitHub Repo:</strong> <?php echo esc_html($this->github_repo); ?></p>
+                        <p><strong>API URL:</strong> https://api.github.com/repos/<?php echo esc_html($this->github_repo); ?>/commits/main</p>
+                        <p><strong>Fehler:</strong> <?php echo esc_html($this->last_error ?: 'Unbekannt'); ?></p>
+                        <p style="margin-top: 10px;"><strong>Mögliche Ursachen:</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>Server blockiert ausgehende Verbindungen</li>
+                            <li>GitHub API Rate Limit erreicht</li>
+                            <li>SSL-Zertifikat Problem</li>
+                            <li>Repository ist privat (muss public sein)</li>
+                        </ul>
+                    </div>
+                </details>
+                <?php endif; ?>
             </div>
         </div>
         <?php
@@ -194,26 +217,45 @@ class ParkourONE_GitHub_Updater {
      */
     private function get_remote_version() {
         $api_url = "https://api.github.com/repos/{$this->github_repo}/commits/main";
-        
+
         $response = wp_remote_get($api_url, [
             'headers' => [
                 'Accept' => 'application/vnd.github.v3+json',
                 'User-Agent' => 'ParkourONE-Theme-Updater'
             ],
-            'timeout' => 10
+            'timeout' => 15,
+            'sslverify' => true
         ]);
-        
+
         if (is_wp_error($response)) {
+            $this->last_error = 'WP Error: ' . $response->get_error_message();
+            error_log('ParkourONE Updater: ' . $this->last_error);
             return false;
         }
-        
+
+        $response_code = wp_remote_retrieve_response_code($response);
+        if ($response_code !== 200) {
+            $this->last_error = 'HTTP ' . $response_code;
+            error_log('ParkourONE Updater: GitHub API returned HTTP ' . $response_code);
+            return false;
+        }
+
         $body = json_decode(wp_remote_retrieve_body($response), true);
-        
+
         if (isset($body['sha'])) {
+            $this->last_error = null;
             return substr($body['sha'], 0, 7); // Kurzer Hash
         }
-        
+
+        $this->last_error = 'Keine SHA in Antwort';
         return false;
+    }
+
+    /**
+     * Gibt den letzten Fehler zurück
+     */
+    public function get_last_error() {
+        return $this->last_error ?? null;
     }
     
     /**

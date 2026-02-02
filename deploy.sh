@@ -12,7 +12,7 @@ echo "📦 Erstelle Theme-ZIP..."
 
 cd "$THEME_DIR/.."
 zip -r "$OUTPUT_DIR/$ZIP_NAME" "$THEME_NAME" \
-    -x "*.git*" \
+    -x "*.git/*" \
     -x "*node_modules*" \
     -x "*.DS_Store" \
     -x "*deploy.sh"
