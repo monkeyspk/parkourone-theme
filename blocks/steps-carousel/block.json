@@ -1,0 +1,68 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/steps-carousel",
+	"version": "2.0.0",
+	"title": "Steps Timeline",
+	"category": "parkourone",
+	"icon": "slides",
+	"description": "Apple-Style Timeline mit nummerierten Schritten und Bildern",
+	"keywords": ["steps", "timeline", "schritte", "apple", "prozess"],
+	"supports": {
+		"html": false,
+		"align": ["wide", "full"]
+	},
+	"attributes": {
+		"headline": {
+			"type": "string",
+			"default": "So funktioniert's"
+		},
+		"subheadline": {
+			"type": "string",
+			"default": "In 4 einfachen Schritten zum ersten Training"
+		},
+		"steps": {
+			"type": "array",
+			"default": [
+				{
+					"title": "Standort wählen",
+					"description": "Wähle einen Standort aus, an dem du trainieren möchtest.",
+					"icon": "location"
+				},
+				{
+					"title": "Klasse wählen",
+					"description": "Wähle die passende Klasse basierend auf der Altersgruppe aus.",
+					"icon": "users"
+				},
+				{
+					"title": "Termin buchen",
+					"description": "Das Probetraining kostet 15 € und dient auch zur Bewertung deines Könnens.",
+					"icon": "calendar"
+				},
+				{
+					"title": "Loslegen",
+					"description": "Nach dem Probetraining kannst du entscheiden, ob du Mitglied werden möchtest.",
+					"icon": "check"
+				}
+			]
+		},
+		"ageCategory": {
+			"type": "string",
+			"default": "default",
+			"enum": ["kids", "juniors", "adults", "default"]
+		},
+		"align": {
+			"type": "string",
+			"default": "full"
+		},
+		"backgroundColor": {
+			"type": "string",
+			"default": "light",
+			"enum": ["light", "dark", "white"]
+		}
+	},
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php",
+	"style": "file:./style.css"
+}

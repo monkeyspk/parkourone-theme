@@ -1,0 +1,209 @@
+/* Stats Counter - Apple Style */
+.po-stats {
+	padding: 100px 0;
+	font-family: var(--po-font-sans, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif);
+}
+
+.po-stats--light {
+	background: #fff;
+}
+
+.po-stats--dark {
+	background: #1d1d1f;
+}
+
+.po-stats--gradient {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.po-stats__inner {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 24px;
+}
+
+.po-stats__headline {
+	font-size: clamp(24px, 3vw, 32px);
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	text-align: center;
+	margin: 0 0 60px;
+}
+
+.po-stats--light .po-stats__headline {
+	color: #1d1d1f;
+}
+
+.po-stats--dark .po-stats__headline,
+.po-stats--gradient .po-stats__headline {
+	color: #fff;
+}
+
+.po-stats__grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 40px;
+	text-align: center;
+}
+
+.po-stats__item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	opacity: 0;
+	transform: translateY(30px);
+	transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+	            transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.po-stats__item:nth-child(1) { transition-delay: 0s; }
+.po-stats__item:nth-child(2) { transition-delay: 0.15s; }
+.po-stats__item:nth-child(3) { transition-delay: 0.3s; }
+.po-stats__item:nth-child(4) { transition-delay: 0.45s; }
+
+.po-stats.is-visible .po-stats__item {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.po-stats__number-wrapper {
+	display: flex;
+	align-items: baseline;
+	justify-content: center;
+	margin-bottom: 12px;
+}
+
+.po-stats__number {
+	font-size: clamp(56px, 10vw, 96px);
+	font-weight: 700;
+	letter-spacing: -0.03em;
+	line-height: 1;
+}
+
+.po-stats--light .po-stats__number {
+	color: #1d1d1f;
+}
+
+.po-stats--dark .po-stats__number,
+.po-stats--gradient .po-stats__number {
+	color: #fff;
+}
+
+.po-stats__suffix {
+	font-size: clamp(32px, 5vw, 56px);
+	font-weight: 600;
+	margin-left: 4px;
+}
+
+.po-stats--light .po-stats__suffix {
+	color: #0066cc;
+}
+
+.po-stats--dark .po-stats__suffix {
+	color: #2997ff;
+}
+
+.po-stats--gradient .po-stats__suffix {
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.po-stats__label {
+	font-size: clamp(16px, 2vw, 20px);
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	margin-bottom: 6px;
+}
+
+.po-stats--light .po-stats__label {
+	color: #1d1d1f;
+}
+
+.po-stats--dark .po-stats__label,
+.po-stats--gradient .po-stats__label {
+	color: #fff;
+}
+
+.po-stats__subtext {
+	font-size: 14px;
+	font-weight: 400;
+}
+
+.po-stats--light .po-stats__subtext {
+	color: #86868b;
+}
+
+.po-stats--dark .po-stats__subtext {
+	color: rgba(255, 255, 255, 0.6);
+}
+
+.po-stats--gradient .po-stats__subtext {
+	color: rgba(255, 255, 255, 0.7);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+	.po-stats {
+		padding: 80px 0;
+	}
+
+	.po-stats__headline {
+		margin-bottom: 48px;
+	}
+
+	.po-stats__grid {
+		grid-template-columns: 1fr;
+		gap: 48px;
+	}
+
+	.po-stats__item {
+		padding: 0 20px;
+	}
+
+	.po-stats__number {
+		font-size: 72px;
+	}
+
+	.po-stats__suffix {
+		font-size: 40px;
+	}
+}
+
+/* Editor Styles */
+.po-stats-editor {
+	padding: 40px;
+	background: #f5f5f7;
+	border-radius: 12px;
+}
+
+.po-stats-editor__preview {
+	display: flex;
+	justify-content: center;
+	gap: 60px;
+	text-align: center;
+}
+
+.po-stats-editor__item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.po-stats-editor__number {
+	font-size: 48px;
+	font-weight: 700;
+	color: #1d1d1f;
+	line-height: 1;
+}
+
+.po-stats-editor__label {
+	font-size: 14px;
+	font-weight: 600;
+	color: #1d1d1f;
+	margin-top: 8px;
+}
+
+.po-stats-editor__subtext {
+	font-size: 12px;
+	color: #86868b;
+	margin-top: 4px;
+}

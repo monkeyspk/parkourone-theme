@@ -1,0 +1,39 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/testimonial-highlight",
+	"version": "1.0.0",
+	"title": "Testimonial Highlight",
+	"category": "parkourone-startseite",
+	"icon": "format-quote",
+	"description": "Prominente Zitat-Darstellung im Apple-Style fuer maximale Wirkung.",
+	"keywords": ["testimonial", "zitat", "quote", "bewertung", "highlight"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"quotes": {
+			"type": "array",
+			"default": [
+				{
+					"text": "Parkour hat mein Leben veraendert. Ich habe nicht nur koerperliche Staerke gewonnen, sondern auch mentale.",
+					"author": "Sarah M.",
+					"role": "Schuelerin seit 2019",
+					"imageUrl": ""
+				}
+			]
+		},
+		"layout": {
+			"type": "string",
+			"default": "single",
+			"enum": ["single", "double"]
+		},
+		"style": {
+			"type": "string",
+			"default": "light",
+			"enum": ["light", "dark"]
+		}
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}

@@ -1,0 +1,23 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/stundenplan",
+	"version": "1.0.0",
+	"title": "Stundenplan",
+	"category": "parkourone-blocks",
+	"icon": "calendar-alt",
+	"description": "Wochenübersicht der Trainingszeiten als Stundenplan-Grid.",
+	"keywords": ["stundenplan", "schedule", "woche", "training", "zeiten"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"headline": { "type": "string", "default": "Stundenplan" },
+		"filterAge": { "type": "string", "default": "" },
+		"filterLocation": { "type": "string", "default": "" },
+		"buttonText": { "type": "string", "default": "Probetraining buchen" },
+		"filterLayout": { "type": "string", "default": "fab", "enum": ["fab", "inline"] }
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}

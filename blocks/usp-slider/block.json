@@ -1,0 +1,72 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/usp-slider",
+	"version": "2.0.0",
+	"title": "USP Slider",
+	"category": "parkourone-startseite",
+	"icon": "star-filled",
+	"description": "Apple-Style Slider fuer Alleinstellungsmerkmale (USPs) mit fullbleed Cards und Modals.",
+	"keywords": ["usp", "vorteile", "benefits", "slider", "features", "warum"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"headline": {
+			"type": "string",
+			"default": "Warum ParkourONE?"
+		},
+		"slides": {
+			"type": "array",
+			"default": [
+				{
+					"eyebrow": "Ganzheitliches Training",
+					"headline": "Trainiere deinen Körper ganzheitlich.",
+					"text": "Starte ein Training, das Kraft, Ausdauer, Beweglichkeit und Koordination fördert – für ein rundum fittes Ich.",
+					"modalText": "Parkour ist mehr als Sport – es ist ein Training für Körper und Geist. Du lernst, Hindernisse effizient zu überwinden und dabei deinen gesamten Körper zu nutzen. Jede Session verbessert deine Kraft, Ausdauer, Balance und Koordination gleichzeitig.",
+					"buttonText": "Jetzt Probelektion buchen",
+					"buttonUrl": "#probetraining",
+					"imageUrl": ""
+				},
+				{
+					"eyebrow": "Community",
+					"headline": "Werde Teil einer starken Community.",
+					"text": "Schliesse dich uns an und erlebe die Unterstützung und Inspiration einer Gemeinschaft, die dir hilft, deine Ziele zu erreichen.",
+					"modalText": "Bei ParkourONE trainierst du nie allein. Unsere Community motiviert, unterstützt und pusht sich gegenseitig. Vom Anfänger bis zum Fortgeschrittenen – hier findet jeder seinen Platz und Trainingspartner.",
+					"buttonText": "Parkour Schüler_in werden",
+					"buttonUrl": "#anmelden",
+					"imageUrl": ""
+				},
+				{
+					"eyebrow": "Urban Training",
+					"headline": "Mach die Stadt zu deinem Spielplatz.",
+					"text": "Entdecke deine Umgebung neu und lerne, urbanen Raum kreativ zu nutzen. Sieh deine Stadt aus einer völlig neuen Perspektive!",
+					"modalText": "Mauern, Geländer, Treppen – was andere als Hindernisse sehen, wird für dich zum Trainingsgerät. Parkour verändert deinen Blick auf die Stadt und eröffnet dir unendliche Möglichkeiten für Bewegung und Kreativität.",
+					"buttonText": "Die Stadt neu entdecken",
+					"buttonUrl": "#outdoor",
+					"imageUrl": ""
+				},
+				{
+					"eyebrow": "Mental Strength",
+					"headline": "Werde mental stärker.",
+					"text": "Überwinde Hindernisse nicht nur physisch, sondern auch mental. Wachse mit jedem Sprung und stelle dich neuen Herausforderungen.",
+					"modalText": "Parkour trainiert deinen Kopf genauso wie deinen Körper. Du lernst, Ängste zu überwinden, Risiken einzuschätzen und Selbstvertrauen aufzubauen. Diese mentale Stärke nimmst du mit in jeden Bereich deines Lebens.",
+					"buttonText": "Grenzen überwinden",
+					"buttonUrl": "#mental",
+					"imageUrl": ""
+				},
+				{
+					"eyebrow": "Spass & Abenteuer",
+					"headline": "Erlebe Spass und Abenteuer.",
+					"text": "Unsere abwechslungsreichen Trainings bereichern deinen Alltag und bringen frischen Wind in dein Leben.",
+					"modalText": "Vergiss langweilige Fitnessstudios! Bei uns ist jedes Training ein Abenteuer. Neue Spots, neue Challenges, neue Moves – Langeweile gibt es bei Parkour nicht. Komm vorbei und erlebe selbst, wie viel Spass Bewegung machen kann.",
+					"buttonText": "Dein Abenteuer beginnt hier",
+					"buttonUrl": "#abenteuer",
+					"imageUrl": ""
+				}
+			]
+		}
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}

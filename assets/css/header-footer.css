@@ -1,0 +1,442 @@
+/* ==========================================================================
+   ParkourONE Header & Footer Styles
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   HEADER
+   -------------------------------------------------------------------------- */
+
+.po-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.po-header.is-scrolled {
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+}
+
+.po-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+}
+
+/* Logo */
+.po-header__logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #000;
+}
+
+.po-header__logo-img {
+    height: 48px;
+    width: auto;
+    transition: transform 0.2s ease;
+}
+
+.po-header__logo:hover .po-header__logo-img {
+    transform: scale(1.02);
+}
+
+.po-header__logo-text {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+/* Header Actions (CTA + Toggle) */
+.po-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* CTA Button */
+.po-header__cta {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background: #000;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    border-radius: 100px;
+    white-space: nowrap;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.po-header__cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    color: #fff;
+}
+
+/* Hamburger Toggle */
+.po-header__toggle {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+.po-header__toggle-bar {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: #000;
+    border-radius: 2px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Hamburger → X Animation */
+.po-header__toggle.is-active .po-header__toggle-bar:first-child {
+    transform: translateY(4px) rotate(45deg);
+}
+
+.po-header__toggle.is-active .po-header__toggle-bar:last-child {
+    transform: translateY(-4px) rotate(-45deg);
+}
+
+/* --------------------------------------------------------------------------
+   FULLSCREEN MENU OVERLAY
+   -------------------------------------------------------------------------- */
+
+.po-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+    background: #fff;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    overflow-y: auto;
+}
+
+.po-menu-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.po-menu-overlay__inner {
+    min-height: 100vh;
+    padding: 120px 2rem 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Menu Columns Layout */
+.po-menu__columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4rem;
+}
+
+.po-menu__column {
+    min-width: 200px;
+}
+
+.po-menu__column--with-children {
+    flex: 0 0 auto;
+}
+
+.po-menu__column--links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Menu List */
+.po-menu__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.po-menu__item {
+    margin: 0;
+}
+
+/* Menu Links */
+.po-menu__link {
+    display: inline-block;
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #1d1d1f;
+    text-decoration: none;
+    padding: 0.25rem 0;
+    position: relative;
+    transition: color 0.2s ease;
+}
+
+/* Stundenplan Highlight (erster Link in Spalte 1) */
+.po-menu__link--highlight {
+    font-weight: 700;
+}
+
+.po-menu__link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #000;
+    transition: width 0.3s ease;
+}
+
+.po-menu__link:hover {
+    color: #000;
+}
+
+.po-menu__link:hover::after {
+    width: 100%;
+}
+
+/* Standalone Links (Top-Level without Children) */
+.po-menu__link--standalone {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+/* Empty Menu Message */
+.po-menu__empty {
+    color: #86868b;
+    font-size: 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   FOOTER
+   -------------------------------------------------------------------------- */
+
+.po-footer {
+    margin-top: auto;
+}
+
+.po-footer__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Footer Grid */
+.po-footer__grid {
+    margin-bottom: 0;
+}
+
+.po-footer__grid > .wp-block-column {
+    margin-bottom: 2rem;
+}
+
+/* Column Headings */
+.po-footer__heading {
+    color: #fff;
+    margin-top: 0;
+}
+
+/* Footer Lists */
+.po-footer__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.po-footer__list li {
+    margin-bottom: 0.25rem;
+}
+
+.po-footer__list a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    transition: color 0.2s ease;
+}
+
+.po-footer__list a:hover {
+    color: #fff;
+}
+
+/* Divider */
+.po-footer__divider {
+    opacity: 1;
+    border: none;
+    height: 1px;
+}
+
+/* Footer Bottom */
+.po-footer__bottom {
+    gap: 1.5rem;
+}
+
+.po-footer__copyright {
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+}
+
+/* Social Links */
+.po-footer__social {
+    margin: 0;
+    padding: 0;
+}
+
+.po-footer__social .wp-block-social-link {
+    margin: 0;
+}
+
+.po-footer__social .wp-social-link {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.po-footer__social .wp-social-link:hover {
+    transform: translateY(-2px);
+    opacity: 0.8;
+}
+
+.po-footer__social .wp-social-link svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* --------------------------------------------------------------------------
+   BODY PADDING (für fixed Header)
+   -------------------------------------------------------------------------- */
+
+body:not(.wp-admin):not(.block-editor-page) {
+    padding-top: 80px;
+}
+
+/* WordPress Block-Editor fügt automatisch margin-block-start hinzu - entfernen */
+body:not(.wp-admin) .wp-site-blocks > *:first-child {
+    margin-block-start: 0 !important;
+}
+
+body:not(.wp-admin) .wp-site-blocks > header + * {
+    margin-block-start: 0 !important;
+}
+
+/* Page Header direkt nach Header - kein extra Margin */
+body:not(.wp-admin) .po-ph:first-child,
+body:not(.wp-admin) main > .po-ph:first-child,
+body:not(.wp-admin) .wp-site-blocks > .po-ph:first-child {
+    margin-top: 0;
+}
+
+/* Im Editor kein Padding */
+.editor-styles-wrapper {
+    padding-top: 0 !important;
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE
+   -------------------------------------------------------------------------- */
+
+/* Tablet */
+@media (max-width: 1024px) {
+    .po-menu__columns {
+        gap: 3rem;
+    }
+
+    .po-menu__column {
+        min-width: 180px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    body:not(.wp-admin):not(.block-editor-page) {
+        padding-top: 72px;
+    }
+
+    .po-header__inner {
+        padding: 0.875rem 1rem;
+    }
+
+    .po-header__logo-img {
+        height: 40px;
+    }
+
+    .po-header__cta {
+        padding: 0.625rem 1.25rem;
+        font-size: 0.8125rem;
+    }
+
+    .po-menu-overlay__inner {
+        padding: 100px 1.5rem 3rem;
+    }
+
+    .po-menu__columns {
+        flex-direction: column;
+        gap: 2.5rem;
+    }
+
+    .po-menu__column {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .po-menu__column--links {
+        padding-top: 1.5rem;
+        border-top: 1px solid #e5e5e5;
+    }
+
+    .po-menu__link {
+        font-size: 1rem;
+    }
+
+    .po-menu__link--standalone {
+        font-size: 1.125rem;
+    }
+
+    /* Footer Mobile */
+    .po-footer__grid {
+        flex-direction: column;
+    }
+
+    .po-footer__grid > .wp-block-column {
+        flex-basis: 100%;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .po-footer__bottom {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+    .po-header__cta {
+        padding: 0.5rem 1rem;
+    }
+
+    .po-footer {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+}

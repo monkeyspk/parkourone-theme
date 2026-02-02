@@ -1,0 +1,36 @@
+/* PO Text Block - Ticket #2 */
+.po-text {
+	margin: 0 0 1rem 0;
+	line-height: 1.6;
+}
+
+.po-text--small {
+	font-size: 0.875rem;
+}
+
+.po-text--medium {
+	font-size: 1rem;
+}
+
+.po-text--large {
+	font-size: 1.25rem;
+}
+
+.po-text--xlarge {
+	font-size: 1.5rem;
+	line-height: 1.4;
+}
+
+.po-text--has-background {
+	padding: 1rem 1.5rem;
+	border-radius: 8px;
+}
+
+.po-text a {
+	color: #667eea;
+	text-decoration: underline;
+}
+
+.po-text a:hover {
+	color: #764ba2;
+}

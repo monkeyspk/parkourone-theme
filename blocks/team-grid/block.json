@@ -1,0 +1,20 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/team-grid",
+	"version": "1.0.0",
+	"title": "Team Grid",
+	"category": "parkourone-about",
+	"icon": "groups",
+	"description": "Team-Übersicht mit Coaches aus dem Coach CPT.",
+	"keywords": ["team", "trainer", "coaches", "mitarbeiter"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"headline": { "type": "string", "default": "Unser Team" },
+		"intro": { "type": "string", "default": "Das sind wir. Ob draussen vor den Klassen oder im Büro hinter den Kulissen – lerne unser Team kennen." }
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}

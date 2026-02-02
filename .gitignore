@@ -1,0 +1,33 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# IDE
+.idea/
+.vscode/
+*.sublime-*
+
+# Node (falls ihr mal Build-Tools nutzt)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# WordPress spezifisch - NICHT committen
+wp-config.php
+.htaccess
+
+# Logs
+*.log
+debug.log
+
+# Temporäre Dateien
+*.tmp
+*.temp
+*.swp
+*~
+
+# Lokale Entwicklung
+.env
+.env.local

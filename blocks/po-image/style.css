@@ -1,0 +1,89 @@
+/* PO Image Block - Ticket #2 */
+.po-image {
+	margin: 0 0 1.5rem 0;
+}
+
+.po-image__img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.po-image__link {
+	display: block;
+	transition: opacity 0.2s ease;
+}
+
+.po-image__link:hover {
+	opacity: 0.9;
+}
+
+.po-image__caption {
+	margin-top: 0.75rem;
+	font-size: 0.875rem;
+	color: #86868b;
+	text-align: center;
+}
+
+/* Editor */
+.po-image-editor {
+	margin: 0;
+}
+
+.po-image-editor__container {
+	position: relative;
+}
+
+.po-image-editor__img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.po-image-editor__buttons {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	display: flex;
+	gap: 8px;
+	opacity: 0;
+	transition: opacity 0.2s;
+}
+
+.po-image-editor__container:hover .po-image-editor__buttons {
+	opacity: 1;
+}
+
+.po-image-editor__placeholder {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	padding: 3rem;
+	background: #f5f5f7;
+	border: 2px dashed #ccc;
+	border-radius: 8px;
+	cursor: pointer;
+	width: 100%;
+	transition: border-color 0.2s, background 0.2s;
+}
+
+.po-image-editor__placeholder:hover {
+	border-color: #667eea;
+	background: #f0f0f5;
+}
+
+.po-image-editor__placeholder .dashicons {
+	font-size: 48px;
+	width: 48px;
+	height: 48px;
+	color: #999;
+}
+
+.po-image-editor__caption {
+	margin-top: 0.5rem;
+	font-size: 0.875rem;
+	color: #666;
+	text-align: center;
+}

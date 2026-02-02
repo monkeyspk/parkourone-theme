@@ -1,0 +1,26 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/hero",
+	"version": "1.0.0",
+	"title": "Hero",
+	"category": "parkourone-startseite",
+	"icon": "cover-image",
+	"description": "Fullwidth Hero-Sektion mit Hintergrundbild, Headline, Subtext und CTA.",
+	"keywords": ["hero", "header", "banner", "startseite"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"headline": { "type": "string", "default": "Stärke deinen Körper, schärfe deinen Geist – erlebe Parkour" },
+		"subtext": { "type": "string", "default": "Bei ParkourONE lernst du, Hindernisse zu überwinden und Bewegung neu zu erleben." },
+		"buttonText": { "type": "string", "default": "Jetzt beginnen" },
+		"buttonUrl": { "type": "string", "default": "#" },
+		"imageUrl": { "type": "string", "default": "" },
+		"imageId": { "type": "number", "default": 0 },
+		"ageCategory": { "type": "string", "default": "" },
+		"useRandomFallback": { "type": "boolean", "default": false }
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}

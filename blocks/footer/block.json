@@ -1,0 +1,43 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/footer",
+	"version": "1.0.0",
+	"title": "Footer",
+	"category": "parkourone-layout",
+	"icon": "align-full-width",
+	"description": "Vollständiger Footer mit Kontakt, Standorten und Newsletter.",
+	"keywords": ["footer", "fußzeile", "kontakt"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"companyName": { "type": "string", "default": "ParkourONE Berlin" },
+		"companyAddress": { "type": "string", "default": "Scheffler & Gessinger GbR\nDietzinger Straße 25\n13156 Berlin" },
+		"socialInstagram": { "type": "string", "default": "#" },
+		"socialYoutube": { "type": "string", "default": "#" },
+		"socialPodcast": { "type": "string", "default": "#" },
+		"phone": { "type": "string", "default": "+49 30 48 49 42 40" },
+		"email": { "type": "string", "default": "berlin@parkourone.com" },
+		"contactFormUrl": { "type": "string", "default": "#" },
+		"phoneHours": { "type": "string", "default": "Montag: 09:00 - 10:00 Uhr, 13:00 - 15:30 Uhr\nDi. - Do.: 09:00 - 12:00 Uhr, 13:00 - 16:30 Uhr" },
+		"standorte": { "type": "array", "default": [
+			{"name":"Augsburg","url":"#"},
+			{"name":"Duisburg","url":"#"},
+			{"name":"Hannover","url":"#"},
+			{"name":"Düsseldorf","url":"#"},
+			{"name":"Münster","url":"#"},
+			{"name":"Schweiz","url":"#"}
+		]},
+		"zentraleName": { "type": "string", "default": "Parkour ONE Academy" },
+		"zentraleUrl": { "type": "string", "default": "#" },
+		"newsletterHeadline": { "type": "string", "default": "Abboniere unseren Newsletter" },
+		"newsletterText": { "type": "string", "default": "Wage den Sprung und sei immer auf dem neusten Stand!" },
+		"impressumUrl": { "type": "string", "default": "#" },
+		"datenschutzUrl": { "type": "string", "default": "#" },
+		"cookiesUrl": { "type": "string", "default": "#" },
+		"copyrightYear": { "type": "string", "default": "2024" }
+	},
+	"supports": { "align": ["full"], "html": false }
+}

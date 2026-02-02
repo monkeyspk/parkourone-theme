@@ -1,0 +1,80 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/page-header",
+	"version": "3.0.0",
+	"title": "Page Header",
+	"category": "parkourone-about",
+	"icon": "heading",
+	"description": "Flexibler Page Header mit 3 Varianten: Centered, Split, Fullscreen",
+	"keywords": ["header", "hero", "titel", "seite"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./editor.css",
+	"style": "file:./style.css",
+	"viewScript": "file:./view.js",
+	"render": "file:./render.php",
+	"attributes": {
+		"variant": {
+			"type": "string",
+			"default": "centered",
+			"enum": ["centered", "split", "fullscreen"]
+		},
+		"title": {
+			"type": "string",
+			"default": "Parkour Training"
+		},
+		"titleAccent": {
+			"type": "string",
+			"default": ""
+		},
+		"description": {
+			"type": "string",
+			"default": ""
+		},
+		"image": {
+			"type": "string",
+			"default": ""
+		},
+		"imageAlt": {
+			"type": "string",
+			"default": ""
+		},
+		"ctaText": {
+			"type": "string",
+			"default": "Probetraining buchen"
+		},
+		"ctaUrl": {
+			"type": "string",
+			"default": "#probetraining"
+		},
+		"ctaSecondaryText": {
+			"type": "string",
+			"default": ""
+		},
+		"ctaSecondaryUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"stats": {
+			"type": "array",
+			"default": []
+		},
+		"accentColor": {
+			"type": "string",
+			"default": "#0066cc"
+		},
+		"overlayOpacity": {
+			"type": "number",
+			"default": 50
+		},
+		"imageRotation": {
+			"type": "number",
+			"default": 2
+		}
+	},
+	"supports": {
+		"align": ["full", "wide"],
+		"html": false
+	}
+}

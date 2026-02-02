@@ -1,0 +1,26 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/feature-cards",
+	"version": "1.0.0",
+	"title": "Feature Cards",
+	"category": "parkourone-about",
+	"icon": "grid-view",
+	"description": "Feature-Karten mit Icons und Überschrift.",
+	"keywords": ["features", "karten", "icons", "bildungsziele"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"headline": { "type": "string", "default": "Unsere Bildungsziele" },
+		"showHeadline": { "type": "boolean", "default": true },
+		"cards": { "type": "array", "default": [
+			{"iconUrl":"","title":"Potentialentfaltung","desc":"Jeder Mensch ist einzigartig, wertvoll und hat besondere Talente! Mit TRUST schaffen wir einen Raum, wo sich alle individuell entfalten können und dürfen."},
+			{"iconUrl":"","title":"Werthaltung","desc":"Die Verbreitung der Philosophie und ein Erhalt unserer Werte ist zentral in der Vermittlung von Parkour nach TRUST. Sinnbildlich haben wir Werte an einer Hand definiert."},
+			{"iconUrl":"","title":"Gesundheitsförderung","desc":"Physische, psychische und soziale Gesundheit sind essentiell für den Menschen. Die Gesundheitsförderung ist die Wurzel unserer Arbeit mittels TRUST."}
+		]},
+		"backgroundColor": { "type": "string", "default": "#ffffff" }
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}

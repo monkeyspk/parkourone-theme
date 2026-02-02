@@ -1,0 +1,238 @@
+/* Intro Section - Apple Style */
+.po-intro-section {
+	padding: clamp(4rem, 10vw, 7rem) max(24px, calc((100vw - 1200px) / 2));
+}
+
+/* Background Variants */
+.po-intro-section--bg-white {
+	background: #fff;
+}
+
+.po-intro-section--bg-light {
+	background: #fff;
+}
+
+.po-intro-section--bg-gradient {
+	background: #fff;
+}
+
+/* Container */
+.po-intro-section__container {
+	max-width: 980px;
+}
+
+/* Layout: Default */
+.po-intro-section--default .po-intro-section__container {
+	display: block;
+}
+
+/* Layout: Centered */
+.po-intro-section--centered .po-intro-section__container {
+	text-align: center;
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.po-intro-section--centered .po-intro-section__benefits-list {
+	display: inline-flex;
+	flex-direction: column;
+	text-align: left;
+}
+
+/* Layout: Split */
+.po-intro-section--split .po-intro-section__container {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: clamp(2rem, 6vw, 5rem);
+	align-items: start;
+}
+
+/* Content */
+.po-intro-section__content {
+	margin-bottom: 3rem;
+}
+
+.po-intro-section--split .po-intro-section__content {
+	margin-bottom: 0;
+}
+
+/* Headline - Apple Typography */
+.po-intro-section__headline {
+	font-size: clamp(2rem, 5vw, 3.5rem);
+	font-weight: 700;
+	letter-spacing: -0.025em;
+	line-height: 1.1;
+	margin: 0 0 1.5rem 0;
+	color: #1d1d1f;
+	background: linear-gradient(135deg, #1d1d1f 0%, #434343 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+}
+
+/* Text */
+.po-intro-section__text {
+	font-size: clamp(1.125rem, 2vw, 1.375rem);
+	line-height: 1.6;
+	color: #86868b;
+	margin: 0;
+	max-width: 680px;
+}
+
+.po-intro-section--centered .po-intro-section__text {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/* Benefits Section */
+.po-intro-section__benefits {
+	padding-top: 0.5rem;
+}
+
+.po-intro-section__benefits-headline {
+	font-size: 1.125rem;
+	font-weight: 600;
+	color: #1d1d1f;
+	margin: 0 0 1.25rem 0;
+	letter-spacing: -0.01em;
+}
+
+.po-intro-section__benefits-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+/* Individual Benefit */
+.po-intro-section__benefit {
+	display: flex;
+	align-items: flex-start;
+	gap: 1rem;
+	animation: benefitFadeIn 0.5s ease-out both;
+	animation-delay: var(--delay, 0s);
+}
+
+@keyframes benefitFadeIn {
+	from {
+		opacity: 0;
+		transform: translateX(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+.po-intro-section__benefit-icon {
+	flex-shrink: 0;
+	width: 28px;
+	height: 28px;
+	color: #34c759;
+	margin-top: 0.125rem;
+}
+
+.po-intro-section__benefit-icon svg {
+	width: 100%;
+	height: 100%;
+}
+
+.po-intro-section__benefit-text {
+	font-size: 1.0625rem;
+	line-height: 1.5;
+	color: #1d1d1f;
+}
+
+/* Hover Effect on Benefits */
+.po-intro-section__benefit {
+	padding: 0.75rem 1rem;
+	margin: -0.75rem -1rem;
+	border-radius: 12px;
+	transition: background 0.2s ease;
+}
+
+.po-intro-section__benefit:hover {
+	background: rgba(0, 0, 0, 0.02);
+}
+
+.po-intro-section--bg-light .po-intro-section__benefit:hover,
+.po-intro-section--bg-gradient .po-intro-section__benefit:hover {
+	background: rgba(255, 255, 255, 0.6);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+	.po-intro-section--split .po-intro-section__container {
+		grid-template-columns: 1fr;
+		gap: 2rem;
+	}
+
+	.po-intro-section__content {
+		margin-bottom: 2rem;
+	}
+
+	.po-intro-section__benefit {
+		padding: 0.5rem 0.75rem;
+		margin: -0.5rem -0.75rem;
+	}
+
+	.po-intro-section__benefit-icon {
+		width: 24px;
+		height: 24px;
+	}
+
+	.po-intro-section__benefits-list {
+		gap: 0.75rem;
+	}
+}
+
+/* Editor Preview */
+.po-intro-section-editor {
+	padding: 2.5rem;
+	background: #fafafa;
+	border-radius: 16px;
+}
+
+.po-intro-section-editor__headline {
+	font-size: 1.75rem;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	margin: 0 0 1rem 0;
+	color: #1d1d1f;
+}
+
+.po-intro-section-editor__text {
+	font-size: 1.0625rem;
+	color: #86868b;
+	margin: 0 0 1.5rem 0;
+	line-height: 1.5;
+}
+
+.po-intro-section-editor__benefits {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.po-intro-section-editor__benefit {
+	display: flex;
+	align-items: center;
+	gap: 0.625rem;
+	font-size: 0.9375rem;
+	color: #1d1d1f;
+}
+
+.po-intro-section-editor__benefit-icon {
+	color: #34c759;
+	font-size: 1rem;
+}
+
+.po-intro-section-editor__meta {
+	margin-top: 1.5rem;
+	padding-top: 1rem;
+	border-top: 1px solid #e0e0e0;
+	font-size: 0.8125rem;
+	color: #86868b;
+}

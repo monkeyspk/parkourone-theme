@@ -1,0 +1,26 @@
+/* PO Icon Block - Ticket #2 */
+.po-icon {
+	margin: 1rem 0;
+}
+
+.po-icon__svg {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.po-icon__link {
+	display: inline-block;
+	transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.po-icon__link:hover {
+	transform: scale(1.1);
+	opacity: 0.8;
+}
+
+/* Editor */
+.po-icon-editor {
+	padding: 1.5rem;
+	background: #f9f9f9;
+	border-radius: 8px;
+}

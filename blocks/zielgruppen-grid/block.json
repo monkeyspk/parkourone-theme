@@ -1,0 +1,28 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/zielgruppen-grid",
+	"version": "1.0.0",
+	"title": "Zielgruppen Grid",
+	"category": "parkourone-startseite",
+	"icon": "groups",
+	"description": "Zielgruppen-Kacheln (Kids, Juniors, Adults) mit Bild und Link. Mobile als Slider.",
+	"keywords": ["zielgruppen", "grid", "kacheln", "alter", "kids", "juniors", "adults"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"headline": { "type": "string", "default": "Was ist dein nächster Sprung?" },
+		"subtext": { "type": "string", "default": "Nimm eine neue Herausforderung an, unabhängig von deinem Fitnesslevel." },
+		"categories": {
+			"type": "array",
+			"default": [
+				{ "label": "Kids", "imageUrl": "", "linkUrl": "/kids" },
+				{ "label": "Juniors", "imageUrl": "", "linkUrl": "/juniors" },
+				{ "label": "Adults", "imageUrl": "", "linkUrl": "/adults" }
+			]
+		}
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}

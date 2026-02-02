@@ -1,0 +1,31 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/klassen-slider",
+	"version": "2.0.0",
+	"title": "Klassen Slider",
+	"category": "parkourone-blocks",
+	"icon": "slides",
+	"description": "Moderner Slider mit Klassen-Cards und Filter-Dropdowns.",
+	"keywords": ["klassen", "slider", "kurse", "swiper", "cards", "filter"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"headline": { "type": "string", "default": "" },
+		"filterMode": {
+			"type": "string",
+			"default": "none",
+			"enum": ["age", "location", "both", "none"]
+		},
+		"filterAge": { "type": "string", "default": "" },
+		"filterLocation": { "type": "string", "default": "" },
+		"filterOffer": { "type": "string", "default": "" },
+		"filterWeekday": { "type": "string", "default": "" },
+		"bookingPageUrl": { "type": "string", "default": "/probetraining/" },
+		"buttonText": { "type": "string", "default": "Probetraining buchen" },
+		"hideIfEmpty": { "type": "boolean", "default": false }
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}

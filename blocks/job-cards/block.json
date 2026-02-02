@@ -1,0 +1,26 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/job-cards",
+	"version": "1.0.0",
+	"title": "Job Cards",
+	"category": "parkourone-about",
+	"icon": "businessperson",
+	"description": "Stellenangebote mit Karten.",
+	"keywords": ["jobs", "stellen", "karriere", "bewerbung"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"headline": { "type": "string", "default": "Werde Teil unseres Teams" },
+		"intro": { "type": "string", "default": "Wir bei ParkourOne sind ständig auf der Suche nach begeisterten und talentierten Menschen, die unser Team bereichern wollen. Schau dir unsere offenen Stellen an und finde heraus, wie du uns unterstützen kannst!" },
+		"jobs": { "type": "array", "default": [
+			{"title":"Headcoach","type":"Full-time","desc":"Wir suchen einen erfahrenen und motivierten Headcoach! Du planst und leitest Trainings, entwickelst unsere Schüler und führst unser Trainerteam. Bewerbe dich jetzt und werde Teil unseres dynamischen Teams!","ctaText":"Jetzt bewerben","ctaUrl":"#"},
+			{"title":"Social Media Manager/in","type":"Full-time","desc":"Wir suchen eine kreative und engagierte Person als Social Media Manager für unsere Parkour Schule! Du entwickelst und verwaltest unsere Social-Media-Kanäle, erstellst ansprechende Inhalte und baust unsere Online-Community auf.","ctaText":"Jetzt bewerben","ctaUrl":"#"},
+			{"title":"Social Media Manager","type":"Full-time","desc":"Wir suchen einen erfahrenen und motivierten Headcoach für unsere Parkour Schule! Du planst und leitest Trainings, entwickelst unsere Schüler und führst unser Trainerteam. Bewerbe dich jetzt und werde Teil unseres dynamischen Teams!","ctaText":"Jetzt bewerben","ctaUrl":"#"}
+		]},
+		"backgroundColor": { "type": "string", "default": "#ffffff" }
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}

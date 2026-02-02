@@ -1,0 +1,46 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/po-columns",
+	"version": "1.0.0",
+	"title": "PO Spalten",
+	"category": "parkourone-basis",
+	"icon": "columns",
+	"description": "Spalten-Layout mit 2-4 Spalten",
+	"keywords": ["spalten", "columns", "layout", "grid", "basis"],
+	"supports": {
+		"html": false,
+		"align": ["wide", "full"]
+	},
+	"attributes": {
+		"columns": {
+			"type": "number",
+			"default": 2
+		},
+		"gap": {
+			"type": "string",
+			"default": "medium"
+		},
+		"verticalAlign": {
+			"type": "string",
+			"default": "top"
+		},
+		"backgroundColor": {
+			"type": "string",
+			"default": ""
+		},
+		"columnContent": {
+			"type": "array",
+			"default": [
+				{ "content": "", "backgroundColor": "" },
+				{ "content": "", "backgroundColor": "" },
+				{ "content": "", "backgroundColor": "" },
+				{ "content": "", "backgroundColor": "" }
+			]
+		}
+	},
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}

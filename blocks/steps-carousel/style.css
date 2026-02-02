@@ -1,0 +1,327 @@
+/* Steps Timeline - Apple-inspired Design */
+.po-steps-timeline {
+	padding: 80px 0;
+	font-family: var(--po-font-sans, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif);
+}
+
+/* Background variants */
+.po-steps-timeline--light {
+	background: #f5f5f7;
+}
+
+.po-steps-timeline--dark {
+	background: #1d1d1f;
+}
+
+.po-steps-timeline--white {
+	background: #fff;
+}
+
+/* Container */
+.po-steps-timeline__container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 24px;
+}
+
+/* Header */
+.po-steps-timeline__header {
+	text-align: center;
+	margin-bottom: 60px;
+}
+
+.po-steps-timeline__headline {
+	font-size: clamp(28px, 4vw, 40px);
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	margin: 0 0 12px;
+	color: #1d1d1f;
+}
+
+.po-steps-timeline--dark .po-steps-timeline__headline {
+	color: #f5f5f7;
+}
+
+.po-steps-timeline__subheadline {
+	font-size: 17px;
+	color: #86868b;
+	margin: 0;
+	max-width: 500px;
+	margin: 0 auto;
+}
+
+/* Timeline Track */
+.po-steps-timeline__track {
+	display: flex;
+	justify-content: space-between;
+	position: relative;
+	max-width: 1000px;
+	margin: 0 auto;
+}
+
+/* Connecting Line */
+.po-steps-timeline__track::before {
+	content: '';
+	position: absolute;
+	top: 24px;
+	left: 12%;
+	right: 12%;
+	height: 2px;
+	background: linear-gradient(90deg,
+		rgba(0, 102, 204, 0.2) 0%,
+		rgba(0, 102, 204, 0.6) 25%,
+		rgba(0, 102, 204, 0.6) 75%,
+		rgba(0, 102, 204, 0.2) 100%
+	);
+	z-index: 0;
+}
+
+.po-steps-timeline--dark .po-steps-timeline__track::before {
+	background: linear-gradient(90deg,
+		rgba(10, 132, 255, 0.2) 0%,
+		rgba(10, 132, 255, 0.5) 25%,
+		rgba(10, 132, 255, 0.5) 75%,
+		rgba(10, 132, 255, 0.2) 100%
+	);
+}
+
+/* Single Step */
+.po-steps-timeline__step {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 22%;
+	text-align: center;
+	position: relative;
+}
+
+/* Number Wrap */
+.po-steps-timeline__number-wrap {
+	position: relative;
+	z-index: 1;
+	margin-bottom: 20px;
+}
+
+/* Number Circle */
+.po-steps-timeline__number {
+	width: 48px;
+	height: 48px;
+	background: linear-gradient(135deg, #0066cc 0%, #004499 100%);
+	color: #fff;
+	font-size: 18px;
+	font-weight: 600;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.po-steps-timeline__step:hover .po-steps-timeline__number {
+	transform: scale(1.1);
+	box-shadow: 0 6px 20px rgba(0, 102, 204, 0.4);
+}
+
+.po-steps-timeline--dark .po-steps-timeline__number {
+	background: linear-gradient(135deg, #0a84ff 0%, #0066cc 100%);
+	box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3);
+}
+
+/* Image Wrap */
+.po-steps-timeline__image-wrap {
+	width: 140px;
+	height: 140px;
+	border-radius: 20px;
+	overflow: hidden;
+	margin-bottom: 20px;
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+	transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.po-steps-timeline__step:hover .po-steps-timeline__image-wrap {
+	transform: translateY(-8px);
+	box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+}
+
+.po-steps-timeline--dark .po-steps-timeline__image-wrap {
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Image */
+.po-steps-timeline__image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 0.4s ease;
+}
+
+.po-steps-timeline__step:hover .po-steps-timeline__image {
+	transform: scale(1.05);
+}
+
+/* Title */
+.po-steps-timeline__title {
+	font-size: 17px;
+	font-weight: 600;
+	color: #1d1d1f;
+	margin: 0 0 8px;
+	letter-spacing: -0.01em;
+}
+
+.po-steps-timeline--dark .po-steps-timeline__title {
+	color: #f5f5f7;
+}
+
+/* Description */
+.po-steps-timeline__desc {
+	font-size: 14px;
+	line-height: 1.5;
+	color: #86868b;
+	margin: 0;
+	max-width: 180px;
+}
+
+.po-steps-timeline--dark .po-steps-timeline__desc {
+	color: rgba(255, 255, 255, 0.6);
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+	.po-steps-timeline__track::before {
+		left: 5%;
+		right: 5%;
+	}
+
+	.po-steps-timeline__image-wrap {
+		width: 120px;
+		height: 120px;
+	}
+
+	.po-steps-timeline__desc {
+		font-size: 13px;
+	}
+}
+
+/* Mobile: Vertical Timeline */
+@media (max-width: 768px) {
+	.po-steps-timeline {
+		padding: 60px 0;
+	}
+
+	.po-steps-timeline__header {
+		margin-bottom: 40px;
+	}
+
+	.po-steps-timeline__track {
+		flex-direction: column;
+		gap: 0;
+		padding-left: 60px;
+	}
+
+	/* Vertical Line */
+	.po-steps-timeline__track::before {
+		top: 24px;
+		bottom: 24px;
+		left: 23px;
+		right: auto;
+		width: 2px;
+		height: auto;
+		background: linear-gradient(180deg,
+			rgba(0, 102, 204, 0.6) 0%,
+			rgba(0, 102, 204, 0.6) 100%
+		);
+	}
+
+	/* Step - horizontal layout */
+	.po-steps-timeline__step {
+		flex-direction: row;
+		align-items: flex-start;
+		text-align: left;
+		width: 100%;
+		gap: 20px;
+		padding-bottom: 40px;
+	}
+
+	.po-steps-timeline__step:last-child {
+		padding-bottom: 0;
+	}
+
+	/* Number positioned on the line */
+	.po-steps-timeline__number-wrap {
+		position: absolute;
+		left: -60px;
+		top: 0;
+		margin-bottom: 0;
+	}
+
+	.po-steps-timeline__number {
+		width: 44px;
+		height: 44px;
+		font-size: 16px;
+	}
+
+	/* Image */
+	.po-steps-timeline__image-wrap {
+		width: 100px;
+		height: 100px;
+		flex-shrink: 0;
+		margin-bottom: 0;
+		border-radius: 16px;
+	}
+
+	/* Content wrapper */
+	.po-steps-timeline__step > *:not(.po-steps-timeline__number-wrap):not(.po-steps-timeline__image-wrap) {
+		flex: 1;
+	}
+
+	.po-steps-timeline__title {
+		font-size: 16px;
+		margin-bottom: 6px;
+	}
+
+	.po-steps-timeline__desc {
+		max-width: 100%;
+		font-size: 14px;
+	}
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+	.po-steps-timeline {
+		padding: 48px 0;
+	}
+
+	.po-steps-timeline__container {
+		padding: 0 16px;
+	}
+
+	.po-steps-timeline__track {
+		padding-left: 50px;
+	}
+
+	.po-steps-timeline__number-wrap {
+		left: -50px;
+	}
+
+	.po-steps-timeline__number {
+		width: 36px;
+		height: 36px;
+		font-size: 14px;
+	}
+
+	.po-steps-timeline__track::before {
+		left: 17px;
+	}
+
+	.po-steps-timeline__image-wrap {
+		width: 80px;
+		height: 80px;
+		border-radius: 12px;
+	}
+
+	.po-steps-timeline__step {
+		gap: 16px;
+		padding-bottom: 32px;
+	}
+}

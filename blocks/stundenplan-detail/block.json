@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/stundenplan-detail",
+	"version": "1.0.0",
+	"title": "Stundenplan Detail",
+	"category": "parkourone-blocks",
+	"icon": "calendar-alt",
+	"description": "Detaillierte Wochenansicht des Stundenplans mit Filtern nach Alter, Standort und Angebot.",
+	"keywords": ["stundenplan", "schedule", "wochenplan", "kalender", "kurse"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"headline": { "type": "string", "default": "Unser Stundenplan" },
+		"showFilters": { "type": "boolean", "default": true },
+		"filterAge": { "type": "string", "default": "" },
+		"filterLocation": { "type": "string", "default": "" },
+		"compactView": { "type": "boolean", "default": false }
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}

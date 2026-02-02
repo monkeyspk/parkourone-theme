@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/about-section",
+	"version": "1.0.0",
+	"title": "About Section",
+	"category": "parkourone-startseite",
+	"icon": "info-outline",
+	"description": "About-Bereich mit Text und Video oder Bild.",
+	"keywords": ["about", "über", "uns", "video", "info"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"subheadline": { "type": "string", "default": "ABOUT" },
+		"headline": { "type": "string", "default": "parkourONE" },
+		"text": { "type": "string", "default": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum." },
+		"ctaText": { "type": "string", "default": "Über unsere Schule" },
+		"ctaUrl": { "type": "string", "default": "#" },
+		"mediaType": { "type": "string", "default": "video" },
+		"imageUrl": { "type": "string", "default": "" },
+		"videoUrl": { "type": "string", "default": "" },
+		"videoType": { "type": "string", "default": "embed" },
+		"mediaRight": { "type": "boolean", "default": true },
+		"backgroundColor": { "type": "string", "default": "#ffffff" }
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}

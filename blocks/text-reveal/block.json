@@ -1,0 +1,37 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/text-reveal",
+	"version": "1.0.0",
+	"title": "Text Reveal",
+	"category": "parkourone",
+	"icon": "text",
+	"description": "Apple-Style Text der beim Scrollen Wort für Wort sichtbar wird",
+	"keywords": ["text", "reveal", "scroll", "animation", "apple"],
+	"supports": {
+		"html": false,
+		"align": ["wide", "full"]
+	},
+	"attributes": {
+		"text": {
+			"type": "string",
+			"default": "Bei ParkourONE lernst du, Hindernisse zu überwinden – in der Stadt und im Leben. Entdecke unsere Klassen für alle Altersgruppen und starte deine Parkour-Reise."
+		},
+		"align": {
+			"type": "string",
+			"default": "wide"
+		},
+		"textSize": {
+			"type": "string",
+			"default": "large",
+			"enum": ["medium", "large", "xlarge"]
+		},
+		"textAlign": {
+			"type": "string",
+			"default": "center"
+		}
+	},
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}

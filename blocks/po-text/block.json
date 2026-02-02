@@ -1,0 +1,41 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/po-text",
+	"version": "1.0.0",
+	"title": "PO Text",
+	"category": "parkourone-basis",
+	"icon": "editor-textcolor",
+	"description": "Einfacher Text-Block mit Formatierungsoptionen",
+	"keywords": ["text", "absatz", "paragraph", "basis"],
+	"supports": {
+		"html": false,
+		"align": ["left", "center", "right", "wide", "full"]
+	},
+	"attributes": {
+		"content": {
+			"type": "string",
+			"default": ""
+		},
+		"fontSize": {
+			"type": "string",
+			"default": "medium"
+		},
+		"textAlign": {
+			"type": "string",
+			"default": "left"
+		},
+		"backgroundColor": {
+			"type": "string",
+			"default": ""
+		},
+		"textColor": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}

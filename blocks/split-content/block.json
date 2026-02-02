@@ -1,0 +1,26 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/split-content",
+	"version": "1.0.0",
+	"title": "Split Content",
+	"category": "parkourone-about",
+	"icon": "columns",
+	"description": "50/50 Layout mit Text und Bild.",
+	"keywords": ["split", "zwei", "spalten", "bild", "text"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"headline": { "type": "string", "default": "ParkourONE Academy Berlin" },
+		"text": { "type": "string", "default": "Wir von ParkourONE verstehen uns als ganzheitliche Bildungseinrichtung. Mit all unseren Parkour-Angeboten wollen wir die Potentialentfaltung, Werthaltung und Gesundheitsförderung (physische, soziale und psychische) der Teilnehmer unterstützen – sei es in unseren regelmäßigen Klassen, in Workshops, Kursen, Fortbildungen oder anderen Events.\n\nParkourONE ist außerdem Initiator vieler kostenloser Angebote in Berlin, wie z.B. des Public Meetings, der Hellnight, des Monday Velo Jams (MoVe Jam), und Mitbegründerin des Female Movement Events (FEMME)." },
+		"imageUrl": { "type": "string", "default": "" },
+		"imageRight": { "type": "boolean", "default": true },
+		"showCta": { "type": "boolean", "default": false },
+		"ctaText": { "type": "string", "default": "Mehr erfahren" },
+		"ctaUrl": { "type": "string", "default": "#" },
+		"backgroundColor": { "type": "string", "default": "#ffffff" }
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}

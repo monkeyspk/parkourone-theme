@@ -1,0 +1,128 @@
+.po-hero {
+	position: relative;
+	min-height: 85vh;
+	display: flex;
+	align-items: center;
+	background-size: cover;
+	background-position: center;
+	background-color: #1d1d1f;
+}
+
+.po-hero__overlay {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(90deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+}
+
+.po-hero__content {
+	position: relative;
+	z-index: 1;
+	max-width: 600px;
+	padding: 60px max(24px, calc((100vw - 1200px) / 2));
+}
+
+.po-hero__headline {
+	font-size: clamp(36px, 5vw, 56px);
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	line-height: 1.1;
+	color: #fff;
+	margin: 0 0 20px;
+}
+
+.po-hero__subtext {
+	font-size: clamp(16px, 2vw, 18px);
+	line-height: 1.5;
+	color: rgba(255, 255, 255, 0.85);
+	margin: 0 0 32px;
+}
+
+.po-hero__button {
+	display: inline-block;
+	padding: 14px 28px;
+	background: #1d1d1f;
+	color: #fff;
+	font-size: 15px;
+	font-weight: 500;
+	text-decoration: none;
+	border-radius: 8px;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.po-hero__button:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+	color: #fff;
+}
+
+.po-hero-editor__preview {
+	min-height: 400px;
+	background-size: cover;
+	background-position: center;
+	background-color: #86868b;
+	border-radius: 12px;
+	display: flex;
+	align-items: center;
+	position: relative;
+}
+
+.po-hero-editor__preview::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(90deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+	border-radius: 12px;
+}
+
+.po-hero-editor__content {
+	position: relative;
+	z-index: 1;
+	padding: 40px;
+	max-width: 500px;
+}
+
+.po-hero-editor__headline {
+	font-size: 32px;
+	font-weight: 600;
+	color: #fff;
+	margin: 0 0 12px;
+}
+
+.po-hero-editor__subtext {
+	font-size: 15px;
+	color: rgba(255, 255, 255, 0.85);
+	margin: 0 0 20px;
+}
+
+.po-hero-editor__button {
+	display: inline-block;
+	padding: 10px 20px;
+	background: #1d1d1f;
+	color: #fff;
+	font-size: 14px;
+	font-weight: 500;
+	border-radius: 6px;
+}
+
+@media (max-width: 768px) {
+	.po-hero {
+		min-height: 70vh;
+	}
+	
+	.po-hero__overlay {
+		background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%);
+	}
+	
+	.po-hero__content {
+		padding: 40px 20px;
+		max-width: 100%;
+	}
+	
+	.po-hero__headline {
+		margin-bottom: 16px;
+	}
+	
+	.po-hero__subtext {
+		margin-bottom: 24px;
+	}
+}

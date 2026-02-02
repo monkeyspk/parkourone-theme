@@ -1,0 +1,55 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/intro-section",
+	"version": "1.0.0",
+	"title": "Intro Section",
+	"category": "parkourone-blocks",
+	"icon": "editor-alignleft",
+	"description": "Elegante Intro-Sektion mit Headline, Text und Benefits im Apple-Style.",
+	"keywords": ["intro", "einleitung", "benefits", "vorteile", "text"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"headline": {
+			"type": "string",
+			"default": "Deine Überschrift hier"
+		},
+		"text": {
+			"type": "string",
+			"default": "Beschreibe hier, worum es geht. Ein bis zwei Sätze, die den Besucher abholen."
+		},
+		"showBenefits": {
+			"type": "boolean",
+			"default": true
+		},
+		"benefitsHeadline": {
+			"type": "string",
+			"default": "Was dich erwartet:"
+		},
+		"benefits": {
+			"type": "array",
+			"default": [
+				"Erster Vorteil hier",
+				"Zweiter Vorteil hier",
+				"Dritter Vorteil hier"
+			]
+		},
+		"layout": {
+			"type": "string",
+			"default": "default",
+			"enum": ["default", "centered", "split"]
+		},
+		"backgroundColor": {
+			"type": "string",
+			"default": "white",
+			"enum": ["white", "light", "gradient"]
+		}
+	},
+	"supports": {
+		"align": ["full", "wide"],
+		"html": false
+	}
+}

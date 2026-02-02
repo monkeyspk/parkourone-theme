@@ -1,0 +1,67 @@
+.po-schulen {
+	padding: clamp(3rem, 8vw, 6rem) clamp(1.5rem, 5vw, 4rem);
+}
+
+.po-schulen__headline {
+	font-size: clamp(2rem, 5vw, 3rem);
+	font-weight: 700;
+	text-align: center;
+	margin: 0 0 1rem 0;
+}
+
+.po-schulen__intro {
+	font-size: 1rem;
+	color: #666;
+	text-align: center;
+	margin: 0 auto 3rem;
+	max-width: 800px;
+	line-height: 1.6;
+}
+
+.po-schulen__grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 1.5rem;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.po-schule-card {
+	position: relative;
+	cursor: pointer;
+	text-decoration: none;
+	color: inherit;
+	display: block;
+}
+
+.po-schule-card__image {
+	aspect-ratio: 4/3;
+	background: #e5e5e5;
+	background-size: cover;
+	background-position: center;
+	border-radius: 12px;
+	margin-bottom: 0.75rem;
+	transition: transform 0.3s ease;
+}
+
+.po-schule-card:hover .po-schule-card__image {
+	transform: scale(1.02);
+}
+
+.po-schule-card__name {
+	font-size: 1.125rem;
+	font-weight: 600;
+	margin: 0;
+}
+
+@media (max-width: 900px) {
+	.po-schulen__grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 600px) {
+	.po-schulen__grid {
+		grid-template-columns: 1fr;
+	}
+}

@@ -1,0 +1,45 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/po-icon",
+	"version": "1.0.0",
+	"title": "PO Icon",
+	"category": "parkourone-basis",
+	"icon": "star-filled",
+	"description": "Icon-Block mit Auswahl aus Lucide Icons",
+	"keywords": ["icon", "symbol", "lucide", "basis"],
+	"supports": {
+		"html": false,
+		"align": ["left", "center", "right"]
+	},
+	"attributes": {
+		"icon": {
+			"type": "string",
+			"default": "star"
+		},
+		"size": {
+			"type": "number",
+			"default": 48
+		},
+		"color": {
+			"type": "string",
+			"default": "#667eea"
+		},
+		"linkUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"linkTarget": {
+			"type": "string",
+			"default": "_self"
+		},
+		"align": {
+			"type": "string",
+			"default": "center"
+		}
+	},
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}

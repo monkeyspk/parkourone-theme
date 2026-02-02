@@ -1,0 +1,57 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/trust-education",
+	"version": "1.0.0",
+	"title": "TRUST Education",
+	"category": "parkourone-about",
+	"icon": "awards",
+	"description": "TRUST Education Block mit den 3 Bildungszielen: Potentialentfaltung, Werthaltung, Gesundheitsförderung",
+	"keywords": ["trust", "education", "bildung", "werte", "mission"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"headline": {
+			"type": "string",
+			"default": "TRUST Education"
+		},
+		"intro": {
+			"type": "string",
+			"default": "Die Mission von TRUST Education umfasst die drei Bildungsziele Potentialentfaltung, Werthaltung und Gesundheitsförderung. Unser Ziel ist eine ganzheitliche Bildung, bei welcher der Mensch im Zentrum steht. Dieses erreichen wir durch eine klare Methodik, die feste Strukturen, mehrdimensionales Lernen, eine umfassende Gesundheitsförderung und die Vermittlung wichtiger Kernwerte umfasst."
+		},
+		"goalsHeadline": {
+			"type": "string",
+			"default": "Unsere Bildungsziele"
+		},
+		"goals": {
+			"type": "array",
+			"default": [
+				{
+					"title": "Potentialentfaltung",
+					"icon": "star",
+					"text": "Jeder Mensch ist einzigartig, wertvoll und hat besondere Talente! Mit TRUST schaffen wir einen Raum, wo sich alle individuell entfalten können und dürfen."
+				},
+				{
+					"title": "Werthaltung",
+					"icon": "heart",
+					"text": "Die Verbreitung der Philosophie und ein Erhalt unserer Werte ist zentral in der Vermittlung von Parkour nach TRUST. Sinnbildlich haben wir Werte an einer Hand definiert."
+				},
+				{
+					"title": "Gesundheitsförderung",
+					"icon": "shield",
+					"text": "Physische, psychische und soziale Gesundheit sind essentiell für den Menschen. Die Gesundheitsförderung ist die Wurzel unserer Arbeit mittels TRUST."
+				}
+			]
+		},
+		"backgroundColor": {
+			"type": "string",
+			"default": "light"
+		}
+	},
+	"supports": {
+		"align": ["full", "wide"],
+		"html": false
+	}
+}

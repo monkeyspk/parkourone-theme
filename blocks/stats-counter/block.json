@@ -1,0 +1,50 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/stats-counter",
+	"version": "1.0.0",
+	"title": "Stats Counter",
+	"category": "parkourone-startseite",
+	"icon": "chart-bar",
+	"description": "Emotionale Statistiken mit animierten Zahlen im Apple-Style.",
+	"keywords": ["stats", "zahlen", "counter", "statistik", "fakten"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"headline": {
+			"type": "string",
+			"default": ""
+		},
+		"stats": {
+			"type": "array",
+			"default": [
+				{
+					"number": "1500",
+					"suffix": "+",
+					"label": "Schueler:innen",
+					"subtext": "vertrauen uns"
+				},
+				{
+					"number": "25",
+					"suffix": "",
+					"label": "Jahre Erfahrung",
+					"subtext": "seit 1999"
+				},
+				{
+					"number": "7",
+					"suffix": "",
+					"label": "Standorte",
+					"subtext": "in Deutschland & Schweiz"
+				}
+			]
+		},
+		"style": {
+			"type": "string",
+			"default": "light",
+			"enum": ["light", "dark", "gradient"]
+		}
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}

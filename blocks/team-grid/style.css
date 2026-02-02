@@ -1,0 +1,845 @@
+.po-tg {
+	padding: clamp(3rem, 8vw, 6rem) 0;
+	background: #000;
+}
+
+.po-tg__headline {
+	font-size: clamp(2rem, 5vw, 3rem);
+	font-weight: 700;
+	margin: 0 0 1rem 0;
+	padding: 0 clamp(1.5rem, 5vw, 4rem);
+	color: #fff;
+}
+
+.po-tg__intro {
+	font-size: 1rem;
+	color: rgba(255, 255, 255, 0.6);
+	margin: 0 0 2rem 0;
+	max-width: 800px;
+	padding: 0 clamp(1.5rem, 5vw, 4rem);
+}
+
+.po-tg__filter-fab {
+	position: fixed;
+	bottom: 32px;
+	left: 50%;
+	transform: translateX(-50%) translateY(100px);
+	z-index: 1000;
+	opacity: 0;
+	pointer-events: none;
+	transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1), opacity 0.3s ease;
+}
+
+.po-tg__filter-fab.is-visible {
+	transform: translateX(-50%) translateY(0);
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.po-tg__filter-trigger {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 14px 20px 14px 24px;
+	background: rgba(30, 30, 30, 0.85);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 100px;
+	color: #fff;
+	font-size: 0.9375rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+.po-tg__filter-trigger:hover {
+	background: rgba(40, 40, 40, 0.9);
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.po-tg__filter-icon {
+	width: 20px;
+	height: 20px;
+	padding: 4px;
+	background: #0071e3;
+	border-radius: 50%;
+	transition: transform 0.3s ease;
+}
+
+.po-tg__filter-fab.is-open .po-tg__filter-icon {
+	transform: rotate(45deg);
+}
+
+.po-tg__filter-dropdown {
+	position: absolute;
+	bottom: calc(100% + 12px);
+	left: 50%;
+	transform: translateX(-50%) scale(0.95);
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	padding: 8px;
+	background: rgba(30, 30, 30, 0.95);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 16px;
+	min-width: 200px;
+	opacity: 0;
+	pointer-events: none;
+	transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.po-tg__filter-fab.is-open .po-tg__filter-dropdown {
+	transform: translateX(-50%) scale(1);
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.po-tg__filter-option {
+	padding: 12px 16px;
+	background: transparent;
+	border: none;
+	border-radius: 10px;
+	color: rgba(255, 255, 255, 0.8);
+	font-size: 0.9375rem;
+	font-weight: 500;
+	text-align: left;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.po-tg__filter-option:hover {
+	background: rgba(255, 255, 255, 0.1);
+	color: #fff;
+}
+
+.po-tg__filter-option.is-active {
+	background: #0071e3;
+	color: #fff;
+}
+
+.po-tg__grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 16px;
+	padding: 0 clamp(1.5rem, 5vw, 4rem);
+}
+
+.po-tg__card {
+	position: relative;
+	aspect-ratio: 1 / 1;
+	overflow: hidden;
+	cursor: pointer;
+	border: none;
+	padding: 0;
+	background: #111;
+	text-align: left;
+	border-radius: 16px;
+}
+
+.po-tg__card:hover .po-tg__card-image {
+	transform: scale(1.05);
+}
+
+.po-tg__card--static {
+	cursor: default;
+}
+
+.po-tg__card--static:hover .po-tg__card-image {
+	transform: none;
+}
+
+.po-tg__card-image {
+	position: absolute;
+	inset: 0;
+	background-size: cover;
+	background-position: center top;
+	transition: transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.po-tg__card-image--empty {
+	background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+}
+
+.po-tg__card-overlay {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.4) 40%, transparent 70%);
+}
+
+.po-tg__card-content {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	padding: 24px;
+	z-index: 1;
+}
+
+.po-tg__card-name {
+	display: block;
+	font-size: clamp(1.25rem, 2vw, 1.75rem);
+	font-weight: 700;
+	line-height: 1.1;
+	letter-spacing: -0.02em;
+	color: #fff;
+	text-transform: uppercase;
+	margin-bottom: 6px;
+}
+
+.po-tg__card-role {
+	display: block;
+	font-size: clamp(0.75rem, 1vw, 0.875rem);
+	color: rgba(255, 255, 255, 0.7);
+	font-weight: 400;
+}
+
+.po-tg__card-action {
+	position: absolute;
+	bottom: 16px;
+	right: 16px;
+	width: 32px;
+	height: 32px;
+	color: #fff;
+	z-index: 2;
+	transition: transform 0.3s ease;
+}
+
+.po-tg__card-action svg {
+	width: 100%;
+	height: 100%;
+}
+
+.po-tg__card:hover .po-tg__card-action {
+	transform: scale(1.1);
+}
+
+body.po-tg-no-scroll {
+	overflow: hidden;
+}
+
+.po-tg-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 999999;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	padding: 0;
+	overflow-y: auto;
+	overflow-x: hidden;
+	visibility: hidden;
+	pointer-events: none;
+	box-sizing: border-box;
+}
+
+.po-tg-modal.is-active {
+	visibility: visible;
+	pointer-events: auto;
+}
+
+.po-tg-modal__backdrop {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.9);
+	backdrop-filter: blur(40px);
+	-webkit-backdrop-filter: blur(40px);
+	opacity: 0;
+	transition: opacity 0.3s ease-out;
+}
+
+.po-tg-modal.is-active .po-tg-modal__backdrop {
+	opacity: 1;
+}
+
+.po-tg-modal__panel {
+	position: relative;
+	width: 80vw;
+	max-width: 1200px;
+	background: #fff;
+	border-radius: 24px;
+	padding: 72px 56px 56px;
+	box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+	opacity: 0;
+	transform: scale(0.94) translateY(20px);
+	transition: opacity 0.4s cubic-bezier(0.25, 0.1, 0.25, 1), transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+	flex-shrink: 0;
+	margin: 5vh 0;
+}
+
+.po-tg-modal.is-active .po-tg-modal__panel {
+	opacity: 1;
+	transform: scale(1) translateY(0);
+}
+
+.po-tg-modal__close {
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	transition: transform 0.2s ease;
+	z-index: 10;
+}
+
+.po-tg-modal__close svg {
+	width: 100%;
+	height: 100%;
+}
+
+.po-tg-modal__close:hover {
+	transform: scale(1.1);
+}
+
+.po-tg-modal__close:focus {
+	outline: none;
+}
+
+.po-tg-coach {
+	display: flex;
+	flex-direction: column;
+}
+
+.po-tg-coach__header {
+	margin-bottom: 40px;
+}
+
+.po-tg-coach__name {
+	font-size: 48px;
+	font-weight: 700;
+	color: #1d1d1f;
+	margin: 0 0 8px;
+	letter-spacing: -0.04em;
+	line-height: 1.05;
+}
+
+.po-tg-coach__meta {
+	font-size: 19px;
+	color: #86868b;
+	margin: 0;
+	font-weight: 400;
+}
+
+.po-tg-coach__hero-image {
+	margin-bottom: 40px;
+}
+
+.po-tg-coach__hero-image img {
+	width: 100%;
+	height: auto;
+	border-radius: 16px;
+}
+
+.po-tg-coach__card {
+	background: #f5f5f7;
+	border-radius: 28px;
+	padding: 40px;
+	margin-bottom: 24px;
+}
+
+.po-tg-coach__content p {
+	font-size: 17px;
+	line-height: 1.7;
+	color: #6e6e73;
+	margin: 0 0 24px;
+}
+
+.po-tg-coach__content p:last-child {
+	margin-bottom: 0;
+}
+
+.po-tg-coach__content strong {
+	font-weight: 600;
+	color: #1d1d1f;
+}
+
+.po-tg-coach__image {
+	width: 100%;
+	height: auto;
+	border-radius: 12px;
+	margin-top: 24px;
+}
+
+.po-tg-coach__video {
+	position: relative;
+	padding-bottom: 56.25%;
+	height: 0;
+	border-radius: 12px;
+	overflow: hidden;
+	margin-top: 24px;
+}
+
+.po-tg-coach__video iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	border: none;
+}
+
+.po-tg-coach__facts {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 16px;
+	background: #f5f5f7;
+	border-radius: 16px;
+	padding: 24px;
+	margin: 0 0 24px;
+}
+
+.po-tg-coach__fact {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.po-tg-coach__fact dt {
+	font-size: 13px;
+	font-weight: 500;
+	color: #86868b;
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
+}
+
+.po-tg-coach__fact dd {
+	margin: 0;
+	font-size: 17px;
+	font-weight: 600;
+	color: #1d1d1f;
+}
+
+.po-tg-coach__fact--full {
+	grid-column: 1 / -1;
+}
+
+.po-tg-coach__fact--full dd {
+	font-weight: 500;
+	font-style: italic;
+	color: #1d1d1f;
+}
+
+.po-tg-coach__trainings {
+	margin-top: 48px;
+}
+
+.po-tg-coach__trainings-title {
+	font-size: 24px;
+	font-weight: 600;
+	color: #1d1d1f;
+	margin: 0 0 20px;
+}
+
+.po-tg-coach__trainings-list {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.po-tg-coach__training-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 20px 24px;
+	background: #f5f5f7;
+	border-radius: 16px;
+}
+
+.po-tg-coach__training-info {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.po-tg-coach__training-name {
+	font-size: 17px;
+	font-weight: 600;
+	color: #1d1d1f;
+}
+
+.po-tg-coach__training-time {
+	font-size: 15px;
+	color: #86868b;
+}
+
+.po-tg-coach__training-cta {
+	font-size: 15px;
+	font-weight: 600;
+	color: #0066cc;
+	padding: 10px 20px;
+	background: rgba(0, 102, 204, 0.1);
+	border: none;
+	border-radius: 100px;
+	cursor: pointer;
+	transition: background 0.2s ease;
+}
+
+.po-tg-coach__training-cta:hover {
+	background: rgba(0, 102, 204, 0.2);
+}
+
+.po-tg-booking {
+	max-width: 480px;
+	margin: 0 auto;
+	padding-top: 20px;
+}
+
+.po-tg-modal__panel.is-booking-active {
+	width: auto;
+	max-width: 640px;
+}
+
+.po-tg-booking__steps {
+	position: relative;
+	overflow: hidden;
+	min-height: 300px;
+}
+
+.po-tg-booking__track {
+	position: relative;
+}
+
+.po-tg-booking__slide {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	opacity: 0;
+	transform: translateX(60px);
+	transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+	pointer-events: none;
+}
+
+.po-tg-booking__slide.is-active {
+	position: relative;
+	opacity: 1;
+	transform: translateX(0);
+	pointer-events: auto;
+}
+
+.po-tg-booking__slide.is-prev {
+	opacity: 0;
+	transform: translateX(-60px);
+}
+
+.po-tg-booking__slide.is-next {
+	opacity: 0;
+	transform: translateX(60px);
+}
+
+.po-tg-booking__header {
+	text-align: center;
+	margin-bottom: 28px;
+}
+
+.po-tg-booking__eyebrow {
+	display: block;
+	font-size: 13px;
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: #86868b;
+	margin-bottom: 8px;
+}
+
+.po-tg-booking__heading {
+	font-size: 28px;
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	color: #1d1d1f;
+	margin: 0;
+	line-height: 1.2;
+}
+
+.po-tg-booking__subheading {
+	font-size: 15px;
+	color: #86868b;
+	margin: 8px 0 0;
+}
+
+.po-tg-booking__cta {
+	display: block;
+	width: 100%;
+	padding: 16px 24px;
+	background: #0066cc;
+	color: #fff;
+	font-size: 16px;
+	font-weight: 600;
+	text-align: center;
+	text-decoration: none;
+	border: none;
+	border-radius: 14px;
+	cursor: pointer;
+	transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.po-tg-booking__cta:hover {
+	background: #0055b3;
+}
+
+.po-tg-booking__cta:active {
+	transform: scale(0.98);
+}
+
+.po-tg-booking__cta:disabled {
+	background: #999;
+	cursor: not-allowed;
+	transform: none;
+}
+
+.po-tg-booking__dates {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin-bottom: 28px;
+}
+
+.po-tg-booking__date {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 16px 18px;
+	background: #f5f5f7;
+	border: 2px solid transparent;
+	border-radius: 14px;
+	cursor: pointer;
+	transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+	text-align: left;
+}
+
+.po-tg-booking__date:hover {
+	background: #eaeaea;
+	transform: translateY(-1px);
+}
+
+.po-tg-booking__date-text {
+	font-size: 16px;
+	font-weight: 500;
+	color: #1d1d1f;
+}
+
+.po-tg-booking__date-stock {
+	font-size: 13px;
+	color: #86868b;
+	background: rgba(0, 0, 0, 0.05);
+	padding: 4px 10px;
+	border-radius: 20px;
+}
+
+.po-tg-booking__empty {
+	text-align: center;
+	padding: 40px 20px;
+	background: #f5f5f7;
+	border-radius: 14px;
+	margin-bottom: 28px;
+}
+
+.po-tg-booking__empty p {
+	margin: 0 0 8px;
+	font-size: 15px;
+	color: #86868b;
+}
+
+.po-tg-booking__empty p:last-child {
+	margin-bottom: 0;
+}
+
+.po-tg-booking__back {
+	display: block;
+	width: 100%;
+	padding: 12px;
+	margin-top: 16px;
+	background: none;
+	border: none;
+	font-size: 14px;
+	color: #0066cc;
+	text-align: center;
+	cursor: pointer;
+	transition: opacity 0.2s ease;
+}
+
+.po-tg-booking__back:hover {
+	opacity: 0.7;
+}
+
+.po-tg-booking__form {
+	margin-bottom: 8px;
+}
+
+.po-tg-booking__field {
+	margin-bottom: 16px;
+}
+
+.po-tg-booking__field label {
+	display: block;
+	font-size: 14px;
+	font-weight: 500;
+	color: #1d1d1f;
+	margin-bottom: 6px;
+}
+
+.po-tg-booking__field input {
+	width: 100%;
+	padding: 14px 16px;
+	font-size: 16px;
+	border: 1px solid #d2d2d7;
+	border-radius: 10px;
+	background: #fff;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+	box-sizing: border-box;
+}
+
+.po-tg-booking__field input:focus {
+	outline: none;
+	border-color: #0066cc;
+	box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
+}
+
+.po-tg-booking__success {
+	text-align: center;
+	padding: 40px 0;
+}
+
+.po-tg-booking__success-icon {
+	width: 64px;
+	height: 64px;
+	margin: 0 auto 20px;
+	background: #34c759;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.po-tg-booking__success-icon svg {
+	width: 32px;
+	height: 32px;
+	color: #fff;
+}
+
+@media (max-width: 1024px) {
+	.po-tg__grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 768px) {
+	.po-tg__filter-fab {
+		bottom: 24px;
+	}
+	
+	.po-tg__filter-trigger {
+		padding: 12px 16px 12px 20px;
+		font-size: 0.875rem;
+		gap: 10px;
+	}
+	
+	.po-tg__filter-icon {
+		width: 18px;
+		height: 18px;
+	}
+	
+	.po-tg__filter-dropdown {
+		min-width: 180px;
+	}
+	
+	.po-tg__filter-option {
+		padding: 10px 14px;
+		font-size: 0.875rem;
+	}
+	
+	.po-tg__grid {
+		grid-template-columns: 1fr;
+		gap: 12px;
+		padding: 0 16px;
+	}
+	
+	.po-tg__card-content {
+		padding: 20px;
+	}
+	
+	.po-tg__card-name {
+		font-size: 1.5rem;
+	}
+	
+	.po-tg-modal__panel {
+		width: calc(100% - 24px);
+		padding: 48px 24px 32px;
+		border-radius: 20px;
+		margin: 24px 12px;
+	}
+	
+	.po-tg-coach__header {
+		margin-bottom: 28px;
+	}
+	
+	.po-tg-coach__name {
+		font-size: 32px;
+	}
+	
+	.po-tg-coach__meta {
+		font-size: 16px;
+	}
+	
+	.po-tg-coach__hero-image {
+		margin-bottom: 28px;
+	}
+	
+	.po-tg-coach__card {
+		padding: 28px;
+		border-radius: 20px;
+		margin-bottom: 16px;
+	}
+	
+	.po-tg-coach__content p {
+		font-size: 16px;
+	}
+	
+	.po-tg-coach__facts {
+		grid-template-columns: 1fr;
+		padding: 20px;
+		gap: 12px;
+	}
+	
+	.po-tg-coach__fact--full {
+		grid-column: 1;
+	}
+	
+	.po-tg-coach__trainings {
+		margin-top: 36px;
+	}
+	
+	.po-tg-coach__trainings-title {
+		font-size: 20px;
+	}
+	
+	.po-tg-coach__training-item {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 12px;
+		padding: 16px 20px;
+	}
+	
+	.po-tg-coach__training-cta {
+		width: 100%;
+		text-align: center;
+	}
+	
+	.po-tg-booking__heading {
+		font-size: 24px;
+	}
+}

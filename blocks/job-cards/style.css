@@ -1,0 +1,81 @@
+.po-jobs {
+	padding: clamp(3rem, 8vw, 6rem) clamp(1.5rem, 5vw, 4rem);
+}
+
+.po-jobs__headline {
+	font-size: clamp(2rem, 5vw, 3rem);
+	font-weight: 700;
+	text-align: center;
+	margin: 0 0 1rem 0;
+}
+
+.po-jobs__intro {
+	font-size: 1rem;
+	color: #666;
+	text-align: center;
+	margin: 0 auto 3rem;
+	max-width: 800px;
+	line-height: 1.6;
+}
+
+.po-jobs__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 1.5rem;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.po-job-card {
+	background: #fff;
+	border-radius: 12px;
+	padding: 2rem;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+	display: flex;
+	flex-direction: column;
+}
+
+.po-job-card__title {
+	font-size: 1.5rem;
+	font-weight: 700;
+	margin: 0 0 0.5rem 0;
+}
+
+.po-job-card__type {
+	font-size: 0.875rem;
+	color: #666;
+	margin-bottom: 1rem;
+}
+
+.po-job-card__desc {
+	font-size: 0.9375rem;
+	color: #444;
+	line-height: 1.6;
+	margin: 0 0 1.5rem 0;
+	flex-grow: 1;
+}
+
+.po-job-card__cta {
+	display: inline-block;
+	padding: 0.75rem 1.5rem;
+	border: 1px solid #000;
+	border-radius: 100px;
+	font-size: 0.875rem;
+	font-weight: 500;
+	text-decoration: none;
+	color: #000;
+	text-align: center;
+	transition: all 0.2s;
+	align-self: flex-start;
+}
+
+.po-job-card__cta:hover {
+	background: #000;
+	color: #fff;
+}
+
+.po-jobs[style*="background-color: #f5f5f7"] .po-job-card,
+.po-jobs[style*="background-color: rgb(245, 245, 247)"] .po-job-card {
+	box-shadow: none;
+	border: 1px solid #e5e5e5;
+}

@@ -1,0 +1,31 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/schulen-grid",
+	"version": "1.0.0",
+	"title": "Schulen Grid",
+	"category": "parkourone-about",
+	"icon": "location-alt",
+	"description": "Übersicht aller Standorte mit Bildern. Blendet automatisch die aktuelle Schule basierend auf der Domain aus.",
+	"keywords": ["schulen", "standorte", "locations", "franchise"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"headline": { "type": "string", "default": "Weitere Schulen" },
+		"intro": { "type": "string", "default": "ParkourOne ist an mehreren Standorten vertreten, um dir das beste Parkour-Training in deiner Region zu bieten. Unsere erfahrenen Trainer freuen sich darauf, dich vor Ort zu unterstützen und dein Können auf das nächste Level zu bringen." },
+		"schulen": { "type": "array", "default": [
+			{"name":"Schweiz","slug":"schweiz","imageUrl":"","url":"https://schweiz.parkourone.com"},
+			{"name":"Berlin","slug":"berlin","imageUrl":"","url":"https://berlin.parkourone.com"},
+			{"name":"Augsburg","slug":"augsburg","imageUrl":"","url":"https://augsburg.parkourone.com"},
+			{"name":"Dresden","slug":"dresden","imageUrl":"","url":"https://dresden.parkourone.com"},
+			{"name":"Rhein-Ruhr","slug":"rheinruhr","imageUrl":"","url":"https://rheinruhr.parkourone.com"},
+			{"name":"Münster","slug":"muenster","imageUrl":"","url":"https://muenster.parkourone.com"},
+			{"name":"Hannover","slug":"hannover","imageUrl":"","url":"https://hannover.parkourone.com"}
+		]},
+		"hideCurrentSchool": { "type": "boolean", "default": true },
+		"backgroundColor": { "type": "string", "default": "#ffffff" }
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}

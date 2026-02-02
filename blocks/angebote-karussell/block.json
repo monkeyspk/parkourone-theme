@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/angebote-karussell",
+	"version": "1.0.0",
+	"title": "Angebote Karussell",
+	"category": "parkourone-startseite",
+	"icon": "slides",
+	"description": "Karussell mit featured Angeboten für die Startseite.",
+	"keywords": ["angebote", "karussell", "slider", "startseite", "featured"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"viewScript": "file:./view.js",
+	"render": "file:./render.php",
+	"attributes": {
+		"headline": { "type": "string", "default": "Angebote & Workshops" },
+		"subtext": { "type": "string", "default": "Entdecke unser vielfältiges Programm" },
+		"showAllLink": { "type": "boolean", "default": true },
+		"allLinkUrl": { "type": "string", "default": "/angebote" },
+		"allLinkText": { "type": "string", "default": "Alle Angebote" }
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}

@@ -1,0 +1,627 @@
+.po-angebote-grid {
+	padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 3vw, 2rem);
+	max-width: 1400px;
+	margin: 0 auto;
+}
+
+/* Filter */
+.po-angebote-grid__filter {
+	display: flex;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+	margin-bottom: 2rem;
+	justify-content: center;
+}
+
+.po-angebote-grid__filter-btn {
+	padding: 0.5rem 1.25rem;
+	border: 1px solid #e0e0e0;
+	border-radius: 100px;
+	background: #fff;
+	color: #333;
+	font-size: 0.875rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.po-angebote-grid__filter-btn:hover {
+	border-color: #000;
+}
+
+.po-angebote-grid__filter-btn.active {
+	background: #000;
+	color: #fff;
+	border-color: #000;
+}
+
+/* Grid */
+.po-angebote-grid__cards {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 1.5rem;
+}
+
+.po-angebote-grid[data-columns="2"] .po-angebote-grid__cards {
+	grid-template-columns: repeat(2, 1fr);
+}
+
+/* Card */
+.po-angebote-grid__card {
+	background: #fff;
+	border-radius: 16px;
+	overflow: hidden;
+	cursor: pointer;
+	transition: transform 0.2s, box-shadow 0.2s;
+	border: 1px solid #eee;
+}
+
+.po-angebote-grid__card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+}
+
+.po-angebote-grid__card.hidden {
+	display: none;
+}
+
+.po-angebote-grid__card-image {
+	position: relative;
+	aspect-ratio: 16/10;
+	background: #f5f5f7;
+	overflow: hidden;
+}
+
+.po-angebote-grid__card-image img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 0.3s;
+}
+
+.po-angebote-grid__card:hover .po-angebote-grid__card-image img {
+	transform: scale(1.05);
+}
+
+.po-angebote-grid__badge {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	padding: 0.25rem 0.75rem;
+	border-radius: 100px;
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
+}
+
+.po-angebote-grid__badge--kostenlos {
+	background: #000;
+	color: #fff;
+}
+
+.po-angebote-grid__badge--workshop {
+	background: #f5f5f7;
+	color: #000;
+	border: 1px solid #ddd;
+}
+
+.po-angebote-grid__badge--camp {
+	background: #f5f5f7;
+	color: #000;
+	border: 1px solid #ddd;
+}
+
+.po-angebote-grid__badge--privatunterricht {
+	background: #f5f5f7;
+	color: #000;
+	border: 1px solid #ddd;
+}
+
+.po-angebote-grid__card-content {
+	padding: 1.25rem;
+}
+
+.po-angebote-grid__card-title {
+	font-size: 1.125rem;
+	font-weight: 600;
+	margin: 0 0 0.5rem 0;
+	line-height: 1.3;
+}
+
+.po-angebote-grid__card-desc {
+	font-size: 0.875rem;
+	color: #666;
+	margin: 0 0 1rem 0;
+	line-height: 1.5;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.po-angebote-grid__card-cta {
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: #000;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.po-angebote-grid__empty {
+	text-align: center;
+	color: #666;
+	padding: 3rem;
+}
+
+/* Modal */
+.po-angebote-modal {
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.3s, visibility 0.3s;
+}
+
+.po-angebote-modal[aria-hidden="false"] {
+	opacity: 1;
+	visibility: visible;
+}
+
+.po-angebote-modal__backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.6);
+	backdrop-filter: blur(4px);
+}
+
+.po-angebote-modal__container {
+	position: relative;
+	background: #fff;
+	border-radius: 20px;
+	max-width: 800px;
+	max-height: 90vh;
+	width: 90%;
+	overflow-y: auto;
+	transform: translateY(20px);
+	transition: transform 0.3s;
+}
+
+.po-angebote-modal[aria-hidden="false"] .po-angebote-modal__container {
+	transform: translateY(0);
+}
+
+.po-angebote-modal__close {
+	position: absolute;
+	top: 1rem;
+	right: 1rem;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.9);
+	border: none;
+	font-size: 1.5rem;
+	cursor: pointer;
+	z-index: 10;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background 0.2s;
+}
+
+.po-angebote-modal__close:hover {
+	background: #fff;
+}
+
+.po-angebote-modal__content {
+	padding: 0;
+}
+
+/* Modal Content */
+.po-angebote-modal__image {
+	width: 100%;
+	aspect-ratio: 16/9;
+	object-fit: cover;
+	border-radius: 20px 20px 0 0;
+}
+
+.po-angebote-modal__body {
+	padding: 2rem;
+}
+
+.po-angebote-modal__badge {
+	display: inline-block;
+	padding: 0.25rem 0.75rem;
+	border-radius: 100px;
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	background: #000;
+	color: #fff;
+	margin-bottom: 0.75rem;
+}
+
+.po-angebote-modal__title {
+	font-size: 1.75rem;
+	font-weight: 700;
+	margin: 0 0 1rem 0;
+	line-height: 1.2;
+}
+
+.po-angebote-modal__description {
+	font-size: 1rem;
+	line-height: 1.7;
+	color: #333;
+	margin-bottom: 1.5rem;
+}
+
+.po-angebote-modal__description p {
+	margin: 0 0 1rem 0;
+}
+
+.po-angebote-modal__details {
+	background: #f5f5f7;
+	border-radius: 12px;
+	padding: 1.5rem;
+	margin-bottom: 1.5rem;
+}
+
+.po-angebote-modal__detail {
+	display: flex;
+	gap: 0.75rem;
+	margin-bottom: 0.75rem;
+}
+
+.po-angebote-modal__detail:last-child {
+	margin-bottom: 0;
+}
+
+.po-angebote-modal__detail-label {
+	font-weight: 600;
+	min-width: 120px;
+	color: #666;
+	font-size: 0.875rem;
+}
+
+.po-angebote-modal__detail-value {
+	flex: 1;
+	font-size: 0.875rem;
+}
+
+.po-angebote-modal__detail-value a {
+	color: #000;
+}
+
+/* Termine */
+.po-angebote-modal__termine {
+	margin-bottom: 1.5rem;
+}
+
+.po-angebote-modal__termine-title {
+	font-size: 1rem;
+	font-weight: 600;
+	margin: 0 0 1rem 0;
+}
+
+.po-angebote-modal__termin {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1rem;
+	background: #f5f5f7;
+	border-radius: 8px;
+	margin-bottom: 0.5rem;
+}
+
+.po-angebote-modal__termin-info {
+	font-size: 0.875rem;
+}
+
+.po-angebote-modal__termin-date {
+	font-weight: 600;
+}
+
+.po-angebote-modal__termin-details {
+	color: #666;
+	margin-top: 0.25rem;
+}
+
+.po-angebote-modal__termin-btn {
+	padding: 0.5rem 1rem;
+	background: #000;
+	color: #fff;
+	border: none;
+	border-radius: 100px;
+	font-size: 0.875rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: opacity 0.2s;
+}
+
+.po-angebote-modal__termin-btn:hover {
+	opacity: 0.8;
+}
+
+/* CTA */
+.po-angebote-modal__cta {
+	display: inline-block;
+	padding: 1rem 2rem;
+	background: #000;
+	color: #fff;
+	border: none;
+	border-radius: 100px;
+	font-size: 1rem;
+	font-weight: 500;
+	cursor: pointer;
+	text-decoration: none;
+	transition: opacity 0.2s;
+}
+
+.po-angebote-modal__cta:hover {
+	opacity: 0.8;
+	color: #fff;
+}
+
+/* Kontaktformular im Modal */
+.po-angebote-modal__form {
+	background: #f5f5f7;
+	border-radius: 12px;
+	padding: 1.5rem;
+}
+
+.po-angebote-modal__form-title {
+	font-size: 1rem;
+	font-weight: 600;
+	margin: 0 0 1rem 0;
+}
+
+.po-angebote-modal__form-row {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1rem;
+}
+
+.po-angebote-modal__form-group {
+	margin-bottom: 1rem;
+}
+
+.po-angebote-modal__form-group:last-of-type {
+	margin-bottom: 1rem;
+}
+
+.po-angebote-modal__form-label {
+	display: block;
+	font-size: 0.875rem;
+	font-weight: 500;
+	margin-bottom: 0.25rem;
+}
+
+.po-angebote-modal__form-input,
+.po-angebote-modal__form-textarea {
+	width: 100%;
+	padding: 0.75rem;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	font-size: 1rem;
+	font-family: inherit;
+	background: #fff;
+}
+
+.po-angebote-modal__form-input:focus,
+.po-angebote-modal__form-textarea:focus {
+	outline: none;
+	border-color: #000;
+}
+
+.po-angebote-modal__form-textarea {
+	min-height: 100px;
+	resize: vertical;
+}
+
+.po-angebote-modal__form-checkbox {
+	font-size: 0.875rem;
+	line-height: 1.5;
+}
+
+.po-angebote-modal__form-checkbox input[type="checkbox"] {
+	width: 18px;
+	height: 18px;
+	vertical-align: middle;
+	margin-right: 0.5rem;
+}
+
+.po-angebote-modal__form-checkbox a {
+	color: #000;
+	text-decoration: underline;
+}
+
+.po-angebote-modal__form-message {
+	padding: 0.875rem;
+	border-radius: 8px;
+	font-size: 0.875rem;
+	margin-bottom: 1rem;
+}
+
+.po-angebote-modal__form-message--success {
+	background: #d4edda;
+	color: #155724;
+}
+
+.po-angebote-modal__form-message--error {
+	background: #f8d7da;
+	color: #721c24;
+}
+
+.po-angebote-modal__form-submit {
+	width: 100%;
+	padding: 0.875rem;
+	background: #000;
+	color: #fff;
+	border: none;
+	border-radius: 100px;
+	font-size: 1rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: opacity 0.2s;
+}
+
+.po-angebote-modal__form-submit:hover {
+	opacity: 0.8;
+}
+
+.po-angebote-modal__form-submit:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+/* Buchungsformular im Modal */
+.po-angebote-modal__booking {
+	padding: 2rem;
+}
+
+.po-angebote-modal__booking-back {
+	background: none;
+	border: none;
+	font-size: 0.875rem;
+	color: #666;
+	cursor: pointer;
+	padding: 0;
+	margin-bottom: 1rem;
+}
+
+.po-angebote-modal__booking-back:hover {
+	color: #000;
+}
+
+.po-angebote-modal__booking-title {
+	font-size: 1.25rem;
+	font-weight: 700;
+	margin: 0 0 1rem 0;
+}
+
+.po-angebote-modal__booking-info {
+	background: #f5f5f7;
+	border-radius: 8px;
+	padding: 1rem;
+	margin-bottom: 1.5rem;
+	font-size: 0.875rem;
+	line-height: 1.6;
+}
+
+.po-angebote-modal__booking-participant {
+	background: #f5f5f7;
+	border-radius: 12px;
+	padding: 1.5rem;
+	margin-bottom: 1rem;
+}
+
+.po-angebote-modal__booking-participant h4 {
+	font-size: 0.875rem;
+	font-weight: 600;
+	margin: 0 0 1rem 0;
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
+	color: #666;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+	.po-angebote-grid__cards {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 640px) {
+	.po-angebote-grid__cards {
+		grid-template-columns: 1fr;
+	}
+
+	.po-angebote-grid__filter {
+		justify-content: flex-start;
+		overflow-x: auto;
+		flex-wrap: nowrap;
+		padding-bottom: 0.5rem;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.po-angebote-grid__filter-btn {
+		white-space: nowrap;
+	}
+
+	.po-angebote-modal__container {
+		width: 100%;
+		height: 100%;
+		max-height: 100%;
+		border-radius: 0;
+	}
+
+	.po-angebote-modal__image {
+		border-radius: 0;
+	}
+
+	.po-angebote-modal__body {
+		padding: 1.5rem;
+	}
+
+	.po-angebote-modal__detail {
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.po-angebote-modal__detail-label {
+		min-width: auto;
+	}
+
+	.po-angebote-modal__form-row {
+		grid-template-columns: 1fr;
+	}
+
+	.po-angebote-modal__booking {
+		padding: 1.5rem;
+	}
+
+	.po-angebote-modal__termin {
+		flex-direction: column;
+		gap: 0.75rem;
+		align-items: flex-start;
+	}
+
+	.po-angebote-modal__termin-btn {
+		width: 100%;
+	}
+}
+
+/* Editor Styles */
+.po-angebote-grid-editor {
+	padding: 2rem;
+	background: #f9f9f9;
+	border-radius: 8px;
+}
+
+.po-angebote-grid-editor__preview {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 1rem;
+	margin-top: 1rem;
+}
+
+.po-angebote-grid-editor__card {
+	background: #fff;
+	border-radius: 8px;
+	padding: 1rem;
+	border: 1px solid #ddd;
+}
+
+.po-angebote-grid-editor__card-title {
+	font-weight: 600;
+	margin-bottom: 0.25rem;
+}
+
+.po-angebote-grid-editor__card-cat {
+	font-size: 0.75rem;
+	color: #666;
+}

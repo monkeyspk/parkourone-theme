@@ -1,0 +1,247 @@
+/* Angebote Karussell - Apple-Style Slider */
+:root {
+	--po-angebote-card-height: 480px;
+	--po-angebote-card-width: 340px;
+}
+
+.po-angebote-karussell {
+	padding: clamp(3rem, 8vw, 5rem) 0;
+	overflow: hidden;
+}
+
+.po-angebote-karussell__header {
+	padding: 0 max(24px, calc((100vw - 1200px) / 2));
+	margin-bottom: 2rem;
+}
+
+.po-angebote-karussell__headline {
+	font-size: clamp(1.75rem, 4vw, 2.5rem);
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	margin: 0 0 0.5rem 0;
+	line-height: 1.2;
+}
+
+.po-angebote-karussell__subtext {
+	font-size: 1rem;
+	color: #86868b;
+	margin: 0;
+}
+
+/* Track - Horizontal Scroll */
+.po-angebote-karussell__track {
+	display: flex;
+	gap: 20px;
+	padding: 0 max(24px, calc((100vw - 1200px) / 2));
+	overflow-x: auto;
+	overflow-y: hidden;
+	scroll-behavior: smooth;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+	cursor: grab;
+	-webkit-overflow-scrolling: touch;
+}
+
+.po-angebote-karussell__track::-webkit-scrollbar {
+	display: none;
+}
+
+.po-angebote-karussell__track.is-grabbing {
+	cursor: grabbing;
+	scroll-behavior: auto;
+}
+
+/* Card - Portrait mit Gradient */
+.po-angebote-karussell__card {
+	position: relative;
+	flex: 0 0 var(--po-angebote-card-width);
+	height: var(--po-angebote-card-height);
+	border-radius: 18px;
+	overflow: hidden;
+	cursor: pointer;
+	background: #000;
+}
+
+.po-angebote-karussell__card:hover {
+	/* Kein Schatten, kein Transform - wie klassen-slider */
+}
+
+.po-angebote-karussell__card-image {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+}
+
+.po-angebote-karussell__card-image img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transform: scale(1.0);
+	transition: transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.po-angebote-karussell__card:hover .po-angebote-karussell__card-image img {
+	transform: scale(1.06);
+}
+
+.po-angebote-karussell__card-placeholder {
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+
+/* Gradient Overlay */
+.po-angebote-karussell__card-gradient {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		to top,
+		rgba(0, 0, 0, 0.9) 0%,
+		rgba(0, 0, 0, 0.5) 40%,
+		rgba(0, 0, 0, 0.1) 70%,
+		transparent 100%
+	);
+	pointer-events: none;
+}
+
+/* Card Content - Bottom */
+.po-angebote-karussell__card-content {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	padding: 24px;
+	z-index: 2;
+}
+
+.po-angebote-karussell__badge {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	z-index: 3;
+	padding: 0.25rem 0.75rem;
+	border-radius: 100px;
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
+}
+
+.po-angebote-karussell__badge--kostenlos {
+	background: #000;
+	color: #fff;
+}
+
+.po-angebote-karussell__badge--workshop,
+.po-angebote-karussell__badge--camp,
+.po-angebote-karussell__badge--privatunterricht {
+	background: #f5f5f7;
+	color: #000;
+	border: 1px solid #ddd;
+}
+
+.po-angebote-karussell__card-title {
+	font-size: 20px;
+	font-weight: 600;
+	line-height: 1.2;
+	letter-spacing: 0.01em;
+	color: #fff;
+	margin: 0 0 6px 0;
+}
+
+.po-angebote-karussell__card-desc {
+	font-size: 14px;
+	line-height: 1.4;
+	color: rgba(255, 255, 255, 0.75);
+	margin: 0;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+/* Footer */
+.po-angebote-karussell__footer {
+	text-align: center;
+	margin-top: 2rem;
+	padding: 0 max(24px, calc((100vw - 1200px) / 2));
+}
+
+.po-angebote-karussell__all-link {
+	display: inline-block;
+	font-size: 1rem;
+	font-weight: 500;
+	color: #0066cc;
+	text-decoration: none;
+	transition: opacity 0.2s;
+}
+
+.po-angebote-karussell__all-link:hover {
+	opacity: 0.7;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+	:root {
+		--po-angebote-card-height: 400px;
+		--po-angebote-card-width: 280px;
+	}
+
+	.po-angebote-karussell__track {
+		gap: 14px;
+		padding: 0 20px;
+	}
+
+	.po-angebote-karussell__header {
+		padding: 0 20px;
+	}
+
+	.po-angebote-karussell__footer {
+		padding: 0 20px;
+	}
+
+	.po-angebote-karussell__card-title {
+		font-size: 18px;
+	}
+
+	.po-angebote-karussell__card-content {
+		padding: 20px;
+	}
+}
+
+@media (max-width: 480px) {
+	:root {
+		--po-angebote-card-height: 360px;
+		--po-angebote-card-width: 260px;
+	}
+
+	.po-angebote-karussell__track {
+		gap: 12px;
+	}
+
+	.po-angebote-karussell__card-title {
+		font-size: 17px;
+	}
+}
+
+/* Editor */
+.po-angebote-karussell-editor {
+	padding: 2rem;
+	background: #f9f9f9;
+	border-radius: 8px;
+}
+
+.po-angebote-karussell-editor__preview {
+	display: flex;
+	gap: 1rem;
+	overflow-x: auto;
+	padding: 1rem 0;
+}
+
+.po-angebote-karussell-editor__card {
+	flex: 0 0 200px;
+	background: #fff;
+	border-radius: 8px;
+	padding: 1rem;
+	border: 1px solid #ddd;
+}

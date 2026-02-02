@@ -1,0 +1,53 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/po-image",
+	"version": "1.0.0",
+	"title": "PO Bild",
+	"category": "parkourone-basis",
+	"icon": "format-image",
+	"description": "Bild-Block mit Upload, Grösse und Link-Optionen",
+	"keywords": ["bild", "image", "foto", "basis"],
+	"supports": {
+		"html": false,
+		"align": ["left", "center", "right", "wide", "full"]
+	},
+	"attributes": {
+		"mediaId": {
+			"type": "number",
+			"default": 0
+		},
+		"mediaUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"alt": {
+			"type": "string",
+			"default": ""
+		},
+		"caption": {
+			"type": "string",
+			"default": ""
+		},
+		"linkUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"linkTarget": {
+			"type": "string",
+			"default": "_self"
+		},
+		"sizeSlug": {
+			"type": "string",
+			"default": "large"
+		},
+		"borderRadius": {
+			"type": "number",
+			"default": 0
+		}
+	},
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}

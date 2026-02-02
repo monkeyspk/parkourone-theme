@@ -1,0 +1,666 @@
+/* ==========================================================================
+   Page Header Block - 3 Varianten
+   A: Centered | B: Split | C: Fullscreen
+   Premium Apple-Style Design System
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Base Styles (alle Varianten)
+   -------------------------------------------------------------------------- */
+
+.po-ph {
+	--accent-color: #0066cc;
+	--accent-glow: rgba(0, 102, 204, 0.3);
+	position: relative;
+	overflow: hidden;
+}
+
+.po-ph__title-accent {
+	color: var(--accent-color);
+	display: block;
+}
+
+.po-ph__cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 1.0625rem;
+	font-weight: 600;
+	text-decoration: none;
+	border-radius: 100px;
+	transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.po-ph__cta--primary {
+	padding: 1rem 2rem;
+	background: linear-gradient(135deg, #1d1d1f 0%, #2d2d2f 100%);
+	color: #fff;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.po-ph__cta--primary:hover {
+	background: linear-gradient(135deg, #000 0%, #1d1d1f 100%);
+	transform: translateY(-2px) scale(1.02);
+	box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+}
+
+.po-ph__cta--secondary {
+	padding: 1rem 0.75rem;
+	background: transparent;
+	color: #1d1d1f;
+	font-weight: 500;
+}
+
+.po-ph__cta--secondary:hover {
+	color: var(--accent-color);
+}
+
+.po-ph__cta--secondary svg {
+	transition: transform 0.3s ease;
+}
+
+.po-ph__cta--secondary:hover svg {
+	transform: translateX(6px);
+}
+
+/* ==========================================================================
+   VARIANTE A: CENTERED
+   Premium Hero mit animiertem Gradient und Stats
+   ========================================================================== */
+
+.po-ph--centered {
+	background:
+		radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 102, 204, 0.08) 0%, transparent 50%),
+		radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0, 200, 255, 0.05) 0%, transparent 40%),
+		linear-gradient(180deg, #fafafa 0%, #fff 30%, #fff 70%, #f5f5f7 100%);
+	padding: clamp(4rem, 10vw, 8rem) 0 clamp(4rem, 10vw, 8rem);
+	min-height: 85vh;
+	display: flex;
+	align-items: center;
+}
+
+/* Subtle animated gradient overlay */
+.po-ph--centered::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background:
+		radial-gradient(circle at 20% 80%, rgba(0, 102, 204, 0.03) 0%, transparent 30%),
+		radial-gradient(circle at 80% 20%, rgba(0, 200, 255, 0.03) 0%, transparent 30%);
+	pointer-events: none;
+	animation: gradientShift 15s ease-in-out infinite alternate;
+}
+
+@keyframes gradientShift {
+	0% { opacity: 0.5; transform: scale(1); }
+	100% { opacity: 1; transform: scale(1.1); }
+}
+
+.po-ph__container--centered {
+	max-width: 1400px;
+	margin: 0 auto;
+	padding: 0 clamp(1.5rem, 5vw, 4rem);
+	text-align: center;
+	position: relative;
+	z-index: 1;
+}
+
+.po-ph__content--centered {
+	max-width: 1000px;
+	margin: 0 auto;
+}
+
+.po-ph__title--centered {
+	font-size: clamp(3.5rem, 10vw, 7rem);
+	font-weight: 700;
+	line-height: 0.95;
+	letter-spacing: -0.045em;
+	color: #1d1d1f;
+	margin: 0 0 1.75rem 0;
+	animation: fadeInUp 0.9s ease-out;
+}
+
+.po-ph__title--centered .po-ph__title-accent {
+	background: linear-gradient(135deg, var(--accent-color) 0%, #00a8ff 50%, var(--accent-color) 100%);
+	background-size: 200% auto;
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+	animation: shimmer 4s linear infinite;
+}
+
+@keyframes shimmer {
+	0% { background-position: 0% center; }
+	100% { background-position: 200% center; }
+}
+
+.po-ph__description--centered {
+	font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+	line-height: 1.6;
+	color: #6e6e73;
+	margin: 0 auto 3rem;
+	max-width: 750px;
+	animation: fadeInUp 0.9s ease-out 0.15s both;
+}
+
+.po-ph__actions--centered {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.25rem;
+	justify-content: center;
+	animation: fadeInUp 0.9s ease-out 0.25s both;
+}
+
+/* Stats Counter - Premium Design */
+.po-ph__stats {
+	display: flex;
+	justify-content: center;
+	gap: clamp(3rem, 8vw, 6rem);
+	margin-top: clamp(4rem, 8vw, 6rem);
+	padding-top: clamp(3rem, 5vw, 4rem);
+	border-top: 1px solid rgba(0, 0, 0, 0.08);
+	animation: fadeInUp 0.9s ease-out 0.4s both;
+}
+
+.po-ph__stat {
+	text-align: center;
+	position: relative;
+}
+
+.po-ph__stat::after {
+	content: '';
+	position: absolute;
+	bottom: -8px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 30px;
+	height: 3px;
+	background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+	opacity: 0;
+	transition: opacity 0.3s ease;
+}
+
+.po-ph__stat:hover::after {
+	opacity: 1;
+}
+
+.po-ph__stat-number {
+	display: block;
+	font-size: clamp(3rem, 6vw, 5rem);
+	font-weight: 700;
+	color: #1d1d1f;
+	line-height: 1;
+	letter-spacing: -0.03em;
+	transition: color 0.3s ease;
+}
+
+.po-ph__stat:hover .po-ph__stat-number {
+	color: var(--accent-color);
+}
+
+.po-ph__stat-number::after {
+	content: '+';
+	font-size: 0.6em;
+	color: var(--accent-color);
+	margin-left: 2px;
+}
+
+.po-ph__stat-label {
+	display: block;
+	font-size: 0.9375rem;
+	color: #86868b;
+	margin-top: 0.75rem;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	font-weight: 500;
+}
+
+/* ==========================================================================
+   VARIANTE B: SPLIT
+   Asymmetrisches Layout mit prominentem Bild
+   ========================================================================== */
+
+.po-ph--split {
+	background: #fff;
+	padding: clamp(3rem, 8vw, 6rem) 0;
+	min-height: 80vh;
+	display: flex;
+	align-items: center;
+}
+
+/* Subtle background accent */
+.po-ph--split::before {
+	content: '';
+	position: absolute;
+	top: -20%;
+	right: -10%;
+	width: 60%;
+	height: 140%;
+	background: radial-gradient(ellipse at center, rgba(0, 102, 204, 0.04) 0%, transparent 70%);
+	pointer-events: none;
+}
+
+.po-ph__container--split {
+	display: grid;
+	grid-template-columns: 1fr 1.4fr;
+	gap: clamp(4rem, 8vw, 7rem);
+	align-items: center;
+	max-width: 1600px;
+	margin: 0 auto;
+	padding: 0 clamp(1.5rem, 5vw, 4rem);
+	position: relative;
+	z-index: 1;
+}
+
+.po-ph__content--split {
+	max-width: 560px;
+}
+
+.po-ph__title--split {
+	font-size: clamp(2.75rem, 5.5vw, 4.5rem);
+	font-weight: 700;
+	line-height: 1.0;
+	letter-spacing: -0.035em;
+	color: #1d1d1f;
+	margin: 0 0 1.5rem 0;
+}
+
+.po-ph__title--split .po-ph__title-accent {
+	background: linear-gradient(135deg, var(--accent-color) 0%, #00a8ff 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+}
+
+.po-ph__visual--split {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	position: relative;
+	perspective: 1000px;
+}
+
+/* Decorative elements behind image */
+.po-ph__visual--split::before {
+	content: '';
+	position: absolute;
+	top: 10%;
+	right: 5%;
+	width: 85%;
+	height: 85%;
+	background: linear-gradient(135deg, var(--accent-color) 0%, #00a8ff 100%);
+	border-radius: 28px;
+	opacity: 0.08;
+	transform: rotate(-3deg);
+	z-index: -1;
+}
+
+.po-ph__visual--split::after {
+	content: '';
+	position: absolute;
+	bottom: -5%;
+	left: 10%;
+	width: 70%;
+	height: 30%;
+	background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.15) 0%, transparent 70%);
+	filter: blur(25px);
+	z-index: -1;
+}
+
+.po-ph__image-wrapper--split {
+	position: relative;
+	width: 100%;
+	max-width: 700px;
+	transform: rotate(var(--rotation, 2deg)) translateZ(0);
+	transition: transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+	will-change: transform;
+}
+
+.po-ph__image-wrapper--split:hover {
+	transform: rotate(0deg) scale(1.03) translateY(-8px);
+}
+
+.po-ph--split .po-ph__image {
+	width: 100%;
+	height: auto;
+	border-radius: 28px;
+	box-shadow:
+		0 40px 100px rgba(0, 0, 0, 0.18),
+		0 15px 40px rgba(0, 0, 0, 0.12),
+		0 0 0 1px rgba(0, 0, 0, 0.05);
+	display: block;
+	transition: box-shadow 0.6s ease;
+}
+
+.po-ph__image-wrapper--split:hover .po-ph__image {
+	box-shadow:
+		0 50px 120px rgba(0, 0, 0, 0.22),
+		0 20px 50px rgba(0, 0, 0, 0.15),
+		0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+.po-ph--split .po-ph__description {
+	font-size: clamp(1.0625rem, 1.8vw, 1.25rem);
+	line-height: 1.65;
+	color: #6e6e73;
+	margin: 0 0 2.25rem 0;
+}
+
+.po-ph--split .po-ph__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.25rem;
+	align-items: center;
+}
+
+/* ==========================================================================
+   VARIANTE C: FULLSCREEN
+   Immersives Vollbild-Erlebnis mit cineastischen Effekten
+   ========================================================================== */
+
+.po-ph--fullscreen {
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+}
+
+.po-ph__background {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+}
+
+.po-ph__bg-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
+	transform: scale(1.05);
+	animation: subtleZoom 20s ease-in-out infinite alternate;
+}
+
+@keyframes subtleZoom {
+	0% { transform: scale(1.05); }
+	100% { transform: scale(1.1); }
+}
+
+/* Premium multi-layer overlay */
+.po-ph__overlay {
+	position: absolute;
+	inset: 0;
+	background:
+		/* Vignette effect */
+		radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%),
+		/* Bottom gradient for text readability */
+		linear-gradient(
+			0deg,
+			rgba(0, 0, 0, calc(var(--overlay-opacity) * 1.2)) 0%,
+			rgba(0, 0, 0, calc(var(--overlay-opacity) * 0.8)) 30%,
+			rgba(0, 0, 0, calc(var(--overlay-opacity) * 0.5)) 60%,
+			rgba(0, 0, 0, calc(var(--overlay-opacity) * 0.3)) 100%
+		),
+		/* Accent color tint */
+		linear-gradient(135deg, rgba(0, 102, 204, 0.1) 0%, transparent 50%);
+}
+
+.po-ph__container--fullscreen {
+	position: relative;
+	z-index: 1;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: clamp(8rem, 18vw, 14rem) clamp(1.5rem, 5vw, 4rem);
+	text-align: center;
+}
+
+.po-ph__content--fullscreen {
+	max-width: 950px;
+	margin: 0 auto;
+}
+
+.po-ph__title--fullscreen {
+	font-size: clamp(3.5rem, 10vw, 6.5rem);
+	font-weight: 700;
+	line-height: 0.95;
+	letter-spacing: -0.04em;
+	color: #fff;
+	margin: 0 0 1.75rem 0;
+	text-shadow:
+		0 4px 30px rgba(0, 0, 0, 0.4),
+		0 2px 10px rgba(0, 0, 0, 0.3);
+	animation: fadeInUp 1s ease-out;
+}
+
+.po-ph__title--fullscreen .po-ph__title-accent {
+	color: var(--accent-color);
+	-webkit-text-fill-color: var(--accent-color);
+	text-shadow:
+		0 0 60px var(--accent-glow),
+		0 0 30px var(--accent-glow),
+		0 4px 20px rgba(0, 0, 0, 0.3);
+	filter: brightness(1.1);
+}
+
+.po-ph__description--fullscreen {
+	font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+	line-height: 1.6;
+	color: rgba(255, 255, 255, 0.92);
+	margin: 0 auto 3rem;
+	max-width: 750px;
+	text-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
+	animation: fadeInUp 1s ease-out 0.15s both;
+}
+
+.po-ph__actions--fullscreen {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.25rem;
+	justify-content: center;
+	animation: fadeInUp 1s ease-out 0.3s both;
+}
+
+/* Light Buttons für Fullscreen */
+.po-ph__cta--light.po-ph__cta--primary {
+	background: linear-gradient(135deg, #fff 0%, #f5f5f7 100%);
+	color: #1d1d1f;
+	box-shadow:
+		0 8px 30px rgba(0, 0, 0, 0.3),
+		0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.po-ph__cta--light.po-ph__cta--primary:hover {
+	background: #fff;
+	transform: translateY(-3px) scale(1.03);
+	box-shadow:
+		0 15px 45px rgba(0, 0, 0, 0.35),
+		0 0 60px rgba(255, 255, 255, 0.2);
+}
+
+.po-ph__cta--light.po-ph__cta--secondary {
+	color: rgba(255, 255, 255, 0.95);
+	text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.po-ph__cta--light.po-ph__cta--secondary:hover {
+	color: #fff;
+}
+
+/* ==========================================================================
+   Animations
+   ========================================================================== */
+
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(40px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* ==========================================================================
+   Responsive - Centered
+   ========================================================================== */
+
+@media (max-width: 768px) {
+	.po-ph--centered {
+		min-height: auto;
+		padding: clamp(2.5rem, 8vw, 4rem) 0;
+	}
+
+	.po-ph__title--centered {
+		font-size: clamp(2.75rem, 12vw, 4.5rem);
+	}
+
+	.po-ph__description--centered {
+		font-size: 1.125rem;
+	}
+
+	.po-ph__stats {
+		flex-wrap: wrap;
+		gap: 2rem 3rem;
+	}
+
+	.po-ph__stat {
+		flex: 0 0 calc(50% - 1.5rem);
+	}
+
+	.po-ph__stat-number {
+		font-size: clamp(2.5rem, 10vw, 3.5rem);
+	}
+}
+
+/* ==========================================================================
+   Responsive - Split
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+	.po-ph--split {
+		min-height: auto;
+		padding: clamp(2rem, 6vw, 4rem) 0;
+	}
+
+	.po-ph__container--split {
+		grid-template-columns: 1fr;
+		gap: 3.5rem;
+		text-align: center;
+	}
+
+	.po-ph__content--split {
+		max-width: 100%;
+		order: 1;
+	}
+
+	.po-ph__visual--split {
+		order: 0;
+		justify-content: center;
+	}
+
+	.po-ph__visual--split::before {
+		top: 5%;
+		right: 10%;
+		width: 80%;
+	}
+
+	.po-ph__image-wrapper--split {
+		max-width: 550px;
+		transform: rotate(calc(var(--rotation, 2deg) * 0.5));
+	}
+
+	.po-ph--split .po-ph__actions {
+		justify-content: center;
+	}
+}
+
+@media (max-width: 640px) {
+	.po-ph--split {
+		padding: 1.5rem 0 2.5rem;
+	}
+
+	.po-ph__title--split {
+		font-size: clamp(2rem, 9vw, 2.75rem);
+	}
+
+	.po-ph__image-wrapper--split {
+		max-width: 100%;
+		transform: rotate(0deg);
+	}
+
+	.po-ph--split .po-ph__image {
+		border-radius: 20px;
+	}
+
+	.po-ph__visual--split::before {
+		display: none;
+	}
+
+	.po-ph--split .po-ph__actions {
+		flex-direction: column;
+		width: 100%;
+	}
+
+	.po-ph--split .po-ph__cta--primary {
+		width: 100%;
+		justify-content: center;
+	}
+}
+
+/* ==========================================================================
+   Responsive - Fullscreen
+   ========================================================================== */
+
+@media (max-width: 768px) {
+	.po-ph--fullscreen {
+		min-height: 90vh;
+	}
+
+	.po-ph__title--fullscreen {
+		font-size: clamp(2.75rem, 12vw, 4.5rem);
+	}
+
+	.po-ph__description--fullscreen {
+		font-size: 1.125rem;
+	}
+
+	.po-ph__actions--fullscreen {
+		flex-direction: column;
+	}
+
+	.po-ph__cta--light.po-ph__cta--primary {
+		width: 100%;
+		justify-content: center;
+	}
+}
+
+/* ==========================================================================
+   Reduced Motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+	.po-ph--centered::before,
+	.po-ph__bg-image {
+		animation: none;
+	}
+
+	.po-ph__title--centered .po-ph__title-accent {
+		animation: none;
+	}
+
+	.po-ph__title--centered,
+	.po-ph__description--centered,
+	.po-ph__actions--centered,
+	.po-ph__stats,
+	.po-ph__title--fullscreen,
+	.po-ph__description--fullscreen,
+	.po-ph__actions--fullscreen {
+		animation: none;
+		opacity: 1;
+		transform: none;
+	}
+}

@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/klassen-selektor",
+	"version": "1.0.0",
+	"title": "Klassen Selektor",
+	"category": "parkourone-blocks",
+	"icon": "list-view",
+	"description": "Accordion-Selektor für Klassen mit integriertem Buchungspanel.",
+	"keywords": ["klassen", "accordion", "selektor", "booking", "kurse"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"headline": { "type": "string", "default": "Wähle deinen Kurs" },
+		"groupBy": { "type": "string", "default": "weekday", "enum": ["weekday", "age", "location"] },
+		"filterAge": { "type": "string", "default": "" },
+		"filterLocation": { "type": "string", "default": "" },
+		"showBookingPanel": { "type": "boolean", "default": true }
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}
