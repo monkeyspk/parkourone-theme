@@ -14,16 +14,149 @@ class ParkourONE_GitHub_Updater {
     private $transient_key = 'parkourone_github_update_check';
     
     public function __construct() {
-        // Nur im Admin und nicht bei AJAX
-        if (!is_admin() || wp_doing_ajax()) {
+        // Nur im Admin
+        if (!is_admin()) {
             return;
         }
-        
-        // Auto-Update Check bei Admin-Seiten
-        add_action('admin_init', [$this, 'maybe_auto_update']);
-        
-        // Info im Admin anzeigen (optional)
+
+        // Auto-Update Check bei Admin-Seiten (nicht bei AJAX)
+        if (!wp_doing_ajax()) {
+            add_action('admin_init', [$this, 'maybe_auto_update']);
+        }
+
+        // Admin-Seite für manuelle Updates
+        add_action('admin_menu', [$this, 'add_admin_page']);
+
+        // Manueller Update-Check Handler
+        add_action('admin_init', [$this, 'handle_manual_check']);
+
+        // Info im Admin anzeigen
         add_action('admin_notices', [$this, 'show_update_notice']);
+    }
+
+    /**
+     * Admin-Seite hinzufügen
+     */
+    public function add_admin_page() {
+        add_theme_page(
+            'Theme Updates',
+            'Theme Updates',
+            'manage_options',
+            'parkourone-updates',
+            [$this, 'render_admin_page']
+        );
+    }
+
+    /**
+     * Admin-Seite rendern
+     */
+    public function render_admin_page() {
+        $local_version = $this->get_local_version();
+        $remote_version = $this->get_remote_version();
+        $last_update = get_option('parkourone_last_update');
+        $last_check = get_transient($this->transient_key);
+
+        $is_up_to_date = ($local_version === $remote_version);
+        $next_check_in = $last_check ? human_time_diff(time(), $last_check + $this->check_interval) : 'Jetzt';
+
+        ?>
+        <div class="wrap">
+            <h1>ParkourONE Theme Updates</h1>
+
+            <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); max-width: 600px; margin-top: 20px;">
+
+                <h2 style="margin-top: 0;">Status</h2>
+
+                <table class="form-table" style="margin: 0;">
+                    <tr>
+                        <th>Lokale Version:</th>
+                        <td><code style="font-size: 14px;"><?php echo esc_html($local_version); ?></code></td>
+                    </tr>
+                    <tr>
+                        <th>GitHub Version:</th>
+                        <td>
+                            <code style="font-size: 14px;"><?php echo esc_html($remote_version ?: 'Nicht erreichbar'); ?></code>
+                            <?php if ($is_up_to_date && $remote_version): ?>
+                                <span style="color: #46b450; margin-left: 10px;">&#10003; Aktuell</span>
+                            <?php elseif ($remote_version): ?>
+                                <span style="color: #dc3232; margin-left: 10px;">&#8593; Update verfügbar</span>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Letztes Update:</th>
+                        <td>
+                            <?php if ($last_update): ?>
+                                <?php echo esc_html($last_update['time']); ?>
+                                <span style="color: #666;">(<?php echo human_time_diff(strtotime($last_update['time']), current_time('timestamp')); ?> her)</span>
+                            <?php else: ?>
+                                <span style="color: #666;">Noch kein Update durchgeführt</span>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Nächster Auto-Check:</th>
+                        <td>in <?php echo esc_html($next_check_in); ?></td>
+                    </tr>
+                </table>
+
+                <hr style="margin: 20px 0;">
+
+                <form method="post" style="display: inline;">
+                    <?php wp_nonce_field('parkourone_manual_update', 'parkourone_nonce'); ?>
+                    <button type="submit" name="parkourone_check_update" class="button button-primary" style="margin-right: 10px;">
+                        Jetzt prüfen & aktualisieren
+                    </button>
+                </form>
+
+                <a href="https://github.com/<?php echo esc_attr($this->github_repo); ?>/commits/main" target="_blank" class="button">
+                    GitHub Commits ansehen
+                </a>
+
+                <p style="margin-top: 15px; color: #666; font-size: 13px;">
+                    Das Theme prüft automatisch alle 12 Stunden auf Updates und aktualisiert sich selbst.
+                </p>
+            </div>
+        </div>
+        <?php
+    }
+
+    /**
+     * Manuellen Update-Check verarbeiten
+     */
+    public function handle_manual_check() {
+        if (!isset($_POST['parkourone_check_update'])) {
+            return;
+        }
+
+        if (!wp_verify_nonce($_POST['parkourone_nonce'] ?? '', 'parkourone_manual_update')) {
+            return;
+        }
+
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+
+        // Transient löschen um sofortigen Check zu erzwingen
+        delete_transient($this->transient_key);
+
+        // Update durchführen
+        $remote_version = $this->get_remote_version();
+        $local_version = $this->get_local_version();
+
+        if ($remote_version && $remote_version !== $local_version) {
+            $result = $this->do_update();
+            if ($result) {
+                add_settings_error('parkourone_updates', 'updated', 'Theme wurde auf Version ' . $remote_version . ' aktualisiert!', 'success');
+            } else {
+                add_settings_error('parkourone_updates', 'error', 'Update fehlgeschlagen. Siehe Error-Log.', 'error');
+            }
+        } else {
+            add_settings_error('parkourone_updates', 'info', 'Theme ist bereits aktuell (Version: ' . $local_version . ')', 'info');
+        }
+
+        // Transient neu setzen
+        set_transient($this->transient_key, time(), $this->check_interval);
     }
     
     /**
