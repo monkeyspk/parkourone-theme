@@ -218,25 +218,46 @@ class ParkourONE_GitHub_Updater {
     private function get_remote_version() {
         $api_url = "https://api.github.com/repos/{$this->github_repo}/commits/main";
 
+        error_log('ParkourONE Updater: Versuche GitHub API zu erreichen: ' . $api_url);
+
+        // Erst mit SSL versuchen
         $response = wp_remote_get($api_url, [
             'headers' => [
                 'Accept' => 'application/vnd.github.v3+json',
-                'User-Agent' => 'ParkourONE-Theme-Updater'
+                'User-Agent' => 'WordPress/ParkourONE-Theme-Updater'
             ],
-            'timeout' => 15,
+            'timeout' => 20,
             'sslverify' => true
         ]);
 
+        // Fallback ohne SSL-Verifikation
         if (is_wp_error($response)) {
-            $this->last_error = 'WP Error: ' . $response->get_error_message();
-            error_log('ParkourONE Updater: ' . $this->last_error);
+            error_log('ParkourONE Updater: SSL-Versuch fehlgeschlagen: ' . $response->get_error_message());
+            error_log('ParkourONE Updater: Versuche ohne SSL-Verifikation...');
+
+            $response = wp_remote_get($api_url, [
+                'headers' => [
+                    'Accept' => 'application/vnd.github.v3+json',
+                    'User-Agent' => 'WordPress/ParkourONE-Theme-Updater'
+                ],
+                'timeout' => 20,
+                'sslverify' => false
+            ]);
+        }
+
+        if (is_wp_error($response)) {
+            $this->last_error = $response->get_error_message();
+            error_log('ParkourONE Updater: Endgültiger Fehler: ' . $this->last_error);
             return false;
         }
 
         $response_code = wp_remote_retrieve_response_code($response);
+        error_log('ParkourONE Updater: HTTP Response Code: ' . $response_code);
+
         if ($response_code !== 200) {
-            $this->last_error = 'HTTP ' . $response_code;
-            error_log('ParkourONE Updater: GitHub API returned HTTP ' . $response_code);
+            $body = wp_remote_retrieve_body($response);
+            $this->last_error = 'HTTP ' . $response_code . ' - ' . substr($body, 0, 200);
+            error_log('ParkourONE Updater: ' . $this->last_error);
             return false;
         }
 
@@ -244,10 +265,12 @@ class ParkourONE_GitHub_Updater {
 
         if (isset($body['sha'])) {
             $this->last_error = null;
-            return substr($body['sha'], 0, 7); // Kurzer Hash
+            error_log('ParkourONE Updater: Erfolgreich! SHA: ' . substr($body['sha'], 0, 7));
+            return substr($body['sha'], 0, 7);
         }
 
-        $this->last_error = 'Keine SHA in Antwort';
+        $this->last_error = 'Keine SHA in Antwort gefunden';
+        error_log('ParkourONE Updater: ' . $this->last_error);
         return false;
     }
 
