@@ -1016,13 +1016,29 @@ function parkourone_get_available_dates_for_event($event_id) {
         }
         
         $stock_int = (int) $stock;
-        
+
+        // Get price from WooCommerce product
+        $price = '';
+        $price_raw = 0;
+        if (function_exists('wc_get_product')) {
+            $wc_product = wc_get_product($product_id);
+            if ($wc_product) {
+                $price_raw = $wc_product->get_price();
+                $price = $wc_product->get_price_html();
+            }
+        } else {
+            $price_raw = get_post_meta($product_id, '_price', true);
+            $price = $price_raw ? number_format((float)$price_raw, 2, ',', '.') . ' €' : '';
+        }
+
         if ($formatted_date >= $today && $stock_int > 0 && $stock_status === 'instock') {
             $available_dates[] = [
                 'product_id' => $product_id,
                 'date' => $event_date,
                 'date_formatted' => date_i18n('l, j. F Y', strtotime($formatted_date)),
-                'stock' => $stock_int
+                'stock' => $stock_int,
+                'price' => $price,
+                'price_raw' => $price_raw
             ];
         }
     }

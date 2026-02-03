@@ -276,12 +276,44 @@ body.po-no-scroll {
 	color: var(--po-color-text);
 }
 
+.po-steps__date-info {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
 .po-steps__date-stock {
 	font-size: 13px;
 	color: var(--po-color-text-secondary);
-	background: rgba(0, 0, 0, 0.05);
-	padding: 4px 10px;
-	border-radius: 20px;
+}
+
+.po-steps__date-price {
+	font-size: 18px;
+	font-weight: 700;
+	color: #0066cc;
+	white-space: nowrap;
+}
+
+/* Price display on first slide */
+.po-steps__price {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 16px 20px;
+	background: #f5f5f7;
+	border-radius: 12px;
+	margin-bottom: 20px;
+}
+
+.po-steps__price-label {
+	font-size: 14px;
+	color: var(--po-color-text-secondary);
+}
+
+.po-steps__price-value {
+	font-size: 24px;
+	font-weight: 700;
+	color: #0066cc;
 }
 
 .po-steps__empty {
