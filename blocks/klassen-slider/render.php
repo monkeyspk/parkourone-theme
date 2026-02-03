@@ -358,13 +358,8 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 					<div class="po-steps__dates">
 						<?php foreach ($available_dates as $date): ?>
 						<button type="button" class="po-steps__date po-steps__next" data-product-id="<?php echo esc_attr($date['product_id']); ?>" data-date-text="<?php echo esc_attr($date['date_formatted']); ?>">
-							<span class="po-steps__date-info">
-								<span class="po-steps__date-text"><?php echo esc_html($date['date_formatted']); ?></span>
-								<span class="po-steps__date-stock"><?php echo esc_html($date['stock']); ?> <?php echo $date['stock'] === 1 ? 'Platz' : 'Plaetze'; ?> frei</span>
-							</span>
-							<?php if (!empty($date['price'])): ?>
-							<span class="po-steps__date-price"><?php echo wp_kses_post($date['price']); ?></span>
-							<?php endif; ?>
+							<span class="po-steps__date-text"><?php echo esc_html($date['date_formatted']); ?></span>
+							<span class="po-steps__date-stock"><?php echo esc_html($date['stock']); ?> <?php echo $date['stock'] === 1 ? 'Platz' : 'Plaetze'; ?> frei</span>
 						</button>
 						<?php endforeach; ?>
 					</div>
