@@ -346,6 +346,13 @@ body:not(.wp-admin) .wp-site-blocks > .po-ph:first-child {
     margin-top: 0;
 }
 
+/* Hero Block auf Startseite - negatives Margin um body padding auszugleichen */
+body:not(.wp-admin) .po-hero:first-child,
+body:not(.wp-admin) main > .po-hero:first-child,
+body:not(.wp-admin) .wp-site-blocks > .po-hero:first-child {
+    margin-top: -80px;
+}
+
 /* Im Editor kein Padding */
 .editor-styles-wrapper {
     padding-top: 0 !important;
@@ -370,6 +377,13 @@ body:not(.wp-admin) .wp-site-blocks > .po-ph:first-child {
 @media (max-width: 768px) {
     body:not(.wp-admin):not(.block-editor-page) {
         padding-top: 72px;
+    }
+
+    /* Hero Block Mobile - angepasstes negatives Margin */
+    body:not(.wp-admin) .po-hero:first-child,
+    body:not(.wp-admin) main > .po-hero:first-child,
+    body:not(.wp-admin) .wp-site-blocks > .po-hero:first-child {
+        margin-top: -72px;
     }
 
     .po-header__inner {
