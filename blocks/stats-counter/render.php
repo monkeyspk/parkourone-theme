@@ -35,54 +35,98 @@ $class .= ' po-stats--' . $style;
 
 <script>
 (function() {
-	var section = document.getElementById('<?php echo esc_js($unique_id); ?>');
-	if (!section) return;
+	function initStatsCounter() {
+		var section = document.getElementById('<?php echo esc_js($unique_id); ?>');
+		if (!section) return;
 
-	var numbers = section.querySelectorAll('.po-stats__number');
-	var animated = false;
+		var numbers = section.querySelectorAll('.po-stats__number');
+		var animated = false;
 
-	function animateNumber(el) {
-		var target = parseInt(el.getAttribute('data-target'), 10);
-		var duration = 2000;
-		var startTime = null;
+		function animateNumber(el) {
+			var targetStr = el.getAttribute('data-target') || '0';
+			// Entferne alle nicht-numerischen Zeichen ausser Punkt/Komma
+			var cleanNum = targetStr.replace(/[^\d.,]/g, '').replace(',', '.');
+			var target = parseFloat(cleanNum) || 0;
+			var isInteger = Number.isInteger(target);
+			var duration = 2000;
+			var startTime = null;
 
-		function easeOutQuart(t) {
-			return 1 - Math.pow(1 - t, 4);
-		}
-
-		function step(timestamp) {
-			if (!startTime) startTime = timestamp;
-			var progress = Math.min((timestamp - startTime) / duration, 1);
-			var easedProgress = easeOutQuart(progress);
-			var current = Math.floor(easedProgress * target);
-			el.textContent = current.toLocaleString('de-DE');
-			if (progress < 1) {
-				requestAnimationFrame(step);
-			} else {
-				el.textContent = target.toLocaleString('de-DE');
+			function easeOutQuart(t) {
+				return 1 - Math.pow(1 - t, 4);
 			}
+
+			function step(timestamp) {
+				if (!startTime) startTime = timestamp;
+				var progress = Math.min((timestamp - startTime) / duration, 1);
+				var easedProgress = easeOutQuart(progress);
+				var current = easedProgress * target;
+
+				if (isInteger) {
+					el.textContent = Math.floor(current).toLocaleString('de-DE');
+				} else {
+					el.textContent = current.toFixed(1).replace('.', ',');
+				}
+
+				if (progress < 1) {
+					requestAnimationFrame(step);
+				} else {
+					if (isInteger) {
+						el.textContent = target.toLocaleString('de-DE');
+					} else {
+						el.textContent = target.toFixed(1).replace('.', ',');
+					}
+				}
+			}
+
+			requestAnimationFrame(step);
 		}
 
-		requestAnimationFrame(step);
-	}
-
-	function checkVisibility() {
-		if (animated) return;
-		var rect = section.getBoundingClientRect();
-		var windowHeight = window.innerHeight || document.documentElement.clientHeight;
-
-		if (rect.top <= windowHeight * 0.85 && rect.bottom >= 0) {
+		function startAnimation() {
+			if (animated) return;
 			animated = true;
 			section.classList.add('is-visible');
 			numbers.forEach(function(num) {
 				animateNumber(num);
 			});
 		}
+
+		// Intersection Observer für zuverlässige Erkennung
+		if ('IntersectionObserver' in window) {
+			var observer = new IntersectionObserver(function(entries) {
+				entries.forEach(function(entry) {
+					if (entry.isIntersecting && !animated) {
+						startAnimation();
+						observer.disconnect();
+					}
+				});
+			}, { threshold: 0.2 });
+
+			observer.observe(section);
+		} else {
+			// Fallback für alte Browser
+			function checkVisibility() {
+				if (animated) return;
+				var rect = section.getBoundingClientRect();
+				var windowHeight = window.innerHeight || document.documentElement.clientHeight;
+
+				if (rect.top <= windowHeight * 0.85 && rect.bottom >= 0) {
+					startAnimation();
+					window.removeEventListener('scroll', checkVisibility);
+				}
+			}
+
+			window.addEventListener('scroll', checkVisibility, { passive: true });
+			checkVisibility();
+		}
 	}
 
-	window.addEventListener('scroll', checkVisibility, { passive: true });
-	window.addEventListener('resize', checkVisibility, { passive: true });
-	checkVisibility();
+	// Warten bis DOM bereit ist
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initStatsCounter);
+	} else {
+		// DOM ist bereits geladen - kurz warten für Layout
+		setTimeout(initStatsCounter, 100);
+	}
 })();
 </script>
 <?php endif; ?>
