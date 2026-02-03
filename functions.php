@@ -611,6 +611,7 @@ function parkourone_register_blocks() {
         'trust-education',
         'text-reveal',
         'steps-carousel',
+        'pricing-table',
         // Ticket #2: Basis Building Blocks für Schulleiter
         'po-text',
         'po-image',
