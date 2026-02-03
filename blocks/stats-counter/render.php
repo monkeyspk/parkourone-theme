@@ -37,9 +37,14 @@ $class .= ' po-stats--' . $style;
 (function() {
 	function initStatsCounter() {
 		var section = document.getElementById('<?php echo esc_js($unique_id); ?>');
+		console.log('Stats Counter Init:', '<?php echo esc_js($unique_id); ?>', section);
 		if (!section) return;
 
 		var numbers = section.querySelectorAll('.po-stats__number');
+		console.log('Stats Numbers found:', numbers.length);
+		numbers.forEach(function(n) {
+			console.log('Number data-target:', n.getAttribute('data-target'));
+		});
 		var animated = false;
 
 		function animateNumber(el) {
@@ -82,10 +87,12 @@ $class .= ' po-stats--' . $style;
 		}
 
 		function startAnimation() {
+			console.log('Stats Counter: Starting animation!');
 			if (animated) return;
 			animated = true;
 			section.classList.add('is-visible');
 			numbers.forEach(function(num) {
+				console.log('Animating number to:', num.getAttribute('data-target'));
 				animateNumber(num);
 			});
 		}
