@@ -333,27 +333,62 @@ class ParkourONE_GitHub_Updater {
      * Führt das Update durch
      */
     private function do_update() {
+        // WP_Filesystem initialisieren
+        global $wp_filesystem;
+
+        if (!function_exists('WP_Filesystem')) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
+
+        // Filesystem mit direktem Zugriff initialisieren
+        if (!WP_Filesystem(false, false, true)) {
+            error_log('ParkourONE Updater: WP_Filesystem konnte nicht initialisiert werden');
+            return false;
+        }
+
         // ZIP von GitHub holen
         $zip_url = "https://github.com/{$this->github_repo}/archive/refs/heads/main.zip";
-        
+
         $temp_file = download_url($zip_url);
-        
+
         if (is_wp_error($temp_file)) {
             error_log('ParkourONE Updater: Download fehlgeschlagen - ' . $temp_file->get_error_message());
             return false;
         }
-        
+
         // Theme-Verzeichnis
         $theme_dir = get_template_directory();
         $themes_dir = dirname($theme_dir);
         $temp_dir = $themes_dir . '/parkourone-theme-temp-' . time();
-        
-        // ZIP entpacken
+
+        // ZIP entpacken - erst WP versuchen, dann native PHP ZipArchive
         $unzip_result = unzip_file($temp_file, $temp_dir);
-        @unlink($temp_file);
-        
+
         if (is_wp_error($unzip_result)) {
-            error_log('ParkourONE Updater: Entpacken fehlgeschlagen - ' . $unzip_result->get_error_message());
+            error_log('ParkourONE Updater: WP unzip fehlgeschlagen - ' . $unzip_result->get_error_message());
+            error_log('ParkourONE Updater: Versuche native PHP ZipArchive...');
+
+            // Fallback: Native PHP ZipArchive
+            if (class_exists('ZipArchive')) {
+                $zip = new ZipArchive();
+                if ($zip->open($temp_file) === true) {
+                    @mkdir($temp_dir, 0755, true);
+                    $zip->extractTo($temp_dir);
+                    $zip->close();
+                    $unzip_result = true;
+                    error_log('ParkourONE Updater: Native ZipArchive erfolgreich');
+                } else {
+                    error_log('ParkourONE Updater: Native ZipArchive konnte ZIP nicht öffnen');
+                }
+            } else {
+                error_log('ParkourONE Updater: ZipArchive Klasse nicht verfügbar');
+            }
+        }
+
+        @unlink($temp_file);
+
+        if (is_wp_error($unzip_result) || $unzip_result !== true) {
+            error_log('ParkourONE Updater: Entpacken endgültig fehlgeschlagen');
             $this->remove_directory($temp_dir);
             return false;
         }
