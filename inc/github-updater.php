@@ -31,8 +31,86 @@ class ParkourONE_GitHub_Updater {
         // Manueller Update-Check Handler
         add_action('admin_init', [$this, 'handle_manual_check']);
 
+        // Cache-Löschen Handler
+        add_action('admin_init', [$this, 'handle_cache_clear']);
+
         // Info im Admin anzeigen
         add_action('admin_notices', [$this, 'show_update_notice']);
+    }
+
+    /**
+     * Cache-Löschen Handler
+     */
+    public function handle_cache_clear() {
+        if (!isset($_POST['parkourone_clear_cache'])) {
+            return;
+        }
+
+        if (!wp_verify_nonce($_POST['parkourone_cache_nonce'] ?? '', 'parkourone_clear_cache')) {
+            return;
+        }
+
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+
+        $cleared = [];
+
+        // 1. WordPress Object Cache
+        if (function_exists('wp_cache_flush')) {
+            wp_cache_flush();
+            $cleared[] = 'Object Cache';
+        }
+
+        // 2. Alle Transients löschen
+        global $wpdb;
+        $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_%'");
+        $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_site_transient_%'");
+        $cleared[] = 'Transients';
+
+        // 3. WP Super Cache
+        if (function_exists('wp_cache_clear_cache')) {
+            wp_cache_clear_cache();
+            $cleared[] = 'WP Super Cache';
+        }
+
+        // 4. W3 Total Cache
+        if (function_exists('w3tc_flush_all')) {
+            w3tc_flush_all();
+            $cleared[] = 'W3 Total Cache';
+        }
+
+        // 5. WP Fastest Cache
+        if (function_exists('wpfc_clear_all_cache')) {
+            wpfc_clear_all_cache();
+            $cleared[] = 'WP Fastest Cache';
+        }
+
+        // 6. LiteSpeed Cache
+        if (class_exists('LiteSpeed_Cache_API') && method_exists('LiteSpeed_Cache_API', 'purge_all')) {
+            LiteSpeed_Cache_API::purge_all();
+            $cleared[] = 'LiteSpeed Cache';
+        }
+
+        // 7. Autoptimize
+        if (class_exists('autoptimizeCache') && method_exists('autoptimizeCache', 'clearall')) {
+            autoptimizeCache::clearall();
+            $cleared[] = 'Autoptimize';
+        }
+
+        // 8. Elementor Cache (falls vorhanden)
+        if (did_action('elementor/loaded')) {
+            \Elementor\Plugin::$instance->files_manager->clear_cache();
+            $cleared[] = 'Elementor';
+        }
+
+        // Redirect mit Erfolgs-Parameter
+        wp_redirect(add_query_arg([
+            'page' => 'parkourone-updates',
+            'cache_cleared' => '1',
+            'cleared' => implode(',', $cleared)
+        ], admin_url('themes.php')));
+        exit;
     }
 
     /**
@@ -78,6 +156,11 @@ class ParkourONE_GitHub_Updater {
                 } else {
                     echo '<div class="notice notice-error is-dismissible"><p><strong>Fehler:</strong> Update fehlgeschlagen. Siehe Error-Log für Details.</p></div>';
                 }
+            }
+            // Cache gelöscht Nachricht
+            if (isset($_GET['cache_cleared']) && $_GET['cache_cleared'] === '1') {
+                $cleared = isset($_GET['cleared']) ? sanitize_text_field($_GET['cleared']) : '';
+                echo '<div class="notice notice-success is-dismissible"><p><strong>Cache gelöscht!</strong> Folgende Caches wurden geleert: ' . esc_html($cleared) . '</p></div>';
             }
             ?>
 
@@ -137,6 +220,21 @@ class ParkourONE_GitHub_Updater {
                 <p style="margin-top: 15px; color: #666; font-size: 13px;">
                     Das Theme prüft automatisch alle 12 Stunden auf Updates und aktualisiert sich selbst.
                 </p>
+
+                <hr style="margin: 20px 0;">
+
+                <h3 style="margin-top: 0;">Cache leeren</h3>
+                <p style="color: #666; font-size: 13px; margin-bottom: 15px;">
+                    Löscht alle WordPress-Caches (Object Cache, Transients, Plugin-Caches).
+                    Nützlich wenn Änderungen nicht sichtbar werden.
+                </p>
+
+                <form method="post" style="display: inline;">
+                    <?php wp_nonce_field('parkourone_clear_cache', 'parkourone_cache_nonce'); ?>
+                    <button type="submit" name="parkourone_clear_cache" class="button" style="background: #d63638; border-color: #d63638; color: #fff;">
+                        Alle Caches leeren
+                    </button>
+                </form>
 
                 <?php if (!$remote_version): ?>
                 <hr style="margin: 20px 0;">
