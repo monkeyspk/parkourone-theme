@@ -102,11 +102,14 @@ document.addEventListener('DOMContentLoaded', function() {
 		if (details.length > 0) {
 			html += '<div class="po-angebote-modal__details">';
 			details.forEach(function(d) {
-				html += '<div class="po-angebote-modal__detail">';
+				var detailClass = 'po-angebote-modal__detail';
+				if (d.label === 'Preis') detailClass += ' po-angebote-modal__detail--price';
+				html += '<div class="' + detailClass + '">';
 				html += '<span class="po-angebote-modal__detail-label">' + d.label + '</span>';
 				html += '<span class="po-angebote-modal__detail-value">' + (d.raw ? d.value : escapeHtml(d.value)) + '</span>';
 				html += '</div>';
 			});
+			html += '<a href="/preise/" class="po-angebote-modal__pricing-link">Alle Preise ansehen <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>';
 			html += '</div>';
 		}
 

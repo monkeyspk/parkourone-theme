@@ -1,0 +1,86 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/pricing-table",
+	"version": "1.0.0",
+	"title": "Pricing Table",
+	"category": "parkourone-startseite",
+	"icon": "money-alt",
+	"description": "Preistabelle mit Kategorien nach Altersgruppen im Apple-Style.",
+	"keywords": ["pricing", "preise", "kosten", "mitgliedschaft", "tabelle"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"headline": {
+			"type": "string",
+			"default": "Unsere Preise"
+		},
+		"subtext": {
+			"type": "string",
+			"default": "Faire Preise für Training, das dich weiterbringt"
+		},
+		"categories": {
+			"type": "array",
+			"default": [
+				{
+					"name": "Kids & Minis",
+					"fromPrice": "50",
+					"classes": [
+						{ "name": "Minis", "price": "50", "details": "45 Min, 1x/Woche, 6-8 Jahre" },
+						{ "name": "Kids", "price": "60", "details": "90 Min, 1x/Woche, 8-12 Jahre" }
+					],
+					"features": ["1x pro Woche", "45-90 Minuten", "Ab 6 Jahren"],
+					"ctaText": "Probetraining",
+					"ctaUrl": "/probetraining/"
+				},
+				{
+					"name": "Juniors & Adults",
+					"fromPrice": "65",
+					"highlighted": true,
+					"classes": [
+						{ "name": "Juniors", "price": "65", "details": "2h, 1x/Woche, 12-17 Jahre" },
+						{ "name": "Adults", "price": "65", "details": "2h, 1x/Woche, ab 18 Jahre" },
+						{ "name": "Originals", "price": "85", "details": "2h, 2x/Woche, Fortgeschritten" }
+					],
+					"features": ["1-2x pro Woche", "2 Stunden Training", "Ab 12 Jahren"],
+					"ctaText": "Probetraining",
+					"ctaUrl": "/probetraining/"
+				},
+				{
+					"name": "Spezial",
+					"fromPrice": "65",
+					"classes": [
+						{ "name": "Women", "price": "65", "details": "2h, 1x/Woche, nur Frauen" },
+						{ "name": "Seniors", "price": "65", "details": "2h, 1x/Woche, ab 30 Jahre" }
+					],
+					"features": ["1x pro Woche", "2 Stunden Training", "Spezialkurse"],
+					"ctaText": "Probetraining",
+					"ctaUrl": "/probetraining/"
+				}
+			]
+		},
+		"style": {
+			"type": "string",
+			"default": "light",
+			"enum": ["light", "dark"]
+		},
+		"currency": {
+			"type": "string",
+			"default": "€"
+		},
+		"period": {
+			"type": "string",
+			"default": "pro Monat"
+		},
+		"footnote": {
+			"type": "string",
+			"default": "Alle Preise inkl. MwSt."
+		}
+	},
+	"supports": {
+		"align": ["full", "wide"],
+		"html": false
+	}
+}

@@ -1092,6 +1092,14 @@ function parkourone_get_template_pages() {
 			'pattern_file' => 'page-stundenplan.php',
 			'page_slug' => 'stundenplan',
 		],
+		[
+			'slug' => 'preise',
+			'title' => 'Preise & Mitgliedschaft',
+			'description' => 'Preisübersicht nach Altersgruppen mit FAQ',
+			'blocks' => 'Page-Header, Pricing-Table, Intro-Section, FAQ',
+			'pattern_file' => 'page-preise.php',
+			'page_slug' => 'preise',
+		],
 	];
 
 	// Prüfen ob Seiten bereits existieren

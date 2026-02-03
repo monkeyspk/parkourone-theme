@@ -296,6 +296,36 @@
 	color: #000;
 }
 
+/* Price Highlight */
+.po-angebote-modal__detail--price .po-angebote-modal__detail-value {
+	font-size: 1.25rem;
+	font-weight: 700;
+	color: #0066cc;
+}
+
+/* Pricing Link */
+.po-angebote-modal__pricing-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	color: #0066cc;
+	font-size: 0.875rem;
+	font-weight: 500;
+	text-decoration: none;
+	margin-top: 0.75rem;
+	transition: color 0.2s;
+}
+
+.po-angebote-modal__pricing-link:hover {
+	color: #0055aa;
+	text-decoration: underline;
+}
+
+.po-angebote-modal__pricing-link svg {
+	width: 16px;
+	height: 16px;
+}
+
 /* Termine */
 .po-angebote-modal__termine {
 	margin-bottom: 1.5rem;
