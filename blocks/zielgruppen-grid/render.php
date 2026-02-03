@@ -3,6 +3,23 @@ $headline = $attributes['headline'] ?? 'Was ist dein nächster Sprung?';
 $subtext = $attributes['subtext'] ?? 'Nimm eine neue Herausforderung an, unabhängig von deinem Fitnesslevel.';
 $categories = $attributes['categories'] ?? [];
 $count = count($categories);
+
+// Fallback-Bilder für Zielgruppen (Action & Parkour)
+$fallback_images = [
+	'kids' => get_template_directory_uri() . '/assets/images/fallback/kids/2022-04_potsi_kids-126-scaled.jpg',
+	'juniors' => get_template_directory_uri() . '/assets/images/fallback/juniors/grosserpsrung.jpg',
+	'adults' => get_template_directory_uri() . '/assets/images/fallback/adults/466A7464-scaled.jpg',
+];
+
+// Fallback-Bilder zuweisen wenn leer
+foreach ($categories as $index => $cat) {
+	if (empty($cat['imageUrl'])) {
+		$label_lower = strtolower($cat['label'] ?? '');
+		if (isset($fallback_images[$label_lower])) {
+			$categories[$index]['imageUrl'] = $fallback_images[$label_lower];
+		}
+	}
+}
 ?>
 
 <section class="po-cg">
