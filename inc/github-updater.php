@@ -64,6 +64,23 @@ class ParkourONE_GitHub_Updater {
         <div class="wrap">
             <h1>ParkourONE Theme Updates</h1>
 
+            <?php
+            // Feedback-Nachrichten basierend auf Query-Parametern
+            if (isset($_GET['updated']) && $_GET['updated'] === '1') {
+                $version = isset($_GET['version']) ? sanitize_text_field($_GET['version']) : '';
+                echo '<div class="notice notice-success is-dismissible"><p><strong>Erfolg!</strong> Theme wurde auf Version <code>' . esc_html($version) . '</code> aktualisiert.</p></div>';
+            } elseif (isset($_GET['uptodate']) && $_GET['uptodate'] === '1') {
+                $version = isset($_GET['version']) ? sanitize_text_field($_GET['version']) : '';
+                echo '<div class="notice notice-info is-dismissible"><p>Theme ist bereits aktuell (Version: <code>' . esc_html($version) . '</code>)</p></div>';
+            } elseif (isset($_GET['error'])) {
+                if ($_GET['error'] === 'connection') {
+                    echo '<div class="notice notice-error is-dismissible"><p><strong>Fehler:</strong> Konnte GitHub nicht erreichen. Siehe Debug-Informationen unten.</p></div>';
+                } else {
+                    echo '<div class="notice notice-error is-dismissible"><p><strong>Fehler:</strong> Update fehlgeschlagen. Siehe Error-Log für Details.</p></div>';
+                }
+            }
+            ?>
+
             <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); max-width: 600px; margin-top: 20px;">
 
                 <h2 style="margin-top: 0;">Status</h2>
@@ -167,19 +184,29 @@ class ParkourONE_GitHub_Updater {
         $remote_version = $this->get_remote_version();
         $local_version = $this->get_local_version();
 
+        $redirect_args = ['page' => 'parkourone-updates'];
+
         if ($remote_version && $remote_version !== $local_version) {
             $result = $this->do_update();
             if ($result) {
-                add_settings_error('parkourone_updates', 'updated', 'Theme wurde auf Version ' . $remote_version . ' aktualisiert!', 'success');
+                $redirect_args['updated'] = '1';
+                $redirect_args['version'] = $remote_version;
             } else {
-                add_settings_error('parkourone_updates', 'error', 'Update fehlgeschlagen. Siehe Error-Log.', 'error');
+                $redirect_args['error'] = '1';
             }
+        } else if (!$remote_version) {
+            $redirect_args['error'] = 'connection';
         } else {
-            add_settings_error('parkourone_updates', 'info', 'Theme ist bereits aktuell (Version: ' . $local_version . ')', 'info');
+            $redirect_args['uptodate'] = '1';
+            $redirect_args['version'] = $local_version;
         }
 
         // Transient neu setzen
         set_transient($this->transient_key, time(), $this->check_interval);
+
+        // Redirect mit Feedback-Parametern
+        wp_redirect(add_query_arg($redirect_args, admin_url('themes.php')));
+        exit;
     }
     
     /**
