@@ -336,110 +336,175 @@ $trainings = parkourone_get_coach_trainings_with_dates($m['name']);
 				</div>
 			</div>
 			
-			<?php foreach ($trainings as $tindex => $training): ?>
-			<div class="po-tg-booking" data-training-index="<?php echo esc_attr($tindex); ?>" style="display: none;">
-				<div class="po-tg-booking__steps" data-step="0">
-					<div class="po-tg-booking__track">
-						
-						<div class="po-tg-booking__slide is-active" data-slide="0">
-							<header class="po-tg-booking__header">
-								<span class="po-tg-booking__eyebrow">Probetraining</span>
-								<h2 class="po-tg-booking__heading"><?php echo esc_html($training['title']); ?></h2>
-								<p class="po-tg-booking__subheading">
-									<?php if ($training['weekday']): ?>
-										<?php echo esc_html($training['weekday']); ?>, 
-									<?php endif; ?>
-									<?php echo esc_html($training['start_time']); ?> – <?php echo esc_html($training['end_time']); ?>
-								</p>
-							</header>
-							
-							<button type="button" class="po-tg-booking__cta po-tg-booking__next">
-								Probetraining buchen
-							</button>
-							
-							<button type="button" class="po-tg-booking__back po-tg-coach__booking-back">← Zurück zum Profil</button>
-						</div>
-						
-						<div class="po-tg-booking__slide is-next" data-slide="1">
-							<header class="po-tg-booking__header">
-								<span class="po-tg-booking__eyebrow">Schritt 1 von 2</span>
-								<h2 class="po-tg-booking__heading">Termin wählen</h2>
-								<p class="po-tg-booking__subheading"><?php echo esc_html($training['title']); ?></p>
-							</header>
-							
-							<?php if (!empty($training['available_dates'])): ?>
-							<div class="po-tg-booking__dates">
-								<?php foreach ($training['available_dates'] as $date): ?>
-								<button type="button" class="po-tg-booking__date po-tg-booking__next" data-product-id="<?php echo esc_attr($date['product_id']); ?>" data-date-text="<?php echo esc_attr($date['date_formatted']); ?>">
-									<span class="po-tg-booking__date-text"><?php echo esc_html($date['date_formatted']); ?></span>
-									<span class="po-tg-booking__date-stock"><?php echo esc_html($date['stock']); ?> <?php echo $date['stock'] === 1 ? 'Platz' : 'Plätze'; ?> frei</span>
-								</button>
-								<?php endforeach; ?>
-							</div>
-							<?php else: ?>
-							<div class="po-tg-booking__empty">
-								<p>Aktuell sind keine Probetraining-Termine verfügbar.</p>
-								<p>Kontaktiere uns für weitere Informationen.</p>
-							</div>
-							<?php endif; ?>
-							
-							<button type="button" class="po-tg-booking__back">← Zurück</button>
-						</div>
-						
-						<div class="po-tg-booking__slide is-next" data-slide="2">
-							<header class="po-tg-booking__header">
-								<span class="po-tg-booking__eyebrow">Schritt 2 von 2</span>
-								<h2 class="po-tg-booking__heading">Wer nimmt teil?</h2>
-								<p class="po-tg-booking__subheading po-tg-booking__selected-date"></p>
-							</header>
-							
-							<form class="po-tg-booking__form">
-								<input type="hidden" name="product_id" value="">
-								<input type="hidden" name="event_id" value="<?php echo esc_attr($training['id']); ?>">
-								
-								<div class="po-tg-booking__field">
-									<label for="vorname-<?php echo esc_attr($unique_id . '-' . $m['id'] . '-' . $tindex); ?>">Vorname</label>
-									<input type="text" id="vorname-<?php echo esc_attr($unique_id . '-' . $m['id'] . '-' . $tindex); ?>" name="vorname" required autocomplete="given-name">
-								</div>
-								
-								<div class="po-tg-booking__field">
-									<label for="name-<?php echo esc_attr($unique_id . '-' . $m['id'] . '-' . $tindex); ?>">Nachname</label>
-									<input type="text" id="name-<?php echo esc_attr($unique_id . '-' . $m['id'] . '-' . $tindex); ?>" name="name" required autocomplete="family-name">
-								</div>
-								
-								<div class="po-tg-booking__field">
-									<label for="geburtsdatum-<?php echo esc_attr($unique_id . '-' . $m['id'] . '-' . $tindex); ?>">Geburtsdatum</label>
-									<input type="date" id="geburtsdatum-<?php echo esc_attr($unique_id . '-' . $m['id'] . '-' . $tindex); ?>" name="geburtsdatum" required>
-								</div>
-								
-								<button type="submit" class="po-tg-booking__cta po-tg-booking__submit">Zum Warenkorb hinzufügen</button>
-							</form>
-							
-							<button type="button" class="po-tg-booking__back">← Anderer Termin</button>
-						</div>
-						
-						<div class="po-tg-booking__slide is-next" data-slide="3">
-							<div class="po-tg-booking__success">
-								<div class="po-tg-booking__success-icon">
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-										<path d="M20 6L9 17l-5-5"/>
-									</svg>
-								</div>
-								<h2 class="po-tg-booking__heading">Hinzugefügt!</h2>
-								<p class="po-tg-booking__subheading"><?php echo esc_html($training['title']); ?></p>
-								<p class="po-tg-booking__selected-date-confirm"></p>
-							</div>
-						</div>
-						
-					</div>
-				</div>
-			</div>
-			<?php endforeach; ?>
 			<?php endif; ?>
 		</div>
 	</div>
 </div>
 <?php endif; ?>
+
+<?php // Separate Buchungs-Modals für jedes Training ?>
+<?php if (!empty($trainings)):
+$mood_texts = [
+	'minis' => 'Erste Bewegungserfahrungen in spielerischer Atmosphäre - hier entdecken die Kleinsten ihre motorischen Fähigkeiten.',
+	'kids' => 'Spielerisch Bewegungstalente entdecken: Klettern, Springen und Balancieren in einer sicheren Umgebung.',
+	'juniors-adults' => 'Den eigenen Körper kennenlernen, Grenzen austesten und fortgeschrittene Techniken meistern - intensives Training mit der Möglichkeit, an den eigenen Grenzen zu wachsen.',
+	'seniors-masters' => 'Koordination erhalten, Fitness aufbauen und mit Gleichgesinnten trainieren - beweglich bleiben und den Körper langfristig fit halten.'
+];
+?>
+<?php foreach ($trainings as $tindex => $training):
+	$booking_available_dates = $training['available_dates'];
+	$age_slug = get_post_meta($training['id'], '_event_age_slug', true) ?: '';
+	if (empty($age_slug)) {
+		$event_terms = wp_get_post_terms($training['id'], 'event_category', ['fields' => 'all']);
+		foreach ($event_terms as $term) {
+			if ($term->parent) {
+				$parent = get_term($term->parent, 'event_category');
+				if ($parent && !is_wp_error($parent) && $parent->slug === 'alter') {
+					$age_slug = $term->slug;
+					break;
+				}
+			}
+		}
+	}
+	$coach_text = !empty($m['name']) ? ' von ' . $m['name'] . ' geleitet und' : '';
+	$time_text = $training['start_time'] ? $training['start_time'] . ($training['end_time'] ? ' - ' . $training['end_time'] . ' Uhr' : ' Uhr') : '';
+?>
+<div class="po-overlay" id="<?php echo esc_attr($unique_id . '-booking-' . $m['id'] . '-' . $tindex); ?>" aria-hidden="true" role="dialog" aria-modal="true">
+	<div class="po-overlay__backdrop"></div>
+	<div class="po-overlay__panel">
+		<button class="po-overlay__close" aria-label="Schließen">
+			<svg viewBox="0 0 24 24" fill="none">
+				<circle cx="12" cy="12" r="12" fill="#1d1d1f"/>
+				<path d="M8 8l8 8M16 8l-8 8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+			</svg>
+		</button>
+
+		<div class="po-steps" data-step="0" data-class-title="<?php echo esc_attr($training['title']); ?>">
+			<div class="po-steps__track">
+
+				<div class="po-steps__slide is-active" data-slide="0">
+					<header class="po-steps__header">
+						<span class="po-steps__eyebrow"><?php echo esc_html($training['weekday']); ?></span>
+						<h2 class="po-steps__heading"><?php echo esc_html($training['title']); ?></h2>
+					</header>
+
+					<dl class="po-steps__meta">
+						<?php if ($training['start_time']): ?>
+						<div class="po-steps__meta-item">
+							<dt><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></dt>
+							<dd><?php echo esc_html($training['start_time']); ?><?php if ($training['end_time']): ?> - <?php echo esc_html($training['end_time']); ?><?php endif; ?> Uhr</dd>
+						</div>
+						<?php endif; ?>
+						<?php if (!empty($training['venue'])): ?>
+						<div class="po-steps__meta-item">
+							<dt><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></dt>
+							<dd><?php echo esc_html($training['venue']); ?></dd>
+						</div>
+						<?php endif; ?>
+						<?php if (!empty($m['name'])): ?>
+						<div class="po-steps__meta-item">
+							<dt><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></dt>
+							<dd><?php echo esc_html($m['name']); ?></dd>
+						</div>
+						<?php endif; ?>
+					</dl>
+
+					<?php if ($age_slug && isset($mood_texts[$age_slug])): ?>
+					<p class="po-steps__description">
+						Dieses Training wird<?php echo esc_html($coach_text); ?> findet wöchentlich <?php echo esc_html($training['weekday']); ?> von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($training['venue'])): ?> Treffpunkt ist <?php echo esc_html($training['venue']); ?>.<?php endif; ?> <?php echo esc_html($mood_texts[$age_slug]); ?>
+					</p>
+					<?php endif; ?>
+
+					<?php if (!empty($booking_available_dates) && !empty($booking_available_dates[0]['price'])): ?>
+					<div class="po-steps__price">
+						<span class="po-steps__price-label">Probetraining</span>
+						<span class="po-steps__price-value"><?php echo wp_kses_post($booking_available_dates[0]['price']); ?></span>
+					</div>
+					<?php endif; ?>
+
+					<button type="button" class="po-steps__cta po-steps__next">
+						Probetraining buchen
+					</button>
+				</div>
+
+				<div class="po-steps__slide is-next" data-slide="1">
+					<header class="po-steps__header">
+						<span class="po-steps__eyebrow">Schritt 1 von 2</span>
+						<h2 class="po-steps__heading">Termin wählen</h2>
+						<p class="po-steps__subheading"><?php echo esc_html($training['title']); ?></p>
+					</header>
+
+					<?php if (!empty($booking_available_dates)): ?>
+					<div class="po-steps__dates">
+						<?php foreach ($booking_available_dates as $date): ?>
+						<button type="button" class="po-steps__date po-steps__next" data-product-id="<?php echo esc_attr($date['product_id']); ?>" data-date-text="<?php echo esc_attr($date['date_formatted']); ?>">
+							<span class="po-steps__date-text"><?php echo esc_html($date['date_formatted']); ?></span>
+							<span class="po-steps__date-stock"><?php echo esc_html($date['stock']); ?> <?php echo $date['stock'] === 1 ? 'Platz' : 'Plätze'; ?> frei</span>
+						</button>
+						<?php endforeach; ?>
+					</div>
+					<?php else: ?>
+					<div class="po-steps__empty">
+						<p>Aktuell sind keine Probetraining-Termine verfügbar.</p>
+						<p>Kontaktiere uns für weitere Informationen.</p>
+					</div>
+					<?php endif; ?>
+
+					<button type="button" class="po-steps__back-link">← Zurück zur Übersicht</button>
+				</div>
+
+				<div class="po-steps__slide is-next" data-slide="2">
+					<header class="po-steps__header">
+						<span class="po-steps__eyebrow">Schritt 2 von 2</span>
+						<h2 class="po-steps__heading">Wer nimmt teil?</h2>
+						<p class="po-steps__subheading po-steps__selected-date"></p>
+					</header>
+
+					<form class="po-steps__form">
+						<input type="hidden" name="product_id" value="">
+						<input type="hidden" name="event_id" value="<?php echo esc_attr($training['id']); ?>">
+
+						<div class="po-steps__field">
+							<label for="vorname-<?php echo esc_attr($unique_id . '-booking-' . $m['id'] . '-' . $tindex); ?>">Vorname</label>
+							<input type="text" id="vorname-<?php echo esc_attr($unique_id . '-booking-' . $m['id'] . '-' . $tindex); ?>" name="vorname" required autocomplete="given-name">
+						</div>
+
+						<div class="po-steps__field">
+							<label for="name-<?php echo esc_attr($unique_id . '-booking-' . $m['id'] . '-' . $tindex); ?>">Nachname</label>
+							<input type="text" id="name-<?php echo esc_attr($unique_id . '-booking-' . $m['id'] . '-' . $tindex); ?>" name="name" required autocomplete="family-name">
+						</div>
+
+						<div class="po-steps__field">
+							<label for="geburtsdatum-<?php echo esc_attr($unique_id . '-booking-' . $m['id'] . '-' . $tindex); ?>">Geburtsdatum</label>
+							<input type="date" id="geburtsdatum-<?php echo esc_attr($unique_id . '-booking-' . $m['id'] . '-' . $tindex); ?>" name="geburtsdatum" required>
+						</div>
+
+						<button type="submit" class="po-steps__cta po-steps__submit">Zum Warenkorb hinzufügen</button>
+					</form>
+
+					<button type="button" class="po-steps__back-link">← Anderer Termin</button>
+				</div>
+
+				<div class="po-steps__slide is-next" data-slide="3">
+					<div class="po-steps__success">
+						<div class="po-steps__success-icon">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<path d="M20 6L9 17l-5-5"/>
+							</svg>
+						</div>
+						<h2 class="po-steps__heading">Hinzugefügt!</h2>
+						<p class="po-steps__subheading"><?php echo esc_html($training['title']); ?></p>
+						<p class="po-steps__selected-date-confirm"></p>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+<?php endforeach; ?>
+<?php endif; ?>
+
 <?php endforeach; ?>
 
 <script>
@@ -524,22 +589,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		function closeModal() {
 			modal.classList.remove('is-active');
 			document.body.classList.remove('po-tg-no-scroll');
-			var panel = modal.querySelector('.po-tg-modal__panel');
-			if (panel) panel.classList.remove('is-booking-active');
-			modal.querySelectorAll('.po-tg-booking').forEach(function(p) {
-				p.style.display = 'none';
-				var steps = p.querySelector('.po-tg-booking__steps');
-				if (steps) {
-					steps.setAttribute('data-step', '0');
-					steps.querySelectorAll('.po-tg-booking__slide').forEach(function(slide, i) {
-						slide.classList.remove('is-active', 'is-prev', 'is-next');
-						slide.classList.add(i === 0 ? 'is-active' : 'is-next');
-					});
-				}
-			});
-			modal.querySelectorAll('.po-tg-coach__header, .po-tg-coach__hero-image, .po-tg-coach__facts, .po-tg-coach__card, .po-tg-coach__trainings').forEach(function(el) {
-				el.style.display = '';
-			});
 		}
 		
 		btn.addEventListener('click', openModal);
@@ -552,87 +601,21 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		});
 		
+		// Separate Buchungs-Modals öffnen
 		modal.querySelectorAll('.po-tg-coach__booking-trigger').forEach(function(trigger) {
-			trigger.addEventListener('click', function() {
+			trigger.addEventListener('click', function(e) {
+				e.preventDefault();
+				e.stopPropagation();
 				var index = this.getAttribute('data-training-index');
-				var panel = modal.querySelector('.po-tg-modal__panel');
-				if (panel) panel.classList.add('is-booking-active');
-				
-				modal.querySelectorAll('.po-tg-coach__header, .po-tg-coach__hero-image, .po-tg-coach__facts, .po-tg-coach__card, .po-tg-coach__trainings').forEach(function(el) {
-					el.style.display = 'none';
-				});
-				
-				modal.querySelectorAll('.po-tg-booking').forEach(function(p) {
-					p.style.display = p.getAttribute('data-training-index') === index ? 'block' : 'none';
-				});
-			});
-		});
-		
-		modal.querySelectorAll('.po-tg-coach__booking-back').forEach(function(backBtn) {
-			backBtn.addEventListener('click', function() {
-				var panel = modal.querySelector('.po-tg-modal__panel');
-				if (panel) panel.classList.remove('is-booking-active');
-				
-				modal.querySelectorAll('.po-tg-booking').forEach(function(p) {
-					p.style.display = 'none';
-					var steps = p.querySelector('.po-tg-booking__steps');
-					if (steps) {
-						steps.setAttribute('data-step', '0');
-						steps.querySelectorAll('.po-tg-booking__slide').forEach(function(slide, i) {
-							slide.classList.remove('is-active', 'is-prev', 'is-next');
-							slide.classList.add(i === 0 ? 'is-active' : 'is-next');
-						});
-					}
-				});
-				modal.querySelectorAll('.po-tg-coach__header, .po-tg-coach__hero-image, .po-tg-coach__facts, .po-tg-coach__card, .po-tg-coach__trainings').forEach(function(el) {
-					el.style.display = '';
-				});
-			});
-		});
-		
-		modal.querySelectorAll('.po-tg-booking__next').forEach(function(nextBtn) {
-			nextBtn.addEventListener('click', function() {
-				var stepsEl = this.closest('.po-tg-booking__steps');
-				if (!stepsEl) return;
-				
-				var currentStep = parseInt(stepsEl.getAttribute('data-step')) || 0;
-				
-				if (this.classList.contains('po-tg-booking__date')) {
-					var prodInput = stepsEl.querySelector('[name="product_id"]');
-					var dateEl = stepsEl.querySelector('.po-tg-booking__selected-date');
-					var confirmEl = stepsEl.querySelector('.po-tg-booking__selected-date-confirm');
-					if (prodInput) prodInput.value = this.getAttribute('data-product-id');
-					if (dateEl) dateEl.textContent = this.getAttribute('data-date-text');
-					if (confirmEl) confirmEl.textContent = this.getAttribute('data-date-text');
+				var coachId = modal.id.split('-modal-')[1];
+				var bookingModalId = '<?php echo esc_js($unique_id); ?>-booking-' + coachId + '-' + index;
+				var bookingModal = document.getElementById(bookingModalId);
+
+				if (bookingModal) {
+					bookingModal.classList.add('is-active');
+					bookingModal.setAttribute('aria-hidden', 'false');
+					document.body.classList.add('po-no-scroll');
 				}
-				
-				var slides = stepsEl.querySelectorAll('.po-tg-booking__slide');
-				slides.forEach(function(slide, i) {
-					slide.classList.remove('is-active', 'is-prev', 'is-next');
-					if (i < currentStep + 1) slide.classList.add('is-prev');
-					else if (i === currentStep + 1) slide.classList.add('is-active');
-					else slide.classList.add('is-next');
-				});
-				stepsEl.setAttribute('data-step', currentStep + 1);
-			});
-		});
-		
-		modal.querySelectorAll('.po-tg-booking__back:not(.po-tg-coach__booking-back)').forEach(function(backBtn) {
-			backBtn.addEventListener('click', function() {
-				var stepsEl = this.closest('.po-tg-booking__steps');
-				if (!stepsEl) return;
-				
-				var currentStep = parseInt(stepsEl.getAttribute('data-step')) || 0;
-				if (currentStep === 0) return;
-				
-				var slides = stepsEl.querySelectorAll('.po-tg-booking__slide');
-				slides.forEach(function(slide, i) {
-					slide.classList.remove('is-active', 'is-prev', 'is-next');
-					if (i < currentStep - 1) slide.classList.add('is-prev');
-					else if (i === currentStep - 1) slide.classList.add('is-active');
-					else slide.classList.add('is-next');
-				});
-				stepsEl.setAttribute('data-step', currentStep - 1);
 			});
 		});
 		
@@ -641,78 +624,148 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <script>
+// Separate Buchungs-Modals (po-overlay mit po-steps) Handler
 document.addEventListener('DOMContentLoaded', function() {
-	document.querySelectorAll('.po-tg-booking__form').forEach(function(form) {
-		form.addEventListener('submit', function(e) {
-			e.preventDefault();
-			
-			var submitBtn = this.querySelector('.po-tg-booking__submit');
-			var stepsEl = this.closest('.po-tg-booking__steps');
-			var modal = this.closest('.po-tg-modal');
-			var formEl = this;
-			
-			if (!submitBtn || !stepsEl) return;
-			
-			submitBtn.disabled = true;
-			submitBtn.textContent = 'Wird hinzugefuegt...';
-			
-			if (typeof jQuery === 'undefined' || typeof poBooking === 'undefined') {
-				alert('Buchung nicht möglich. Bitte Seite neu laden.');
-				submitBtn.disabled = false;
-				submitBtn.textContent = 'Zum Warenkorb hinzufügen';
-				return;
+	var bookingModals = document.querySelectorAll('.po-overlay[id*="<?php echo esc_js($unique_id); ?>-booking-"]');
+
+	bookingModals.forEach(function(modal) {
+		var closeBtn = modal.querySelector('.po-overlay__close');
+		var backdrop = modal.querySelector('.po-overlay__backdrop');
+		var stepsContainer = modal.querySelector('.po-steps');
+
+		function closeModal() {
+			modal.classList.remove('is-active');
+			modal.setAttribute('aria-hidden', 'true');
+			document.body.classList.remove('po-no-scroll');
+			// Reset steps
+			if (stepsContainer) {
+				stepsContainer.setAttribute('data-step', '0');
+				stepsContainer.querySelectorAll('.po-steps__slide').forEach(function(slide, i) {
+					slide.classList.remove('is-active', 'is-prev', 'is-next');
+					slide.classList.add(i === 0 ? 'is-active' : 'is-next');
+				});
 			}
-			
-			var data = {
-				action: 'po_add_to_cart',
-				nonce: poBooking.nonce,
-				product_id: formEl.querySelector('[name="product_id"]').value,
-				event_id: formEl.querySelector('[name="event_id"]').value,
-				vorname: formEl.querySelector('[name="vorname"]').value,
-				name: formEl.querySelector('[name="name"]').value,
-				geburtsdatum: formEl.querySelector('[name="geburtsdatum"]').value
-			};
-			
-			jQuery.post(poBooking.ajaxUrl, data, function(response) {
-				if (response.success) {
-					var slides = stepsEl.querySelectorAll('.po-tg-booking__slide');
-					slides.forEach(function(slide, i) {
-						slide.classList.remove('is-active', 'is-prev', 'is-next');
-						if (i < 3) slide.classList.add('is-prev');
-						else if (i === 3) slide.classList.add('is-active');
-						else slide.classList.add('is-next');
-					});
-					stepsEl.setAttribute('data-step', '3');
-					formEl.reset();
-					
-					setTimeout(function() {
-						if (modal) {
-							modal.classList.remove('is-active');
-							document.body.classList.remove('po-tg-no-scroll');
-							var panel = modal.querySelector('.po-tg-modal__panel');
-							if (panel) panel.classList.remove('is-booking-active');
-							modal.querySelectorAll('.po-tg-booking').forEach(function(p) { p.style.display = 'none'; });
-							modal.querySelectorAll('.po-tg-coach__header, .po-tg-coach__hero-image, .po-tg-coach__facts, .po-tg-coach__card, .po-tg-coach__trainings').forEach(function(el) { el.style.display = ''; });
-							stepsEl.querySelectorAll('.po-tg-booking__slide').forEach(function(slide, i) {
-								slide.classList.remove('is-active', 'is-prev', 'is-next');
-								slide.classList.add(i === 0 ? 'is-active' : 'is-next');
-							});
-							stepsEl.setAttribute('data-step', '0');
-						}
-						jQuery(document.body).trigger('wc_fragment_refresh');
-						jQuery(document.body).trigger('added_to_cart');
-					}, 1500);
-				} else {
-					alert('Fehler beim Hinzufügen');
-					submitBtn.disabled = false;
-					submitBtn.textContent = 'Zum Warenkorb hinzufügen';
+		}
+
+		if (closeBtn) closeBtn.addEventListener('click', closeModal);
+		if (backdrop) backdrop.addEventListener('click', closeModal);
+
+		document.addEventListener('keydown', function(e) {
+			if (e.key === 'Escape' && modal.classList.contains('is-active')) {
+				closeModal();
+			}
+		});
+
+		// Next button handler
+		modal.querySelectorAll('.po-steps__next').forEach(function(nextBtn) {
+			nextBtn.addEventListener('click', function() {
+				if (!stepsContainer) return;
+
+				var currentStep = parseInt(stepsContainer.getAttribute('data-step')) || 0;
+
+				// Date selection handling
+				if (this.classList.contains('po-steps__date')) {
+					var prodInput = stepsContainer.querySelector('[name="product_id"]');
+					var dateEl = stepsContainer.querySelector('.po-steps__selected-date');
+					var confirmEl = stepsContainer.querySelector('.po-steps__selected-date-confirm');
+					if (prodInput) prodInput.value = this.getAttribute('data-product-id');
+					if (dateEl) dateEl.textContent = this.getAttribute('data-date-text');
+					if (confirmEl) confirmEl.textContent = this.getAttribute('data-date-text');
 				}
-			}).fail(function() {
-				alert('Fehler');
-				submitBtn.disabled = false;
-				submitBtn.textContent = 'Zum Warenkorb hinzufügen';
+
+				var slides = stepsContainer.querySelectorAll('.po-steps__slide');
+				slides.forEach(function(slide, i) {
+					slide.classList.remove('is-active', 'is-prev', 'is-next');
+					if (i < currentStep + 1) slide.classList.add('is-prev');
+					else if (i === currentStep + 1) slide.classList.add('is-active');
+					else slide.classList.add('is-next');
+				});
+				stepsContainer.setAttribute('data-step', currentStep + 1);
 			});
 		});
+
+		// Back link handler
+		modal.querySelectorAll('.po-steps__back-link').forEach(function(backBtn) {
+			backBtn.addEventListener('click', function() {
+				if (!stepsContainer) return;
+
+				var currentStep = parseInt(stepsContainer.getAttribute('data-step')) || 0;
+				if (currentStep === 0) {
+					closeModal();
+					return;
+				}
+
+				var slides = stepsContainer.querySelectorAll('.po-steps__slide');
+				slides.forEach(function(slide, i) {
+					slide.classList.remove('is-active', 'is-prev', 'is-next');
+					if (i < currentStep - 1) slide.classList.add('is-prev');
+					else if (i === currentStep - 1) slide.classList.add('is-active');
+					else slide.classList.add('is-next');
+				});
+				stepsContainer.setAttribute('data-step', currentStep - 1);
+			});
+		});
+
+		// Form submission handler
+		var form = modal.querySelector('.po-steps__form');
+		if (form) {
+			form.addEventListener('submit', function(e) {
+				e.preventDefault();
+
+				var submitBtn = this.querySelector('.po-steps__submit');
+				var formEl = this;
+
+				if (!submitBtn) return;
+
+				submitBtn.disabled = true;
+				submitBtn.textContent = 'Wird hinzugefügt...';
+
+				if (typeof jQuery === 'undefined' || typeof poBooking === 'undefined') {
+					alert('Buchung nicht möglich. Bitte Seite neu laden.');
+					submitBtn.disabled = false;
+					submitBtn.textContent = 'Zum Warenkorb hinzufügen';
+					return;
+				}
+
+				var data = {
+					action: 'po_add_to_cart',
+					nonce: poBooking.nonce,
+					product_id: formEl.querySelector('[name="product_id"]').value,
+					event_id: formEl.querySelector('[name="event_id"]').value,
+					vorname: formEl.querySelector('[name="vorname"]').value,
+					name: formEl.querySelector('[name="name"]').value,
+					geburtsdatum: formEl.querySelector('[name="geburtsdatum"]').value
+				};
+
+				jQuery.post(poBooking.ajaxUrl, data, function(response) {
+					if (response.success) {
+						var slides = stepsContainer.querySelectorAll('.po-steps__slide');
+						slides.forEach(function(slide, i) {
+							slide.classList.remove('is-active', 'is-prev', 'is-next');
+							if (i < 3) slide.classList.add('is-prev');
+							else if (i === 3) slide.classList.add('is-active');
+							else slide.classList.add('is-next');
+						});
+						stepsContainer.setAttribute('data-step', '3');
+						formEl.reset();
+
+						setTimeout(function() {
+							closeModal();
+							jQuery(document.body).trigger('wc_fragment_refresh');
+							jQuery(document.body).trigger('added_to_cart');
+						}, 1500);
+					} else {
+						alert('Fehler beim Hinzufügen');
+						submitBtn.disabled = false;
+						submitBtn.textContent = 'Zum Warenkorb hinzufügen';
+					}
+				}).fail(function() {
+					alert('Fehler');
+					submitBtn.disabled = false;
+					submitBtn.textContent = 'Zum Warenkorb hinzufügen';
+				});
+			});
+		}
 	});
 });
 </script>

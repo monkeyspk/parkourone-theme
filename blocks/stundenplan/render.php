@@ -374,8 +374,17 @@ $used_age_slugs = array_unique(array_filter(array_column($klassen, 'age_slug')))
 </section>
 
 <?php foreach ($klassen as $klasse): ?>
-<?php 
+<?php
 $available_dates = function_exists('parkourone_get_available_dates_for_event') ? parkourone_get_available_dates_for_event($klasse['id']) : [];
+$mood_texts = [
+	'minis' => 'Erste Bewegungserfahrungen in spielerischer Atmosphäre - hier entdecken die Kleinsten ihre motorischen Fähigkeiten.',
+	'kids' => 'Spielerisch Bewegungstalente entdecken: Klettern, Springen und Balancieren in einer sicheren Umgebung.',
+	'juniors-adults' => 'Den eigenen Körper kennenlernen, Grenzen austesten und fortgeschrittene Techniken meistern - intensives Training mit der Möglichkeit, an den eigenen Grenzen zu wachsen.',
+	'seniors-masters' => 'Koordination erhalten, Fitness aufbauen und mit Gleichgesinnten trainieren - beweglich bleiben und den Körper langfristig fit halten.'
+];
+$category = $klasse['age_slug'] ?? '';
+$coach_text = !empty($klasse['headcoach']) ? ' von ' . $klasse['headcoach'] . ' geleitet und' : '';
+$time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'] ? ' - ' . $klasse['end_time'] . ' Uhr' : ' Uhr') : '';
 ?>
 <div class="po-overlay" id="<?php echo esc_attr($unique_id . '-modal-' . $klasse['id']); ?>" aria-hidden="true" role="dialog" aria-modal="true">
 	<div class="po-overlay__backdrop"></div>
@@ -432,7 +441,20 @@ $available_dates = function_exists('parkourone_get_available_dates_for_event') ?
 						<?php endif; ?>
 						<?php endif; ?>
 					</dl>
-					
+
+					<?php if ($category && isset($mood_texts[$category])): ?>
+					<p class="po-steps__description">
+						Dieses Training wird<?php echo esc_html($coach_text); ?> findet wöchentlich <?php echo esc_html($klasse['weekday']); ?> von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($klasse['venue'])): ?> Treffpunkt ist <?php echo esc_html($klasse['venue']); ?>.<?php endif; ?> <?php echo esc_html($mood_texts[$category]); ?>
+					</p>
+					<?php endif; ?>
+
+					<?php if (!empty($available_dates) && !empty($available_dates[0]['price'])): ?>
+					<div class="po-steps__price">
+						<span class="po-steps__price-label">Probetraining</span>
+						<span class="po-steps__price-value"><?php echo wp_kses_post($available_dates[0]['price']); ?></span>
+					</div>
+					<?php endif; ?>
+
 					<button type="button" class="po-steps__cta po-steps__next">
 						<?php echo esc_html($buttonText); ?>
 					</button>
