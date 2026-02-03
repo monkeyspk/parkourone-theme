@@ -6,6 +6,11 @@
 	background-size: cover;
 	background-position: center;
 	background-color: #1d1d1f;
+	/* Full-width: aus WordPress Container ausbrechen */
+	width: 100vw;
+	max-width: 100vw;
+	margin-left: calc(50% - 50vw);
+	margin-right: calc(50% - 50vw);
 }
 
 .po-hero__overlay {
