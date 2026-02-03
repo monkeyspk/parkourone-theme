@@ -56,6 +56,12 @@ class ParkourONE_GitHub_Updater {
 
         $cleared = [];
 
+        // 0. PHP OPcache leeren (wichtig für Dateiänderungen!)
+        if (function_exists('opcache_reset')) {
+            opcache_reset();
+            $cleared[] = 'OPcache';
+        }
+
         // 1. WordPress Object Cache
         if (function_exists('wp_cache_flush')) {
             wp_cache_flush();
