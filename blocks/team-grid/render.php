@@ -230,7 +230,7 @@ $trainings = parkourone_get_coach_trainings_with_dates($m['name']);
 <div class="po-tg-modal" id="<?php echo esc_attr($unique_id . '-modal-' . $m['id']); ?>" aria-hidden="true" role="dialog" aria-modal="true">
 	<div class="po-tg-modal__backdrop"></div>
 	<div class="po-tg-modal__panel">
-		<button class="po-tg-modal__close" aria-label="Schliessen">
+		<button class="po-tg-modal__close" aria-label="Schließen">
 			<svg viewBox="0 0 24 24" fill="none">
 				<circle cx="12" cy="12" r="12" fill="#1d1d1f"/>
 				<path d="M8 8l8 8M16 8l-8 8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
@@ -657,9 +657,9 @@ document.addEventListener('DOMContentLoaded', function() {
 			submitBtn.textContent = 'Wird hinzugefuegt...';
 			
 			if (typeof jQuery === 'undefined' || typeof poBooking === 'undefined') {
-				alert('Buchung nicht moeglich. Bitte Seite neu laden.');
+				alert('Buchung nicht möglich. Bitte Seite neu laden.');
 				submitBtn.disabled = false;
-				submitBtn.textContent = 'Zum Warenkorb hinzufuegen';
+				submitBtn.textContent = 'Zum Warenkorb hinzufügen';
 				return;
 			}
 			
@@ -703,14 +703,14 @@ document.addEventListener('DOMContentLoaded', function() {
 						jQuery(document.body).trigger('added_to_cart');
 					}, 1500);
 				} else {
-					alert('Fehler beim Hinzufuegen');
+					alert('Fehler beim Hinzufügen');
 					submitBtn.disabled = false;
-					submitBtn.textContent = 'Zum Warenkorb hinzufuegen';
+					submitBtn.textContent = 'Zum Warenkorb hinzufügen';
 				}
 			}).fail(function() {
 				alert('Fehler');
 				submitBtn.disabled = false;
-				submitBtn.textContent = 'Zum Warenkorb hinzufuegen';
+				submitBtn.textContent = 'Zum Warenkorb hinzufügen';
 			});
 		});
 	});

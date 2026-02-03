@@ -102,7 +102,7 @@ $kategorie_labels = [
 <div class="po-angebote-modal" id="po-angebote-modal" aria-hidden="true">
 	<div class="po-angebote-modal__backdrop"></div>
 	<div class="po-angebote-modal__container">
-		<button class="po-angebote-modal__close" aria-label="Schliessen">&times;</button>
+		<button class="po-angebote-modal__close" aria-label="Schließen">&times;</button>
 		<div class="po-angebote-modal__content">
 			<!-- Content wird per JS eingefügt -->
 		</div>

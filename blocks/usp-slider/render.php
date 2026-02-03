@@ -54,7 +54,7 @@ unset($slide);
 	</div>
 
 	<div class="po-usp__nav">
-		<button type="button" class="po-usp__nav-btn po-usp__nav-prev" aria-label="Zurueck" disabled>
+		<button type="button" class="po-usp__nav-btn po-usp__nav-prev" aria-label="Zurück" disabled>
 			<svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 		</button>
 		<button type="button" class="po-usp__nav-btn po-usp__nav-next" aria-label="Weiter">
@@ -67,7 +67,7 @@ unset($slide);
 <div class="po-overlay" id="<?php echo esc_attr($unique_id . '-modal-' . $index); ?>" aria-hidden="true" role="dialog" aria-modal="true">
 	<div class="po-overlay__backdrop"></div>
 	<div class="po-overlay__panel po-overlay__panel--compact">
-		<button class="po-overlay__close" aria-label="Schliessen">
+		<button class="po-overlay__close" aria-label="Schließen">
 			<svg viewBox="0 0 24 24" fill="none">
 				<circle cx="12" cy="12" r="12" fill="#1d1d1f"/>
 				<path d="M8 8l8 8M16 8l-8 8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>

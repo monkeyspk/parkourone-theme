@@ -272,7 +272,7 @@ $hasFilters = $showAgeFilter || $showLocationFilter;
 	</div>
 
 	<div class="po-klassen-slider__empty-message" style="display: none;">
-		<p>Keine Klassen fuer diese Auswahl gefunden.</p>
+		<p>Keine Klassen für diese Auswahl gefunden.</p>
 	</div>
 </section>
 
@@ -280,10 +280,10 @@ $hasFilters = $showAgeFilter || $showLocationFilter;
 <?php
 $available_dates = function_exists('parkourone_get_available_dates_for_event') ? parkourone_get_available_dates_for_event($klasse['id']) : [];
 $mood_texts = [
-	'minis' => 'Erste Bewegungserfahrungen in spielerischer Atmosphaere - hier entdecken die Kleinsten ihre motorischen Faehigkeiten.',
+	'minis' => 'Erste Bewegungserfahrungen in spielerischer Atmosphäre - hier entdecken die Kleinsten ihre motorischen Fähigkeiten.',
 	'kids' => 'Spielerisch Bewegungstalente entdecken: Klettern, Springen und Balancieren in einer sicheren Umgebung.',
-	'juniors-adults' => 'Den eigenen Koerper kennenlernen, Grenzen austesten und fortgeschrittene Techniken meistern - intensives Training mit der Moeglichkeit, an den eigenen Grenzen zu wachsen.',
-	'seniors-masters' => 'Koordination erhalten, Fitness aufbauen und mit Gleichgesinnten trainieren - beweglich bleiben und den Koerper langfristig fit halten.'
+	'juniors-adults' => 'Den eigenen Körper kennenlernen, Grenzen austesten und fortgeschrittene Techniken meistern - intensives Training mit der Möglichkeit, an den eigenen Grenzen zu wachsen.',
+	'seniors-masters' => 'Koordination erhalten, Fitness aufbauen und mit Gleichgesinnten trainieren - beweglich bleiben und den Körper langfristig fit halten.'
 ];
 $category = $klasse['category'] ?? '';
 $coach_text = !empty($klasse['headcoach']) ? ' von ' . $klasse['headcoach'] . ' geleitet und' : '';
@@ -292,7 +292,7 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 <div class="po-overlay" id="<?php echo esc_attr($unique_id . '-modal-' . $index); ?>" aria-hidden="true" role="dialog" aria-modal="true">
 	<div class="po-overlay__backdrop"></div>
 	<div class="po-overlay__panel">
-		<button class="po-overlay__close" aria-label="Schliessen">
+		<button class="po-overlay__close" aria-label="Schließen">
 			<svg viewBox="0 0 24 24" fill="none">
 				<circle cx="12" cy="12" r="12" fill="#1d1d1f"/>
 				<path d="M8 8l8 8M16 8l-8 8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
@@ -325,7 +325,7 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 
 					<?php if ($category && isset($mood_texts[$category])): ?>
 					<p class="po-steps__description">
-						Dieses Training wird<?php echo esc_html($coach_text); ?> findet woechentlich <?php echo esc_html($klasse['weekday']); ?> von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($klasse['venue'])): ?> Treffpunkt ist <?php echo esc_html($klasse['venue']); ?>.<?php endif; ?> <?php echo esc_html($mood_texts[$category]); ?>
+						Dieses Training wird<?php echo esc_html($coach_text); ?> findet wöchentlich <?php echo esc_html($klasse['weekday']); ?> von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($klasse['venue'])): ?> Treffpunkt ist <?php echo esc_html($klasse['venue']); ?>.<?php endif; ?> <?php echo esc_html($mood_texts[$category]); ?>
 					</p>
 					<?php endif; ?>
 
@@ -350,7 +350,7 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 				<div class="po-steps__slide is-next" data-slide="1">
 					<header class="po-steps__header">
 						<span class="po-steps__eyebrow">Schritt 1 von 2</span>
-						<h2 class="po-steps__heading">Termin waehlen</h2>
+						<h2 class="po-steps__heading">Termin wählen</h2>
 						<p class="po-steps__subheading"><?php echo esc_html($klasse['title']); ?></p>
 					</header>
 
@@ -359,18 +359,18 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 						<?php foreach ($available_dates as $date): ?>
 						<button type="button" class="po-steps__date po-steps__next" data-product-id="<?php echo esc_attr($date['product_id']); ?>" data-date-text="<?php echo esc_attr($date['date_formatted']); ?>">
 							<span class="po-steps__date-text"><?php echo esc_html($date['date_formatted']); ?></span>
-							<span class="po-steps__date-stock"><?php echo esc_html($date['stock']); ?> <?php echo $date['stock'] === 1 ? 'Platz' : 'Plaetze'; ?> frei</span>
+							<span class="po-steps__date-stock"><?php echo esc_html($date['stock']); ?> <?php echo $date['stock'] === 1 ? 'Platz' : 'Plätze'; ?> frei</span>
 						</button>
 						<?php endforeach; ?>
 					</div>
 					<?php else: ?>
 					<div class="po-steps__empty">
-						<p>Aktuell sind keine Probetraining-Termine verfuegbar.</p>
-						<p>Kontaktiere uns fuer weitere Informationen.</p>
+						<p>Aktuell sind keine Probetraining-Termine verfügbar.</p>
+						<p>Kontaktiere uns für weitere Informationen.</p>
 					</div>
 					<?php endif; ?>
 
-					<button type="button" class="po-steps__back-link">← Zurueck zur Uebersicht</button>
+					<button type="button" class="po-steps__back-link">← Zurück zur Übersicht</button>
 				</div>
 
 				<div class="po-steps__slide is-next" data-slide="2">
@@ -399,7 +399,7 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 							<input type="date" id="geburtsdatum-<?php echo esc_attr($unique_id . '-' . $index); ?>" name="geburtsdatum" required>
 						</div>
 
-						<button type="submit" class="po-steps__cta po-steps__submit">Zum Warenkorb hinzufuegen</button>
+						<button type="submit" class="po-steps__cta po-steps__submit">Zum Warenkorb hinzufügen</button>
 					</form>
 
 					<button type="button" class="po-steps__back-link">← Anderer Termin</button>
@@ -412,7 +412,7 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 								<path d="M20 6L9 17l-5-5"/>
 							</svg>
 						</div>
-						<h2 class="po-steps__heading">Hinzugefuegt!</h2>
+						<h2 class="po-steps__heading">Hinzugefügt!</h2>
 						<p class="po-steps__subheading"><?php echo esc_html($klasse['title']); ?></p>
 						<p class="po-steps__selected-date-confirm"></p>
 					</div>
