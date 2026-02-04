@@ -9,9 +9,15 @@
  * Block Types: core/post-content
  * Post Types: page
  */
+
+// Bilder-URLs
+$theme_uri = get_template_directory_uri();
+$hero_image = $theme_uri . '/assets/images/fallback/adults/EveryONE_5MP-149-von-152-scaled.jpg';
+$split_image = $theme_uri . '/assets/images/fallback/adults/2022_MastersBern-34-scaled.jpg';
+$testimonial_image = $theme_uri . '/assets/images/fallback/adults/IMG_0716-scaled.jpg';
 ?>
 
-<!-- wp:parkourone/page-header {"variant":"fullscreen","title":"Die Menschen hinter der Bewegung","description":"Parkour ist mehr als Sport. Es sind die Menschen, die es besonders machen. Lerne unser Team kennen.","ctaText":"Team kennenlernen","ctaUrl":"#team","ctaSecondaryText":"Offene Stellen","ctaSecondaryUrl":"#jobs","align":"full"} /-->
+<!-- wp:parkourone/page-header {"variant":"fullscreen","title":"Die Menschen hinter der Bewegung","description":"Parkour ist mehr als Sport. Es sind die Menschen, die es besonders machen. Lerne unser Team kennen.","image":"<?php echo esc_url($hero_image); ?>","ctaText":"Team kennenlernen","ctaUrl":"#team","ctaSecondaryText":"Offene Stellen","ctaSecondaryUrl":"#jobs","align":"full"} /-->
 
 <!-- wp:spacer {"height":"80px"} -->
 <div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
@@ -23,13 +29,13 @@
 <div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:parkourone/testimonial-highlight {"quotes":[{"text":"Bei ParkourONE geht es nicht darum, der Beste zu sein. Es geht darum, jeden Tag ein bisschen besser zu werden als gestern. Das versuche ich meinen Schülern zu vermitteln.","author":"","role":"Coach bei ParkourONE","imageUrl":""}],"layout":"single","style":"dark","align":"full"} /-->
+<!-- wp:parkourone/testimonial-highlight {"quotes":[{"text":"Bei ParkourONE geht es nicht darum, der Beste zu sein. Es geht darum, jeden Tag ein bisschen besser zu werden als gestern. Das versuche ich meinen Schülern zu vermitteln.","author":"Coach","role":"ParkourONE","imageUrl":"<?php echo esc_url($testimonial_image); ?>"}],"layout":"single","style":"dark","align":"full"} /-->
 
 <!-- wp:spacer {"height":"80px"} -->
 <div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:parkourone/split-content {"headline":"Was uns verbindet","text":"Wir kommen aus verschiedenen Hintergründen, aber teilen dieselbe Leidenschaft: Menschen durch Bewegung zu inspirieren.\n\nBei ParkourONE arbeiten wir nach TRUST Education - unserer eigenen pädagogischen Methode. Sie verbindet körperliches Training mit persönlicher Entwicklung. Wir glauben daran, dass jeder Mensch einzigartige Potenziale hat, die es zu entfalten gilt.","imageUrl":"","imageRight":false,"showCta":true,"ctaText":"Mehr über TRUST","ctaUrl":"/trust-education/","backgroundColor":"#ffffff","align":"full"} /-->
+<!-- wp:parkourone/split-content {"headline":"Was uns verbindet","text":"Wir kommen aus verschiedenen Hintergründen, aber teilen dieselbe Leidenschaft: Menschen durch Bewegung zu inspirieren.\n\nBei ParkourONE arbeiten wir nach TRUST Education - unserer eigenen pädagogischen Methode. Sie verbindet körperliches Training mit persönlicher Entwicklung. Wir glauben daran, dass jeder Mensch einzigartige Potenziale hat, die es zu entfalten gilt.","imageUrl":"<?php echo esc_url($split_image); ?>","imageRight":false,"showCta":true,"ctaText":"Mehr über TRUST","ctaUrl":"/trust-education/","backgroundColor":"#ffffff","align":"full"} /-->
 
 <!-- wp:spacer {"height":"80px"} -->
 <div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
