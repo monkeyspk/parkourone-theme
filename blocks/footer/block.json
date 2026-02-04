@@ -37,7 +37,7 @@
 		"impressumUrl": { "type": "string", "default": "#" },
 		"datenschutzUrl": { "type": "string", "default": "#" },
 		"cookiesUrl": { "type": "string", "default": "#" },
-		"copyrightYear": { "type": "string", "default": "2024" }
+		"copyrightYear": { "type": "string", "default": "" }
 	},
 	"supports": { "align": ["full"], "html": false }
 }
