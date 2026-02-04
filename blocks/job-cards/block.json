@@ -2,11 +2,11 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "parkourone/job-cards",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"title": "Job Cards",
 	"category": "parkourone-about",
 	"icon": "businessperson",
-	"description": "Stellenangebote mit Karten.",
+	"description": "Stellenangebote mit Karten und Detail-Modals.",
 	"keywords": ["jobs", "stellen", "karriere", "bewerbung"],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
@@ -14,13 +14,32 @@
 	"render": "file:./render.php",
 	"attributes": {
 		"headline": { "type": "string", "default": "Werde Teil unseres Teams" },
-		"intro": { "type": "string", "default": "Wir bei ParkourOne sind ständig auf der Suche nach begeisterten und talentierten Menschen, die unser Team bereichern wollen. Schau dir unsere offenen Stellen an und finde heraus, wie du uns unterstützen kannst!" },
+		"intro": { "type": "string", "default": "Wir bei ParkourONE sind ständig auf der Suche nach begeisterten und talentierten Menschen, die unser Team bereichern wollen." },
 		"jobs": { "type": "array", "default": [
-			{"title":"Headcoach","type":"Full-time","desc":"Wir suchen einen erfahrenen und motivierten Headcoach! Du planst und leitest Trainings, entwickelst unsere Schüler und führst unser Trainerteam. Bewerbe dich jetzt und werde Teil unseres dynamischen Teams!","ctaText":"Jetzt bewerben","ctaUrl":"#"},
-			{"title":"Social Media Manager/in","type":"Full-time","desc":"Wir suchen eine kreative und engagierte Person als Social Media Manager für unsere Parkour Schule! Du entwickelst und verwaltest unsere Social-Media-Kanäle, erstellst ansprechende Inhalte und baust unsere Online-Community auf.","ctaText":"Jetzt bewerben","ctaUrl":"#"},
-			{"title":"Social Media Manager","type":"Full-time","desc":"Wir suchen einen erfahrenen und motivierten Headcoach für unsere Parkour Schule! Du planst und leitest Trainings, entwickelst unsere Schüler und führst unser Trainerteam. Bewerbe dich jetzt und werde Teil unseres dynamischen Teams!","ctaText":"Jetzt bewerben","ctaUrl":"#"}
+			{
+				"title": "Parkour Coach",
+				"type": "Teilzeit / Vollzeit",
+				"desc": "Du brennst für Parkour und möchtest deine Leidenschaft weitergeben?",
+				"fullDescription": "Als Coach bei ParkourONE leitest du Trainings für verschiedene Altersgruppen und hilfst unseren Schüler:innen, über sich hinauszuwachsen. Du wirst Teil eines engagierten Teams, das Parkour nicht nur als Sport, sondern als Lebensphilosophie versteht.",
+				"requirements": "Erfahrung im Parkour-Training\nFreude am Unterrichten\nZuverlässigkeit und Teamfähigkeit\nBereitschaft zur Weiterbildung (TRUST-Zertifizierung)",
+				"benefits": "Faire Vergütung\nFlexible Arbeitszeiten\nKostenloses Training\nFort- und Weiterbildungen\nEin motiviertes Team",
+				"howToApply": "Schick uns eine kurze Vorstellung von dir, deinen Parkour-Hintergrund und warum du bei uns arbeiten möchtest.",
+				"contactEmail": "jobs@parkourone.com",
+				"ctaText": "Mehr erfahren"
+			},
+			{
+				"title": "Praktikum",
+				"type": "3-6 Monate",
+				"desc": "Sammle erste Erfahrungen in der Welt des Parkour-Trainings.",
+				"fullDescription": "In unserem Praktikum lernst du von erfahrenen Coaches und unterstützt uns bei Training und Organisation. Du bekommst Einblicke in alle Bereiche einer Parkour-Schule.",
+				"requirements": "Interesse an Parkour und Bewegung\nMindestalter 18 Jahre\nZuverlässigkeit\nOffenheit für Neues",
+				"benefits": "Praktische Erfahrung\nMentoring durch erfahrene Coaches\nKostenloses Training\nMöglichkeit zur Übernahme",
+				"howToApply": "Bewirb dich mit einem kurzen Motivationsschreiben und deinem Lebenslauf.",
+				"contactEmail": "praktikum@parkourone.com",
+				"ctaText": "Mehr erfahren"
+			}
 		]},
-		"backgroundColor": { "type": "string", "default": "#ffffff" }
+		"backgroundColor": { "type": "string", "default": "#f5f5f7" }
 	},
 	"supports": { "align": ["full", "wide"], "html": false }
 }

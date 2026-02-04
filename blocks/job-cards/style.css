@@ -79,3 +79,183 @@
 	box-shadow: none;
 	border: 1px solid #e5e5e5;
 }
+
+/* Header */
+.po-jobs__header {
+	max-width: 800px;
+	margin: 0 auto 3rem;
+	text-align: center;
+}
+
+/* Card Updates */
+.po-job-card__content {
+	flex-grow: 1;
+}
+
+.po-job-card__type {
+	display: inline-block;
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: #0066cc;
+	background: rgba(0, 102, 204, 0.1);
+	padding: 0.25rem 0.75rem;
+	border-radius: 100px;
+	margin-bottom: 1rem;
+}
+
+.po-job-card__cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	background: none;
+	cursor: pointer;
+}
+
+.po-job-card__cta svg {
+	width: 16px;
+	height: 16px;
+	transition: transform 0.2s;
+}
+
+.po-job-card__cta:hover svg {
+	transform: translateX(4px);
+}
+
+/* Modal Panel */
+.po-overlay__panel--job {
+	max-width: 600px;
+	padding: 0;
+}
+
+/* Job Modal */
+.po-job-modal {
+	padding: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.po-job-modal__header {
+	margin-bottom: 2rem;
+	padding-bottom: 1.5rem;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.po-job-modal__type {
+	display: inline-block;
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: #0066cc;
+	background: rgba(0, 102, 204, 0.1);
+	padding: 0.25rem 0.75rem;
+	border-radius: 100px;
+	margin-bottom: 0.75rem;
+}
+
+.po-job-modal__title {
+	font-size: clamp(1.5rem, 4vw, 2rem);
+	font-weight: 700;
+	margin: 0;
+	line-height: 1.2;
+}
+
+.po-job-modal__section {
+	margin-bottom: 2rem;
+}
+
+.po-job-modal__section:last-child {
+	margin-bottom: 0;
+}
+
+.po-job-modal__description {
+	font-size: 1rem;
+	line-height: 1.7;
+	color: #1d1d1f;
+	margin: 0;
+}
+
+.po-job-modal__section-title {
+	font-size: 0.875rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: #86868b;
+	margin: 0 0 1rem 0;
+}
+
+.po-job-modal__list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.po-job-modal__list li {
+	position: relative;
+	padding-left: 1.5rem;
+	margin-bottom: 0.75rem;
+	font-size: 0.9375rem;
+	line-height: 1.5;
+	color: #1d1d1f;
+}
+
+.po-job-modal__list li::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0.5em;
+	width: 6px;
+	height: 6px;
+	background: #86868b;
+	border-radius: 50%;
+}
+
+.po-job-modal__list--benefits li::before {
+	background: #34c759;
+}
+
+.po-job-modal__section--apply {
+	background: #f5f5f7;
+	margin: 2rem -clamp(1.5rem, 4vw, 2.5rem) 0;
+	padding: clamp(1.5rem, 4vw, 2rem);
+	border-radius: 0 0 20px 20px;
+}
+
+.po-job-modal__section--apply p {
+	font-size: 0.9375rem;
+	line-height: 1.6;
+	margin: 0 0 1.5rem 0;
+	color: #1d1d1f;
+}
+
+.po-job-modal__apply-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.75rem;
+	background: #0066cc;
+	color: #fff;
+	padding: 1rem 1.5rem;
+	border-radius: 12px;
+	font-size: 1rem;
+	font-weight: 600;
+	text-decoration: none;
+	transition: background 0.2s;
+}
+
+.po-job-modal__apply-btn:hover {
+	background: #0055aa;
+	color: #fff;
+}
+
+.po-job-modal__apply-btn svg {
+	width: 20px;
+	height: 20px;
+}
+
+@media (max-width: 600px) {
+	.po-job-modal__section--apply {
+		margin-left: -1.5rem;
+		margin-right: -1.5rem;
+		border-radius: 0;
+	}
+}
