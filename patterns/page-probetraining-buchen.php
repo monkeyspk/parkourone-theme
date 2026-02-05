@@ -29,7 +29,7 @@ $probetraining_price = function_exists('parkourone_get_probetraining_price') ? p
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"align":"center","style":{"spacing":{"margin":{"bottom":"2rem"}}}} -->
-<p class="has-text-align-center" style="margin-bottom:2rem">Filtere nach Altersgruppe, Standort oder Wochentag und finde den perfekten Kurs für dich.</p>
+<p class="has-text-align-center" style="margin-bottom:2rem">Filtere nach Altersgruppe, Standort oder Wochentag und finde die perfekte Klasse für dich.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:shortcode -->

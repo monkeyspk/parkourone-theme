@@ -1678,9 +1678,9 @@ function parkourone_generate_location_page_content($location_slug, $location_nam
 	// Probetraining-Steps für Steps-Carousel (JSON)
 	$probetraining_steps = json_encode([
 		["title" => "Altersgruppe wählen", "description" => "Wähle die passende Klasse basierend auf deinem Alter: Minis, Kids, Juniors oder Adults.", "icon" => "users"],
-		["title" => "Kurs auswählen", "description" => "Finde den perfekten Kurs für deinen Zeitplan an unserem Standort in {$location_name}.", "icon" => "calendar"],
+		["title" => "Klasse auswählen", "description" => "Finde die perfekte Klasse für deinen Zeitplan an unserem Standort in {$location_name}.", "icon" => "calendar"],
 		["title" => "Termin buchen", "description" => "Buche online dein Probetraining. Es kostet {$probetraining_price} und wird bei Anmeldung verrechnet.", "icon" => "check"],
-		["title" => "Loslegen", "description" => "Komm in bequemer Sportkleidung zu unserer Halle in {$location_name}. Wir freuen uns auf dich!", "icon" => "location"]
+		["title" => "Loslegen", "description" => "Komm in bequemer Sportkleidung zu unserem Training in {$location_name}. Wir freuen uns auf dich!", "icon" => "location"]
 	], JSON_UNESCAPED_UNICODE);
 
 	// Altersgruppen abrufen für Anzahl
