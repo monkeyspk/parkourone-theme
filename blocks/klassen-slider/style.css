@@ -154,6 +154,27 @@ body.po-no-scroll {
 	color: #fff;
 }
 
+/* Coach Avatar on Card */
+.po-card__coach {
+	position: absolute;
+	top: 16px;
+	right: 16px;
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	overflow: hidden;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+	border: 2px solid rgba(255, 255, 255, 0.9);
+	z-index: 3;
+	pointer-events: none;
+}
+
+.po-card__coach img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
 .po-overlay {
 	position: fixed;
 	top: 0;
@@ -588,21 +609,28 @@ body.po-no-scroll {
 		--po-card-height: 380px;
 		--po-card-width: 260px;
 	}
-	
+
 	.po-klassen-slider {
 		padding: 40px 0;
 	}
-	
+
 	.po-klassen-slider__headline {
 		margin-bottom: 24px;
 	}
-	
+
 	.po-klassen-slider__track {
 		gap: 14px;
 	}
-	
+
 	.po-card__title {
 		font-size: 19px;
+	}
+
+	.po-card__coach {
+		width: 40px;
+		height: 40px;
+		top: 12px;
+		right: 12px;
 	}
 	
 	.po-overlay {
@@ -637,6 +665,13 @@ body.po-no-scroll {
 
 	.po-card__title {
 		font-size: 18px;
+	}
+
+	.po-card__coach {
+		width: 36px;
+		height: 36px;
+		top: 10px;
+		right: 10px;
 	}
 
 	.po-overlay__panel {
@@ -830,4 +865,168 @@ body.po-no-scroll {
 		padding: 10px 12px;
 		font-size: 14px;
 	}
+}
+
+/* ========================================
+   COACH SLIDE STYLES
+   ======================================== */
+
+/* Coach-Slide (ausserhalb des normalen Step-Flows) */
+.po-ks__coach-slide {
+	display: none !important;
+}
+
+.po-ks__coach-slide.is-active {
+	display: block !important;
+}
+
+.po-ks__back-to-overview {
+	display: block;
+	width: 100%;
+	padding: 14px 12px;
+	margin-top: 24px;
+	background: #f5f5f7;
+	border: none;
+	border-radius: 12px;
+	color: #1d1d1f;
+	font-size: 15px;
+	font-weight: 500;
+	cursor: pointer;
+	text-align: center;
+	transition: background 0.2s ease;
+}
+
+.po-ks__back-to-overview:hover {
+	background: #e8e8ed;
+}
+
+.po-ks__back-to-overview--top {
+	background: none;
+	margin-top: 0;
+	margin-bottom: 20px;
+	padding: 8px 0;
+	text-align: left;
+	color: #0066cc;
+	font-weight: 400;
+}
+
+.po-ks__back-to-overview--top:hover {
+	background: none;
+	opacity: 0.7;
+}
+
+/* Inline Coach Link im Fliesstext */
+.po-ks__coach-link-inline {
+	background: none;
+	border: none;
+	padding: 0;
+	margin: 0;
+	font: inherit;
+	color: #0066cc;
+	text-decoration: underline;
+	cursor: pointer;
+	transition: opacity 0.2s ease;
+}
+
+.po-ks__coach-link-inline:hover {
+	opacity: 0.7;
+}
+
+/* Coach Content (inside modal slide) */
+.po-ks-coach {
+	padding: 0;
+}
+
+.po-ks-coach__header {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	margin-bottom: 20px;
+}
+
+.po-ks-coach__avatar {
+	width: 64px;
+	height: 64px;
+	border-radius: 50%;
+	object-fit: cover;
+	flex-shrink: 0;
+}
+
+.po-ks-coach__info {
+	flex: 1;
+}
+
+.po-ks-coach__name {
+	font-size: 22px;
+	font-weight: 600;
+	margin: 0;
+	color: #1d1d1f;
+}
+
+.po-ks-coach__role {
+	font-size: 14px;
+	color: #86868b;
+	margin: 4px 0 0;
+}
+
+.po-ks-coach__hero {
+	margin: 0 0 20px;
+	border-radius: 12px;
+	overflow: hidden;
+}
+
+.po-ks-coach__hero img {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
+.po-ks-coach__facts {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px;
+	margin: 0 0 20px;
+	padding: 16px;
+	background: #f5f5f7;
+	border-radius: 12px;
+}
+
+.po-ks-coach__fact {
+	margin: 0;
+}
+
+.po-ks-coach__fact--full {
+	grid-column: 1 / -1;
+}
+
+.po-ks-coach__fact dt {
+	font-size: 11px;
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	color: #86868b;
+	margin-bottom: 4px;
+}
+
+.po-ks-coach__fact dd {
+	font-size: 14px;
+	color: #1d1d1f;
+	margin: 0;
+}
+
+.po-ks-coach__section {
+	margin-bottom: 20px;
+}
+
+.po-ks-coach__section p {
+	font-size: 15px;
+	line-height: 1.6;
+	color: #1d1d1f;
+	margin: 0 0 12px;
+}
+
+.po-ks-coach__image {
+	width: 100%;
+	border-radius: 12px;
+	margin-top: 12px;
 }

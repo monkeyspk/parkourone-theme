@@ -9,6 +9,9 @@ $bookingPageUrl = $attributes['bookingPageUrl'] ?? '/probetraining/';
 $buttonText = $attributes['buttonText'] ?? 'Probetraining buchen';
 $hideIfEmpty = $attributes['hideIfEmpty'] ?? false;
 
+// Coach-Profile für Modals sammeln
+$coach_profiles = [];
+
 $args = [
 	'post_type' => 'event',
 	'posts_per_page' => -1,
@@ -107,11 +110,13 @@ if ($query->have_posts()) {
 			? parkourone_get_event_image($event_id, $age_term)
 			: get_the_post_thumbnail_url($event_id, 'medium_large');
 
-		$klassen[] = [
+		$headcoach_name = get_post_meta($event_id, '_event_headcoach', true);
+
+		$klasse = [
 			'id' => $event_id,
 			'title' => get_the_title(),
 			'permalink' => $permalink,
-			'headcoach' => get_post_meta($event_id, '_event_headcoach', true),
+			'headcoach' => $headcoach_name,
 			'headcoach_image' => get_post_meta($event_id, '_event_headcoach_image_url', true),
 			'headcoach_email' => get_post_meta($event_id, '_event_headcoach_email', true),
 			'headcoach_phone' => get_post_meta($event_id, '_event_headcoach_phone', true),
@@ -122,8 +127,55 @@ if ($query->have_posts()) {
 			'weekday' => $weekday_name,
 			'image' => $event_image,
 			'category' => $age_term,
-			'location' => $location_term
+			'location' => $location_term,
+			'coach_id' => null,
+			'coach_has_profile' => false
 		];
+
+		// Coach-Profile sammeln wenn vorhanden
+		if (!empty($headcoach_name) && !isset($coach_profiles[$headcoach_name])) {
+			$coach_data = function_exists('parkourone_get_coach_by_name')
+				? parkourone_get_coach_by_name($headcoach_name)
+				: null;
+
+			if ($coach_data) {
+				$has_profile = function_exists('parkourone_coach_has_profile')
+					? parkourone_coach_has_profile($coach_data)
+					: false;
+
+				if ($has_profile) {
+					$coach_id = $coach_data['id'];
+					$hero_bild = get_post_meta($coach_id, '_coach_hero_bild', true);
+					$philosophie_bild = $coach_data['philosophie_bild'] ?? '';
+					$moment_bild = $coach_data['moment_bild'] ?? '';
+					$api_image = $coach_data['api_image'] ?? '';
+
+					$coach_profiles[$headcoach_name] = [
+						'id' => $coach_id,
+						'name' => $coach_data['name'],
+						'rolle' => $coach_data['rolle'] ?? '',
+						'standort' => $coach_data['standort'] ?? '',
+						'parkour_seit' => get_post_meta($coach_id, '_coach_parkour_seit', true),
+						'po_seit' => get_post_meta($coach_id, '_coach_po_seit', true),
+						'kurzvorstellung' => $coach_data['kurzvorstellung'] ?? '',
+						'moment' => $coach_data['moment'] ?? '',
+						'leitsatz' => $coach_data['leitsatz'] ?? '',
+						'hero_bild' => $hero_bild,
+						'philosophie_bild' => $philosophie_bild,
+						'moment_bild' => $moment_bild,
+						'card_image' => $hero_bild ?: $philosophie_bild ?: $moment_bild ?: $api_image
+					];
+				}
+			}
+		}
+
+		// Coach-Info zur Klasse hinzufügen
+		if (isset($coach_profiles[$headcoach_name])) {
+			$klasse['coach_id'] = $coach_profiles[$headcoach_name]['id'];
+			$klasse['coach_has_profile'] = true;
+		}
+
+		$klassen[] = $klasse;
 	}
 	wp_reset_postdata();
 }
@@ -248,6 +300,16 @@ $hasFilters = $showAgeFilter || $showLocationFilter;
 		<?php foreach ($klassen as $index => $klasse):
 			$filter_data = trim($klasse['category'] . ' ' . $klasse['location']);
 		?>
+			<?php
+			// Coach-Bild: Bevorzugt aus coach_profiles (hat Fallbacks), sonst aus Event-Meta
+			$coach_avatar = '';
+			if (!empty($klasse['headcoach']) && isset($coach_profiles[$klasse['headcoach']])) {
+				$coach_avatar = $coach_profiles[$klasse['headcoach']]['card_image'] ?? '';
+			}
+			if (empty($coach_avatar) && !empty($klasse['headcoach_image'])) {
+				$coach_avatar = $klasse['headcoach_image'];
+			}
+			?>
 			<article class="po-card" data-modal-target="<?php echo esc_attr($unique_id . '-modal-' . $index); ?>" data-filters="<?php echo esc_attr($filter_data); ?>">
 				<div class="po-card__visual">
 					<?php if (!empty($klasse['image'])): ?>
@@ -256,6 +318,11 @@ $hasFilters = $showAgeFilter || $showLocationFilter;
 						<div class="po-card__placeholder"></div>
 					<?php endif; ?>
 					<div class="po-card__gradient"></div>
+					<?php if (!empty($coach_avatar)): ?>
+					<div class="po-card__coach">
+						<img src="<?php echo esc_url($coach_avatar); ?>" alt="<?php echo esc_attr($klasse['headcoach']); ?>" loading="lazy">
+					</div>
+					<?php endif; ?>
 				</div>
 				<div class="po-card__body">
 					<span class="po-card__eyebrow"><?php echo esc_html($klasse['weekday']); ?></span>
@@ -286,7 +353,16 @@ $mood_texts = [
 	'seniors-masters' => 'Koordination erhalten, Fitness aufbauen und mit Gleichgesinnten trainieren - beweglich bleiben und den Körper langfristig fit halten.'
 ];
 $category = $klasse['category'] ?? '';
-$coach_text = !empty($klasse['headcoach']) ? ' von ' . $klasse['headcoach'] . ' geleitet und' : '';
+// Coach-Text mit Link wenn Profil vorhanden
+if (!empty($klasse['headcoach'])) {
+	if ($klasse['coach_has_profile']) {
+		$coach_text = ' von <button type="button" class="po-ks__coach-link-inline" data-goto-slide="coach">' . esc_html($klasse['headcoach']) . '</button> geleitet und';
+	} else {
+		$coach_text = ' von ' . esc_html($klasse['headcoach']) . ' geleitet und';
+	}
+} else {
+	$coach_text = '';
+}
 $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'] ? ' - ' . $klasse['end_time'] . ' Uhr' : ' Uhr') : '';
 ?>
 <div class="po-overlay" id="<?php echo esc_attr($unique_id . '-modal-' . $index); ?>" aria-hidden="true" role="dialog" aria-modal="true">
@@ -325,7 +401,7 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 
 					<?php if ($category && isset($mood_texts[$category])): ?>
 					<p class="po-steps__description">
-						Dieses Training wird<?php echo esc_html($coach_text); ?> findet wöchentlich <?php echo esc_html($klasse['weekday']); ?> von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($klasse['venue'])): ?> Treffpunkt ist <?php echo esc_html($klasse['venue']); ?>.<?php endif; ?> <?php echo esc_html($mood_texts[$category]); ?>
+						Dieses Training wird<?php echo $coach_text; ?> findet wöchentlich <?php echo esc_html($klasse['weekday']); ?> von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($klasse['venue'])): ?> Treffpunkt ist <?php echo esc_html($klasse['venue']); ?>.<?php endif; ?> <?php echo esc_html($mood_texts[$category]); ?>
 					</p>
 					<?php endif; ?>
 
@@ -417,6 +493,77 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 						<p class="po-steps__selected-date-confirm"></p>
 					</div>
 				</div>
+
+				<?php // Coach-Slide (ausserhalb des normalen Step-Flows) ?>
+				<?php if ($klasse['coach_has_profile'] && isset($coach_profiles[$klasse['headcoach']])):
+					$coach = $coach_profiles[$klasse['headcoach']];
+				?>
+				<div class="po-steps__slide po-ks__coach-slide" data-slide="coach">
+					<button type="button" class="po-ks__back-to-overview po-ks__back-to-overview--top">← Zurück zur Klasse</button>
+					<div class="po-ks-coach">
+						<header class="po-ks-coach__header">
+							<?php if (!empty($coach['card_image'])): ?>
+							<img src="<?php echo esc_url($coach['card_image']); ?>" alt="" class="po-ks-coach__avatar">
+							<?php endif; ?>
+							<div class="po-ks-coach__info">
+								<h2 class="po-ks-coach__name"><?php echo esc_html($coach['name']); ?></h2>
+								<?php if (!empty($coach['rolle'])): ?>
+								<p class="po-ks-coach__role"><?php echo esc_html($coach['rolle']); ?></p>
+								<?php endif; ?>
+							</div>
+						</header>
+
+						<?php if (!empty($coach['hero_bild'])): ?>
+						<div class="po-ks-coach__hero">
+							<img src="<?php echo esc_url($coach['hero_bild']); ?>" alt="">
+						</div>
+						<?php endif; ?>
+
+						<?php if (!empty($coach['parkour_seit']) || !empty($coach['po_seit']) || !empty($coach['leitsatz'])): ?>
+						<dl class="po-ks-coach__facts">
+							<?php if (!empty($coach['parkour_seit'])): ?>
+							<div class="po-ks-coach__fact">
+								<dt>Parkour seit</dt>
+								<dd><?php echo esc_html($coach['parkour_seit']); ?></dd>
+							</div>
+							<?php endif; ?>
+							<?php if (!empty($coach['po_seit'])): ?>
+							<div class="po-ks-coach__fact">
+								<dt>Bei ParkourONE seit</dt>
+								<dd><?php echo esc_html($coach['po_seit']); ?></dd>
+							</div>
+							<?php endif; ?>
+							<?php if (!empty($coach['leitsatz'])): ?>
+							<div class="po-ks-coach__fact po-ks-coach__fact--full">
+								<dt>Leitsatz</dt>
+								<dd>&laquo;<?php echo esc_html($coach['leitsatz']); ?>&raquo;</dd>
+							</div>
+							<?php endif; ?>
+						</dl>
+						<?php endif; ?>
+
+						<?php if (!empty($coach['kurzvorstellung'])): ?>
+						<div class="po-ks-coach__section">
+							<p><?php echo esc_html($coach['kurzvorstellung']); ?></p>
+							<?php if (!empty($coach['philosophie_bild'])): ?>
+							<img src="<?php echo esc_url($coach['philosophie_bild']); ?>" alt="" class="po-ks-coach__image">
+							<?php endif; ?>
+						</div>
+						<?php endif; ?>
+
+						<?php if (!empty($coach['moment'])): ?>
+						<div class="po-ks-coach__section">
+							<p><strong>Ein Parkour Moment, der mich geprägt hat:</strong> <?php echo esc_html($coach['moment']); ?></p>
+							<?php if (!empty($coach['moment_bild'])): ?>
+							<img src="<?php echo esc_url($coach['moment_bild']); ?>" alt="" class="po-ks-coach__image">
+							<?php endif; ?>
+						</div>
+						<?php endif; ?>
+					</div>
+
+					<button type="button" class="po-ks__back-to-overview">← Zurück zur Klasse</button>
+				</div>
+				<?php endif; ?>
 
 			</div>
 		</div>
@@ -563,6 +710,61 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 			if (e.key === 'Escape' && modal.classList.contains('is-active')) {
 				closeModal();
 			}
+		});
+	});
+
+	// ========================================
+	// COACH-SLIDE NAVIGATION
+	// ========================================
+	document.querySelectorAll('.po-ks__coach-link-inline').forEach(function(link) {
+		link.addEventListener('click', function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			var stepsContainer = this.closest('.po-steps');
+			if (!stepsContainer) return;
+
+			var slides = stepsContainer.querySelectorAll('.po-steps__slide');
+			var coachSlide = stepsContainer.querySelector('[data-slide="coach"]');
+
+			if (coachSlide) {
+				slides.forEach(function(s) {
+					s.classList.remove('is-active');
+					s.classList.add('is-next');
+				});
+				coachSlide.classList.remove('is-next');
+				coachSlide.classList.add('is-active');
+			}
+		});
+	});
+
+	// Back to Overview from Coach-Slide
+	document.querySelectorAll('.po-ks__back-to-overview').forEach(function(btn) {
+		btn.addEventListener('click', function() {
+			var stepsContainer = this.closest('.po-steps');
+			if (!stepsContainer) return;
+
+			var slides = stepsContainer.querySelectorAll('.po-steps__slide:not(.po-ks__coach-slide)');
+			var coachSlide = stepsContainer.querySelector('.po-ks__coach-slide');
+			var overviewSlide = stepsContainer.querySelector('[data-slide="0"]');
+
+			// Coach-Slide verstecken
+			if (coachSlide) {
+				coachSlide.classList.remove('is-active');
+			}
+
+			// Normale Slides zurücksetzen
+			slides.forEach(function(s, i) {
+				s.classList.remove('is-active', 'is-prev', 'is-next');
+				if (i === 0) {
+					s.classList.add('is-active');
+				} else {
+					s.classList.add('is-next');
+				}
+			});
+
+			// data-step synchron halten
+			stepsContainer.setAttribute('data-step', '0');
 		});
 	});
 
