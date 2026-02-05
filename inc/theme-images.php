@@ -14,14 +14,16 @@ defined('ABSPATH') || exit;
  */
 function parkourone_get_age_folder_map() {
 	return [
-		'minis'   => 'minis',
-		'kids'    => 'kids',
-		'juniors' => 'juniors',
-		'adults'  => 'adults',
-		'seniors' => 'adults',  // Fallback zu adults (keine eigenen Landscape-Bilder)
-		'masters' => 'adults',  // Fallback zu adults
-		'women'   => 'adults',
-		'default' => 'adults',
+		'minis'           => 'minis',
+		'kids'            => 'kids',
+		'juniors'         => 'juniors',
+		'adults'          => 'adults',
+		'juniors-adults'  => 'juniors',  // Kombi-Kategorie → Juniors
+		'juniors & adults'=> 'juniors',  // Kombi-Kategorie → Juniors
+		'seniors'         => 'adults',   // Fallback zu adults
+		'masters'         => 'adults',   // Fallback zu adults
+		'women'           => 'adults',   // Fallback zu adults
+		'default'         => 'adults',   // Unbekannt → adults
 	];
 }
 

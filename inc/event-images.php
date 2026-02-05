@@ -128,16 +128,20 @@ function parkourone_get_theme_fallback_images($category_slug, $orientation = 'po
 
 	// Mapping auf verfügbare Ordner
 	$folder_map = [
-		'kids' => 'kids',
-		'minis' => 'minis',
-		'juniors' => 'juniors',
-		'adults' => 'adults',
-		'seniors' => 'adults',  // Fallback
-		'masters' => 'adults',  // Fallback
-		'women' => 'adults',    // Fallback
+		'kids'            => 'kids',
+		'minis'           => 'minis',
+		'juniors'         => 'juniors',
+		'adults'          => 'adults',
+		'juniors-adults'  => 'juniors',  // Kombi → Juniors
+		'juniors & adults'=> 'juniors',  // Kombi → Juniors
+		'seniors'         => 'adults',   // Fallback
+		'masters'         => 'adults',   // Fallback
+		'women'           => 'adults',   // Fallback
 	];
 
-	$folder = $folder_map[$category_slug] ?? 'adults';
+	// Lowercase für Matching
+	$slug_lower = strtolower($category_slug);
+	$folder = $folder_map[$slug_lower] ?? 'adults';  // Unbekannt → adults
 	$fallback_dir = get_template_directory() . '/assets/images/fallback/' . $orientation . '/' . $folder;
 	$fallback_url = get_template_directory_uri() . '/assets/images/fallback/' . $orientation . '/' . $folder;
 
