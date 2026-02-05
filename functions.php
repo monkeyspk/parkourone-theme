@@ -1754,3 +1754,28 @@ function parkourone_set_homepage_on_activation() {
 	}
 }
 add_action('after_switch_theme', 'parkourone_set_homepage_on_activation');
+
+/**
+ * Einmaliger Check beim ersten Laden - setzt Startseite als Homepage falls keine gesetzt
+ */
+function parkourone_check_homepage_on_init() {
+	// Nur einmal pro Stunde prüfen (via Transient)
+	if (get_transient('parkourone_homepage_checked')) {
+		return;
+	}
+	set_transient('parkourone_homepage_checked', true, HOUR_IN_SECONDS);
+
+	// Prüfen ob bereits eine gültige Homepage gesetzt ist
+	$current_homepage = get_option('page_on_front');
+	if ($current_homepage && get_post_status($current_homepage) === 'publish') {
+		return; // Homepage existiert bereits
+	}
+
+	// Startseite suchen und setzen
+	$startseite = get_page_by_path('startseite');
+	if ($startseite && $startseite->post_status === 'publish') {
+		update_option('show_on_front', 'page');
+		update_option('page_on_front', $startseite->ID);
+	}
+}
+add_action('init', 'parkourone_check_homepage_on_init');
