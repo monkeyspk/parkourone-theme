@@ -1,6 +1,76 @@
 <?php
 defined('ABSPATH') || exit;
 
+/**
+ * ============================================
+ * MAINTENANCE MODE
+ * ============================================
+ * Zum Aktivieren: PARKOURONE_MAINTENANCE auf true setzen
+ * In wp-config.php hinzufügen: define('PARKOURONE_MAINTENANCE', true);
+ * Oder hier direkt ändern:
+ */
+define('PARKOURONE_MAINTENANCE', false);
+
+/**
+ * Maintenance Mode - Zeigt "Wir sind gleich zurück" Seite
+ * Admins können die Seite normal sehen
+ */
+function parkourone_maintenance_mode() {
+	// Prüfen ob Maintenance Mode aktiv
+	if (!defined('PARKOURONE_MAINTENANCE') || !PARKOURONE_MAINTENANCE) {
+		return;
+	}
+
+	// Admins durchlassen
+	if (current_user_can('manage_options')) {
+		return;
+	}
+
+	// Login-Seite durchlassen
+	if (strpos($_SERVER['REQUEST_URI'], 'wp-login.php') !== false) {
+		return;
+	}
+
+	// Admin-Bereich durchlassen
+	if (strpos($_SERVER['REQUEST_URI'], 'wp-admin') !== false) {
+		return;
+	}
+
+	// AJAX durchlassen
+	if (defined('DOING_AJAX') && DOING_AJAX) {
+		return;
+	}
+
+	// Cron durchlassen
+	if (defined('DOING_CRON') && DOING_CRON) {
+		return;
+	}
+
+	// Maintenance-Seite laden
+	$maintenance_file = get_template_directory() . '/maintenance.php';
+	if (file_exists($maintenance_file)) {
+		header('HTTP/1.1 503 Service Temporarily Unavailable');
+		header('Status: 503 Service Temporarily Unavailable');
+		header('Retry-After: 3600'); // 1 Stunde
+		include $maintenance_file;
+		exit;
+	}
+}
+add_action('template_redirect', 'parkourone_maintenance_mode');
+
+/**
+ * Admin-Notice wenn Maintenance Mode aktiv ist
+ */
+function parkourone_maintenance_admin_notice() {
+	if (defined('PARKOURONE_MAINTENANCE') && PARKOURONE_MAINTENANCE) {
+		echo '<div class="notice notice-warning" style="border-left-color: #2997ff;">';
+		echo '<p><strong>🚧 Maintenance Mode aktiv!</strong> Besucher sehen die "Wir sind gleich zurück" Seite.</p>';
+		echo '<p>Zum Deaktivieren: In <code>functions.php</code> die Zeile <code>define(\'PARKOURONE_MAINTENANCE\', false);</code> setzen.</p>';
+		echo '</div>';
+	}
+}
+add_action('admin_notices', 'parkourone_maintenance_admin_notice');
+
 // Includes
 require_once get_template_directory() . '/inc/angebote-cpt.php';
 require_once get_template_directory() . '/inc/testimonials-cpt.php';
