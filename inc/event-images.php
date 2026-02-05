@@ -121,11 +121,31 @@ function parkourone_get_category_fallback_image($category_slug, $event_id = 0) {
 
 /**
  * Holt alle Fallback-Bilder aus dem Theme-Ordner für eine Kategorie
+ * Verwendet die neue portrait/landscape Struktur
  */
-function parkourone_get_theme_fallback_images($category_slug) {
+function parkourone_get_theme_fallback_images($category_slug, $orientation = 'portrait') {
 	$images = [];
-	$fallback_dir = get_template_directory() . '/assets/images/fallback/' . $category_slug;
-	$fallback_url = get_template_directory_uri() . '/assets/images/fallback/' . $category_slug;
+
+	// Mapping auf verfügbare Ordner
+	$folder_map = [
+		'kids' => 'kids',
+		'minis' => 'minis',
+		'juniors' => 'juniors',
+		'adults' => 'adults',
+		'seniors' => 'adults',  // Fallback
+		'masters' => 'adults',  // Fallback
+		'women' => 'adults',    // Fallback
+	];
+
+	$folder = $folder_map[$category_slug] ?? 'adults';
+	$fallback_dir = get_template_directory() . '/assets/images/fallback/' . $orientation . '/' . $folder;
+	$fallback_url = get_template_directory_uri() . '/assets/images/fallback/' . $orientation . '/' . $folder;
+
+	if (!is_dir($fallback_dir)) {
+		// Fallback zu adults
+		$fallback_dir = get_template_directory() . '/assets/images/fallback/' . $orientation . '/adults';
+		$fallback_url = get_template_directory_uri() . '/assets/images/fallback/' . $orientation . '/adults';
+	}
 
 	if (!is_dir($fallback_dir)) {
 		return $images;
