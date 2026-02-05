@@ -624,7 +624,40 @@ document.addEventListener('DOMContentLoaded', function() {
 				}
 			});
 		});
-		
+
+	});
+
+	// Buchungs-Modals (po-overlay) schliessen Handler
+	document.querySelectorAll('.po-overlay').forEach(function(bookingModal) {
+		var closeBtn = bookingModal.querySelector('.po-overlay__close');
+		var backdrop = bookingModal.querySelector('.po-overlay__backdrop');
+
+		function closeBookingModal() {
+			bookingModal.classList.remove('is-active');
+			bookingModal.setAttribute('aria-hidden', 'true');
+			document.body.classList.remove('po-no-scroll');
+		}
+
+		if (closeBtn) {
+			closeBtn.addEventListener('click', function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+				closeBookingModal();
+			});
+		}
+
+		if (backdrop) {
+			backdrop.addEventListener('click', function(e) {
+				e.preventDefault();
+				closeBookingModal();
+			});
+		}
+
+		document.addEventListener('keydown', function(e) {
+			if (e.key === 'Escape' && bookingModal.classList.contains('is-active')) {
+				closeBookingModal();
+			}
+		});
 	});
 });
 </script>
