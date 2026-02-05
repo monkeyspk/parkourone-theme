@@ -3,21 +3,22 @@ defined('ABSPATH') || exit;
 
 /**
  * ============================================
- * MAINTENANCE MODE
+ * MAINTENANCE MODE (mit Admin-Toggle)
  * ============================================
- * Zum Aktivieren: PARKOURONE_MAINTENANCE auf true setzen
- * In wp-config.php hinzufügen: define('PARKOURONE_MAINTENANCE', true);
- * Oder hier direkt ändern:
  */
-define('PARKOURONE_MAINTENANCE', false);
+
+/**
+ * Prüft ob Maintenance Mode aktiv ist
+ */
+function parkourone_is_maintenance_active() {
+	return get_option('parkourone_maintenance_mode', false);
+}
 
 /**
  * Maintenance Mode - Zeigt "Wir sind gleich zurück" Seite
- * Admins können die Seite normal sehen
  */
 function parkourone_maintenance_mode() {
-	// Prüfen ob Maintenance Mode aktiv
-	if (!defined('PARKOURONE_MAINTENANCE') || !PARKOURONE_MAINTENANCE) {
+	if (!parkourone_is_maintenance_active()) {
 		return;
 	}
 
@@ -51,7 +52,7 @@ function parkourone_maintenance_mode() {
 	if (file_exists($maintenance_file)) {
 		header('HTTP/1.1 503 Service Temporarily Unavailable');
 		header('Status: 503 Service Temporarily Unavailable');
-		header('Retry-After: 3600'); // 1 Stunde
+		header('Retry-After: 3600');
 		include $maintenance_file;
 		exit;
 	}
@@ -59,17 +60,131 @@ function parkourone_maintenance_mode() {
 add_action('template_redirect', 'parkourone_maintenance_mode');
 
 /**
- * Admin-Notice wenn Maintenance Mode aktiv ist
+ * Admin-Notice mit Toggle-Button
  */
 function parkourone_maintenance_admin_notice() {
-	if (defined('PARKOURONE_MAINTENANCE') && PARKOURONE_MAINTENANCE) {
-		echo '<div class="notice notice-warning" style="border-left-color: #2997ff;">';
+	if (!current_user_can('manage_options')) return;
+
+	$is_active = parkourone_is_maintenance_active();
+
+	if ($is_active) {
+		echo '<div class="notice notice-warning" style="border-left-color: #2997ff; display: flex; align-items: center; justify-content: space-between;">';
 		echo '<p><strong>🚧 Maintenance Mode aktiv!</strong> Besucher sehen die "Wir sind gleich zurück" Seite.</p>';
-		echo '<p>Zum Deaktivieren: In <code>functions.php</code> die Zeile <code>define(\'PARKOURONE_MAINTENANCE\', false);</code> setzen.</p>';
+		echo '<form method="post" style="margin: 0;"><input type="hidden" name="parkourone_maintenance_toggle" value="off">';
+		echo wp_nonce_field('parkourone_maintenance_toggle', '_wpnonce', true, false);
+		echo '<button type="submit" class="button" style="background: #fff;">Deaktivieren</button></form>';
 		echo '</div>';
 	}
 }
 add_action('admin_notices', 'parkourone_maintenance_admin_notice');
+
+/**
+ * Toggle-Handler
+ */
+function parkourone_maintenance_toggle_handler() {
+	if (!isset($_POST['parkourone_maintenance_toggle'])) return;
+	if (!current_user_can('manage_options')) return;
+	if (!wp_verify_nonce($_POST['_wpnonce'], 'parkourone_maintenance_toggle')) return;
+
+	$new_state = $_POST['parkourone_maintenance_toggle'] === 'on';
+	update_option('parkourone_maintenance_mode', $new_state);
+
+	wp_redirect(remove_query_arg(['_wpnonce']));
+	exit;
+}
+add_action('admin_init', 'parkourone_maintenance_toggle_handler');
+
+/**
+ * Admin Bar Toggle für schnellen Zugriff
+ */
+function parkourone_maintenance_admin_bar($wp_admin_bar) {
+	if (!current_user_can('manage_options')) return;
+
+	$is_active = parkourone_is_maintenance_active();
+
+	$wp_admin_bar->add_node([
+		'id' => 'maintenance-mode',
+		'title' => $is_active
+			? '<span style="color: #ffb900;">🚧 Maintenance AN</span>'
+			: '<span style="color: #72aee6;">✓ Seite Live</span>',
+		'href' => admin_url('themes.php?page=parkourone-maintenance'),
+	]);
+}
+add_action('admin_bar_menu', 'parkourone_maintenance_admin_bar', 100);
+
+/**
+ * Admin-Seite für Maintenance Mode
+ */
+function parkourone_maintenance_admin_page() {
+	add_theme_page(
+		'Maintenance Mode',
+		'Maintenance Mode',
+		'manage_options',
+		'parkourone-maintenance',
+		'parkourone_maintenance_admin_page_html'
+	);
+}
+add_action('admin_menu', 'parkourone_maintenance_admin_page');
+
+function parkourone_maintenance_admin_page_html() {
+	if (!current_user_can('manage_options')) return;
+
+	$is_active = parkourone_is_maintenance_active();
+	?>
+	<div class="wrap">
+		<h1>Maintenance Mode</h1>
+
+		<div style="background: #fff; padding: 24px; border-radius: 8px; max-width: 600px; margin-top: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+
+			<div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+				<div style="width: 64px; height: 64px; border-radius: 50%; background: <?php echo $is_active ? '#fff3cd' : '#d4edda'; ?>; display: flex; align-items: center; justify-content: center; font-size: 32px;">
+					<?php echo $is_active ? '🚧' : '✓'; ?>
+				</div>
+				<div>
+					<h2 style="margin: 0; font-size: 24px;">
+						<?php echo $is_active ? 'Maintenance Mode ist AKTIV' : 'Seite ist LIVE'; ?>
+					</h2>
+					<p style="margin: 4px 0 0; color: #666;">
+						<?php echo $is_active
+							? 'Besucher sehen die "Wir sind gleich zurück" Seite.'
+							: 'Alle Besucher können die Seite normal sehen.'; ?>
+					</p>
+				</div>
+			</div>
+
+			<form method="post">
+				<?php wp_nonce_field('parkourone_maintenance_toggle'); ?>
+				<input type="hidden" name="parkourone_maintenance_toggle" value="<?php echo $is_active ? 'off' : 'on'; ?>">
+
+				<button type="submit" class="button button-hero <?php echo $is_active ? '' : 'button-primary'; ?>" style="width: 100%;">
+					<?php echo $is_active ? '🟢 Seite Live schalten' : '🚧 Maintenance Mode aktivieren'; ?>
+				</button>
+			</form>
+
+			<?php if ($is_active): ?>
+			<p style="margin-top: 16px; padding: 12px; background: #f0f0f0; border-radius: 4px; font-size: 13px;">
+				<strong>Tipp:</strong> Du bist als Admin eingeloggt und siehst die Seite normal.
+				<a href="<?php echo home_url('/?preview_maintenance=1'); ?>" target="_blank">Maintenance-Seite ansehen →</a>
+			</p>
+			<?php endif; ?>
+		</div>
+	</div>
+	<?php
+}
+
+/**
+ * Preview der Maintenance-Seite für Admins
+ */
+function parkourone_maintenance_preview() {
+	if (isset($_GET['preview_maintenance']) && current_user_can('manage_options')) {
+		$maintenance_file = get_template_directory() . '/maintenance.php';
+		if (file_exists($maintenance_file)) {
+			include $maintenance_file;
+			exit;
+		}
+	}
+}
+add_action('template_redirect', 'parkourone_maintenance_preview', 1);
 
 // Includes
 require_once get_template_directory() . '/inc/angebote-cpt.php';
