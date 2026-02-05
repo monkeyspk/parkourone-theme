@@ -16,13 +16,18 @@ $site_name = $site_location['name'];
 // Nur bei erkannten Standorten (im Mapping) Stadt-spezifische Texte verwenden
 $is_city_site = !empty($site_location['detected']) && !empty($site_location['slug']) && !in_array($site_location['slug'], ['parkourone', 'www', 'new', 'staging', 'dev', 'test', 'localhost']);
 
+// Standorte die "in der" statt "in" benötigen (Länder mit Artikel)
+$locations_with_article = ['schweiz', 'türkei', 'ukraine', 'slowakei', 'mongolei'];
+$needs_article = in_array($site_location['slug'], $locations_with_article);
+$in_location = $needs_article ? "in der {$site_name}" : "in {$site_name}";
+
 // SEO-optimierte Texte basierend auf Standort
 if ($is_city_site) {
 	$hero_eyebrow = "ParkourONE {$site_name}";
-	$hero_headline = "Parkour in {$site_name}";
-	$hero_subtext = "Professionelles Parkour-Training für alle Altersgruppen in {$site_name}. Erfahrene Coaches, sichere Umgebung, starke Community.";
-	$klassen_headline = "Parkour-Klassen in {$site_name}";
-	$faq_headline = "Häufige Fragen zu Parkour in {$site_name}";
+	$hero_headline = "Parkour {$in_location}";
+	$hero_subtext = "Professionelles Parkour-Training für alle Altersgruppen {$in_location}. Erfahrene Coaches, sichere Umgebung, starke Community.";
+	$klassen_headline = "Parkour-Klassen {$in_location}";
+	$faq_headline = "Häufige Fragen zu Parkour {$in_location}";
 	$testimonial_headline = "Das sagen unsere Teilnehmer";
 } else {
 	$hero_eyebrow = "Parkour für alle";
