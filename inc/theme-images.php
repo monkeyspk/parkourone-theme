@@ -18,8 +18,8 @@ function parkourone_get_age_folder_map() {
 		'kids'    => 'kids',
 		'juniors' => 'juniors',
 		'adults'  => 'adults',
-		'seniors' => 'seniors',
-		'masters' => 'seniors',
+		'seniors' => 'adults',  // Fallback zu adults (keine eigenen Landscape-Bilder)
+		'masters' => 'adults',  // Fallback zu adults
 		'women'   => 'adults',
 		'default' => 'adults',
 	];
