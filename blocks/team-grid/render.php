@@ -515,7 +515,7 @@ $mood_texts = [
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-	var section = document.getElementById('<?php echo esc_js($unique_id); ?>');
+	var section = document.getElementById('<?php echo esc_js($anchor ?: $unique_id); ?>');
 	if (!section) return;
 	
 	var fab = section.querySelector('.po-tg__filter-fab');
