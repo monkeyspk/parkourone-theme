@@ -25,6 +25,29 @@
 			position: relative;
 		}
 
+		/* Background Image */
+		.bg-image {
+			position: absolute;
+			inset: 0;
+			background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/fallback/landscape/adults/1T2A6249.jpg');
+			background-size: cover;
+			background-position: center;
+			background-repeat: no-repeat;
+			z-index: -2;
+		}
+
+		.bg-overlay {
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(
+				to bottom,
+				rgba(10, 10, 10, 0.7) 0%,
+				rgba(10, 10, 10, 0.85) 50%,
+				rgba(10, 10, 10, 0.95) 100%
+			);
+			z-index: -1;
+		}
+
 		/* Animated Background Grid */
 		.bg-grid {
 			position: absolute;
@@ -239,25 +262,6 @@
 			color: rgba(255, 255, 255, 0.3);
 		}
 
-		/* Parkour Silhouette Animation */
-		.runner {
-			position: absolute;
-			bottom: 100px;
-			left: -100px;
-			width: 60px;
-			height: 60px;
-			opacity: 0.1;
-			animation: runAcross 15s linear infinite;
-		}
-
-		@keyframes runAcross {
-			0% { left: -100px; transform: scaleX(1); }
-			49% { transform: scaleX(1); }
-			50% { left: calc(100% + 100px); transform: scaleX(-1); }
-			99% { transform: scaleX(-1); }
-			100% { left: -100px; transform: scaleX(1); }
-		}
-
 		/* Responsive */
 		@media (max-width: 480px) {
 			.description {
@@ -271,16 +275,15 @@
 	</style>
 </head>
 <body>
+	<!-- Background Image -->
+	<div class="bg-image"></div>
+	<div class="bg-overlay"></div>
+
 	<!-- Background Effects -->
 	<div class="bg-grid"></div>
 	<div class="orb orb-1"></div>
 	<div class="orb orb-2"></div>
 	<div class="orb orb-3"></div>
-
-	<!-- Running Silhouette -->
-	<svg class="runner" viewBox="0 0 24 24" fill="currentColor">
-		<path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/>
-	</svg>
 
 	<!-- Content -->
 	<div class="content">
