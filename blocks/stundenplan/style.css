@@ -598,6 +598,23 @@
 	opacity: 0.7;
 }
 
+/* Inline Coach Link im Fliesstext */
+.po-sp__coach-link-inline {
+	background: none;
+	border: none;
+	padding: 0;
+	margin: 0;
+	font: inherit;
+	color: #0066cc;
+	text-decoration: underline;
+	cursor: pointer;
+	transition: opacity 0.2s ease;
+}
+
+.po-sp__coach-link-inline:hover {
+	opacity: 0.7;
+}
+
 /* Coach Content (inside modal slide) */
 .po-sp-coach {
 	padding: 0;

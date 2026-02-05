@@ -383,7 +383,16 @@ $mood_texts = [
 	'seniors-masters' => 'Koordination erhalten, Fitness aufbauen und mit Gleichgesinnten trainieren - beweglich bleiben und den Körper langfristig fit halten.'
 ];
 $category = $klasse['age_slug'] ?? '';
-$coach_text = !empty($klasse['headcoach']) ? ' von ' . $klasse['headcoach'] . ' geleitet und' : '';
+// Coach-Text mit Link wenn Profil vorhanden
+if (!empty($klasse['headcoach'])) {
+	if ($klasse['coach_has_profile']) {
+		$coach_text = ' von <button type="button" class="po-sp__coach-link-inline" data-goto-slide="coach">' . esc_html($klasse['headcoach']) . '</button> geleitet und';
+	} else {
+		$coach_text = ' von ' . esc_html($klasse['headcoach']) . ' geleitet und';
+	}
+} else {
+	$coach_text = '';
+}
 $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'] ? ' - ' . $klasse['end_time'] . ' Uhr' : ' Uhr') : '';
 ?>
 <div class="po-overlay" id="<?php echo esc_attr($unique_id . '-modal-' . $klasse['id']); ?>" aria-hidden="true" role="dialog" aria-modal="true">
@@ -418,33 +427,11 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 							<dd><?php echo esc_html($klasse['venue']); ?></dd>
 						</div>
 						<?php endif; ?>
-						<?php if (!empty($klasse['headcoach'])): ?>
-						<?php if ($klasse['coach_has_profile']): ?>
-						<button type="button" class="po-steps__meta-item po-sp__meta-coach po-sp__coach-link" data-goto-slide="coach">
-							<?php if (!empty($klasse['headcoach_image'])): ?>
-								<img src="<?php echo esc_url($klasse['headcoach_image']); ?>" alt="" class="po-sp__modal-coach-img">
-							<?php else: ?>
-								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="po-sp__modal-coach-icon"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-							<?php endif; ?>
-							<span><?php echo esc_html($klasse['headcoach']); ?></span>
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="po-sp__coach-arrow"><path d="M9 18l6-6-6-6"/></svg>
-						</button>
-						<?php else: ?>
-						<div class="po-steps__meta-item po-sp__meta-coach">
-							<?php if (!empty($klasse['headcoach_image'])): ?>
-								<img src="<?php echo esc_url($klasse['headcoach_image']); ?>" alt="" class="po-sp__modal-coach-img">
-							<?php else: ?>
-								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="po-sp__modal-coach-icon"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-							<?php endif; ?>
-							<span><?php echo esc_html($klasse['headcoach']); ?></span>
-						</div>
-						<?php endif; ?>
-						<?php endif; ?>
 					</dl>
 
 					<?php if ($category && isset($mood_texts[$category])): ?>
 					<p class="po-steps__description">
-						Dieses Training wird<?php echo esc_html($coach_text); ?> findet wöchentlich <?php echo esc_html($klasse['weekday']); ?> von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($klasse['venue'])): ?> Treffpunkt ist <?php echo esc_html($klasse['venue']); ?>.<?php endif; ?> <?php echo esc_html($mood_texts[$category]); ?>
+						Dieses Training wird<?php echo $coach_text; ?> findet wöchentlich <?php echo esc_html($klasse['weekday']); ?> von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($klasse['venue'])): ?> Treffpunkt ist <?php echo esc_html($klasse['venue']); ?>.<?php endif; ?> <?php echo esc_html($mood_texts[$category]); ?>
 					</p>
 					<?php endif; ?>
 
@@ -824,8 +811,8 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 		});
 	});
 
-	// Coach-Slide Navigation Handler
-	document.querySelectorAll('.po-sp__coach-link').forEach(function(link) {
+	// Coach-Slide Navigation Handler (Button und Inline-Link)
+	document.querySelectorAll('.po-sp__coach-link, .po-sp__coach-link-inline').forEach(function(link) {
 		link.addEventListener('click', function(e) {
 			e.preventDefault();
 			e.stopPropagation();
