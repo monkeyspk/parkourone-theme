@@ -190,6 +190,7 @@ add_action('template_redirect', 'parkourone_maintenance_preview', 1);
 require_once get_template_directory() . '/inc/angebote-cpt.php';
 require_once get_template_directory() . '/inc/testimonials-cpt.php';
 require_once get_template_directory() . '/inc/faq-cpt.php';
+require_once get_template_directory() . '/inc/jobs-cpt.php';
 require_once get_template_directory() . '/inc/auto-pages.php';
 require_once get_template_directory() . '/inc/event-images.php';
 require_once get_template_directory() . '/inc/github-updater.php';

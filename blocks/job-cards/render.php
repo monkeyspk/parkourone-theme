@@ -1,7 +1,20 @@
 <?php
+/**
+ * Job Cards Block
+ * Zeigt Stellenangebote aus dem Jobs CPT an
+ * Versteckt sich automatisch wenn keine Jobs vorhanden sind
+ */
+
+// Jobs aus CPT holen
+$jobs = function_exists('parkourone_get_jobs') ? parkourone_get_jobs() : [];
+
+// Wenn keine Jobs, Block nicht anzeigen
+if (empty($jobs)) {
+	return;
+}
+
 $headline = $attributes['headline'] ?? 'Werde Teil unseres Teams';
 $intro = $attributes['intro'] ?? '';
-$jobs = $attributes['jobs'] ?? [];
 $bgColor = $attributes['backgroundColor'] ?? '#f5f5f7';
 $anchor = $attributes['anchor'] ?? '';
 $unique_id = $anchor ?: ('po-jobs-' . uniqid());
@@ -18,12 +31,16 @@ $unique_id = $anchor ?: ('po-jobs-' . uniqid());
 		<?php foreach ($jobs as $index => $j): ?>
 			<article class="po-job-card">
 				<div class="po-job-card__content">
-					<span class="po-job-card__type"><?php echo esc_html($j['type'] ?? ''); ?></span>
-					<h3 class="po-job-card__title"><?php echo esc_html($j['title'] ?? ''); ?></h3>
-					<p class="po-job-card__desc"><?php echo esc_html($j['desc'] ?? ''); ?></p>
+					<?php if (!empty($j['type'])): ?>
+						<span class="po-job-card__type"><?php echo esc_html($j['type']); ?></span>
+					<?php endif; ?>
+					<h3 class="po-job-card__title"><?php echo esc_html($j['title']); ?></h3>
+					<?php if (!empty($j['desc'])): ?>
+						<p class="po-job-card__desc"><?php echo esc_html($j['desc']); ?></p>
+					<?php endif; ?>
 				</div>
 				<button type="button" class="po-job-card__cta" data-modal-target="<?php echo esc_attr($unique_id . '-modal-' . $index); ?>">
-					<?php echo esc_html($j['ctaText'] ?? 'Mehr erfahren'); ?>
+					Mehr erfahren
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
 				</button>
 			</article>
@@ -47,8 +64,10 @@ $unique_id = $anchor ?: ('po-jobs-' . uniqid());
 
 		<div class="po-job-modal">
 			<header class="po-job-modal__header">
-				<span class="po-job-modal__type"><?php echo esc_html($j['type'] ?? ''); ?></span>
-				<h2 class="po-job-modal__title"><?php echo esc_html($j['title'] ?? ''); ?></h2>
+				<?php if (!empty($j['type'])): ?>
+					<span class="po-job-modal__type"><?php echo esc_html($j['type']); ?></span>
+				<?php endif; ?>
+				<h2 class="po-job-modal__title"><?php echo esc_html($j['title']); ?></h2>
 			</header>
 
 			<?php if (!empty($j['fullDescription'])): ?>
