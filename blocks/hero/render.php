@@ -1,25 +1,32 @@
 <?php
-// Standort automatisch erkennen für SEO-optimierte Headlines
-$site_location = function_exists('parkourone_get_site_location') ? parkourone_get_site_location() : null;
-$is_city_site = $site_location && !empty($site_location['detected']) && !in_array($site_location['slug'], ['parkourone', 'www', 'new', 'staging', 'dev', 'test', 'localhost']);
+// Subdomain automatisch erkennen für Eyebrow
+$host = parse_url(home_url(), PHP_URL_HOST);
+$subdomain = explode('.', $host)[0];
+$subdomain_display = ucfirst($subdomain); // "new" → "New", "berlin" → "Berlin"
 
-// Locations mit Artikel
+// Locations mit Artikel (für korrekte Grammatik)
 $locations_with_article = ['schweiz', 'türkei', 'ukraine', 'slowakei', 'mongolei'];
-$needs_article = $site_location && in_array($site_location['slug'], $locations_with_article);
-$location_name = $site_location['name'] ?? '';
-$in_location = $needs_article ? "in der {$location_name}" : "in {$location_name}";
+$needs_article = in_array(strtolower($subdomain), $locations_with_article);
+$location_text = $needs_article ? "in der {$subdomain_display}" : "in {$subdomain_display}";
 
-$eyebrow = $attributes['eyebrow'] ?? '';
+// Automatischer Eyebrow basierend auf Subdomain
+$default_eyebrow = "Parkour {$location_text}";
+
+$eyebrow = $attributes['eyebrow'] ?? $default_eyebrow;
+// Wenn eyebrow leer oder der alte Default, dann automatisch setzen
+if (empty($eyebrow) || $eyebrow === 'Parkour für alle') {
+	$eyebrow = $default_eyebrow;
+}
+
+// Headline IMMER mit Glow auf Körper und Geist
 $headline = $attributes['headline'] ?? 'Stärke deinen Körper, schärfe deinen Geist';
+// Glow hinzufügen wenn Default-Headline
+if ($headline === 'Stärke deinen Körper, schärfe deinen Geist') {
+	$headline = 'Stärke deinen <span class="po-hero__highlight">Körper</span>, schärfe deinen <span class="po-hero__highlight">Geist</span>';
+}
+
 $subtext = $attributes['subtext'] ?? 'Entdecke Parkour – für alle Altersgruppen, an mehreren Standorten.';
 $layout = $attributes['layout'] ?? 'centered';
-
-// Automatische Headline für Stadt-Seiten (überschreibt Default, nicht Custom)
-if ($is_city_site && $headline === 'Stärke deinen Körper, schärfe deinen Geist') {
-	$headline = "Parkour {$in_location}";
-	$subtext = "Stärke deinen <span class=\"po-hero__highlight\">Körper</span>, schärfe deinen <span class=\"po-hero__highlight\">Geist</span>";
-	$eyebrow = $eyebrow ?: "ParkourONE {$location_name}";
-}
 $buttonText = $attributes['buttonText'] ?? 'Jetzt starten';
 $buttonUrl = $attributes['buttonUrl'] ?? '#stundenplan';
 $secondButtonText = $attributes['secondButtonText'] ?? '';
