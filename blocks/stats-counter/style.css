@@ -66,6 +66,12 @@
 	transform: translateY(0);
 }
 
+/* No-JS Fallback: Wenn JavaScript nicht läuft, zeige Zahlen sofort */
+.po-stats--no-js .po-stats__item {
+	opacity: 1;
+	transform: translateY(0);
+}
+
 .po-stats__number-wrapper {
 	display: flex;
 	align-items: baseline;

@@ -42,21 +42,42 @@
 	margin: 0 0 32px;
 }
 
+.po-hero__buttons {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
 .po-hero__button {
 	display: inline-block;
 	padding: 14px 28px;
-	background: #1d1d1f;
-	color: #fff;
 	font-size: 15px;
 	font-weight: 500;
 	text-decoration: none;
 	border-radius: 8px;
-	transition: transform 0.2s ease, box-shadow 0.2s ease;
+	transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-.po-hero__button:hover {
+.po-hero__button--primary {
+	background: #fff;
+	color: #1d1d1f;
+}
+
+.po-hero__button--primary:hover {
 	transform: translateY(-2px);
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+	color: #1d1d1f;
+}
+
+.po-hero__button--secondary {
+	background: transparent;
+	color: #fff;
+	border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.po-hero__button--secondary:hover {
+	background: rgba(255, 255, 255, 0.1);
+	border-color: rgba(255, 255, 255, 0.8);
 	color: #fff;
 }
 
@@ -113,21 +134,30 @@
 	.po-hero {
 		min-height: 70vh;
 	}
-	
+
 	.po-hero__overlay {
 		background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%);
 	}
-	
+
 	.po-hero__content {
 		padding: 40px 20px;
 		max-width: 100%;
 	}
-	
+
 	.po-hero__headline {
 		margin-bottom: 16px;
 	}
-	
+
 	.po-hero__subtext {
 		margin-bottom: 24px;
+	}
+
+	.po-hero__buttons {
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.po-hero__button {
+		text-align: center;
 	}
 }

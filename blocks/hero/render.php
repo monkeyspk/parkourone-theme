@@ -2,7 +2,9 @@
 $headline = $attributes['headline'] ?? 'Stärke deinen Körper, schärfe deinen Geist – erlebe Parkour';
 $subtext = $attributes['subtext'] ?? 'Bei ParkourONE lernst du, Hindernisse zu überwinden und Bewegung neu zu erleben.';
 $buttonText = $attributes['buttonText'] ?? 'Jetzt beginnen';
-$buttonUrl = $attributes['buttonUrl'] ?? '#';
+$buttonUrl = $attributes['buttonUrl'] ?? '#stundenplan';
+$secondButtonText = $attributes['secondButtonText'] ?? '';
+$secondButtonUrl = $attributes['secondButtonUrl'] ?? '';
 $imageUrl = $attributes['imageUrl'] ?? '';
 $ageCategory = $attributes['ageCategory'] ?? '';
 $useRandomFallback = $attributes['useRandomFallback'] ?? false;
@@ -64,8 +66,32 @@ $unique_id = 'hero-' . uniqid();
 		<?php if ($subtext): ?>
 			<p class="po-hero__subtext"><?php echo wp_kses_post($subtext); ?></p>
 		<?php endif; ?>
-		<?php if ($buttonText && $buttonUrl): ?>
-			<a href="<?php echo esc_url($buttonUrl); ?>" class="po-hero__button"><?php echo esc_html($buttonText); ?></a>
+		<?php if ($buttonText || $secondButtonText): ?>
+		<div class="po-hero__buttons">
+			<?php if ($buttonText && $buttonUrl): ?>
+				<a href="<?php echo esc_url($buttonUrl); ?>" class="po-hero__button po-hero__button--primary"><?php echo esc_html($buttonText); ?></a>
+			<?php endif; ?>
+			<?php if ($secondButtonText && $secondButtonUrl): ?>
+				<a href="<?php echo esc_url($secondButtonUrl); ?>" class="po-hero__button po-hero__button--secondary"><?php echo esc_html($secondButtonText); ?></a>
+			<?php endif; ?>
+		</div>
 		<?php endif; ?>
 	</div>
 </section>
+
+<?php if (strpos($buttonUrl, '#') === 0 || strpos($secondButtonUrl, '#') === 0): ?>
+<script>
+(function() {
+	document.querySelectorAll('.po-hero__button[href^="#"]').forEach(function(btn) {
+		btn.addEventListener('click', function(e) {
+			var targetId = this.getAttribute('href').substring(1);
+			var target = document.getElementById(targetId);
+			if (target) {
+				e.preventDefault();
+				target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			}
+		});
+	});
+})();
+</script>
+<?php endif; ?>

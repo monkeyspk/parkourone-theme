@@ -4,7 +4,7 @@ $stats = $attributes['stats'] ?? [];
 $style = $attributes['style'] ?? 'light';
 $unique_id = 'stats-counter-' . uniqid();
 
-$class = 'po-stats';
+$class = 'po-stats po-stats--no-js';
 $class .= ' po-stats--' . $style;
 ?>
 
@@ -19,7 +19,7 @@ $class .= ' po-stats--' . $style;
 			<?php foreach ($stats as $stat): ?>
 			<div class="po-stats__item">
 				<div class="po-stats__number-wrapper">
-					<span class="po-stats__number" data-target="<?php echo esc_attr($stat['number']); ?>">0</span><?php if (!empty($stat['suffix'])): ?><span class="po-stats__suffix"><?php echo esc_html($stat['suffix']); ?></span><?php endif; ?>
+					<span class="po-stats__number" data-target="<?php echo esc_attr($stat['number']); ?>"><?php echo esc_html($stat['number']); ?></span><?php if (!empty($stat['suffix'])): ?><span class="po-stats__suffix"><?php echo esc_html($stat['suffix']); ?></span><?php endif; ?>
 				</div>
 				<?php if (!empty($stat['label'])): ?>
 				<span class="po-stats__label"><?php echo esc_html($stat['label']); ?></span>
@@ -35,105 +35,120 @@ $class .= ' po-stats--' . $style;
 
 <script>
 (function() {
-	function initStatsCounter() {
-		var section = document.getElementById('<?php echo esc_js($unique_id); ?>');
-		console.log('Stats Counter Init:', '<?php echo esc_js($unique_id); ?>', section);
-		if (!section) return;
+	var sectionId = '<?php echo esc_js($unique_id); ?>';
+	var animated = false;
+	var prepared = false;
 
-		var numbers = section.querySelectorAll('.po-stats__number');
-		console.log('Stats Numbers found:', numbers.length);
-		numbers.forEach(function(n) {
-			console.log('Number data-target:', n.getAttribute('data-target'));
+	function animateNumber(el) {
+		var targetStr = el.getAttribute('data-target') || '0';
+		var cleanNum = targetStr.replace(/[^\d.,]/g, '').replace(',', '.');
+		var target = parseFloat(cleanNum) || 0;
+		var isInteger = Number.isInteger(target);
+		var duration = 2000;
+		var startTime = null;
+
+		function easeOutQuart(t) {
+			return 1 - Math.pow(1 - t, 4);
+		}
+
+		function step(timestamp) {
+			if (!startTime) startTime = timestamp;
+			var progress = Math.min((timestamp - startTime) / duration, 1);
+			var easedProgress = easeOutQuart(progress);
+			var current = easedProgress * target;
+
+			if (isInteger) {
+				el.textContent = Math.floor(current).toLocaleString('de-DE');
+			} else {
+				el.textContent = current.toFixed(1).replace('.', ',');
+			}
+
+			if (progress < 1) {
+				requestAnimationFrame(step);
+			} else {
+				el.textContent = isInteger ? target.toLocaleString('de-DE') : target.toFixed(1).replace('.', ',');
+			}
+		}
+
+		requestAnimationFrame(step);
+	}
+
+	function prepareAnimation(section) {
+		if (prepared) return;
+		prepared = true;
+		// Entferne no-js Klasse (zeigt dass JS funktioniert)
+		section.classList.remove('po-stats--no-js');
+		// Setze Zahlen auf 0 für Animation
+		section.querySelectorAll('.po-stats__number').forEach(function(el) {
+			el.textContent = '0';
 		});
-		var animated = false;
+	}
 
-		function animateNumber(el) {
-			var targetStr = el.getAttribute('data-target') || '0';
-			// Entferne alle nicht-numerischen Zeichen ausser Punkt/Komma
-			var cleanNum = targetStr.replace(/[^\d.,]/g, '').replace(',', '.');
-			var target = parseFloat(cleanNum) || 0;
-			var isInteger = Number.isInteger(target);
-			var duration = 2000;
-			var startTime = null;
+	function startAnimation(section) {
+		if (animated) return;
+		animated = true;
+		section.classList.add('is-visible');
+		section.querySelectorAll('.po-stats__number').forEach(animateNumber);
+	}
 
-			function easeOutQuart(t) {
-				return 1 - Math.pow(1 - t, 4);
-			}
+	function initStatsCounter() {
+		var section = document.getElementById(sectionId);
+		if (!section || section.dataset.initialized) return;
+		section.dataset.initialized = 'true';
 
-			function step(timestamp) {
-				if (!startTime) startTime = timestamp;
-				var progress = Math.min((timestamp - startTime) / duration, 1);
-				var easedProgress = easeOutQuart(progress);
-				var current = easedProgress * target;
+		// Bereite Animation vor (setze Zahlen auf 0)
+		prepareAnimation(section);
 
-				if (isInteger) {
-					el.textContent = Math.floor(current).toLocaleString('de-DE');
-				} else {
-					el.textContent = current.toFixed(1).replace('.', ',');
-				}
-
-				if (progress < 1) {
-					requestAnimationFrame(step);
-				} else {
-					if (isInteger) {
-						el.textContent = target.toLocaleString('de-DE');
-					} else {
-						el.textContent = target.toFixed(1).replace('.', ',');
-					}
-				}
-			}
-
-			requestAnimationFrame(step);
-		}
-
-		function startAnimation() {
-			console.log('Stats Counter: Starting animation!');
-			if (animated) return;
-			animated = true;
-			section.classList.add('is-visible');
-			numbers.forEach(function(num) {
-				console.log('Animating number to:', num.getAttribute('data-target'));
-				animateNumber(num);
-			});
-		}
-
-		// Intersection Observer für zuverlässige Erkennung
+		// Intersection Observer
 		if ('IntersectionObserver' in window) {
 			var observer = new IntersectionObserver(function(entries) {
 				entries.forEach(function(entry) {
 					if (entry.isIntersecting && !animated) {
-						startAnimation();
+						startAnimation(section);
 						observer.disconnect();
 					}
 				});
-			}, { threshold: 0.2 });
+			}, {
+				threshold: 0.1,
+				rootMargin: '0px 0px -50px 0px'
+			});
 
 			observer.observe(section);
+
+			// Fallback: Falls Observer nach 3 Sekunden nicht gefeuert hat und Element sichtbar ist
+			setTimeout(function() {
+				if (!animated) {
+					var rect = section.getBoundingClientRect();
+					if (rect.top < window.innerHeight && rect.bottom > 0) {
+						startAnimation(section);
+						observer.disconnect();
+					}
+				}
+			}, 3000);
 		} else {
 			// Fallback für alte Browser
 			function checkVisibility() {
 				if (animated) return;
 				var rect = section.getBoundingClientRect();
-				var windowHeight = window.innerHeight || document.documentElement.clientHeight;
-
-				if (rect.top <= windowHeight * 0.85 && rect.bottom >= 0) {
-					startAnimation();
+				if (rect.top < window.innerHeight * 0.9 && rect.bottom > 0) {
+					startAnimation(section);
 					window.removeEventListener('scroll', checkVisibility);
 				}
 			}
-
 			window.addEventListener('scroll', checkVisibility, { passive: true });
 			checkVisibility();
 		}
 	}
 
-	// Warten bis DOM bereit ist
+	// Initialisierung
 	if (document.readyState === 'loading') {
 		document.addEventListener('DOMContentLoaded', initStatsCounter);
 	} else {
-		// DOM ist bereits geladen - kurz warten für Layout
-		setTimeout(initStatsCounter, 100);
+		initStatsCounter();
 	}
+
+	// Zusätzlicher Versuch nach kurzer Verzögerung
+	setTimeout(initStatsCounter, 300);
 })();
 </script>
 <?php endif; ?>

@@ -2,6 +2,7 @@
 $headline = $attributes['headline'] ?? 'Stundenplan';
 $buttonText = $attributes['buttonText'] ?? 'Probetraining buchen';
 $filterLayout = $attributes['filterLayout'] ?? 'fab';
+$anchor = $attributes['anchor'] ?? '';
 
 $args = [
 	'post_type' => 'event',
@@ -182,7 +183,7 @@ $used_age_slugs = array_unique(array_filter(array_column($klassen, 'age_slug')))
 ?>
 
 <?php if (!empty($klassen)): ?>
-<section class="po-sp <?php echo $filterLayout === 'inline' ? 'po-sp--inline-filter' : ''; ?>" id="<?php echo esc_attr($unique_id); ?>">
+<section class="po-sp <?php echo $filterLayout === 'inline' ? 'po-sp--inline-filter' : ''; ?>" id="<?php echo esc_attr($anchor ?: $unique_id); ?>">
 	<?php if ($headline): ?>
 		<h2 class="po-sp__headline"><?php echo wp_kses_post($headline); ?></h2>
 	<?php endif; ?>
@@ -597,7 +598,7 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 
 <script>
 (function() {
-	var section = document.getElementById('<?php echo esc_js($unique_id); ?>');
+	var section = document.getElementById('<?php echo esc_js($anchor ?: $unique_id); ?>');
 	if (!section) return;
 
 	var events = section.querySelectorAll('[data-filters]');

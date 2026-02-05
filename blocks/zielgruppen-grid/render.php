@@ -11,13 +11,25 @@ $fallback_images = [
 	'adults' => get_template_directory_uri() . '/assets/images/fallback/adults/466A7464-scaled.jpg',
 ];
 
-// Fallback-Bilder zuweisen wenn leer
+// Feste Links für Kategorieseiten
+$category_links = [
+	'kids' => home_url('/kids/'),
+	'juniors' => home_url('/juniors/'),
+	'adults' => home_url('/adults/'),
+];
+
+// Fallback-Bilder und Links zuweisen
 foreach ($categories as $index => $cat) {
-	if (empty($cat['imageUrl'])) {
-		$label_lower = strtolower($cat['label'] ?? '');
-		if (isset($fallback_images[$label_lower])) {
-			$categories[$index]['imageUrl'] = $fallback_images[$label_lower];
-		}
+	$label_lower = strtolower($cat['label'] ?? '');
+
+	// Fallback-Bild
+	if (empty($cat['imageUrl']) && isset($fallback_images[$label_lower])) {
+		$categories[$index]['imageUrl'] = $fallback_images[$label_lower];
+	}
+
+	// Fester Link für bekannte Kategorien
+	if (isset($category_links[$label_lower])) {
+		$categories[$index]['linkUrl'] = $category_links[$label_lower];
 	}
 }
 ?>
