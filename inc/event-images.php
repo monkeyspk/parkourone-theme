@@ -22,8 +22,8 @@ function parkourone_get_event_image($event_id, $age_slug = '') {
 	$image = get_post_meta($event_id, '_event_image', true);
 	if (!empty($image)) return $image;
 
-	// 2. WordPress Featured Image
-	$image = get_the_post_thumbnail_url($event_id, 'medium_large');
+	// 2. WordPress Featured Image (volle Größe für beste Qualität)
+	$image = get_the_post_thumbnail_url($event_id, 'full');
 	if (!empty($image)) return $image;
 
 	// 3. Kategorie ermitteln falls nicht übergeben
@@ -258,7 +258,8 @@ function parkourone_event_image_metabox_html($post) {
 
 			mediaUploader.on('select', function() {
 				var attachment = mediaUploader.state().get('selection').first().toJSON();
-				var imageUrl = attachment.sizes.medium_large ? attachment.sizes.medium_large.url : attachment.url;
+				// Immer volle Größe verwenden für beste Qualität
+				var imageUrl = attachment.url;
 
 				$('#event_image').val(imageUrl);
 				$('#event-image-preview').html('<img src="' + imageUrl + '" style="max-width: 100%; height: auto; border-radius: 8px;">');
@@ -469,7 +470,8 @@ function parkourone_event_images_admin_page() {
 
 			mediaUploader.on('select', function() {
 				var attachment = mediaUploader.state().get('selection').first().toJSON();
-				var imageUrl = attachment.sizes.medium ? attachment.sizes.medium.url : attachment.url;
+				// Immer volle Größe verwenden für beste Qualität
+				var imageUrl = attachment.url;
 
 				$input.val(imageUrl);
 				$preview.html('<img src="' + imageUrl + '" style="width: 100%; height: 100%; object-fit: cover;">');
@@ -693,7 +695,8 @@ function parkourone_fallback_images_admin_page() {
 
 			mediaUploader.on('select', function() {
 				var attachment = mediaUploader.state().get('selection').first().toJSON();
-				var imageUrl = attachment.sizes.medium_large ? attachment.sizes.medium_large.url : attachment.url;
+				// Immer volle Größe verwenden für beste Qualität
+				var imageUrl = attachment.url;
 
 				$input.val(imageUrl);
 				$slot.html('<img src="' + imageUrl + '" style="width: 100%; height: 100%; object-fit: cover;"><button type="button" class="remove-fallback-btn" style="position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; border-radius: 50%; background: rgba(0,0,0,0.6); color: #fff; border: none; cursor: pointer; font-size: 14px; line-height: 1;">&times;</button>' + $input.prop('outerHTML'));

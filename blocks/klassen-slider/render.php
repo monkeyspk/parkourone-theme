@@ -108,7 +108,7 @@ if ($query->have_posts()) {
 		// Zentrale Bildlogik mit automatischem Fallback (Event-spezifisch > Featured > Kategorie-Fallback)
 		$event_image = function_exists('parkourone_get_event_image')
 			? parkourone_get_event_image($event_id, $age_term)
-			: get_the_post_thumbnail_url($event_id, 'medium_large');
+			: get_the_post_thumbnail_url($event_id, 'full');
 
 		$headcoach_name = get_post_meta($event_id, '_event_headcoach', true);
 

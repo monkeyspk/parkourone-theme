@@ -1055,10 +1055,10 @@ function parkourone_get_klassen(WP_REST_Request $request) {
                 }
             }
 
-            // Bild über zentrale Funktion holen
+            // Bild über zentrale Funktion holen (volle Größe für beste Qualität)
             $event_image = function_exists('parkourone_get_event_image')
                 ? parkourone_get_event_image($event_id, $age_term)
-                : get_the_post_thumbnail_url($event_id, 'medium_large');
+                : get_the_post_thumbnail_url($event_id, 'full');
 
             $klassen[] = [
                 'id' => $event_id,
