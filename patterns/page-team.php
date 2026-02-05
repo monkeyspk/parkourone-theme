@@ -9,18 +9,12 @@
  * Block Types: core/post-content
  * Post Types: page
  */
-
-// Bilder-URLs
-$theme_uri = get_template_directory_uri();
-$hero_image = $theme_uri . '/assets/images/fallback/adults/EveryONE_5MP-149-von-152-scaled.jpg';
-$testimonial_image = $theme_uri . '/assets/images/fallback/adults/IMG_0716-scaled.jpg';
 ?>
-
-<!-- wp:parkourone/page-header {"variant":"fullscreen","title":"Die Menschen hinter der Bewegung","description":"Parkour ist mehr als Sport. Es sind die Menschen, die es besonders machen. Lerne unser Team kennen.","image":"<?php echo esc_url($hero_image); ?>","ctaText":"Team kennenlernen","ctaUrl":"#team","ctaSecondaryText":"Offene Stellen","ctaSecondaryUrl":"#jobs","align":"full"} /-->
+<!-- wp:parkourone/page-header {"variant":"fullscreen","title":"Die Menschen hinter der Bewegung","description":"Parkour ist mehr als Sport. Es sind die Menschen, die es besonders machen. Lerne unser Team kennen.","ctaText":"Team kennenlernen","ctaUrl":"#team","ctaSecondaryText":"Offene Stellen","ctaSecondaryUrl":"#jobs","align":"full"} /-->
 
 <!-- wp:parkourone/team-grid {"headline":"Unser Team","intro":"Ob auf dem Trainingsplatz oder hinter den Kulissen - jede:r bei ParkourONE brennt für Bewegung und Menschen.","align":"wide","anchor":"team"} /-->
 
-<!-- wp:parkourone/testimonial-highlight {"quotes":[{"text":"Bei ParkourONE geht es nicht darum, der Beste zu sein. Es geht darum, jeden Tag ein bisschen besser zu werden als gestern. Das versuche ich meinen Schülern zu vermitteln.","author":"Coach","role":"ParkourONE","imageUrl":"<?php echo esc_url($testimonial_image); ?>"}],"layout":"single","style":"dark","align":"full"} /-->
+<!-- wp:parkourone/testimonial-highlight {"quotes":[{"text":"Bei ParkourONE geht es nicht darum, der Beste zu sein. Es geht darum, jeden Tag ein bisschen besser zu werden als gestern. Das versuche ich meinen Schülern zu vermitteln.","author":"Coach","role":"ParkourONE","imageUrl":""}],"layout":"single","style":"dark","align":"full"} /-->
 
 <!-- wp:parkourone/trust-education {"headline":"TRUST Education","intro":"Bei ParkourONE arbeiten wir nach TRUST Education - unserer eigenen pädagogischen Methode. Sie verbindet körperliches Training mit persönlicher Entwicklung.","backgroundColor":"white","align":"full"} /-->
 
