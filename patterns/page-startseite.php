@@ -87,7 +87,7 @@ $testimonials = json_encode([
 <div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:parkourone/about-section {"subheadline":"ABOUT","headline":"ParkourONE","text":"Bei ParkourONE glauben wir an das Recht auf persönliches Wohlbefinden und Wohlstand sowie an die Kraft der Gemeinschaft. Unter dem Motto 'ONE for all – all for ONE' möchten wir dich unterstützen, deine Träume zu verwirklichen. Durch Parkour möchten wir unsere Schüler_innen inspirieren, fördern und herausfordern.","ctaText":"Mehr erfahren","ctaUrl":"/ueber-uns/","mediaType":"image","align":"full"} /-->
+<!-- wp:parkourone/about-section {"subheadline":"ABOUT","headline":"ParkourONE","text":"Bei ParkourONE glauben wir an das Recht auf persönliches Wohlbefinden und Wohlstand sowie an die Kraft der Gemeinschaft. Unter dem Motto 'ONE for all – all for ONE' möchten wir dich unterstützen, deine Träume zu verwirklichen. Durch Parkour möchten wir unsere Schüler_innen inspirieren, fördern und herausfordern.","ctaText":"Unser Team","ctaUrl":"/team/","mediaType":"image","align":"full"} /-->
 
 <!-- wp:spacer {"height":"80px"} -->
 <div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
