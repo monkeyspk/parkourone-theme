@@ -616,6 +616,25 @@ function parkourone_auto_pages_admin_page() {
 	$template_pages = parkourone_get_template_pages();
 	$site_location = parkourone_get_site_location();
 
+	// Single-City-Site Erkennung:
+	// Wenn die Site-Location (z.B. "berlin") mit der einzigen Stadt übereinstimmt,
+	// zeigen wir stattdessen die einzelnen Ortschaften an
+	$is_single_city_site = false;
+	$ortschaften = [];
+
+	if (count($cities) === 1) {
+		$city_keys = array_keys($cities);
+		$only_city = $city_keys[0];
+
+		// Prüfen ob Site-Location mit der Stadt übereinstimmt
+		if ($site_location['slug'] === $only_city ||
+			stripos($site_location['slug'], $only_city) !== false ||
+			stripos($only_city, $site_location['slug']) !== false) {
+			$is_single_city_site = true;
+			$ortschaften = $cities[$only_city]['locations'] ?? [];
+		}
+	}
+
 	// SEO Status berechnen
 	$seo_status = parkourone_get_seo_status($template_pages, $cities, $target_groups);
 
@@ -837,74 +856,142 @@ function parkourone_auto_pages_admin_page() {
 
 		<div class="po-auto-pages-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
 
-			<!-- Stadt-Seiten -->
+			<!-- Stadt-Seiten oder Ortschaft-Seiten (je nach Site-Typ) -->
 			<div class="po-auto-pages-card" style="background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-				<h2 style="margin-top: 0;">🏙️ Stadt-Seiten</h2>
-				<p>Erkannte Städte aus deinen Standorten:</p>
+				<?php if ($is_single_city_site): ?>
+					<!-- Single-City-Site: Zeige Ortschaften statt Städte -->
+					<h2 style="margin-top: 0;">📍 Ortschaft-Seiten</h2>
+					<p>Erkannte Ortschaften in <?php echo esc_html($site_location['name']); ?>:</p>
 
-				<?php if (empty($cities)): ?>
-					<p><em>Keine Standorte gefunden. Bitte erstelle zuerst Events mit Standort-Kategorien.</em></p>
-				<?php else: ?>
-					<form method="post" action="">
-						<?php wp_nonce_field('po_generate_city_pages', 'po_city_nonce'); ?>
-						<input type="hidden" name="header_variant" class="po-header-variant-field" value="split">
+					<?php if (empty($ortschaften)): ?>
+						<p><em>Keine Ortschaften gefunden. Bitte erstelle zuerst Events mit Standort-Kategorien unter "Ortschaft".</em></p>
+					<?php else: ?>
+						<form method="post" action="">
+							<?php wp_nonce_field('po_generate_location_pages', 'po_location_nonce'); ?>
+							<input type="hidden" name="header_variant" class="po-header-variant-field" value="split">
 
-						<!-- Überschreiben Option -->
-						<div style="background: #f6f7f7; padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem;">
-							<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
-								<input type="checkbox" name="overwrite_cities" id="overwrite-cities" value="1">
-								<span><strong>Bestehende ueberschreiben</strong></span>
-							</label>
-							<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; margin-top: 8px;">
-								<input type="checkbox" name="force_cities" id="force-cities" value="1">
-								<span><strong>Force (komplett neu)</strong> - Ignoriert manuelle Anpassungen</span>
-							</label>
-						</div>
+							<!-- Überschreiben Option -->
+							<div style="background: #f6f7f7; padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem;">
+								<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+									<input type="checkbox" name="overwrite_locations" id="overwrite-locations" value="1">
+									<span><strong>Bestehende überschreiben</strong></span>
+								</label>
+								<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; margin-top: 8px;">
+									<input type="checkbox" name="force_locations" id="force-locations" value="1">
+									<span><strong>Force (komplett neu)</strong> - Ignoriert manuelle Anpassungen</span>
+								</label>
+							</div>
 
-						<table class="widefat" style="margin: 1rem 0;">
-							<thead>
-								<tr>
-									<th style="width: 30px;"><input type="checkbox" id="select-all-cities"></th>
-									<th>Stadt</th>
-									<th>Standorte</th>
-									<th>Status</th>
-									<th>Links</th>
-								</tr>
-							</thead>
-							<tbody>
-								<?php foreach ($cities as $city_slug => $city):
-									$page_exists = get_page_by_path($city_slug);
-									$is_outdated = isset($outdated_pages['pages']['cities']) && in_array($city_slug, $outdated_pages['pages']['cities']);
-								?>
+							<table class="widefat" style="margin: 1rem 0;">
+								<thead>
 									<tr>
-										<td><input type="checkbox" name="cities[]" value="<?php echo esc_attr($city_slug); ?>" class="city-checkbox" data-exists="<?php echo $page_exists ? '1' : '0'; ?>" <?php echo $page_exists ? 'disabled' : ''; ?>></td>
-										<td><strong><?php echo esc_html($city['name']); ?></strong></td>
-										<td><?php echo count($city['locations']); ?></td>
-										<td>
-											<?php if ($page_exists): ?>
-												<?php if ($is_outdated): ?>
-													<span style="color: #dba617;">⚠️ Update</span>
-												<?php else: ?>
-													<span style="color: green;">✓</span>
-												<?php endif; ?>
-											<?php else: ?>
-												<span style="color: #999;">—</span>
-											<?php endif; ?>
-										</td>
-										<td>
-											<?php if ($page_exists): ?>
-												<a href="<?php echo get_permalink($page_exists->ID); ?>" target="_blank" style="text-decoration: none; margin-right: 8px;" title="Seite ansehen">👁️</a>
-												<a href="<?php echo get_edit_post_link($page_exists->ID); ?>" style="text-decoration: none;" title="Seite bearbeiten">✏️</a>
-											<?php else: ?>
-												<span style="color: #ccc;">—</span>
-											<?php endif; ?>
-										</td>
+										<th style="width: 30px;"><input type="checkbox" id="select-all-locations"></th>
+										<th>Ortschaft</th>
+										<th>Slug</th>
+										<th>Status</th>
+										<th>Links</th>
 									</tr>
-								<?php endforeach; ?>
-							</tbody>
-						</table>
-						<button type="submit" name="generate_city_pages" class="button button-primary">Stadt-Seiten erstellen</button>
-					</form>
+								</thead>
+								<tbody>
+									<?php foreach ($ortschaften as $location):
+										$page_exists = get_page_by_path($location['slug']);
+									?>
+										<tr>
+											<td><input type="checkbox" name="locations[]" value="<?php echo esc_attr($location['slug']); ?>" class="location-checkbox" data-exists="<?php echo $page_exists ? '1' : '0'; ?>" <?php echo $page_exists ? 'disabled' : ''; ?>></td>
+											<td><strong><?php echo esc_html($location['name']); ?></strong></td>
+											<td><code><?php echo esc_html($location['slug']); ?></code></td>
+											<td>
+												<?php if ($page_exists): ?>
+													<span style="color: green;">✓</span>
+												<?php else: ?>
+													<span style="color: #999;">—</span>
+												<?php endif; ?>
+											</td>
+											<td>
+												<?php if ($page_exists): ?>
+													<a href="<?php echo get_permalink($page_exists->ID); ?>" target="_blank" style="text-decoration: none; margin-right: 8px;" title="Seite ansehen">👁️</a>
+													<a href="<?php echo get_edit_post_link($page_exists->ID); ?>" style="text-decoration: none;" title="Seite bearbeiten">✏️</a>
+												<?php else: ?>
+													<span style="color: #ccc;">—</span>
+												<?php endif; ?>
+											</td>
+										</tr>
+									<?php endforeach; ?>
+								</tbody>
+							</table>
+							<button type="submit" name="generate_location_pages" class="button button-primary">Ortschaft-Seiten erstellen</button>
+						</form>
+					<?php endif; ?>
+
+				<?php else: ?>
+					<!-- Multi-City-Site: Zeige Städte wie bisher -->
+					<h2 style="margin-top: 0;">🏙️ Stadt-Seiten</h2>
+					<p>Erkannte Städte aus deinen Standorten:</p>
+
+					<?php if (empty($cities)): ?>
+						<p><em>Keine Standorte gefunden. Bitte erstelle zuerst Events mit Standort-Kategorien.</em></p>
+					<?php else: ?>
+						<form method="post" action="">
+							<?php wp_nonce_field('po_generate_city_pages', 'po_city_nonce'); ?>
+							<input type="hidden" name="header_variant" class="po-header-variant-field" value="split">
+
+							<!-- Überschreiben Option -->
+							<div style="background: #f6f7f7; padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem;">
+								<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+									<input type="checkbox" name="overwrite_cities" id="overwrite-cities" value="1">
+									<span><strong>Bestehende überschreiben</strong></span>
+								</label>
+								<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; margin-top: 8px;">
+									<input type="checkbox" name="force_cities" id="force-cities" value="1">
+									<span><strong>Force (komplett neu)</strong> - Ignoriert manuelle Anpassungen</span>
+								</label>
+							</div>
+
+							<table class="widefat" style="margin: 1rem 0;">
+								<thead>
+									<tr>
+										<th style="width: 30px;"><input type="checkbox" id="select-all-cities"></th>
+										<th>Stadt</th>
+										<th>Standorte</th>
+										<th>Status</th>
+										<th>Links</th>
+									</tr>
+								</thead>
+								<tbody>
+									<?php foreach ($cities as $city_slug => $city):
+										$page_exists = get_page_by_path($city_slug);
+										$is_outdated = isset($outdated_pages['pages']['cities']) && in_array($city_slug, $outdated_pages['pages']['cities']);
+									?>
+										<tr>
+											<td><input type="checkbox" name="cities[]" value="<?php echo esc_attr($city_slug); ?>" class="city-checkbox" data-exists="<?php echo $page_exists ? '1' : '0'; ?>" <?php echo $page_exists ? 'disabled' : ''; ?>></td>
+											<td><strong><?php echo esc_html($city['name']); ?></strong></td>
+											<td><?php echo count($city['locations']); ?></td>
+											<td>
+												<?php if ($page_exists): ?>
+													<?php if ($is_outdated): ?>
+														<span style="color: #dba617;">⚠️ Update</span>
+													<?php else: ?>
+														<span style="color: green;">✓</span>
+													<?php endif; ?>
+												<?php else: ?>
+													<span style="color: #999;">—</span>
+												<?php endif; ?>
+											</td>
+											<td>
+												<?php if ($page_exists): ?>
+													<a href="<?php echo get_permalink($page_exists->ID); ?>" target="_blank" style="text-decoration: none; margin-right: 8px;" title="Seite ansehen">👁️</a>
+													<a href="<?php echo get_edit_post_link($page_exists->ID); ?>" style="text-decoration: none;" title="Seite bearbeiten">✏️</a>
+												<?php else: ?>
+													<span style="color: #ccc;">—</span>
+												<?php endif; ?>
+											</td>
+										</tr>
+									<?php endforeach; ?>
+								</tbody>
+							</table>
+							<button type="submit" name="generate_city_pages" class="button button-primary">Stadt-Seiten erstellen</button>
+						</form>
+					<?php endif; ?>
 				<?php endif; ?>
 			</div>
 
@@ -994,6 +1081,9 @@ function parkourone_auto_pages_admin_page() {
 			$('#select-all-cities').on('change', function() {
 				$('.city-checkbox:not(:disabled)').prop('checked', this.checked);
 			});
+			$('#select-all-locations').on('change', function() {
+				$('.location-checkbox:not(:disabled)').prop('checked', this.checked);
+			});
 			$('#select-all-categories').on('change', function() {
 				$('.category-checkbox:not(:disabled)').prop('checked', this.checked);
 			});
@@ -1013,6 +1103,17 @@ function parkourone_auto_pages_admin_page() {
 			$('#overwrite-cities').on('change', function() {
 				var overwrite = this.checked;
 				$('.city-checkbox').each(function() {
+					if ($(this).data('exists') === 1) {
+						$(this).prop('disabled', !overwrite);
+						if (!overwrite) $(this).prop('checked', false);
+					}
+				});
+			});
+
+			// Überschreiben Toggle - Locations (für Single-City-Sites)
+			$('#overwrite-locations').on('change', function() {
+				var overwrite = this.checked;
+				$('.location-checkbox').each(function() {
 					if ($(this).data('exists') === 1) {
 						$(this).prop('disabled', !overwrite);
 						if (!overwrite) $(this).prop('checked', false);
@@ -1268,6 +1369,39 @@ function parkourone_handle_page_generation() {
 		}
 	}
 
+	// Ortschaft-Seiten generieren (für Single-City-Sites wie berlin.parkourone.com)
+	if (isset($_POST['generate_location_pages']) && wp_verify_nonce($_POST['po_location_nonce'], 'po_generate_location_pages')) {
+		$locations = $_POST['locations'] ?? [];
+		$overwrite = isset($_POST['overwrite_locations']) && $_POST['overwrite_locations'] === '1';
+		$force = isset($_POST['force_locations']) && $_POST['force_locations'] === '1';
+		$header_variant = sanitize_text_field($_POST['header_variant'] ?? 'split');
+		$created = 0;
+		$updated = 0;
+
+		if (empty($locations)) {
+			add_settings_error('po_auto_pages', 'no_locations_selected', 'Bitte wähle mindestens eine Ortschaft aus. Falls alle bereits existieren, aktiviere "Bestehende überschreiben".', 'error');
+		} else {
+			foreach ($locations as $location_slug) {
+				$existing = get_page_by_path($location_slug);
+				$result = parkourone_create_location_page($location_slug, $overwrite, $header_variant, $force);
+				if ($result) {
+					if ($existing && $overwrite) {
+						$updated++;
+					} else {
+						$created++;
+					}
+				}
+			}
+
+			$parts = [];
+			if ($created > 0) $parts[] = "{$created} erstellt";
+			if ($updated > 0) $parts[] = "{$updated} aktualisiert";
+			if (!empty($parts)) {
+				add_settings_error('po_auto_pages', 'locations_created', "Ortschaft-Seiten: " . implode(', ', $parts), 'success');
+			}
+		}
+	}
+
 	// Kategorie-Seiten generieren
 	if (isset($_POST['generate_category_pages']) && wp_verify_nonce($_POST['po_category_nonce'], 'po_generate_category_pages')) {
 		$categories = $_POST['categories'] ?? [];
@@ -1405,7 +1539,7 @@ function parkourone_generate_city_page_content($city_slug, $city, $header_varian
 	 * 7. About-Section
 	 */
 	$content = <<<BLOCKS
-<!-- wp:parkourone/page-header {"variant":"{$header_variant}","title":"Parkour in {$city_name}","titleAccent":"Training in deiner Nähe","description":"{$hero_subtext}","ctaText":"Probetraining buchen","ctaUrl":"/probetraining/","ctaSecondaryText":"Standorte entdecken","ctaSecondaryUrl":"#standorte","stats":{$header_stats},"align":"full"} /-->
+<!-- wp:parkourone/page-header {"variant":"{$header_variant}","title":"Parkour in {$city_name}","titleAccent":"Training in deiner Nähe","description":"{$hero_subtext}","ctaText":"Probetraining buchen","ctaUrl":"/probetraining-buchen/","ctaSecondaryText":"Standorte entdecken","ctaSecondaryUrl":"#standorte","stats":{$header_stats},"align":"full"} /-->
 
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
@@ -1449,6 +1583,133 @@ function parkourone_generate_city_page_content($city_slug, $city, $header_varian
 <!-- /wp:spacer -->
 
 <!-- wp:parkourone/about-section {"subheadline":"WARUM PARKOUR?","headline":"Mehr als nur Sport","text":"Parkour in {$city_name} bei ParkourONE bedeutet nicht nur körperliches Training, sondern auch mentale Stärke, Selbstvertrauen und Community. Unsere Coaches begleiten dich auf deinem individuellen Weg – egal ob Anfänger oder Fortgeschrittene.","ctaText":"Mehr über ParkourONE","ctaUrl":"/team/","align":"full"} /-->
+BLOCKS;
+
+	return $content;
+}
+
+// =====================================================
+// Ortschaft-Seite erstellen (für Single-City-Sites)
+// =====================================================
+
+function parkourone_create_location_page($location_slug, $overwrite = false, $header_variant = 'split', $force = false) {
+	// Ortschaft-Term aus event_category holen
+	$location = get_term_by('slug', $location_slug, 'event_category');
+	if (!$location) return false;
+
+	// Prüfen ob Seite bereits existiert
+	$existing_page = get_page_by_path($location_slug);
+	if ($existing_page && !$overwrite) {
+		return false;
+	}
+
+	$location_name = $location->name;
+	$site_location = parkourone_get_site_location();
+	$site_name = $site_location['name'];
+
+	// Block-Content für die Seite generieren
+	$new_content = parkourone_generate_location_page_content($location_slug, $location_name, $header_variant);
+
+	if ($existing_page && $overwrite) {
+		$content = $force ? $new_content : parkourone_merge_page_content($existing_page->post_content, $new_content);
+
+		$page_id = wp_update_post([
+			'ID' => $existing_page->ID,
+			'post_content' => $content,
+		]);
+		update_post_meta($existing_page->ID, '_parkourone_location_slug', $location_slug);
+		update_post_meta($existing_page->ID, '_parkourone_auto_generated', true);
+		update_post_meta($existing_page->ID, '_parkourone_site_location', $site_name);
+	} else {
+		$page_id = wp_insert_post([
+			'post_title' => "Parkour in {$location_name}",
+			'post_name' => $location_slug,
+			'post_content' => $new_content,
+			'post_status' => 'publish',
+			'post_type' => 'page',
+			'meta_input' => [
+				'_parkourone_location_slug' => $location_slug,
+				'_parkourone_auto_generated' => true,
+				'_parkourone_site_location' => $site_name
+			]
+		]);
+	}
+
+	return $page_id && !is_wp_error($page_id);
+}
+
+function parkourone_generate_location_page_content($location_slug, $location_name, $header_variant = 'split') {
+	$site_location = parkourone_get_site_location();
+	$site_name = $site_location['name'];
+
+	// Theme URI für Bilder
+	$theme_uri = get_template_directory_uri();
+
+	// Probetraining-Preis
+	$probetraining_price = parkourone_get_probetraining_price();
+
+	// Header-Variante validieren
+	$header_variant = in_array($header_variant, ['centered', 'split', 'fullscreen']) ? $header_variant : 'split';
+
+	// Probetraining-Steps
+	$probetraining_steps = json_encode([
+		["title" => "Klasse auswählen", "description" => "Wähle die passende Klasse basierend auf deiner Altersgruppe und deinem Erfahrungslevel.", "icon" => "users"],
+		["title" => "Termin buchen", "description" => "Buche online deinen Wunschtermin. Das Probetraining kostet {$probetraining_price}.", "icon" => "calendar"],
+		["title" => "Zur Halle kommen", "description" => "Komm in bequemer Sportkleidung zu unserer Halle in {$location_name}.", "icon" => "location"],
+		["title" => "Loslegen", "description" => "Nach dem Probetraining kannst du entscheiden, ob du Teil unserer Community werden möchtest.", "icon" => "check"]
+	], JSON_UNESCAPED_UNICODE);
+
+	// Stats
+	$header_stats = json_encode([
+		["number" => "15", "label" => "Jahre Erfahrung"],
+		["number" => "50", "label" => "Kurse/Woche"],
+		["number" => "500", "label" => "Aktive Mitglieder"]
+	], JSON_UNESCAPED_UNICODE);
+
+	$content = <<<BLOCKS
+<!-- wp:parkourone/page-header {"variant":"{$header_variant}","eyebrow":"Parkour in {$location_name}","headline":"Parkour Training in {$location_name}","subtext":"Entdecke professionelles Parkour-Training bei ParkourONE {$site_name}. Kurse für alle Altersgruppen an unserem Standort in {$location_name}.","showStats":true,"stats":{$header_stats},"backgroundType":"image","backgroundImage":"{$theme_uri}/assets/images/fallback/landscape/adults/1T2A6249.jpg","overlayOpacity":60,"align":"full"} /-->
+
+<!-- wp:spacer {"height":"60px"} -->
+<div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
+<!-- /wp:spacer -->
+
+<!-- wp:parkourone/zielgruppen-grid {"headline":"Wähle deine Altersgruppe","subtext":"Finde den passenden Kurs für dich in {$location_name}","align":"wide"} /-->
+
+<!-- wp:spacer {"height":"80px"} -->
+<div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
+<!-- /wp:spacer -->
+
+<!-- wp:parkourone/klassen-slider {"headline":"Parkour Kurse in {$location_name}","filterMode":"age","filterLocation":"{$location_slug}","buttonText":"Probetraining buchen","hideIfEmpty":true,"align":"full"} /-->
+
+<!-- wp:spacer {"height":"80px"} -->
+<div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
+<!-- /wp:spacer -->
+
+<!-- wp:parkourone/steps-carousel {"headline":"So startest du in {$location_name}","subheadline":"In 4 einfachen Schritten zum ersten Training","steps":{$probetraining_steps},"backgroundColor":"light","align":"full"} /-->
+
+<!-- wp:spacer {"height":"80px"} -->
+<div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
+<!-- /wp:spacer -->
+
+<!-- wp:parkourone/usp-slider {"headline":"Warum ParkourONE {$location_name}?","align":"full"} /-->
+
+<!-- wp:spacer {"height":"80px"} -->
+<div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
+<!-- /wp:spacer -->
+
+<!-- wp:parkourone/testimonial-slider {"filterMode":"location","filterValue":"{$location_slug}","headline":"Was unsere Schüler:innen sagen","autoplay":true,"interval":6000,"align":"full"} /-->
+
+<!-- wp:spacer {"height":"60px"} -->
+<div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
+<!-- /wp:spacer -->
+
+<!-- wp:parkourone/faq {"headline":"Häufige Fragen zu {$location_name}","category":"standort","backgroundColor":"light","align":"full"} /-->
+
+<!-- wp:spacer {"height":"60px"} -->
+<div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
+<!-- /wp:spacer -->
+
+<!-- wp:parkourone/about-section {"subheadline":"WARUM PARKOUR?","headline":"Mehr als nur Sport","text":"Parkour in {$location_name} bei ParkourONE {$site_name} bedeutet nicht nur körperliches Training, sondern auch mentale Stärke, Selbstvertrauen und Community. Unsere Coaches begleiten dich auf deinem individuellen Weg – egal ob Anfänger oder Fortgeschrittene.","ctaText":"Mehr über ParkourONE","ctaUrl":"/team/","align":"full"} /-->
 BLOCKS;
 
 	return $content;
@@ -1626,7 +1887,7 @@ function parkourone_generate_category_page_content($cat_slug, $seo, $header_vari
 	$text_reveal_text = "Parkour {$display_name} in {$site_name} bedeutet mehr als nur Sport. Es ist eine Reise zu dir selbst. Bei ParkourONE trainierst du in einer motivierenden Umgebung mit erfahrenen Coaches. Kleine Gruppen, individuelle Betreuung und eine starke Community warten auf dich.";
 
 	$content = <<<BLOCKS
-<!-- wp:parkourone/page-header {"variant":"{$header_variant}","title":"Parkour {$display_name}","titleAccent":"{$site_name}","description":"{$hero_subtext}","ctaText":"Probetraining buchen","ctaUrl":"/probetraining/","ctaSecondaryText":"Mehr erfahren","ctaSecondaryUrl":"#kurse","stats":{$category_stats},"align":"full"} /-->
+<!-- wp:parkourone/page-header {"variant":"{$header_variant}","title":"Parkour {$display_name}","titleAccent":"{$site_name}","description":"{$hero_subtext}","ctaText":"Probetraining buchen","ctaUrl":"/probetraining-buchen/","ctaSecondaryText":"Mehr erfahren","ctaSecondaryUrl":"#kurse","stats":{$category_stats},"align":"full"} /-->
 
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
@@ -1675,7 +1936,7 @@ function parkourone_generate_category_page_content($cat_slug, $seo, $header_vari
 <div style="height:40px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:parkourone/promo-banner {"headline":"Jetzt Parkour {$display_name} in {$site_name} starten!","subtext":"Buche dein erstes Probetraining und erlebe Parkour {$display_name} hautnah. Keine Vorkenntnisse nötig.","buttonText":"Probetraining buchen","buttonUrl":"/probetraining/","align":"full"} /-->
+<!-- wp:parkourone/promo-banner {"headline":"Jetzt Parkour {$display_name} in {$site_name} starten!","subtext":"Buche dein erstes Probetraining und erlebe Parkour {$display_name} hautnah. Keine Vorkenntnisse nötig.","buttonText":"Probetraining buchen","buttonUrl":"/probetraining-buchen/","align":"full"} /-->
 BLOCKS;
 
 	return $content;

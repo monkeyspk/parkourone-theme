@@ -11,7 +11,7 @@
  */
 ?>
 
-<!-- wp:parkourone/hero {"headline":"Parkour Kids – Spielerisch stark werden","subtext":"Bei ParkourONE entdecken Kinder ihre Bewegungstalente: Klettern, Springen und Balancieren in einer sicheren, motivierenden Umgebung. Unsere erfahrenen Coaches fördern Selbstvertrauen und Körperbewusstsein.","buttonText":"Probetraining buchen","buttonUrl":"/probetraining/","ageCategory":"kids","useRandomFallback":true,"align":"full"} /-->
+<!-- wp:parkourone/hero {"headline":"Parkour Kids – Spielerisch stark werden","subtext":"Bei ParkourONE entdecken Kinder ihre Bewegungstalente: Klettern, Springen und Balancieren in einer sicheren, motivierenden Umgebung. Unsere erfahrenen Coaches fördern Selbstvertrauen und Körperbewusstsein.","buttonText":"Probetraining buchen","buttonUrl":"/probetraining-buchen/","ageCategory":"kids","useRandomFallback":true,"align":"full"} /-->
 
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>

@@ -5,7 +5,7 @@ $filterAge = $attributes['filterAge'] ?? '';
 $filterLocation = $attributes['filterLocation'] ?? '';
 $filterOffer = $attributes['filterOffer'] ?? '';
 $filterWeekday = $attributes['filterWeekday'] ?? '';
-$bookingPageUrl = $attributes['bookingPageUrl'] ?? '/probetraining/';
+$bookingPageUrl = $attributes['bookingPageUrl'] ?? '/probetraining-buchen/';
 $buttonText = $attributes['buttonText'] ?? 'Probetraining buchen';
 $hideIfEmpty = $attributes['hideIfEmpty'] ?? false;
 

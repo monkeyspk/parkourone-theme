@@ -67,7 +67,7 @@ $events = get_posts([
 		<div class="po-taxonomy-hero__content">
 			<h1 class="po-taxonomy-hero__title"><?php echo esc_html($seo_content['title']); ?></h1>
 			<p class="po-taxonomy-hero__subtitle"><?php echo esc_html($seo_content['hero_subtitle']); ?></p>
-			<a href="/probetraining/" class="po-taxonomy-hero__cta">Probetraining buchen</a>
+			<a href="/probetraining-buchen/" class="po-taxonomy-hero__cta">Probetraining buchen</a>
 		</div>
 	</section>
 
@@ -181,7 +181,7 @@ $events = get_posts([
 						<?php endif; ?>
 					</div>
 
-					<a href="/probetraining/?event=<?php echo $event_id; ?>" class="po-event-card__cta">
+					<a href="/probetraining-buchen/?event=<?php echo $event_id; ?>" class="po-event-card__cta">
 						Probetraining buchen
 					</a>
 				</article>
@@ -260,7 +260,7 @@ $events = get_posts([
 		<div class="po-taxonomy-cta__container">
 			<h2>Bereit für dein erstes Training?</h2>
 			<p>Buche jetzt dein Probetraining und erlebe Parkour hautnah.</p>
-			<a href="/probetraining/" class="po-taxonomy-cta__button">Probetraining buchen</a>
+			<a href="/probetraining-buchen/" class="po-taxonomy-cta__button">Probetraining buchen</a>
 		</div>
 	</section>
 

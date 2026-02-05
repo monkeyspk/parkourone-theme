@@ -216,7 +216,7 @@ unset($day);
 										<span class="po-schedule-event__badge"><?php echo esc_html($event['age']); ?></span>
 									<?php endif; ?>
 								</div>
-								<a href="/probetraining/?event=<?php echo $event['id']; ?>" class="po-schedule-event__link" aria-label="Probetraining buchen">
+								<a href="/probetraining-buchen/?event=<?php echo $event['id']; ?>" class="po-schedule-event__link" aria-label="Probetraining buchen">
 									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 										<polyline points="9,18 15,12 9,6"/>
 									</svg>
@@ -230,6 +230,6 @@ unset($day);
 	</div>
 
 	<div class="po-stundenplan-detail__footer">
-		<a href="/probetraining/" class="po-stundenplan-detail__cta">Probetraining buchen</a>
+		<a href="/probetraining-buchen/" class="po-stundenplan-detail__cta">Probetraining buchen</a>
 	</div>
 </section>

@@ -11,7 +11,7 @@
  */
 ?>
 
-<!-- wp:parkourone/hero {"headline":"Parkour in Prenzlauer Berg – Dein Training vor Ort","subtext":"Entdecke Parkour-Klassen für alle Altersgruppen in Prenzlauer Berg. Professionelle Coaches, sichere Trainingsumgebung und eine starke Community erwarten dich.","buttonText":"Probetraining buchen","buttonUrl":"/probetraining/","useRandomFallback":true,"align":"full"} /-->
+<!-- wp:parkourone/hero {"headline":"Parkour in Prenzlauer Berg – Dein Training vor Ort","subtext":"Entdecke Parkour-Klassen für alle Altersgruppen in Prenzlauer Berg. Professionelle Coaches, sichere Trainingsumgebung und eine starke Community erwarten dich.","buttonText":"Probetraining buchen","buttonUrl":"/probetraining-buchen/","useRandomFallback":true,"align":"full"} /-->
 
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>

@@ -883,7 +883,7 @@ function parkourone_render_header() {
     $logo_url = $logo_id ? wp_get_attachment_image_url($logo_id, 'full') : '';
     $site_name = get_bloginfo('name');
     $home_url = home_url('/');
-    $probetraining_url = home_url('/probetraining/');
+    $probetraining_url = home_url('/probetraining-buchen/');
 
     ?>
     <header class="po-header" id="po-header">
@@ -897,7 +897,7 @@ function parkourone_render_header() {
             </a>
 
             <div class="po-header__actions">
-                <a href="<?php echo esc_url($probetraining_url); ?>" class="po-header__cta">Probetraining</a>
+                <a href="<?php echo esc_url($probetraining_url); ?>" class="po-header__cta">Probetraining buchen</a>
                 <button class="po-header__toggle" id="po-menu-toggle" aria-label="Menü öffnen" aria-expanded="false">
                     <span class="po-header__toggle-bar"></span>
                     <span class="po-header__toggle-bar"></span>

@@ -46,7 +46,7 @@
 		},
 		"ctaUrl": {
 			"type": "string",
-			"default": "#probetraining"
+			"default": "/probetraining-buchen/"
 		},
 		"ctaSecondaryText": {
 			"type": "string",
