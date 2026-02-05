@@ -139,14 +139,14 @@
 }
 
 .po-hero__button--primary {
-	background: var(--po-color-primary, #00c853);
+	background: #2997ff;
 	color: #fff;
 }
 
 .po-hero__button--primary:hover {
 	transform: translateY(-2px);
-	box-shadow: 0 12px 40px rgba(0, 200, 83, 0.4);
-	background: var(--po-color-primary-hover, #00e676);
+	box-shadow: 0 12px 40px rgba(41, 151, 255, 0.4);
+	background: #40a9ff;
 	color: #fff;
 }
 
@@ -209,7 +209,7 @@
 
 .po-hero__stat-suffix {
 	font-size: 0.6em;
-	color: var(--po-color-primary, #00c853);
+	color: #2997ff;
 	margin-left: 2px;
 }
 
@@ -457,7 +457,7 @@
 }
 
 .po-hero-editor__button--primary {
-	background: var(--po-color-primary, #00c853);
+	background: #2997ff;
 	color: #fff;
 }
 
