@@ -28,30 +28,29 @@ if ($is_city_site) {
 	$hero_subtext = "Professionelles Parkour-Training für alle Altersgruppen {$in_location}. Erfahrene Coaches, sichere Umgebung, starke Community.";
 	$klassen_headline = "Parkour-Klassen {$in_location}";
 	$faq_headline = "Häufige Fragen zu Parkour {$in_location}";
-	$testimonial_headline = "Das sagen unsere Teilnehmer";
 } else {
 	$hero_eyebrow = "Parkour für alle";
 	$hero_headline = "Stärke deinen Körper, schärfe deinen Geist";
 	$hero_subtext = "Entdecke Parkour bei ParkourONE – professionelles Training für alle Altersgruppen.";
 	$klassen_headline = "Unsere Klassen";
 	$faq_headline = "Häufige Fragen zu Parkour";
-	$testimonial_headline = "Das sagen unsere Teilnehmer";
 }
 
-// JSON für komplexe Attribute escapen
+// JSON für komplexe Attribute
 $hero_stats = json_encode([
 	['number' => '1500', 'suffix' => '+', 'label' => 'Schüler:innen'],
 	['number' => '25', 'suffix' => '', 'label' => 'Jahre Erfahrung'],
 	['number' => '7', 'suffix' => '', 'label' => 'Standorte']
-], JSON_UNESCAPED_UNICODE);
+], JSON_UNESCAPED_UNICODE | JSON_HEX_APOS);
 
 $testimonials = json_encode([
 	['text' => 'Parkour hat mein Leben verändert. Ich habe nicht nur körperliche Stärke gewonnen, sondern auch mentale Stärke und ein neues Selbstvertrauen.', 'author' => 'Sarah M.', 'role' => 'Schülerin seit 2019', 'imageUrl' => ''],
 	['text' => 'Die Community bei ParkourONE ist unglaublich. Hier unterstützt jeder jeden – vom Anfänger bis zum Profi.', 'author' => 'Max K.', 'role' => 'Schüler seit 2021', 'imageUrl' => '']
-], JSON_UNESCAPED_UNICODE);
-?>
+], JSON_UNESCAPED_UNICODE | JSON_HEX_APOS);
 
-<!-- wp:parkourone/hero {"eyebrow":"<?php echo esc_attr($hero_eyebrow); ?>","headline":"<?php echo esc_attr($hero_headline); ?>","subtext":"<?php echo esc_attr($hero_subtext); ?>","buttonText":"Jetzt starten","buttonUrl":"#stundenplan","videoUrl":"https://www.youtube.com/watch?v=kb5XFFvQjYs","videoButtonText":"Film ansehen","stats":<?php echo $hero_stats; ?>,"overlayOpacity":55,"align":"full"} /-->
+// Pattern Content ausgeben
+echo '<!-- wp:parkourone/hero {"eyebrow":"' . esc_attr($hero_eyebrow) . '","headline":"' . esc_attr($hero_headline) . '","subtext":"' . esc_attr($hero_subtext) . '","buttonText":"Jetzt starten","buttonUrl":"#stundenplan","videoUrl":"https://www.youtube.com/watch?v=kb5XFFvQjYs","videoButtonText":"Film ansehen","stats":' . $hero_stats . ',"overlayOpacity":55,"align":"full"} /-->';
+?>
 
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
@@ -69,7 +68,7 @@ $testimonials = json_encode([
 <div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:parkourone/testimonial-highlight {"quotes":<?php echo $testimonials; ?>,"layout":"double","style":"light","align":"full"} /-->
+<?php echo '<!-- wp:parkourone/testimonial-highlight {"quotes":' . $testimonials . ',"layout":"double","style":"light","align":"full"} /-->'; ?>
 
 <!-- wp:spacer {"height":"80px"} -->
 <div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
@@ -81,7 +80,7 @@ $testimonials = json_encode([
 <div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:parkourone/klassen-slider {"headline":"<?php echo esc_attr($klassen_headline); ?>","filterMode":"both","hideIfEmpty":true,"align":"full"} /-->
+<?php echo '<!-- wp:parkourone/klassen-slider {"headline":"' . esc_attr($klassen_headline) . '","filterMode":"both","hideIfEmpty":true,"align":"full"} /-->'; ?>
 
 <!-- wp:spacer {"height":"80px"} -->
 <div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
@@ -105,7 +104,7 @@ $testimonials = json_encode([
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:parkourone/faq {"headline":"<?php echo esc_attr($faq_headline); ?>","category":"allgemein","limit":10,"backgroundColor":"light","align":"full"} /-->
+<?php echo '<!-- wp:parkourone/faq {"headline":"' . esc_attr($faq_headline) . '","category":"allgemein","limit":10,"backgroundColor":"light","align":"full"} /-->'; ?>
 
 <!-- wp:spacer {"height":"40px"} -->
 <div style="height:40px" aria-hidden="true" class="wp-block-spacer"></div>
