@@ -526,9 +526,9 @@ function parkourone_render_main_menu() {
 
         if (!is_wp_error($altersgruppen) && !empty($altersgruppen)) {
             foreach ($altersgruppen as $gruppe) {
-                // Schöner Name: "kids" → "Parkour für Kids"
-                $display_name = parkourone_get_age_display_name($gruppe->slug, $gruppe->name);
-                $url = home_url('/parkour-' . $gruppe->slug . '/');
+                // Name direkt aus der Event Category verwenden
+                $display_name = $gruppe->name;
+                $url = home_url('/' . $gruppe->slug . '/');
 
                 $output .= '<li class="po-menu__item">';
                 $output .= '<a href="' . esc_url($url) . '" class="po-menu__link">' . esc_html($display_name) . '</a>';
@@ -558,7 +558,8 @@ function parkourone_render_main_menu() {
             $output .= '<ul class="po-menu__list">';
 
             foreach ($standorte as $standort) {
-                $url = home_url('/standort-' . $standort->slug . '/');
+                // URL direkt mit dem Slug (ohne Präfix)
+                $url = home_url('/' . $standort->slug . '/');
 
                 $output .= '<li class="po-menu__item">';
                 $output .= '<a href="' . esc_url($url) . '" class="po-menu__link">' . esc_html($standort->name) . '</a>';
