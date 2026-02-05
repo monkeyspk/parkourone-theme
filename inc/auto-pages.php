@@ -1699,7 +1699,7 @@ function parkourone_generate_location_page_content($location_slug, $location_nam
 	$text_reveal_text = "Parkour in {$location_name} bedeutet mehr als nur Sport. Es ist eine Reise zu dir selbst. Bei ParkourONE {$site_name} trainierst du in einer motivierenden Umgebung mit erfahrenen Coaches. Kleine Gruppen, individuelle Betreuung und eine starke Community warten auf dich.";
 
 	$content = <<<BLOCKS
-<!-- wp:parkourone/page-header {"variant":"{$header_variant}","title":"Parkour in {$location_name}","titleAccent":"{$site_name}","description":"{$hero_subtext}","ctaText":"Probetraining buchen","ctaUrl":"/probetraining-buchen/","stats":{$location_stats},"align":"full"} /-->
+<!-- wp:parkourone/page-header {"variant":"{$header_variant}","title":"Parkour in {$location_name}","description":"{$hero_subtext}","ctaText":"Probetraining buchen","ctaUrl":"/probetraining-buchen/","stats":{$location_stats},"align":"full"} /-->
 
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
