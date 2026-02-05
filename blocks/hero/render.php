@@ -1,8 +1,25 @@
 <?php
+// Standort automatisch erkennen für SEO-optimierte Headlines
+$site_location = function_exists('parkourone_get_site_location') ? parkourone_get_site_location() : null;
+$is_city_site = $site_location && !empty($site_location['detected']) && !in_array($site_location['slug'], ['parkourone', 'www', 'new', 'staging', 'dev', 'test', 'localhost']);
+
+// Locations mit Artikel
+$locations_with_article = ['schweiz', 'türkei', 'ukraine', 'slowakei', 'mongolei'];
+$needs_article = $site_location && in_array($site_location['slug'], $locations_with_article);
+$location_name = $site_location['name'] ?? '';
+$in_location = $needs_article ? "in der {$location_name}" : "in {$location_name}";
+
 $eyebrow = $attributes['eyebrow'] ?? '';
 $headline = $attributes['headline'] ?? 'Stärke deinen Körper, schärfe deinen Geist';
 $subtext = $attributes['subtext'] ?? 'Entdecke Parkour – für alle Altersgruppen, an mehreren Standorten.';
 $layout = $attributes['layout'] ?? 'centered';
+
+// Automatische Headline für Stadt-Seiten (überschreibt Default, nicht Custom)
+if ($is_city_site && $headline === 'Stärke deinen Körper, schärfe deinen Geist') {
+	$headline = "Parkour {$in_location}";
+	$subtext = "Stärke deinen <span class=\"po-hero__highlight\">Körper</span>, schärfe deinen <span class=\"po-hero__highlight\">Geist</span>";
+	$eyebrow = $eyebrow ?: "ParkourONE {$location_name}";
+}
 $buttonText = $attributes['buttonText'] ?? 'Jetzt starten';
 $buttonUrl = $attributes['buttonUrl'] ?? '#stundenplan';
 $secondButtonText = $attributes['secondButtonText'] ?? '';

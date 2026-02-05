@@ -88,11 +88,28 @@
 
 /* Subtext */
 .po-hero__subtext {
-	font-size: clamp(16px, 2vw, 20px);
+	font-size: clamp(18px, 2.5vw, 24px);
 	line-height: 1.6;
-	color: rgba(255, 255, 255, 0.75);
+	color: rgba(255, 255, 255, 0.85);
 	margin: 0 0 40px;
-	max-width: 560px;
+	max-width: 620px;
+	font-weight: 400;
+}
+
+/* Highlight mit pulsierendem Glow */
+.po-hero__highlight {
+	color: var(--po-color-primary, #00c853);
+	text-shadow: 0 0 20px rgba(0, 200, 83, 0.5);
+	animation: heroGlow 3s ease-in-out infinite;
+}
+
+@keyframes heroGlow {
+	0%, 100% {
+		text-shadow: 0 0 20px rgba(0, 200, 83, 0.4);
+	}
+	50% {
+		text-shadow: 0 0 30px rgba(0, 200, 83, 0.7), 0 0 50px rgba(0, 200, 83, 0.3);
+	}
 }
 
 /* Buttons */
