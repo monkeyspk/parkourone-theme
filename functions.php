@@ -1700,3 +1700,57 @@ function parkourone_coach_image_delete_ajax() {
 }
 add_action('wp_ajax_nopriv_coach_image_delete', 'parkourone_coach_image_delete_ajax');
 add_action('wp_ajax_coach_image_delete', 'parkourone_coach_image_delete_ajax');
+
+/**
+ * Automatisch "Startseite" als Homepage setzen
+ * Wird ausgeführt wenn eine Seite mit dem Slug "startseite" veröffentlicht wird
+ */
+function parkourone_auto_set_homepage($post_id, $post, $update) {
+	// Nur für Seiten
+	if ($post->post_type !== 'page') {
+		return;
+	}
+
+	// Nur für veröffentlichte Seiten
+	if ($post->post_status !== 'publish') {
+		return;
+	}
+
+	// Prüfen ob Slug "startseite" ist
+	if ($post->post_name !== 'startseite') {
+		return;
+	}
+
+	// Prüfen ob bereits eine andere Homepage gesetzt ist
+	$current_homepage = get_option('page_on_front');
+	if ($current_homepage && $current_homepage != $post_id) {
+		// Nur setzen wenn keine Homepage existiert oder es dieselbe Seite ist
+		$current_page = get_post($current_homepage);
+		if ($current_page && $current_page->post_status === 'publish') {
+			return; // Bestehende Homepage nicht überschreiben
+		}
+	}
+
+	// Als statische Homepage setzen
+	update_option('show_on_front', 'page');
+	update_option('page_on_front', $post_id);
+}
+add_action('save_post', 'parkourone_auto_set_homepage', 10, 3);
+
+/**
+ * Beim Theme-Aktivierung prüfen ob Startseite existiert und setzen
+ */
+function parkourone_set_homepage_on_activation() {
+	$startseite = get_page_by_path('startseite');
+
+	if ($startseite && $startseite->post_status === 'publish') {
+		$current_homepage = get_option('page_on_front');
+
+		// Nur setzen wenn keine Homepage existiert
+		if (!$current_homepage || get_post_status($current_homepage) !== 'publish') {
+			update_option('show_on_front', 'page');
+			update_option('page_on_front', $startseite->ID);
+		}
+	}
+}
+add_action('after_switch_theme', 'parkourone_set_homepage_on_activation');
