@@ -11,8 +11,8 @@ $videoType = $attributes['videoType'] ?? 'embed';
 $mediaRight = $attributes['mediaRight'] ?? true;
 $bgColor = $attributes['backgroundColor'] ?? '#f5f5f7';
 
-// Fallback-Bild wenn kein Media gesetzt
-$fallback_image = get_template_directory_uri() . '/assets/images/fallback/juniors/ParkourONE_Sommerfest_2022_DRP1508-scaled-1.jpg';
+// Fallback-Bild wenn kein Media gesetzt (Portrait für About-Section)
+$fallback_image = parkourone_get_fallback_image('juniors', 'portrait');
 
 $class = 'po-about';
 if ($mediaRight) {

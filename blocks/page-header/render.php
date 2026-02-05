@@ -19,9 +19,9 @@ $accent_color = $attributes['accentColor'] ?? '#0066cc';
 $overlay_opacity = $attributes['overlayOpacity'] ?? 50;
 $rotation = $attributes['imageRotation'] ?? 2;
 
-// Fallback-Bild
+// Fallback-Bild (Landscape für Header)
 if (empty($image)) {
-	$image = get_template_directory_uri() . '/assets/images/fallback/juniors/G1A2050-scaled.jpg';
+	$image = parkourone_get_fallback_image('juniors', 'landscape');
 }
 
 // CTA Arrow SVG

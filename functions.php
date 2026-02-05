@@ -78,6 +78,7 @@ require_once get_template_directory() . '/inc/faq-cpt.php';
 require_once get_template_directory() . '/inc/auto-pages.php';
 require_once get_template_directory() . '/inc/event-images.php';
 require_once get_template_directory() . '/inc/github-updater.php';
+require_once get_template_directory() . '/inc/theme-images.php';
 
 /**
  * Menü-Positionen registrieren

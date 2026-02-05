@@ -7,10 +7,10 @@ $class = 'po-quote-highlight';
 $class .= ' po-quote-highlight--' . $layout;
 $class .= ' po-quote-highlight--' . $style;
 
-// Fallback-Bilder
+// Fallback-Bilder (Portrait für Testimonials)
 $fallback_images = [
-	get_template_directory_uri() . '/assets/images/fallback/adults/balance.jpg',
-	get_template_directory_uri() . '/assets/images/fallback/juniors/G1A2147.jpg',
+	parkourone_get_fallback_image('adults', 'portrait'),
+	parkourone_get_fallback_image('juniors', 'portrait'),
 ];
 ?>
 

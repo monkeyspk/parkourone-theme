@@ -3,14 +3,12 @@ $headline = $attributes['headline'] ?? 'Warum ParkourONE?';
 $slides = $attributes['slides'] ?? [];
 $unique_id = 'usp-slider-' . uniqid();
 
-// Standard-Bilder fuer USP-Slides (werden nur verwendet, wenn kein Bild gesetzt)
-$default_images = [
-	get_template_directory_uri() . '/assets/images/fallback/adults/balance.jpg',
-	get_template_directory_uri() . '/assets/images/fallback/juniors/grosserpsrung.jpg',
-	get_template_directory_uri() . '/assets/images/fallback/juniors/20190831_Last10_Berlin_Saturday_0304-scaled.jpg',
-	get_template_directory_uri() . '/assets/images/fallback/adults/1T2A6249.jpg',
-	get_template_directory_uri() . '/assets/images/fallback/kids/slider_kids_balance-scaled.jpg',
-];
+// Standard-Bilder für USP-Slides - Landscape-Bilder aus verschiedenen Kategorien
+$categories = ['adults', 'juniors', 'kids', 'adults', 'juniors'];
+$default_images = [];
+foreach ($categories as $cat) {
+	$default_images[] = parkourone_get_fallback_image($cat, 'landscape');
+}
 
 // Fallback-Bilder zuweisen, wenn keine gesetzt
 foreach ($slides as $index => &$slide) {

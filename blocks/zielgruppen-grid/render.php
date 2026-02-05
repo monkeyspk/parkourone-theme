@@ -5,11 +5,13 @@ $categories = $attributes['categories'] ?? [];
 $count = count($categories);
 $anchor = $attributes['anchor'] ?? 'zielgruppen';
 
-// Fallback-Bilder für Zielgruppen (Action & Parkour)
+// Fallback-Bilder für Zielgruppen - Portrait für Card-Layout
 $fallback_images = [
-	'kids' => get_template_directory_uri() . '/assets/images/fallback/kids/2022-04_potsi_kids-126-scaled.jpg',
-	'juniors' => get_template_directory_uri() . '/assets/images/fallback/juniors/grosserpsrung.jpg',
-	'adults' => get_template_directory_uri() . '/assets/images/fallback/adults/466A7464-scaled.jpg',
+	'minis' => parkourone_get_fallback_image('minis', 'portrait'),
+	'kids' => parkourone_get_fallback_image('kids', 'portrait'),
+	'juniors' => parkourone_get_fallback_image('juniors', 'portrait'),
+	'adults' => parkourone_get_fallback_image('adults', 'portrait'),
+	'seniors' => parkourone_get_fallback_image('seniors', 'portrait'),
 ];
 
 // Feste Links für Kategorieseiten

@@ -44,25 +44,12 @@ $useRandomFallback = $attributes['useRandomFallback'] ?? false;
 $desktopFallback = get_template_directory_uri() . '/assets/images/hero/startseite-desltop.jpg';
 $mobileFallback = get_template_directory_uri() . '/assets/images/hero/mobile-startbild.jpg';
 
-// Zufälliges Fallback-Bild aus Altersgruppen-Ordner
+// Zufälliges Fallback-Bild aus Altersgruppen-Ordner (Landscape für Hero)
 if ($useRandomFallback && empty($imageUrl)) {
-	$folder = 'adults';
-	if (!empty($ageCategory)) {
-		$age_lower = strtolower($ageCategory);
-		if (in_array($age_lower, ['kids', 'minis'])) {
-			$folder = 'kids';
-		} else {
-			$folder = 'adults';
-		}
-	}
-	$fallback_dir = get_template_directory() . '/assets/images/fallback/' . $folder;
-	$fallback_url = get_template_directory_uri() . '/assets/images/fallback/' . $folder;
-	if (is_dir($fallback_dir)) {
-		$images = glob($fallback_dir . '/*.{jpg,jpeg,png,webp}', GLOB_BRACE);
-		if (!empty($images)) {
-			$random_image = $images[array_rand($images)];
-			$desktopFallback = $fallback_url . '/' . basename($random_image);
-		}
+	$category = !empty($ageCategory) ? $ageCategory : 'adults';
+	$fallback = parkourone_get_fallback_image($category, 'landscape');
+	if ($fallback) {
+		$desktopFallback = $fallback;
 	}
 }
 

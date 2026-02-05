@@ -15,36 +15,25 @@ $align_class = '';
 if ($align === 'wide') $align_class = 'alignwide';
 if ($align === 'full') $align_class = 'alignfull';
 
-// Bilder-Mapping nach Kategorie
-$category_images = [
-	'kids' => [
-		$theme_uri . '/assets/images/fallback/kids/2022-04_potsi_kids-126-scaled.jpg',
-		$theme_uri . '/assets/images/fallback/kids/minis.jpg',
-		$theme_uri . '/assets/images/fallback/kids/slider_kids_balance-scaled.jpg',
-		$theme_uri . '/assets/images/fallback/kids/EveryONE_5MP-49-von-152-scaled.jpg',
-	],
-	'juniors' => [
-		$theme_uri . '/assets/images/fallback/juniors/G1A2147.jpg',
-		$theme_uri . '/assets/images/fallback/juniors/RubikONE-Eroeffnung-scaled.jpg',
-		$theme_uri . '/assets/images/fallback/juniors/ParkourONE-46-scaled-e1713961164686.jpg',
-		$theme_uri . '/assets/images/fallback/juniors/grosserpsrung.jpg',
-	],
-	'adults' => [
-		$theme_uri . '/assets/images/fallback/adults/IMG_2604SeeDo-Bern-1-scaled-e1705321049774.jpg',
-		$theme_uri . '/assets/images/fallback/adults/2022_MastersBern-34-scaled.jpg',
-		$theme_uri . '/assets/images/fallback/adults/balance.jpg',
-		$theme_uri . '/assets/images/fallback/adults/EveryONE_5MP-149-von-152-scaled.jpg',
-	],
-	'default' => [
-		$theme_uri . '/assets/images/fallback/juniors/G1A2147.jpg',
-		$theme_uri . '/assets/images/fallback/kids/minis.jpg',
-		$theme_uri . '/assets/images/fallback/adults/balance.jpg',
-		$theme_uri . '/assets/images/fallback/juniors/grosserpsrung.jpg',
-	],
-];
+// Bilder-Mapping nach Kategorie - 4 zufällige Landscape-Bilder holen
+function parkourone_get_step_images($category, $count = 4) {
+	$all_images = parkourone_get_theme_images($category, 'landscape');
+	if (empty($all_images)) {
+		$all_images = parkourone_get_theme_images('adults', 'landscape');
+	}
+	if (empty($all_images)) {
+		return [];
+	}
+	shuffle($all_images);
+	$selected = array_slice($all_images, 0, $count);
+	return array_map(function($img) { return $img['url']; }, $selected);
+}
 
 // Bilder für aktuelle Kategorie
-$images = $category_images[$age_category] ?? $category_images['default'];
+$images = parkourone_get_step_images($age_category, count($steps));
+if (empty($images)) {
+	$images = parkourone_get_step_images('adults', count($steps));
+}
 ?>
 
 <section class="po-steps-timeline po-steps-timeline--<?php echo esc_attr($background_color); ?> <?php echo esc_attr($align_class); ?>" id="<?php echo esc_attr($unique_id); ?>">
