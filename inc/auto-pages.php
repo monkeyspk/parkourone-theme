@@ -1201,6 +1201,30 @@ function parkourone_get_template_pages() {
 			'pattern_file' => 'page-preise.php',
 			'page_slug' => 'preise',
 		],
+		[
+			'slug' => 'probetraining-buchen',
+			'title' => 'Probetraining buchen',
+			'description' => 'Buchungsseite mit Steps, Event-Liste und FAQ',
+			'blocks' => 'Page-Header, Steps, Event-Liste (Shortcode), FAQ',
+			'pattern_file' => 'page-probetraining-buchen.php',
+			'page_slug' => 'probetraining-buchen',
+		],
+		[
+			'slug' => 'datenschutz',
+			'title' => 'Datenschutz',
+			'description' => 'DSGVO-konforme Datenschutzerklärung',
+			'blocks' => 'Text-Inhalte (rechtlich)',
+			'pattern_file' => 'page-datenschutz.php',
+			'page_slug' => 'datenschutz',
+		],
+		[
+			'slug' => 'impressum',
+			'title' => 'Impressum',
+			'description' => 'Rechtlich vorgeschriebenes Impressum',
+			'blocks' => 'Text-Inhalte (rechtlich)',
+			'pattern_file' => 'page-impressum.php',
+			'page_slug' => 'impressum',
+		],
 	];
 
 	// Prüfen ob Seiten bereits existieren
@@ -1645,71 +1669,81 @@ function parkourone_generate_location_page_content($location_slug, $location_nam
 	// Theme URI für Bilder
 	$theme_uri = get_template_directory_uri();
 
-	// Probetraining-Preis
-	$probetraining_price = parkourone_get_probetraining_price();
-
 	// Header-Variante validieren
 	$header_variant = in_array($header_variant, ['centered', 'split', 'fullscreen']) ? $header_variant : 'split';
 
-	// Probetraining-Steps
+	// Probetraining-Preis
+	$probetraining_price = parkourone_get_probetraining_price();
+
+	// Probetraining-Steps für Steps-Carousel (JSON)
 	$probetraining_steps = json_encode([
-		["title" => "Klasse auswählen", "description" => "Wähle die passende Klasse basierend auf deiner Altersgruppe und deinem Erfahrungslevel.", "icon" => "users"],
-		["title" => "Termin buchen", "description" => "Buche online deinen Wunschtermin. Das Probetraining kostet {$probetraining_price}.", "icon" => "calendar"],
-		["title" => "Zur Halle kommen", "description" => "Komm in bequemer Sportkleidung zu unserer Halle in {$location_name}.", "icon" => "location"],
-		["title" => "Loslegen", "description" => "Nach dem Probetraining kannst du entscheiden, ob du Teil unserer Community werden möchtest.", "icon" => "check"]
+		["title" => "Altersgruppe wählen", "description" => "Wähle die passende Klasse basierend auf deinem Alter: Minis, Kids, Juniors oder Adults.", "icon" => "users"],
+		["title" => "Kurs auswählen", "description" => "Finde den perfekten Kurs für deinen Zeitplan an unserem Standort in {$location_name}.", "icon" => "calendar"],
+		["title" => "Termin buchen", "description" => "Buche online dein Probetraining. Es kostet {$probetraining_price} und wird bei Anmeldung verrechnet.", "icon" => "check"],
+		["title" => "Loslegen", "description" => "Komm in bequemer Sportkleidung zu unserer Halle in {$location_name}. Wir freuen uns auf dich!", "icon" => "location"]
 	], JSON_UNESCAPED_UNICODE);
 
-	// Stats
-	$header_stats = json_encode([
+	// Altersgruppen abrufen für Anzahl
+	$age_groups = parkourone_get_ordered_age_groups();
+	$age_count = count($age_groups);
+
+	// Stats für den Page Header
+	$location_stats = json_encode([
 		["number" => "15", "label" => "Jahre Erfahrung"],
-		["number" => "50", "label" => "Kurse/Woche"],
-		["number" => "500", "label" => "Aktive Mitglieder"]
+		["number" => (string)$age_count, "label" => "Altersgruppen"],
+		["number" => "98", "label" => "% Zufriedenheit"]
 	], JSON_UNESCAPED_UNICODE);
+
+	// SEO-optimierte Texte
+	$hero_subtext = "Professionelles Parkour-Training in {$location_name} bei ParkourONE {$site_name}. Kurse für alle Altersgruppen – von Minis bis Adults. Qualifizierte Coaches, sichere Umgebung, starke Community.";
+	$text_reveal_text = "Parkour in {$location_name} bedeutet mehr als nur Sport. Es ist eine Reise zu dir selbst. Bei ParkourONE {$site_name} trainierst du in einer motivierenden Umgebung mit erfahrenen Coaches. Kleine Gruppen, individuelle Betreuung und eine starke Community warten auf dich.";
 
 	$content = <<<BLOCKS
-<!-- wp:parkourone/page-header {"variant":"{$header_variant}","eyebrow":"Parkour in {$location_name}","headline":"Parkour Training in {$location_name}","subtext":"Entdecke professionelles Parkour-Training bei ParkourONE {$site_name}. Kurse für alle Altersgruppen an unserem Standort in {$location_name}.","showStats":true,"stats":{$header_stats},"backgroundType":"image","backgroundImage":"{$theme_uri}/assets/images/fallback/landscape/adults/1T2A6249.jpg","overlayOpacity":60,"align":"full"} /-->
+<!-- wp:parkourone/page-header {"variant":"{$header_variant}","title":"Parkour in {$location_name}","titleAccent":"{$site_name}","description":"{$hero_subtext}","ctaText":"Probetraining buchen","ctaUrl":"/probetraining-buchen/","ctaSecondaryText":"Kurse ansehen","ctaSecondaryUrl":"#kurse","stats":{$location_stats},"align":"full"} /-->
 
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:parkourone/zielgruppen-grid {"headline":"Wähle deine Altersgruppe","subtext":"Finde den passenden Kurs für dich in {$location_name}","align":"wide"} /-->
-
-<!-- wp:spacer {"height":"80px"} -->
-<div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
-<!-- /wp:spacer -->
-
-<!-- wp:parkourone/klassen-slider {"headline":"Parkour Kurse in {$location_name}","filterMode":"age","filterLocation":"{$location_slug}","buttonText":"Probetraining buchen","hideIfEmpty":true,"align":"full"} /-->
-
-<!-- wp:spacer {"height":"80px"} -->
-<div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
-<!-- /wp:spacer -->
-
-<!-- wp:parkourone/steps-carousel {"headline":"So startest du in {$location_name}","subheadline":"In 4 einfachen Schritten zum ersten Training","steps":{$probetraining_steps},"backgroundColor":"light","align":"full"} /-->
-
-<!-- wp:spacer {"height":"80px"} -->
-<div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
-<!-- /wp:spacer -->
-
-<!-- wp:parkourone/usp-slider {"headline":"Warum ParkourONE {$location_name}?","align":"full"} /-->
-
-<!-- wp:spacer {"height":"80px"} -->
-<div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
-<!-- /wp:spacer -->
-
-<!-- wp:parkourone/testimonial-slider {"filterMode":"location","filterValue":"{$location_slug}","headline":"Was unsere Schüler:innen sagen","autoplay":true,"interval":6000,"align":"full"} /-->
+<!-- wp:parkourone/steps-carousel {"headline":"Parkour Probetraining in {$location_name}","subheadline":"In 4 einfachen Schritten zum ersten Training","steps":{$probetraining_steps},"backgroundColor":"light","align":"full"} /-->
 
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:parkourone/faq {"headline":"Häufige Fragen zu {$location_name}","category":"standort","backgroundColor":"light","align":"full"} /-->
+<!-- wp:parkourone/klassen-slider {"headline":"Parkour Kurse in {$location_name}","filterMode":"age","filterLocation":"{$location_slug}","buttonText":"Probetraining buchen","hideIfEmpty":true,"align":"full","anchor":"kurse"} /-->
 
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:parkourone/about-section {"subheadline":"WARUM PARKOUR?","headline":"Mehr als nur Sport","text":"Parkour in {$location_name} bei ParkourONE {$site_name} bedeutet nicht nur körperliches Training, sondern auch mentale Stärke, Selbstvertrauen und Community. Unsere Coaches begleiten dich auf deinem individuellen Weg – egal ob Anfänger oder Fortgeschrittene.","ctaText":"Mehr über ParkourONE","ctaUrl":"/team/","align":"full"} /-->
+<!-- wp:parkourone/testimonials-slider {"headline":"Das sagen Parkour Schüler:innen in {$location_name}","align":"full"} /-->
+
+<!-- wp:spacer {"height":"60px"} -->
+<div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
+<!-- /wp:spacer -->
+
+<!-- wp:parkourone/text-reveal {"text":"{$text_reveal_text}","textSize":"large","textAlign":"center"} /-->
+
+<!-- wp:spacer {"height":"40px"} -->
+<div style="height:40px" aria-hidden="true" class="wp-block-spacer"></div>
+<!-- /wp:spacer -->
+
+<!-- wp:image {"align":"full","sizeSlug":"full"} -->
+<figure class="wp-block-image alignfull size-full"><img src="{$theme_uri}/assets/images/fallback/landscape/adults/1T2A6249.jpg" alt="Parkour Training in {$location_name} bei ParkourONE {$site_name}"/></figure>
+<!-- /wp:image -->
+
+<!-- wp:spacer {"height":"60px"} -->
+<div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
+<!-- /wp:spacer -->
+
+<!-- wp:parkourone/faq {"headline":"Häufige Fragen zu Parkour in {$location_name}","category":"standort","backgroundColor":"light","align":"full"} /-->
+
+<!-- wp:spacer {"height":"60px"} -->
+<div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
+<!-- /wp:spacer -->
+
+<!-- wp:parkourone/promo-banner {"headline":"Jetzt Parkour in {$location_name} starten!","subtext":"Buche dein erstes Probetraining und erlebe Parkour in {$location_name} hautnah. Keine Vorkenntnisse nötig.","buttonText":"Probetraining buchen","buttonUrl":"/probetraining-buchen/","align":"full"} /-->
 BLOCKS;
 
 	return $content;
@@ -2101,6 +2135,7 @@ add_action('wp_enqueue_scripts', 'parkourone_enqueue_taxonomy_styles');
 function parkourone_get_page_seo_meta($post_id) {
 	$city_slug = get_post_meta($post_id, '_parkourone_city_slug', true);
 	$cat_slug = get_post_meta($post_id, '_parkourone_category_slug', true);
+	$location_slug = get_post_meta($post_id, '_parkourone_location_slug', true);
 	$site_location = parkourone_get_site_location();
 	$site_name = $site_location['name'];
 
@@ -2119,6 +2154,17 @@ function parkourone_get_page_seo_meta($post_id) {
 		$meta['keywords'] = "Parkour {$city_name}, Parkour Training {$city_name}, Parkour lernen {$city_name}";
 	}
 
+	// Ortschaft-Seite (z.B. Berlin Tiergarten, Berlin Mitte)
+	if ($location_slug && empty($meta['title'])) {
+		// Location Display Name aus Slug generieren
+		$location_name = ucwords(str_replace('-', ' ', $location_slug));
+		// Wenn Site-Name im Location-Name vorkommt, diesen nutzen
+		// z.B. "berlin-tiergarten" → "Berlin Tiergarten"
+		$meta['title'] = "Parkour in {$location_name} – Training & Kurse | ParkourONE {$site_name}";
+		$meta['description'] = "Parkour Training in {$location_name} bei ParkourONE {$site_name}. Professionelle Kurse für Kids, Jugendliche & Erwachsene. Erfahrene Coaches, sichere Umgebung. Jetzt Probetraining buchen!";
+		$meta['keywords'] = "Parkour {$location_name}, Parkour Training {$location_name}, Parkour lernen {$location_name}, ParkourONE {$site_name}";
+	}
+
 	// Zielgruppen-Seite
 	if ($cat_slug) {
 		$term = get_term_by('slug', $cat_slug, 'event_category');
@@ -2130,7 +2176,7 @@ function parkourone_get_page_seo_meta($post_id) {
 		$meta['keywords'] = "Parkour {$display_name}, Parkour {$display_name} {$site_name}, {$display_name} Parkour Training";
 	}
 
-	// Template-Seiten (Startseite, Kurse, Team)
+	// Template-Seiten (Startseite, Kurse, Team, Probetraining, Legal)
 	$template_slug = get_post_meta($post_id, '_parkourone_template_slug', true);
 	if ($template_slug && empty($meta['title'])) {
 		$template_meta = [
@@ -2148,6 +2194,21 @@ function parkourone_get_page_seo_meta($post_id) {
 				'title' => "Über ParkourONE {$site_name} – Team & TRUST Education",
 				'description' => "Lerne das ParkourONE {$site_name} Team kennen. TRUST-zertifizierte Coaches mit jahrelanger Erfahrung. Entdecke unsere Philosophie und Werte.",
 				'keywords' => "ParkourONE Team, TRUST Education, Parkour Coaches {$site_name}, Roger Widmer"
+			],
+			'probetraining-buchen' => [
+				'title' => "Probetraining buchen {$site_name} – Parkour testen | ParkourONE",
+				'description' => "Buche dein Parkour Probetraining bei ParkourONE {$site_name}. Wähle deinen Kurs, finde den passenden Termin und starte dein Abenteuer!",
+				'keywords' => "Parkour Probetraining {$site_name}, Parkour testen, Parkour buchen, Probetraining ParkourONE"
+			],
+			'datenschutz' => [
+				'title' => "Datenschutzerklärung | ParkourONE {$site_name}",
+				'description' => "Datenschutzerklärung von ParkourONE {$site_name}. Informationen zur Verarbeitung personenbezogener Daten gemäß DSGVO.",
+				'keywords' => "Datenschutz ParkourONE, DSGVO, Datenschutzerklärung"
+			],
+			'impressum' => [
+				'title' => "Impressum | ParkourONE {$site_name}",
+				'description' => "Impressum und rechtliche Informationen von ParkourONE {$site_name}. Kontaktdaten, Verantwortliche und Haftungshinweise.",
+				'keywords' => "Impressum ParkourONE, Kontakt, Rechtliches"
 			]
 		];
 
