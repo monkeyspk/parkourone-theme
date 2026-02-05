@@ -45,12 +45,6 @@ $hero_stats = json_encode([
 	['number' => '7', 'suffix' => '', 'label' => 'Standorte']
 ], JSON_UNESCAPED_UNICODE);
 
-$stats_counter = json_encode([
-	['number' => '1500', 'suffix' => '+', 'label' => 'Schüler:innen', 'subtext' => 'vertrauen uns'],
-	['number' => '25', 'suffix' => '', 'label' => 'Jahre Erfahrung', 'subtext' => 'seit 1999'],
-	['number' => '7', 'suffix' => '', 'label' => 'Standorte', 'subtext' => 'in Deutschland & Schweiz']
-], JSON_UNESCAPED_UNICODE);
-
 $testimonials = json_encode([
 	['text' => 'Parkour hat mein Leben verändert. Ich habe nicht nur körperliche Stärke gewonnen, sondern auch mentale Stärke und ein neues Selbstvertrauen.', 'author' => 'Sarah M.', 'role' => 'Schülerin seit 2019', 'imageUrl' => ''],
 	['text' => 'Die Community bei ParkourONE ist unglaublich. Hier unterstützt jeder jeden – vom Anfänger bis zum Profi.', 'author' => 'Max K.', 'role' => 'Schüler seit 2021', 'imageUrl' => '']
@@ -64,12 +58,6 @@ $testimonials = json_encode([
 <!-- /wp:spacer -->
 
 <!-- wp:parkourone/zielgruppen-grid {"headline":"Was ist dein nächster Sprung?","subtext":"Wähle deine Altersgruppe und finde den passenden Kurs","anchor":"zielgruppen","align":"wide"} /-->
-
-<!-- wp:spacer {"height":"80px"} -->
-<div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
-<!-- /wp:spacer -->
-
-<!-- wp:parkourone/stats-counter {"stats":<?php echo $stats_counter; ?>,"style":"light","align":"full"} /-->
 
 <!-- wp:spacer {"height":"80px"} -->
 <div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
