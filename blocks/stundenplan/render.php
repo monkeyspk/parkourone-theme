@@ -536,6 +536,7 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 					$coach = $coach_profiles[$klasse['headcoach']];
 				?>
 				<div class="po-steps__slide po-sp__coach-slide" data-slide="coach">
+					<button type="button" class="po-sp__back-to-overview po-sp__back-to-overview--top">← Zurück zur Klasse</button>
 					<div class="po-sp-coach">
 						<header class="po-sp-coach__header">
 							<?php if (!empty($coach['card_image'])): ?>
@@ -597,7 +598,7 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 						<?php endif; ?>
 					</div>
 
-					<button type="button" class="po-sp__back-to-overview">← Zurück zur Übersicht</button>
+					<button type="button" class="po-sp__back-to-overview">← Zurück zur Klasse</button>
 				</div>
 				<?php endif; ?>
 
