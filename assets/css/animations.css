@@ -318,6 +318,201 @@
 	transform: translateY(0);
 }
 
+/* ==========================================================================
+   TEAM PAGE BLOCKS ANIMATIONS
+   ========================================================================== */
+
+/* Page Header */
+.po-ph {
+	opacity: 0;
+}
+
+.po-ph.is-visible {
+	opacity: 1;
+}
+
+.po-ph__content,
+.po-ph__visual {
+	opacity: 0;
+	transform: translateY(40px);
+	transition: opacity 0.9s cubic-bezier(0.25, 0.1, 0.25, 1),
+	            transform 0.9s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.po-ph__visual {
+	transition-delay: 0.15s;
+}
+
+.po-ph.is-visible .po-ph__content,
+.po-ph.is-visible .po-ph__visual {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* Team Grid */
+.po-tg__header {
+	opacity: 0;
+	transform: translateY(30px);
+	transition: opacity 0.7s cubic-bezier(0.25, 0.1, 0.25, 1),
+	            transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.po-tg.is-visible .po-tg__header {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.po-tg__card {
+	opacity: 0;
+	transform: translateY(40px) scale(0.95);
+	transition: opacity 0.6s cubic-bezier(0.25, 0.1, 0.25, 1),
+	            transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.po-tg.is-visible .po-tg__card:nth-child(1) { transition-delay: 0.05s; }
+.po-tg.is-visible .po-tg__card:nth-child(2) { transition-delay: 0.1s; }
+.po-tg.is-visible .po-tg__card:nth-child(3) { transition-delay: 0.15s; }
+.po-tg.is-visible .po-tg__card:nth-child(4) { transition-delay: 0.2s; }
+.po-tg.is-visible .po-tg__card:nth-child(5) { transition-delay: 0.25s; }
+.po-tg.is-visible .po-tg__card:nth-child(6) { transition-delay: 0.3s; }
+.po-tg.is-visible .po-tg__card:nth-child(7) { transition-delay: 0.35s; }
+.po-tg.is-visible .po-tg__card:nth-child(8) { transition-delay: 0.4s; }
+.po-tg.is-visible .po-tg__card:nth-child(9) { transition-delay: 0.45s; }
+.po-tg.is-visible .po-tg__card:nth-child(10) { transition-delay: 0.5s; }
+.po-tg.is-visible .po-tg__card:nth-child(11) { transition-delay: 0.55s; }
+.po-tg.is-visible .po-tg__card:nth-child(12) { transition-delay: 0.6s; }
+
+.po-tg.is-visible .po-tg__card {
+	opacity: 1;
+	transform: translateY(0) scale(1);
+}
+
+/* TRUST Education */
+.po-trust__header {
+	opacity: 0;
+	transform: translateY(30px);
+	transition: opacity 0.7s cubic-bezier(0.25, 0.1, 0.25, 1),
+	            transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.po-trust.is-visible .po-trust__header {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.po-trust__goal {
+	opacity: 0;
+	transform: translateY(40px);
+	transition: opacity 0.6s cubic-bezier(0.25, 0.1, 0.25, 1),
+	            transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.po-trust.is-visible .po-trust__goal:nth-child(1) { transition-delay: 0.1s; }
+.po-trust.is-visible .po-trust__goal:nth-child(2) { transition-delay: 0.2s; }
+.po-trust.is-visible .po-trust__goal:nth-child(3) { transition-delay: 0.3s; }
+
+.po-trust.is-visible .po-trust__goal {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.po-trust__cta-wrap {
+	opacity: 0;
+	transform: translateY(20px);
+	transition: opacity 0.6s cubic-bezier(0.25, 0.1, 0.25, 1) 0.4s,
+	            transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1) 0.4s;
+}
+
+.po-trust.is-visible .po-trust__cta-wrap {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* Job Cards */
+.po-jobs__header {
+	opacity: 0;
+	transform: translateY(30px);
+	transition: opacity 0.7s cubic-bezier(0.25, 0.1, 0.25, 1),
+	            transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.po-jobs.is-visible .po-jobs__header {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.po-job-card {
+	opacity: 0;
+	transform: translateY(40px);
+	transition: opacity 0.6s cubic-bezier(0.25, 0.1, 0.25, 1),
+	            transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.po-jobs.is-visible .po-job-card:nth-child(1) { transition-delay: 0.1s; }
+.po-jobs.is-visible .po-job-card:nth-child(2) { transition-delay: 0.2s; }
+.po-jobs.is-visible .po-job-card:nth-child(3) { transition-delay: 0.3s; }
+.po-jobs.is-visible .po-job-card:nth-child(4) { transition-delay: 0.4s; }
+
+.po-jobs.is-visible .po-job-card {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* Schulen Grid */
+.po-schulen__headline,
+.po-schulen__intro {
+	opacity: 0;
+	transform: translateY(30px);
+	transition: opacity 0.7s cubic-bezier(0.25, 0.1, 0.25, 1),
+	            transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.po-schulen__intro {
+	transition-delay: 0.1s;
+}
+
+.po-schulen.is-visible .po-schulen__headline,
+.po-schulen.is-visible .po-schulen__intro {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.po-schulen__card {
+	opacity: 0;
+	transform: translateY(40px) scale(0.95);
+	transition: opacity 0.6s cubic-bezier(0.25, 0.1, 0.25, 1),
+	            transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.po-schulen.is-visible .po-schulen__card:nth-child(1) { transition-delay: 0.15s; }
+.po-schulen.is-visible .po-schulen__card:nth-child(2) { transition-delay: 0.2s; }
+.po-schulen.is-visible .po-schulen__card:nth-child(3) { transition-delay: 0.25s; }
+.po-schulen.is-visible .po-schulen__card:nth-child(4) { transition-delay: 0.3s; }
+.po-schulen.is-visible .po-schulen__card:nth-child(5) { transition-delay: 0.35s; }
+.po-schulen.is-visible .po-schulen__card:nth-child(6) { transition-delay: 0.4s; }
+
+.po-schulen.is-visible .po-schulen__card {
+	opacity: 1;
+	transform: translateY(0) scale(1);
+}
+
+/* Testimonial Highlight */
+.po-quote-highlight {
+	opacity: 0;
+	transform: translateY(30px);
+	transition: opacity 0.8s cubic-bezier(0.25, 0.1, 0.25, 1),
+	            transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.po-quote-highlight.is-visible {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* ==========================================================================
+   REDUCED MOTION
+   ========================================================================== */
+
 /* Respect reduced motion for all block animations */
 @media (prefers-reduced-motion: reduce) {
 	.po-hero .po-hero__content,
@@ -341,7 +536,21 @@
 	.po-testimonials__headline,
 	.po-cg__headline,
 	.po-steps-timeline__headline,
-	.po-stats__item {
+	.po-stats__item,
+	.po-ph,
+	.po-ph__content,
+	.po-ph__visual,
+	.po-tg__header,
+	.po-tg__card,
+	.po-trust__header,
+	.po-trust__goal,
+	.po-trust__cta-wrap,
+	.po-jobs__header,
+	.po-job-card,
+	.po-schulen__headline,
+	.po-schulen__intro,
+	.po-schulen__card,
+	.po-quote-highlight {
 		opacity: 1 !important;
 		transform: none !important;
 		transition: none !important;

@@ -16,5 +16,5 @@
 		"headline": { "type": "string", "default": "Unser Team" },
 		"intro": { "type": "string", "default": "Das sind wir. Ob draussen vor den Klassen oder im Büro hinter den Kulissen – lerne unser Team kennen." }
 	},
-	"supports": { "align": ["full", "wide"], "html": false }
+	"supports": { "align": ["full", "wide"], "html": false, "anchor": true }
 }

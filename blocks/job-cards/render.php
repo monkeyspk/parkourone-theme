@@ -3,7 +3,8 @@ $headline = $attributes['headline'] ?? 'Werde Teil unseres Teams';
 $intro = $attributes['intro'] ?? '';
 $jobs = $attributes['jobs'] ?? [];
 $bgColor = $attributes['backgroundColor'] ?? '#f5f5f7';
-$unique_id = 'po-jobs-' . uniqid();
+$anchor = $attributes['anchor'] ?? '';
+$unique_id = $anchor ?: ('po-jobs-' . uniqid());
 ?>
 <section class="po-jobs alignfull" id="<?php echo esc_attr($unique_id); ?>" style="background-color: <?php echo esc_attr($bgColor); ?>">
 	<div class="po-jobs__header">

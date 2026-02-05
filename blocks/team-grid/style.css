@@ -3,22 +3,24 @@
 	background: #fff;
 }
 
+.po-tg__header {
+	max-width: 800px;
+	margin: 0 auto 3rem;
+	padding: 0 clamp(1.5rem, 5vw, 4rem);
+	text-align: center;
+}
+
 .po-tg__headline {
 	font-size: clamp(2rem, 5vw, 3rem);
 	font-weight: 700;
 	margin: 0 0 1rem 0;
-	padding: 0 clamp(1.5rem, 5vw, 4rem);
 	color: #1d1d1f;
-	text-align: center;
 }
 
 .po-tg__intro {
 	font-size: 1.125rem;
 	color: #86868b;
-	margin: 0 auto 3rem;
-	max-width: 600px;
-	padding: 0 clamp(1.5rem, 5vw, 4rem);
-	text-align: center;
+	margin: 0;
 	line-height: 1.5;
 }
 

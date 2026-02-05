@@ -1,6 +1,7 @@
 <?php
 $headline = $attributes['headline'] ?? 'Unser Team';
 $intro = $attributes['intro'] ?? 'Das sind wir. Ob draussen vor den Klassen oder im Büro hinter den Kulissen – lerne unser Team kennen.';
+$anchor = $attributes['anchor'] ?? '';
 
 $all_coaches = get_posts([
 	'post_type' => 'coach',
@@ -156,13 +157,15 @@ if (!function_exists('parkourone_get_coach_trainings_with_dates')) {
 	}
 }
 ?>
-<section class="po-tg" id="<?php echo esc_attr($unique_id); ?>">
-	<?php if ($headline): ?>
-	<h2 class="po-tg__headline"><?php echo wp_kses_post($headline); ?></h2>
-	<?php endif; ?>
-	<?php if ($intro): ?>
-		<p class="po-tg__intro"><?php echo wp_kses_post($intro); ?></p>
-	<?php endif; ?>
+<section class="po-tg" id="<?php echo esc_attr($anchor ?: $unique_id); ?>">
+	<div class="po-tg__header">
+		<?php if ($headline): ?>
+		<h2 class="po-tg__headline"><?php echo wp_kses_post($headline); ?></h2>
+		<?php endif; ?>
+		<?php if ($intro): ?>
+			<p class="po-tg__intro"><?php echo wp_kses_post($intro); ?></p>
+		<?php endif; ?>
+	</div>
 	
 	<?php if (!empty($members)): ?>
 	<div class="po-tg__grid">

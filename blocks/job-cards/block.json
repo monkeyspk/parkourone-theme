@@ -41,5 +41,5 @@
 		]},
 		"backgroundColor": { "type": "string", "default": "#f5f5f7" }
 	},
-	"supports": { "align": ["full", "wide"], "html": false }
+	"supports": { "align": ["full", "wide"], "html": false, "anchor": true }
 }

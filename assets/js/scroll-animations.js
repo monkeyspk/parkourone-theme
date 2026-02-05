@@ -12,6 +12,7 @@
 		'[data-animate-stagger]',
 		// Block-specific animations
 		'.po-hero',
+		'.po-ph',                    // Page Header
 		'.po-usp',
 		'.po-cg',                    // Zielgruppen Grid
 		'.po-stats',
@@ -23,7 +24,11 @@
 		'.po-faqone',
 		'.po-stundenplan',
 		'.po-stundenplan-detail',
-		'.po-testimonials'
+		'.po-testimonials',
+		'.po-tg',                    // Team Grid
+		'.po-trust',                 // TRUST Education
+		'.po-jobs',                  // Job Cards
+		'.po-schulen'                // Schulen Grid
 	];
 
 	// Configuration
@@ -110,5 +115,35 @@
 				}
 			});
 		}, 200);
+	});
+
+	// Smooth scroll for anchor links
+	document.addEventListener('click', function(e) {
+		var link = e.target.closest('a[href^="#"]');
+		if (!link) return;
+
+		var targetId = link.getAttribute('href');
+		if (targetId === '#' || targetId.length < 2) return;
+
+		var target = document.querySelector(targetId);
+		if (!target) return;
+
+		e.preventDefault();
+
+		// Get header height for offset
+		var header = document.querySelector('.site-header, header, .po-header');
+		var headerHeight = header ? header.offsetHeight : 0;
+
+		var targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerHeight - 40;
+
+		window.scrollTo({
+			top: targetPosition,
+			behavior: 'smooth'
+		});
+
+		// Update URL without scrolling
+		if (history.pushState) {
+			history.pushState(null, null, targetId);
+		}
 	});
 })();

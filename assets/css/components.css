@@ -441,3 +441,97 @@ body.po-no-scroll {
 		padding: 28px 20px 20px;
 	}
 }
+
+/* ==========================================================================
+   SCROLL REVEAL ANIMATIONS
+   Smooth fade-in animations triggered on scroll
+   ========================================================================== */
+
+/* Base state - hidden */
+.po-reveal {
+	opacity: 0;
+	transform: translateY(40px);
+	transition: opacity 0.8s var(--po-transition-smooth),
+	            transform 0.8s var(--po-transition-smooth);
+}
+
+.po-reveal--delay-1 { transition-delay: 0.1s; }
+.po-reveal--delay-2 { transition-delay: 0.2s; }
+.po-reveal--delay-3 { transition-delay: 0.3s; }
+.po-reveal--delay-4 { transition-delay: 0.4s; }
+
+/* Revealed state */
+.po-reveal.is-visible {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* Stagger children animation */
+.po-reveal-stagger > * {
+	opacity: 0;
+	transform: translateY(30px);
+	transition: opacity 0.6s var(--po-transition-smooth),
+	            transform 0.6s var(--po-transition-smooth);
+}
+
+.po-reveal-stagger.is-visible > *:nth-child(1) { transition-delay: 0.05s; }
+.po-reveal-stagger.is-visible > *:nth-child(2) { transition-delay: 0.1s; }
+.po-reveal-stagger.is-visible > *:nth-child(3) { transition-delay: 0.15s; }
+.po-reveal-stagger.is-visible > *:nth-child(4) { transition-delay: 0.2s; }
+.po-reveal-stagger.is-visible > *:nth-child(5) { transition-delay: 0.25s; }
+.po-reveal-stagger.is-visible > *:nth-child(6) { transition-delay: 0.3s; }
+.po-reveal-stagger.is-visible > *:nth-child(7) { transition-delay: 0.35s; }
+.po-reveal-stagger.is-visible > *:nth-child(8) { transition-delay: 0.4s; }
+
+.po-reveal-stagger.is-visible > * {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* Scale reveal */
+.po-reveal--scale {
+	opacity: 0;
+	transform: scale(0.95);
+	transition: opacity 0.6s var(--po-transition-smooth),
+	            transform 0.6s var(--po-transition-smooth);
+}
+
+.po-reveal--scale.is-visible {
+	opacity: 1;
+	transform: scale(1);
+}
+
+/* Slide from left */
+.po-reveal--left {
+	opacity: 0;
+	transform: translateX(-40px);
+}
+
+.po-reveal--left.is-visible {
+	opacity: 1;
+	transform: translateX(0);
+}
+
+/* Slide from right */
+.po-reveal--right {
+	opacity: 0;
+	transform: translateX(40px);
+}
+
+.po-reveal--right.is-visible {
+	opacity: 1;
+	transform: translateX(0);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+	.po-reveal,
+	.po-reveal--scale,
+	.po-reveal--left,
+	.po-reveal--right,
+	.po-reveal-stagger > * {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+}
