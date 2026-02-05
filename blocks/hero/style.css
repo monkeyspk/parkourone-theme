@@ -98,17 +98,17 @@
 
 /* Highlight mit pulsierendem Glow */
 .po-hero__highlight {
-	color: var(--po-color-primary, #00c853);
-	text-shadow: 0 0 20px rgba(0, 200, 83, 0.5);
+	color: #2997ff;
+	text-shadow: 0 0 20px rgba(41, 151, 255, 0.5);
 	animation: heroGlow 3s ease-in-out infinite;
 }
 
 @keyframes heroGlow {
 	0%, 100% {
-		text-shadow: 0 0 20px rgba(0, 200, 83, 0.4);
+		text-shadow: 0 0 20px rgba(41, 151, 255, 0.4);
 	}
 	50% {
-		text-shadow: 0 0 30px rgba(0, 200, 83, 0.7), 0 0 50px rgba(0, 200, 83, 0.3);
+		text-shadow: 0 0 30px rgba(41, 151, 255, 0.7), 0 0 50px rgba(41, 151, 255, 0.3);
 	}
 }
 
