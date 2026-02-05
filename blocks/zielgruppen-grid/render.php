@@ -3,6 +3,7 @@ $headline = $attributes['headline'] ?? 'Was ist dein nächster Sprung?';
 $subtext = $attributes['subtext'] ?? 'Nimm eine neue Herausforderung an, unabhängig von deinem Fitnesslevel.';
 $categories = $attributes['categories'] ?? [];
 $count = count($categories);
+$anchor = $attributes['anchor'] ?? 'zielgruppen';
 
 // Fallback-Bilder für Zielgruppen (Action & Parkour)
 $fallback_images = [
@@ -34,7 +35,7 @@ foreach ($categories as $index => $cat) {
 }
 ?>
 
-<section class="po-cg">
+<section class="po-cg" id="<?php echo esc_attr($anchor); ?>">
 	<div class="po-cg__header">
 		<?php if ($headline): ?>
 			<h2 class="po-cg__headline"><?php echo wp_kses_post($headline); ?></h2>

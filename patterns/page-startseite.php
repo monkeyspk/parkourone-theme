@@ -11,13 +11,13 @@
  */
 ?>
 
-<!-- wp:parkourone/hero {"headline":"Stärke deinen Körper, schärfe deinen Geist – erlebe Parkour","subtext":"Bei ParkourONE lernst du, Hindernisse zu überwinden – in der Stadt und im Leben. Entdecke unsere Klassen für alle Altersgruppen und starte deine Parkour-Reise.","buttonText":"Jetzt beginnen","buttonUrl":"/probetraining/","align":"full"} /-->
+<!-- wp:parkourone/hero {"eyebrow":"Parkour für alle","headline":"Stärke deinen Körper, schärfe deinen Geist","subtext":"Entdecke Parkour – für alle Altersgruppen, an mehreren Standorten in Deutschland und der Schweiz.","buttonText":"Jetzt starten","buttonUrl":"#stundenplan","videoUrl":"https://www.youtube.com/watch?v=kb5XFFvQjYs","videoButtonText":"Film ansehen","stats":[{"number":"1500","suffix":"+","label":"Schüler:innen"},{"number":"25","suffix":"","label":"Jahre Erfahrung"},{"number":"7","suffix":"","label":"Standorte"}],"overlayOpacity":55,"align":"full"} /-->
 
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:parkourone/zielgruppen-grid {"headline":"Was ist dein nächster Sprung?","subtext":"Wähle deine Altersgruppe und finde den passenden Kurs","align":"wide"} /-->
+<!-- wp:parkourone/zielgruppen-grid {"headline":"Was ist dein nächster Sprung?","subtext":"Wähle deine Altersgruppe und finde den passenden Kurs","anchor":"zielgruppen","align":"wide"} /-->
 
 <!-- wp:spacer {"height":"80px"} -->
 <div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
@@ -59,7 +59,7 @@
 <div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:parkourone/stundenplan {"headline":"Stundenplan","buttonText":"Probetraining buchen"} /-->
+<!-- wp:parkourone/stundenplan {"headline":"Stundenplan","buttonText":"Probetraining buchen","anchor":"stundenplan"} /-->
 
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
