@@ -11,9 +11,10 @@
  */
 
 // Standort automatisch erkennen
-$site_location = function_exists('parkourone_get_site_location') ? parkourone_get_site_location() : ['name' => 'ParkourONE', 'slug' => ''];
+$site_location = function_exists('parkourone_get_site_location') ? parkourone_get_site_location() : ['name' => 'ParkourONE', 'slug' => '', 'detected' => false];
 $site_name = $site_location['name'];
-$is_city_site = !empty($site_location['slug']) && $site_location['slug'] !== 'parkourone';
+// Nur bei erkannten Standorten (im Mapping) Stadt-spezifische Texte verwenden
+$is_city_site = !empty($site_location['detected']) && !empty($site_location['slug']) && !in_array($site_location['slug'], ['parkourone', 'www', 'new', 'staging', 'dev', 'test', 'localhost']);
 
 // SEO-optimierte Texte basierend auf Standort
 if ($is_city_site) {
