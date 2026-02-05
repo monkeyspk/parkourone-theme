@@ -15,12 +15,6 @@ $site_location = function_exists('parkourone_get_site_location') ? parkourone_ge
 $site_name = $site_location['name'];
 $probetraining_price = function_exists('parkourone_get_probetraining_price') ? parkourone_get_probetraining_price() : '€15';
 ?>
-<!-- wp:parkourone/page-header {"variant":"centered","eyebrow":"Dein erster Schritt","headline":"Probetraining buchen","subtext":"Erlebe Parkour hautnah bei <?php echo esc_attr($site_name); ?>. Wähle deinen Termin und starte dein Abenteuer.","showStats":false,"align":"full"} /-->
-
-<!-- wp:spacer {"height":"60px"} -->
-<div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
-<!-- /wp:spacer -->
-
 <!-- wp:parkourone/steps-carousel {"headline":"So buchst du dein Probetraining","subheadline":"In 4 einfachen Schritten zum ersten Training","steps":[{"title":"Klasse wählen","description":"Wähle unten die passende Klasse für dein Alter und Level aus. Wir haben Kurse für Minis (4-5), Kids (6-12), Juniors (12-18) und Adults (18+).","icon":"users"},{"title":"Termin aussuchen","description":"Finde einen Termin, der in deinen Zeitplan passt. Unsere Kurse finden mehrmals pro Woche statt.","icon":"calendar"},{"title":"Anmelden","description":"Das Probetraining kostet <?php echo esc_attr($probetraining_price); ?>. Bei Anmeldung wird dieser Betrag mit dem ersten Monatsbeitrag verrechnet.","icon":"check"},{"title":"Loslegen","description":"Komm in bequemer Sportkleidung vorbei. Unsere Coaches zeigen dir alles – keine Vorkenntnisse nötig!","icon":"location"}],"backgroundColor":"light","align":"full"} /-->
 
 <!-- wp:spacer {"height":"80px"} -->
@@ -31,7 +25,7 @@ $probetraining_price = function_exists('parkourone_get_probetraining_price') ? p
 <div class="wp-block-group" style="padding-top:0;padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--40)">
 
 <!-- wp:heading {"textAlign":"center","level":2,"style":{"spacing":{"margin":{"bottom":"1rem"}}}} -->
-<h2 class="wp-block-heading has-text-align-center" style="margin-bottom:1rem">Wähle deinen Kurs</h2>
+<h2 class="wp-block-heading has-text-align-center" style="margin-bottom:1rem">Wähle dein Probetraining</h2>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"align":"center","style":{"spacing":{"margin":{"bottom":"2rem"}}}} -->
@@ -50,9 +44,3 @@ $probetraining_price = function_exists('parkourone_get_probetraining_price') ? p
 <!-- /wp:spacer -->
 
 <!-- wp:parkourone/faq {"headline":"Häufige Fragen zum Probetraining","category":"probetraining","limit":20,"backgroundColor":"light","align":"full"} /-->
-
-<!-- wp:spacer {"height":"60px"} -->
-<div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
-<!-- /wp:spacer -->
-
-<!-- wp:parkourone/promo-banner {"headline":"Noch Fragen?","subtext":"Unser Team hilft dir gerne weiter. Ruf uns an oder schreib uns eine Nachricht.","buttonText":"Kontakt aufnehmen","buttonUrl":"/kontakt/","align":"full"} /-->

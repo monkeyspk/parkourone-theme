@@ -1738,12 +1738,6 @@ function parkourone_generate_location_page_content($location_slug, $location_nam
 <!-- /wp:spacer -->
 
 <!-- wp:parkourone/faq {"headline":"Häufige Fragen zu Parkour in {$location_name}","category":"standort","backgroundColor":"light","align":"full"} /-->
-
-<!-- wp:spacer {"height":"60px"} -->
-<div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
-<!-- /wp:spacer -->
-
-<!-- wp:parkourone/promo-banner {"headline":"Jetzt Parkour in {$location_name} starten!","subtext":"Buche dein erstes Probetraining und erlebe Parkour in {$location_name} hautnah. Keine Vorkenntnisse nötig.","buttonText":"Probetraining buchen","buttonUrl":"/probetraining-buchen/","align":"full"} /-->
 BLOCKS;
 
 	return $content;
@@ -1965,12 +1959,6 @@ function parkourone_generate_category_page_content($cat_slug, $seo, $header_vari
 <!-- /wp:spacer -->
 
 <!-- wp:parkourone/about-section {"subheadline":"PARKOUR {$display_name} {$site_name}","headline":"Training bei ParkourONE","text":"Bei ParkourONE {$site_name} glauben wir an das Recht auf persönliches Wohlbefinden und die Kraft der Gemeinschaft. Unter dem Motto 'ONE for all – all for ONE' begleiten wir dich auf deinem Parkour-Weg. Unsere {$display_name}-Trainings in {$site_name} sind darauf ausgelegt, dich zu inspirieren, zu fördern und herauszufordern.","ctaText":"Mehr über uns","ctaUrl":"/ueber-uns/","align":"full"} /-->
-
-<!-- wp:spacer {"height":"40px"} -->
-<div style="height:40px" aria-hidden="true" class="wp-block-spacer"></div>
-<!-- /wp:spacer -->
-
-<!-- wp:parkourone/promo-banner {"headline":"Jetzt Parkour {$display_name} in {$site_name} starten!","subtext":"Buche dein erstes Probetraining und erlebe Parkour {$display_name} hautnah. Keine Vorkenntnisse nötig.","buttonText":"Probetraining buchen","buttonUrl":"/probetraining-buchen/","align":"full"} /-->
 BLOCKS;
 
 	return $content;
