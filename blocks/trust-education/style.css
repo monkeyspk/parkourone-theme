@@ -1,6 +1,6 @@
 /* TRUST Education Block Styles */
 .po-trust {
-	padding: 5rem 1.5rem;
+	padding: clamp(4rem, 10vw, 7rem) clamp(1.5rem, 5vw, 4rem);
 }
 
 .po-trust__container {
@@ -14,7 +14,7 @@
 }
 
 .po-trust--bg-light {
-	background: #fff;
+	background: #f5f5f7;
 }
 
 .po-trust--bg-dark {
@@ -43,13 +43,14 @@
 	font-weight: 700;
 	color: #1d1d1f;
 	margin: 0 0 1.5rem;
+	letter-spacing: -0.02em;
 }
 
 .po-trust__intro {
 	font-size: 1.125rem;
 	line-height: 1.7;
 	color: #424245;
-	max-width: 800px;
+	max-width: 700px;
 	margin: 0 auto;
 }
 
@@ -59,11 +60,11 @@
 }
 
 .po-trust__goals-headline {
-	font-size: clamp(1.5rem, 3vw, 2rem);
+	font-size: clamp(1.25rem, 3vw, 1.5rem);
 	font-weight: 600;
 	color: #1d1d1f;
 	text-align: center;
-	margin: 0 0 3rem;
+	margin: 0 0 2.5rem;
 }
 
 .po-trust__goals-grid {
@@ -75,14 +76,16 @@
 /* Goal Card */
 .po-trust__goal {
 	text-align: center;
-	padding: 2rem;
+	padding: 2.5rem 2rem;
 	background: #fff;
-	border-radius: 16px;
+	border-radius: 20px;
 	transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.po-trust--bg-white .po-trust__goal {
-	background: #f5f5f7;
+.po-trust--bg-white .po-trust__goal,
+.po-trust--bg-light .po-trust__goal {
+	background: #fff;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 .po-trust--bg-dark .po-trust__goal {
@@ -91,31 +94,33 @@
 
 .po-trust__goal:hover {
 	transform: translateY(-4px);
-	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 }
 
 .po-trust__goal-icon {
-	width: 64px;
-	height: 64px;
+	width: 80px;
+	height: 80px;
 	margin: 0 auto 1.5rem;
-	background: linear-gradient(135deg, #0071e3, #00c6ff);
-	border-radius: 50%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	color: #fff;
 }
 
-.po-trust__goal-icon svg {
-	width: 32px;
-	height: 32px;
+.po-trust__goal-icon img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+.po-trust--bg-dark .po-trust__goal-icon img {
+	filter: invert(1);
 }
 
 .po-trust__goal-title {
 	font-size: 1.25rem;
 	font-weight: 600;
 	color: #1d1d1f;
-	margin: 0 0 1rem;
+	margin: 0 0 0.75rem;
 }
 
 .po-trust__goal-text {
@@ -123,6 +128,269 @@
 	line-height: 1.6;
 	color: #424245;
 	margin: 0;
+}
+
+/* CTA Button */
+.po-trust__cta-wrap {
+	text-align: center;
+	margin-top: 3rem;
+}
+
+.po-trust__cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 1rem 1.75rem;
+	background: transparent;
+	border: 2px solid #1d1d1f;
+	border-radius: 100px;
+	font-size: 1rem;
+	font-weight: 600;
+	color: #1d1d1f;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.po-trust__cta svg {
+	width: 20px;
+	height: 20px;
+	transition: transform 0.2s ease;
+}
+
+.po-trust__cta:hover {
+	background: #1d1d1f;
+	color: #fff;
+}
+
+.po-trust__cta:hover svg {
+	transform: rotate(90deg);
+}
+
+.po-trust--bg-dark .po-trust__cta {
+	border-color: #fff;
+	color: #fff;
+}
+
+.po-trust--bg-dark .po-trust__cta:hover {
+	background: #fff;
+	color: #1d1d1f;
+}
+
+/* ========================================
+   MODAL STYLES
+   ======================================== */
+
+.po-overlay__panel--trust {
+	max-width: 720px;
+	padding: 0;
+	max-height: 90vh;
+	overflow-y: auto;
+}
+
+.po-trust-modal {
+	padding: clamp(2rem, 5vw, 3rem);
+}
+
+/* Modal Header */
+.po-trust-modal__header {
+	text-align: center;
+	margin-bottom: 3rem;
+	padding-bottom: 2rem;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.po-trust-modal__eyebrow {
+	display: inline-block;
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	color: #0066cc;
+	margin-bottom: 0.75rem;
+}
+
+.po-trust-modal__title {
+	font-size: clamp(1.75rem, 4vw, 2.5rem);
+	font-weight: 700;
+	color: #1d1d1f;
+	margin: 0 0 1rem;
+	letter-spacing: -0.02em;
+	line-height: 1.2;
+}
+
+.po-trust-modal__vision-text {
+	font-size: 1.0625rem;
+	line-height: 1.7;
+	color: #424245;
+	margin: 0;
+}
+
+/* Modal Sections */
+.po-trust-modal__section {
+	margin-bottom: 2.5rem;
+}
+
+.po-trust-modal__section:last-of-type {
+	margin-bottom: 0;
+}
+
+.po-trust-modal__section-title {
+	font-size: 1.125rem;
+	font-weight: 600;
+	color: #1d1d1f;
+	margin: 0 0 1.25rem;
+}
+
+.po-trust-modal__section-intro {
+	font-size: 0.9375rem;
+	line-height: 1.6;
+	color: #86868b;
+	margin: 0 0 1.5rem;
+}
+
+/* Modal Goals */
+.po-trust-modal__goals {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+}
+
+.po-trust-modal__goal {
+	display: flex;
+	gap: 1.25rem;
+	padding: 1.25rem;
+	background: #f5f5f7;
+	border-radius: 16px;
+}
+
+.po-trust-modal__goal-icon {
+	flex-shrink: 0;
+	width: 56px;
+	height: 56px;
+}
+
+.po-trust-modal__goal-icon img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+.po-trust-modal__goal-content {
+	flex: 1;
+}
+
+.po-trust-modal__goal-title {
+	font-size: 1rem;
+	font-weight: 600;
+	color: #1d1d1f;
+	margin: 0 0 0.5rem;
+}
+
+.po-trust-modal__goal-text {
+	font-size: 0.875rem;
+	line-height: 1.6;
+	color: #424245;
+	margin: 0;
+}
+
+/* Modal Values (Wertehand) */
+.po-trust-modal__section--values {
+	background: #f5f5f7;
+	margin-left: calc(-1 * clamp(2rem, 5vw, 3rem));
+	margin-right: calc(-1 * clamp(2rem, 5vw, 3rem));
+	padding: 2rem clamp(2rem, 5vw, 3rem);
+}
+
+.po-trust-modal__values {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	gap: 1rem;
+}
+
+.po-trust-modal__value {
+	background: #fff;
+	padding: 1.25rem;
+	border-radius: 12px;
+}
+
+.po-trust-modal__value-finger {
+	display: block;
+	font-size: 0.6875rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: #86868b;
+	margin-bottom: 0.375rem;
+}
+
+.po-trust-modal__value-name {
+	display: block;
+	font-size: 1rem;
+	font-weight: 600;
+	color: #1d1d1f;
+	margin-bottom: 0.5rem;
+}
+
+.po-trust-modal__value-desc {
+	font-size: 0.8125rem;
+	line-height: 1.5;
+	color: #424245;
+	margin: 0;
+}
+
+/* Modal Methods */
+.po-trust-modal__methods {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 1rem;
+}
+
+.po-trust-modal__method {
+	padding: 1rem;
+	background: #f5f5f7;
+	border-radius: 12px;
+}
+
+.po-trust-modal__method-title {
+	font-size: 0.9375rem;
+	font-weight: 600;
+	color: #1d1d1f;
+	margin: 0 0 0.375rem;
+}
+
+.po-trust-modal__method-desc {
+	font-size: 0.8125rem;
+	line-height: 1.5;
+	color: #86868b;
+	margin: 0;
+}
+
+/* Modal Footer */
+.po-trust-modal__footer {
+	margin-top: 2.5rem;
+	padding-top: 2rem;
+	border-top: 1px solid #e5e5e5;
+	text-align: center;
+}
+
+.po-trust-modal__link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 0.9375rem;
+	font-weight: 600;
+	color: #0066cc;
+	text-decoration: none;
+	transition: opacity 0.2s ease;
+}
+
+.po-trust-modal__link:hover {
+	opacity: 0.7;
+}
+
+.po-trust-modal__link svg {
+	width: 16px;
+	height: 16px;
 }
 
 /* Editor Preview */
@@ -183,7 +451,11 @@
 	}
 
 	.po-trust__goal {
-		padding: 1.5rem;
+		padding: 2rem 1.5rem;
+	}
+
+	.po-trust-modal__methods {
+		grid-template-columns: 1fr;
 	}
 }
 
@@ -198,5 +470,37 @@
 
 	.po-trust__goals {
 		margin-top: 2rem;
+	}
+
+	.po-trust__goal-icon {
+		width: 64px;
+		height: 64px;
+	}
+
+	.po-trust__cta-wrap {
+		margin-top: 2rem;
+	}
+
+	.po-trust-modal {
+		padding: 1.5rem;
+	}
+
+	.po-trust-modal__goal {
+		flex-direction: column;
+		text-align: center;
+	}
+
+	.po-trust-modal__goal-icon {
+		margin: 0 auto;
+	}
+
+	.po-trust-modal__section--values {
+		margin-left: -1.5rem;
+		margin-right: -1.5rem;
+		padding: 1.5rem;
+	}
+
+	.po-trust-modal__values {
+		grid-template-columns: 1fr;
 	}
 }

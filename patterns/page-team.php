@@ -35,7 +35,7 @@ $testimonial_image = $theme_uri . '/assets/images/fallback/adults/IMG_0716-scale
 <div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:parkourone/split-content {"headline":"Was uns verbindet","text":"Wir kommen aus verschiedenen Hintergründen, aber teilen dieselbe Leidenschaft: Menschen durch Bewegung zu inspirieren.\n\nBei ParkourONE arbeiten wir nach TRUST Education - unserer eigenen pädagogischen Methode. Sie verbindet körperliches Training mit persönlicher Entwicklung. Wir glauben daran, dass jeder Mensch einzigartige Potenziale hat, die es zu entfalten gilt.","imageUrl":"<?php echo esc_url($split_image); ?>","imageRight":false,"showCta":true,"ctaText":"Mehr über TRUST","ctaUrl":"/trust-education/","backgroundColor":"#ffffff","align":"full"} /-->
+<!-- wp:parkourone/trust-education {"headline":"TRUST Education","intro":"Bei ParkourONE arbeiten wir nach TRUST Education - unserer eigenen pädagogischen Methode. Sie verbindet körperliches Training mit persönlicher Entwicklung.","backgroundColor":"light","align":"full"} /-->
 
 <!-- wp:spacer {"height":"80px"} -->
 <div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>

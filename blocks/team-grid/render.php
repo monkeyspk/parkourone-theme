@@ -175,26 +175,29 @@ if (!function_exists('parkourone_get_coach_trainings_with_dates')) {
 			<?php else: ?>
 			<div class="po-tg__card po-tg__card--static" data-locations="<?php echo esc_attr($location_data); ?>">
 			<?php endif; ?>
-				<?php if (!empty($m['card_image'])): ?>
-				<div class="po-tg__card-image" style="background-image: url('<?php echo esc_url($m['card_image']); ?>')"></div>
-				<?php else: ?>
-				<div class="po-tg__card-image po-tg__card-image--empty"></div>
-				<?php endif; ?>
-				<div class="po-tg__card-overlay"></div>
+				<div class="po-tg__card-image-wrap">
+					<?php if (!empty($m['card_image'])): ?>
+					<div class="po-tg__card-image" style="background-image: url('<?php echo esc_url($m['card_image']); ?>')"></div>
+					<?php else: ?>
+					<div class="po-tg__card-image po-tg__card-image--empty">
+						<span class="po-tg__card-initials"><?php echo esc_html(parkourone_get_initials($m['name'])); ?></span>
+					</div>
+					<?php endif; ?>
+					<?php if ($m['has_profile']): ?>
+					<span class="po-tg__card-action" aria-label="Mehr erfahren">
+						<svg viewBox="0 0 24 24" fill="none">
+							<circle cx="12" cy="12" r="12" fill="currentColor"/>
+							<path d="M12 7v10M7 12h10" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+						</svg>
+					</span>
+					<?php endif; ?>
+				</div>
 				<div class="po-tg__card-content">
 					<strong class="po-tg__card-name"><?php echo esc_html($m['name']); ?></strong>
 					<?php if (!empty($m['rolle'])): ?>
 					<span class="po-tg__card-role"><?php echo esc_html($m['rolle']); ?></span>
 					<?php endif; ?>
 				</div>
-				<?php if ($m['has_profile']): ?>
-				<span class="po-tg__card-action" aria-label="Mehr erfahren">
-					<svg viewBox="0 0 24 24" fill="none">
-						<circle cx="12" cy="12" r="12" fill="currentColor"/>
-						<path d="M12 7v10M7 12h10" stroke="#000" stroke-width="2" stroke-linecap="round"/>
-					</svg>
-				</span>
-				<?php endif; ?>
 			<?php if ($m['has_profile']): ?>
 			</button>
 			<?php else: ?>

@@ -2,11 +2,11 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "parkourone/trust-education",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"title": "TRUST Education",
 	"category": "parkourone-about",
 	"icon": "awards",
-	"description": "TRUST Education Block mit den 3 Bildungszielen: Potentialentfaltung, Werthaltung, Gesundheitsförderung",
+	"description": "TRUST Education Block mit den 3 Bildungszielen, 7 Werten und Modal für Details",
 	"keywords": ["trust", "education", "bildung", "werte", "mission"],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
@@ -19,7 +19,7 @@
 		},
 		"intro": {
 			"type": "string",
-			"default": "Die Mission von TRUST Education umfasst die drei Bildungsziele Potentialentfaltung, Werthaltung und Gesundheitsförderung. Unser Ziel ist eine ganzheitliche Bildung, bei welcher der Mensch im Zentrum steht. Dieses erreichen wir durch eine klare Methodik, die feste Strukturen, mehrdimensionales Lernen, eine umfassende Gesundheitsförderung und die Vermittlung wichtiger Kernwerte umfasst."
+			"default": "Die Mission von TRUST Education umfasst die drei Bildungsziele Potentialentfaltung, Werthaltung und Gesundheitsförderung. Unser Ziel ist eine ganzheitliche Bildung, bei welcher der Mensch im Zentrum steht."
 		},
 		"goalsHeadline": {
 			"type": "string",
@@ -30,19 +30,67 @@
 			"default": [
 				{
 					"title": "Potentialentfaltung",
-					"icon": "star",
-					"text": "Jeder Mensch ist einzigartig, wertvoll und hat besondere Talente! Mit TRUST schaffen wir einen Raum, wo sich alle individuell entfalten können und dürfen."
+					"icon": "potential",
+					"text": "Jeder Mensch ist einzigartig, wertvoll und hat besondere Talente! Mit TRUST schaffen wir einen Raum, wo sich alle individuell entfalten können und dürfen.",
+					"fullText": "Das Bildungsziel Potentialentfaltung wird von TRUST Education mittels ganzheitlichem und mehrdimensionalem Lernen unterstützt. Ganzheitliches Lernen bezieht sich auf ein Konzept, das sich an individuellen Lernprozessen orientiert. Es berücksichtigt sowohl kognitiv-intellektuelle wie auch körperliche und affektiv-emotionale Aspekte. Ganzheitliches Lernen ist Lernen mit allen Sinnen – mit Verstand, Gemüt und Körper."
 				},
 				{
 					"title": "Werthaltung",
-					"icon": "heart",
-					"text": "Die Verbreitung der Philosophie und ein Erhalt unserer Werte ist zentral in der Vermittlung von Parkour nach TRUST. Sinnbildlich haben wir Werte an einer Hand definiert."
+					"icon": "hand",
+					"text": "Die Verbreitung der Philosophie und ein Erhalt unserer Werte ist zentral in der Vermittlung von Parkour nach TRUST.",
+					"fullText": "Das Bildungsziel Werthaltung unterstützt die Bildung persönlicher Glaubenssätze und das Treffen von Entscheidungen. Werte bilden die Grundlage unserer Glaubenssätze und Entscheidungen. Durch gemeinsame Erlebnisse ermöglicht TRUST Education die Entwicklung einer eigenen Werthaltung."
 				},
 				{
 					"title": "Gesundheitsförderung",
-					"icon": "shield",
-					"text": "Physische, psychische und soziale Gesundheit sind essentiell für den Menschen. Die Gesundheitsförderung ist die Wurzel unserer Arbeit mittels TRUST."
+					"icon": "health",
+					"text": "Physische, psychische und soziale Gesundheit sind essentiell für den Menschen. Die Gesundheitsförderung ist die Wurzel unserer Arbeit.",
+					"fullText": "Physische, psychische und soziale Gesundheit sind essentiell für die Entwicklung und das Wohlbefinden eines Menschen. TRUST Education fördert alle drei Dimensionen der Gesundheit durch bewegungsorientiertes Lernen in einer unterstützenden Gemeinschaft."
 				}
+			]
+		},
+		"ctaText": {
+			"type": "string",
+			"default": "Mehr über TRUST erfahren"
+		},
+		"visionHeadline": {
+			"type": "string",
+			"default": "Ganzheitliche Bildung"
+		},
+		"visionText": {
+			"type": "string",
+			"default": "Wir sind der tiefen Überzeugung, dass persönliches Wohlbefinden und Wohlstand Geburtsrechte sind und glauben fest an die Kraft einer Gemeinschaft. TRUST Education ist ein Netzwerk aus Menschen und Firmen, die Bildung und Nächstenliebe als Schlüssel für Wohlstand und Wohlbefinden anerkennen. Wir glauben an Wachstum und einen gemeinsamen Erfolg!"
+		},
+		"valuesHeadline": {
+			"type": "string",
+			"default": "Die Wertehand"
+		},
+		"valuesIntro": {
+			"type": "string",
+			"default": "Unsere Werte sind sinnbildlich an einer Hand definiert. Sie bilden die Grundlage für alle Entscheidungen und sind zentral in der Vermittlung von Parkour nach TRUST."
+		},
+		"values": {
+			"type": "array",
+			"default": [
+				{ "finger": "Daumen", "value": "Unterstützend", "desc": "Wir unterstützen einander auf dem gemeinsamen Weg." },
+				{ "finger": "Zeigefinger", "value": "Zielorientiert", "desc": "Wir setzen uns klare Ziele und arbeiten fokussiert darauf hin." },
+				{ "finger": "Mittelfinger", "value": "Respekt", "desc": "Wir begegnen allen Menschen und der Umgebung mit Respekt." },
+				{ "finger": "Ringfinger", "value": "Vertrauen", "desc": "Wir bauen Vertrauen in uns selbst und in andere auf." },
+				{ "finger": "Kleiner Finger", "value": "Bescheidenheit", "desc": "Wir bleiben bescheiden und erkennen, dass wir immer lernen können." },
+				{ "finger": "Faust", "value": "Mut", "desc": "Wir haben den Mut, Herausforderungen anzunehmen und Neues zu wagen." },
+				{ "finger": "Hände zusammen", "value": "Dankbarkeit", "desc": "Wir sind dankbar für jeden Moment und jede Erfahrung." }
+			]
+		},
+		"methodHeadline": {
+			"type": "string",
+			"default": "Unsere Methodik"
+		},
+		"methods": {
+			"type": "array",
+			"default": [
+				{ "title": "Ganzheitliches Lernen", "desc": "Lernen mit allen Sinnen – mit Verstand, Gemüt und Körper." },
+				{ "title": "Mehrdimensionales Lernen", "desc": "Verknüpfung verschiedener Fähigkeiten für nachhaltigeres Verarbeiten." },
+				{ "title": "Kein Wettkampf", "desc": "Fokus auf persönliche Entwicklung statt Konkurrenz." },
+				{ "title": "Feste Strukturen", "desc": "Klare Rahmenbedingungen für ein sicheres Lernumfeld." }
 			]
 		},
 		"backgroundColor": {
