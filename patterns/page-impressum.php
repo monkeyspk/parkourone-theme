@@ -22,15 +22,15 @@
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p><strong>[SCHULNAME]</strong><br>[INHABER]</p>
+<p><strong>ParkourONE Berlin</strong><br>Scheffler & Gessinger GbR<br>Vertreten durch: Ben Scheffler</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>[STRASSE]<br>[PLZ ORT]<br>[LAND]<br>[TELEFON]</p>
+<p>Dietzinger Straße 25<br>13156 Berlin<br>Deutschland</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>E-Mail: [EMAIL]</p>
+<p>E-Mail: berlin@parkourone.com</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":2} -->
