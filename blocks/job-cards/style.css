@@ -19,11 +19,26 @@
 }
 
 .po-jobs__grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	display: flex;
 	gap: 1.5rem;
 	max-width: 1200px;
 	margin: 0 auto;
+	overflow-x: auto;
+	overflow-y: visible;
+	scroll-snap-type: x mandatory;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+	-webkit-overflow-scrolling: touch;
+	padding-bottom: 1rem;
+}
+
+.po-jobs__grid::-webkit-scrollbar {
+	display: none;
+}
+
+.po-job-card {
+	flex: 0 0 340px;
+	scroll-snap-align: start;
 }
 
 .po-job-card {
