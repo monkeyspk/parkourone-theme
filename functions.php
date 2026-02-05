@@ -1295,6 +1295,28 @@ add_action('wp_ajax_po_add_to_cart', 'parkourone_ajax_add_to_cart');
 add_action('wp_ajax_nopriv_po_add_to_cart', 'parkourone_ajax_add_to_cart');
 
 function parkourone_register_coach_cpt() {
+	// Schul-Taxonomie für Coaches
+	register_taxonomy('coach_school', 'coach', [
+		'labels' => [
+			'name' => 'Schulen',
+			'singular_name' => 'Schule',
+			'search_items' => 'Schulen suchen',
+			'all_items' => 'Alle Schulen',
+			'edit_item' => 'Schule bearbeiten',
+			'update_item' => 'Schule aktualisieren',
+			'add_new_item' => 'Neue Schule hinzufügen',
+			'new_item_name' => 'Neue Schule',
+			'menu_name' => 'Schulen'
+		],
+		'hierarchical' => true,
+		'show_ui' => true,
+		'show_in_menu' => true,
+		'show_in_rest' => true,
+		'show_admin_column' => true,
+		'query_var' => true,
+		'rewrite' => false
+	]);
+
 	register_post_type('coach', [
 		'labels' => [
 			'name' => 'Coaches',
@@ -1315,10 +1337,35 @@ function parkourone_register_coach_cpt() {
 		'menu_icon' => 'dashicons-groups',
 		'supports' => ['title', 'thumbnail'],
 		'has_archive' => false,
-		'rewrite' => false
+		'rewrite' => false,
+		'taxonomies' => ['coach_school']
 	]);
+
+	// Standard-Schulen erstellen
+	parkourone_create_default_coach_schools();
 }
 add_action('init', 'parkourone_register_coach_cpt');
+
+/**
+ * Erstellt die Standard-Schulen für Coaches
+ */
+function parkourone_create_default_coach_schools() {
+	$schools = [
+		'schweiz' => 'Schweiz',
+		'berlin' => 'Berlin',
+		'dresden' => 'Dresden',
+		'hannover' => 'Hannover',
+		'muenster' => 'Münster',
+		'augsburg' => 'Augsburg',
+		'rheinruhr' => 'Rheinruhr',
+	];
+
+	foreach ($schools as $slug => $name) {
+		if (!term_exists($slug, 'coach_school')) {
+			wp_insert_term($name, 'coach_school', ['slug' => $slug]);
+		}
+	}
+}
 
 function parkourone_coach_metaboxes() {
 	add_meta_box(
@@ -1492,14 +1539,14 @@ function parkourone_sync_coaches_from_events() {
 		'posts_per_page' => -1,
 		'post_status' => 'publish'
 	]);
-	
+
 	$api_coaches = [];
-	
+
 	foreach ($events as $event) {
 		$name = get_post_meta($event->ID, '_event_headcoach', true);
 		$image = get_post_meta($event->ID, '_event_headcoach_image_url', true);
 		$email = get_post_meta($event->ID, '_event_headcoach_email', true);
-		
+
 		if (!empty($name) && !isset($api_coaches[$name])) {
 			$api_coaches[$name] = [
 				'image' => $image,
@@ -1507,22 +1554,36 @@ function parkourone_sync_coaches_from_events() {
 			];
 		}
 	}
-	
+
 	foreach ($api_coaches as $name => $data) {
+		// Zuerst nach Name suchen
 		$existing = get_posts([
 			'post_type' => 'coach',
 			'title' => $name,
 			'posts_per_page' => 1,
 			'post_status' => ['publish', 'draft']
 		]);
-		
+
+		// Wenn nicht gefunden, nach E-Mail suchen
+		if (empty($existing) && !empty($data['email'])) {
+			$existing = get_posts([
+				'post_type' => 'coach',
+				'posts_per_page' => 1,
+				'post_status' => ['publish', 'draft'],
+				'meta_query' => [
+					['key' => '_coach_email', 'value' => $data['email']]
+				]
+			]);
+		}
+
 		if (empty($existing)) {
+			// Neuen Coach erstellen
 			$coach_id = wp_insert_post([
 				'post_type' => 'coach',
 				'post_title' => $name,
 				'post_status' => 'publish'
 			]);
-			
+
 			if ($coach_id && !is_wp_error($coach_id)) {
 				update_post_meta($coach_id, '_coach_source', 'api');
 				update_post_meta($coach_id, '_coach_api_image', $data['image']);
@@ -1531,12 +1592,22 @@ function parkourone_sync_coaches_from_events() {
 				}
 			}
 		} else {
+			// Existierenden Coach aktualisieren
 			$coach_id = $existing[0]->ID;
-			update_post_meta($coach_id, '_coach_api_image', $data['image']);
+			$source = get_post_meta($coach_id, '_coach_source', true);
+
+			// API-Bild immer aktualisieren (das ist die aktuelle Info aus der API)
+			if (!empty($data['image'])) {
+				update_post_meta($coach_id, '_coach_api_image', $data['image']);
+			}
+
+			// E-Mail nur setzen wenn noch leer
 			if (!empty($data['email']) && empty(get_post_meta($coach_id, '_coach_email', true))) {
 				update_post_meta($coach_id, '_coach_email', $data['email']);
 			}
-			
+
+			// Source NICHT ändern wenn manual oder preset (damit bleibt geschützt)
+			// Nur bei draft auf publish setzen
 			if ($existing[0]->post_status === 'draft') {
 				wp_update_post([
 					'ID' => $coach_id,
@@ -1545,16 +1616,19 @@ function parkourone_sync_coaches_from_events() {
 			}
 		}
 	}
-	
+
+	// Nur API-Coaches auf Draft setzen wenn sie nicht mehr in der API sind
+	// Manual und Preset Coaches bleiben unberührt
 	$all_coaches = get_posts([
 		'post_type' => 'coach',
 		'posts_per_page' => -1,
 		'post_status' => 'publish'
 	]);
-	
+
 	foreach ($all_coaches as $coach) {
 		$source = get_post_meta($coach->ID, '_coach_source', true);
-		
+
+		// Nur 'api' Coaches deaktivieren, nicht 'manual' oder 'preset'
 		if ($source === 'api' && !isset($api_coaches[$coach->post_title])) {
 			wp_update_post([
 				'ID' => $coach->ID,
@@ -1570,6 +1644,255 @@ function parkourone_sync_coaches_on_admin_load($screen) {
 	}
 }
 add_action('current_screen', 'parkourone_sync_coaches_on_admin_load');
+
+// =====================================================
+// Preset Coaches für Import
+// =====================================================
+
+/**
+ * Gibt die Preset-Coaches für eine Schule zurück
+ */
+function parkourone_get_preset_coaches($school = 'berlin') {
+	$coaches = [
+		'berlin' => [
+			// Klassenleiter (mit AcademyBoard Bildern)
+			['name' => 'Minh', 'email' => 'minh@parkourone.com', 'rolle' => 'Klassenleiter', 'image' => 'https://academyboard.parkourone.com/storage/avatars/avatar_757_1762954933.jpeg'],
+			['name' => 'Carina', 'email' => 'carina@parkourone.com', 'rolle' => 'Klassenleiterin', 'image' => 'https://academyboard.parkourone.com/storage/avatars/carinahötschl-2023-11-29_10:18:13-avatar.png'],
+			['name' => 'Marie', 'email' => 'marie@parkourone.com', 'rolle' => 'Klassenleiterin', 'image' => 'https://academyboard.parkourone.com/storage/avatars/mariefechner-2019-10-12_22:46:35-2.JPG'],
+			['name' => 'Raguel', 'email' => 'raguel@parkourone.com', 'rolle' => 'Klassenleiter', 'image' => 'https://academyboard.parkourone.com/storage/avatars/raguel_coach-2025-05-20_16:10:59-avatar.png'],
+			['name' => 'Luca', 'email' => 'luca@parkourone.com', 'rolle' => 'Klassenleiter', 'image' => 'https://academyboard.parkourone.com/storage/avatars/luca_coach-2021-04-13_10:45:40-IMG5928.JPG'],
+			['name' => 'Marius', 'email' => 'marius@parkourone.com', 'rolle' => 'Klassenleiter', 'image' => 'https://academyboard.parkourone.com/storage/avatars/marius_coach-2020-09-17_18:48:14-elbi8079preview.jpeg'],
+			['name' => 'Marty', 'email' => 'marty@parkourone.com', 'rolle' => 'Klassenleiter', 'image' => 'https://academyboard.parkourone.com/storage/avatars/marty_coach-2023-04-17_10:49:57-avatar.png'],
+			['name' => 'Martin', 'email' => 'martin@parkourone.com', 'rolle' => 'Klassenleiter', 'image' => 'https://academyboard.parkourone.com/storage/avatars/martingessinger_coach-2025-02-07_20:42:37-avatar.png'],
+			// Co-Leitung (ohne AcademyBoard Bilder)
+			['name' => 'Anne', 'email' => 'anne.damrau@parkourone.com', 'rolle' => 'Co-Leitung', 'image' => ''],
+			['name' => 'Jasper', 'email' => 'jasper.schuppan@parkourone.com', 'rolle' => 'Co-Leitung', 'image' => ''],
+			['name' => 'Peer', 'email' => 'peer@parkourone.com', 'rolle' => 'Co-Leitung', 'image' => ''],
+			['name' => 'Fabian', 'email' => 'fabian.nonnenmacher@parkourone.com', 'rolle' => 'Co-Leitung', 'image' => ''],
+			['name' => 'Ole', 'email' => 'ole.brekenfeld@parkourone.com', 'rolle' => 'Co-Leitung', 'image' => ''],
+			['name' => 'Paul', 'email' => 'paul.reithmeier@parkourone.com', 'rolle' => 'Co-Leitung', 'image' => ''],
+		],
+		'schweiz' => [
+			// Hier können Schweizer Coaches hinzugefügt werden
+		],
+	];
+
+	if ($school === 'all') {
+		$all = [];
+		foreach ($coaches as $school_coaches) {
+			$all = array_merge($all, $school_coaches);
+		}
+		return $all;
+	}
+
+	return $coaches[$school] ?? [];
+}
+
+/**
+ * Admin Notice für Coach Import
+ */
+function parkourone_coaches_admin_notice() {
+	$screen = get_current_screen();
+	if ($screen->post_type !== 'coach') return;
+
+	// Welche Schulen haben Preset-Coaches?
+	$schools_with_presets = [];
+	$school_names = [
+		'berlin' => 'Berlin',
+		'schweiz' => 'Schweiz',
+		'dresden' => 'Dresden',
+		'hannover' => 'Hannover',
+		'muenster' => 'Münster',
+		'augsburg' => 'Augsburg',
+		'rheinruhr' => 'Rheinruhr',
+	];
+
+	foreach ($school_names as $slug => $name) {
+		$presets = parkourone_get_preset_coaches($slug);
+		if (!empty($presets)) {
+			// Prüfen wie viele noch nicht importiert sind
+			$not_imported = 0;
+			foreach ($presets as $preset) {
+				$existing = get_posts([
+					'post_type' => 'coach',
+					'posts_per_page' => 1,
+					'post_status' => 'any',
+					'meta_query' => [
+						'relation' => 'OR',
+						['key' => '_coach_email', 'value' => $preset['email']],
+					]
+				]);
+				// Auch nach Name suchen
+				if (empty($existing)) {
+					$existing = get_posts([
+						'post_type' => 'coach',
+						'title' => $preset['name'],
+						'posts_per_page' => 1,
+						'post_status' => 'any'
+					]);
+				}
+				if (empty($existing)) {
+					$not_imported++;
+				}
+			}
+			if ($not_imported > 0) {
+				$schools_with_presets[$slug] = [
+					'name' => $name,
+					'total' => count($presets),
+					'not_imported' => $not_imported
+				];
+			}
+		}
+	}
+
+	if (empty($schools_with_presets)) return;
+	?>
+	<div class="notice notice-info is-dismissible" id="po-coaches-import-notice">
+		<p><strong>Coaches importieren</strong></p>
+		<p>Es gibt Preset-Coaches die noch nicht importiert wurden:</p>
+		<p>
+			<select id="po-coach-school-select" style="margin-right: 10px;">
+				<?php foreach ($schools_with_presets as $slug => $info): ?>
+					<option value="<?php echo esc_attr($slug); ?>"><?php echo esc_html($info['name']); ?> (<?php echo $info['not_imported']; ?> von <?php echo $info['total']; ?> neu)</option>
+				<?php endforeach; ?>
+			</select>
+			<button type="button" class="button button-primary" id="po-import-coaches">Coaches importieren</button>
+		</p>
+	</div>
+	<script>
+	jQuery(document).ready(function($) {
+		$('#po-import-coaches').on('click', function() {
+			var school = $('#po-coach-school-select').val();
+			$(this).prop('disabled', true).text('Importiere...');
+			$.post(ajaxurl, {
+				action: 'po_import_coaches',
+				nonce: '<?php echo wp_create_nonce('po_import_coaches'); ?>',
+				school: school
+			}, function(response) {
+				if (response.success) {
+					alert('Erfolgreich: ' + response.data.imported + ' Coaches importiert, ' + response.data.updated + ' aktualisiert.');
+					location.reload();
+				} else {
+					alert('Fehler: ' + response.data.message);
+					$('#po-import-coaches').prop('disabled', false).text('Coaches importieren');
+				}
+			});
+		});
+	});
+	</script>
+	<?php
+}
+add_action('admin_notices', 'parkourone_coaches_admin_notice');
+
+/**
+ * AJAX Handler für Coach Import
+ */
+function parkourone_ajax_import_coaches() {
+	check_ajax_referer('po_import_coaches', 'nonce');
+
+	if (!current_user_can('edit_posts')) {
+		wp_send_json_error(['message' => 'Keine Berechtigung']);
+	}
+
+	$school = sanitize_text_field($_POST['school'] ?? 'berlin');
+	$presets = parkourone_get_preset_coaches($school);
+
+	if (empty($presets)) {
+		wp_send_json_error(['message' => 'Keine Preset-Coaches für diese Schule']);
+	}
+
+	$imported = 0;
+	$updated = 0;
+
+	foreach ($presets as $preset) {
+		// Zuerst nach E-Mail suchen
+		$existing = null;
+		if (!empty($preset['email'])) {
+			$found = get_posts([
+				'post_type' => 'coach',
+				'posts_per_page' => 1,
+				'post_status' => 'any',
+				'meta_query' => [
+					['key' => '_coach_email', 'value' => $preset['email']]
+				]
+			]);
+			if (!empty($found)) {
+				$existing = $found[0];
+			}
+		}
+
+		// Dann nach Name suchen
+		if (!$existing) {
+			$found = get_posts([
+				'post_type' => 'coach',
+				'title' => $preset['name'],
+				'posts_per_page' => 1,
+				'post_status' => 'any'
+			]);
+			if (!empty($found)) {
+				$existing = $found[0];
+			}
+		}
+
+		if ($existing) {
+			// Existierenden Coach aktualisieren - nur leere Felder füllen
+			$coach_id = $existing->ID;
+
+			// E-Mail nur setzen wenn leer
+			if (!empty($preset['email']) && empty(get_post_meta($coach_id, '_coach_email', true))) {
+				update_post_meta($coach_id, '_coach_email', $preset['email']);
+			}
+
+			// Rolle nur setzen wenn leer
+			if (!empty($preset['rolle']) && empty(get_post_meta($coach_id, '_coach_rolle', true))) {
+				update_post_meta($coach_id, '_coach_rolle', $preset['rolle']);
+			}
+
+			// API-Bild immer aktualisieren (kommt von AcademyBoard)
+			if (!empty($preset['image'])) {
+				update_post_meta($coach_id, '_coach_api_image', $preset['image']);
+			}
+
+			// Schule zuweisen wenn nicht vorhanden
+			$existing_schools = wp_get_post_terms($coach_id, 'coach_school', ['fields' => 'slugs']);
+			if (!in_array($school, $existing_schools)) {
+				wp_set_object_terms($coach_id, $school, 'coach_school', true); // true = append
+			}
+
+			// Auf publish setzen wenn draft
+			if ($existing->post_status === 'draft') {
+				wp_update_post(['ID' => $coach_id, 'post_status' => 'publish']);
+			}
+
+			$updated++;
+		} else {
+			// Neuen Coach erstellen
+			$coach_id = wp_insert_post([
+				'post_type' => 'coach',
+				'post_title' => $preset['name'],
+				'post_status' => 'publish'
+			]);
+
+			if ($coach_id && !is_wp_error($coach_id)) {
+				update_post_meta($coach_id, '_coach_source', 'preset');
+				update_post_meta($coach_id, '_coach_email', $preset['email']);
+				update_post_meta($coach_id, '_coach_rolle', $preset['rolle']);
+
+				if (!empty($preset['image'])) {
+					update_post_meta($coach_id, '_coach_api_image', $preset['image']);
+				}
+
+				// Schule zuweisen
+				wp_set_object_terms($coach_id, $school, 'coach_school');
+
+				$imported++;
+			}
+		}
+	}
+
+	wp_send_json_success(['imported' => $imported, 'updated' => $updated]);
+}
+add_action('wp_ajax_po_import_coaches', 'parkourone_ajax_import_coaches');
 
 function parkourone_get_coach_by_name($name) {
 	$coaches = get_posts([
