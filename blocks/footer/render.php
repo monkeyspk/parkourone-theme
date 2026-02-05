@@ -13,9 +13,24 @@ $zentraleName = $attributes['zentraleName'] ?? '';
 $zentraleUrl = $attributes['zentraleUrl'] ?? '#';
 $newsletterHeadline = $attributes['newsletterHeadline'] ?? '';
 $newsletterText = $attributes['newsletterText'] ?? '';
-$impressumUrl = $attributes['impressumUrl'] ?? '#';
-$datenschutzUrl = $attributes['datenschutzUrl'] ?? '#';
-$cookiesUrl = $attributes['cookiesUrl'] ?? '#';
+// Legal Pages - automatisch verlinken wenn vorhanden
+$impressumUrl = $attributes['impressumUrl'] ?? '';
+$datenschutzUrl = $attributes['datenschutzUrl'] ?? '';
+$cookiesUrl = $attributes['cookiesUrl'] ?? '';
+
+// Fallback zu automatisch erstellten Seiten
+if (empty($impressumUrl) || $impressumUrl === '#') {
+	$impressum_page = get_page_by_path('impressum');
+	$impressumUrl = $impressum_page ? get_permalink($impressum_page) : '/impressum/';
+}
+if (empty($datenschutzUrl) || $datenschutzUrl === '#') {
+	$datenschutz_page = get_page_by_path('datenschutz');
+	$datenschutzUrl = $datenschutz_page ? get_permalink($datenschutz_page) : '/datenschutz/';
+}
+if (empty($cookiesUrl) || $cookiesUrl === '#') {
+	// Cookies-Info ist Teil der Datenschutzseite (Abschnitt 4)
+	$cookiesUrl = $datenschutzUrl . '#cookies';
+}
 $copyrightYear = $attributes['copyrightYear'] ?? date('Y');
 ?>
 <footer class="po-footer alignfull">

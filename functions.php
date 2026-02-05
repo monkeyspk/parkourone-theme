@@ -2288,3 +2288,100 @@ function parkourone_check_homepage_on_init() {
 	}
 }
 add_action('init', 'parkourone_check_homepage_on_init');
+
+/**
+ * Erstellt rechtlich vorgeschriebene Seiten automatisch bei Theme-Aktivierung
+ * (Datenschutz und Impressum)
+ */
+function parkourone_create_legal_pages() {
+	$legal_pages = [
+		'datenschutz' => [
+			'title'   => 'Datenschutz',
+			'pattern' => 'parkourone/page-datenschutz',
+		],
+		'impressum' => [
+			'title'   => 'Impressum',
+			'pattern' => 'parkourone/page-impressum',
+		],
+	];
+
+	foreach ($legal_pages as $slug => $page_data) {
+		// Prüfen ob Seite bereits existiert
+		$existing = get_page_by_path($slug);
+		if ($existing) {
+			continue;
+		}
+
+		// Pattern-Inhalt laden
+		$pattern_content = '';
+		$pattern_file = get_template_directory() . '/patterns/page-' . $slug . '.php';
+
+		if (file_exists($pattern_file)) {
+			ob_start();
+			include $pattern_file;
+			$pattern_content = ob_get_clean();
+
+			// PHP-Header entfernen (alles vor dem ersten HTML-Kommentar)
+			$pattern_content = preg_replace('/^.*?(?=<!--)/s', '', $pattern_content);
+		}
+
+		// Seite erstellen
+		$page_id = wp_insert_post([
+			'post_title'   => $page_data['title'],
+			'post_name'    => $slug,
+			'post_content' => $pattern_content,
+			'post_status'  => 'publish',
+			'post_type'    => 'page',
+			'post_author'  => 1,
+		]);
+
+		if ($page_id && !is_wp_error($page_id)) {
+			// Für Datenschutz: WordPress Privacy Policy Page setzen
+			if ($slug === 'datenschutz') {
+				update_option('wp_page_for_privacy_policy', $page_id);
+			}
+		}
+	}
+}
+add_action('after_switch_theme', 'parkourone_create_legal_pages');
+
+/**
+ * Admin-Button zum manuellen Erstellen der Legal Pages
+ */
+function parkourone_legal_pages_admin_notice() {
+	if (!current_user_can('manage_options')) {
+		return;
+	}
+
+	// Prüfen ob beide Seiten existieren
+	$datenschutz = get_page_by_path('datenschutz');
+	$impressum = get_page_by_path('impressum');
+
+	if ($datenschutz && $impressum) {
+		return; // Beide Seiten existieren
+	}
+
+	$missing = [];
+	if (!$datenschutz) $missing[] = 'Datenschutz';
+	if (!$impressum) $missing[] = 'Impressum';
+
+	// Button-Handler
+	if (isset($_POST['parkourone_create_legal_pages']) && wp_verify_nonce($_POST['_wpnonce'], 'parkourone_create_legal_pages')) {
+		parkourone_create_legal_pages();
+		echo '<div class="notice notice-success"><p>Rechtliche Seiten wurden erstellt!</p></div>';
+		return;
+	}
+
+	?>
+	<div class="notice notice-warning">
+		<p><strong>ParkourONE:</strong> Folgende rechtlich vorgeschriebene Seiten fehlen: <?php echo implode(', ', $missing); ?></p>
+		<form method="post" style="margin-bottom: 10px;">
+			<?php wp_nonce_field('parkourone_create_legal_pages'); ?>
+			<button type="submit" name="parkourone_create_legal_pages" class="button button-primary">
+				Seiten jetzt erstellen
+			</button>
+		</form>
+	</div>
+	<?php
+}
+add_action('admin_notices', 'parkourone_legal_pages_admin_notice');
