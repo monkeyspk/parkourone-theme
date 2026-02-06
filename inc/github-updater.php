@@ -121,15 +121,11 @@ class ParkourONE_GitHub_Updater {
 
     /**
      * Admin-Seite hinzufügen
+     * Hinweis: Die Menü-Registrierung erfolgt jetzt in inc/admin-menu.php
+     * Diese Methode bleibt für Kompatibilität, registriert aber kein eigenes Menü mehr
      */
     public function add_admin_page() {
-        add_theme_page(
-            'Theme Updates',
-            'Theme Updates',
-            'manage_options',
-            'parkourone-updates',
-            [$this, 'render_admin_page']
-        );
+        // Menü wird jetzt zentral in inc/admin-menu.php registriert
     }
 
     /**

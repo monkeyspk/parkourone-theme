@@ -61,14 +61,34 @@ function parkourone_register_admin_menu() {
 		'parkourone_event_images_admin_page'
 	);
 
-	// Einstellungen
+	// Fallback-Bilder
 	add_submenu_page(
 		'parkourone',
-		'Einstellungen',
-		'Einstellungen',
+		'Fallback-Bilder',
+		'Fallback-Bilder',
 		'manage_options',
-		'parkourone-settings',
-		'parkourone_settings_page'
+		'parkourone-fallback-images',
+		'parkourone_fallback_images_page'
+	);
+
+	// Maintenance Mode
+	add_submenu_page(
+		'parkourone',
+		'Maintenance Mode',
+		'Maintenance Mode',
+		'manage_options',
+		'parkourone-maintenance',
+		'parkourone_maintenance_admin_page_html'
+	);
+
+	// Theme Updates
+	add_submenu_page(
+		'parkourone',
+		'Theme Updates',
+		'Theme Updates',
+		'manage_options',
+		'parkourone-updates',
+		'parkourone_theme_updates_page'
 	);
 }
 add_action('admin_menu', 'parkourone_register_admin_menu', 5);
@@ -476,15 +496,83 @@ function parkourone_menu_footer_page() {
 }
 
 /**
- * Einstellungen Seite (Platzhalter für zukünftige Optionen)
+ * Fallback-Bilder Seite
  */
-function parkourone_settings_page() {
+function parkourone_fallback_images_page() {
+	$categories = ['minis', 'kids', 'juniors', 'adults'];
+	$orientations = ['portrait', 'landscape'];
 	?>
 	<div class="wrap">
-		<h1>ParkourONE Einstellungen</h1>
-		<p>Weitere Einstellungen werden hier in Zukunft verfügbar sein.</p>
+		<h1>Fallback-Bilder</h1>
+		<p>Diese Bilder werden automatisch verwendet, wenn ein Event/Kurs kein eigenes Bild hat.</p>
+
+		<style>
+			.po-fallback-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 15px; }
+			.po-fallback-item { position: relative; aspect-ratio: 3/4; border-radius: 8px; overflow: hidden; background: #f0f0f1; }
+			.po-fallback-item.landscape { aspect-ratio: 16/10; }
+			.po-fallback-item img { width: 100%; height: 100%; object-fit: cover; }
+			.po-fallback-item span { position: absolute; bottom: 0; left: 0; right: 0; padding: 5px; background: rgba(0,0,0,0.7); color: #fff; font-size: 11px; text-align: center; }
+			.po-category-section { margin-bottom: 40px; background: #fff; padding: 20px; border: 1px solid #c3c4c7; border-radius: 8px; }
+			.po-category-section h2 { margin-top: 0; text-transform: capitalize; }
+			.po-orientation-group { margin-bottom: 20px; }
+			.po-orientation-group h4 { margin-bottom: 10px; color: #646970; }
+		</style>
+
+		<?php foreach ($categories as $category): ?>
+		<div class="po-category-section">
+			<h2><?php echo esc_html(ucfirst($category)); ?></h2>
+
+			<?php foreach ($orientations as $orientation): ?>
+			<div class="po-orientation-group">
+				<h4><?php echo $orientation === 'portrait' ? 'Portrait (3:4)' : 'Landscape (16:10)'; ?></h4>
+				<?php
+				$dir = get_template_directory() . '/assets/images/fallback/' . $orientation . '/' . $category;
+				$url_base = get_template_directory_uri() . '/assets/images/fallback/' . $orientation . '/' . $category;
+
+				if (is_dir($dir)) {
+					$images = glob($dir . '/*.{jpg,jpeg,png,webp}', GLOB_BRACE);
+					if (!empty($images)): ?>
+					<div class="po-fallback-grid">
+						<?php foreach ($images as $image):
+							$filename = basename($image);
+							?>
+						<div class="po-fallback-item <?php echo esc_attr($orientation); ?>">
+							<img src="<?php echo esc_url($url_base . '/' . $filename); ?>" alt="<?php echo esc_attr($filename); ?>">
+							<span><?php echo esc_html($filename); ?></span>
+						</div>
+						<?php endforeach; ?>
+					</div>
+					<?php else: ?>
+					<p style="color: #666;">Keine Bilder vorhanden.</p>
+					<?php endif;
+				} else { ?>
+					<p style="color: #666;">Ordner nicht vorhanden: <code><?php echo esc_html($orientation . '/' . $category); ?></code></p>
+				<?php } ?>
+			</div>
+			<?php endforeach; ?>
+		</div>
+		<?php endforeach; ?>
+
+		<div style="margin-top: 20px; padding: 15px; background: #f0f6fc; border-radius: 4px;">
+			<strong>Bilder hinzufügen:</strong><br>
+			Lade neue Bilder per FTP/SFTP in folgende Ordner hoch:<br>
+			<code>/wp-content/themes/parkourone-theme/assets/images/fallback/[portrait|landscape]/[minis|kids|juniors|adults]/</code>
+		</div>
 	</div>
 	<?php
+}
+
+/**
+ * Theme Updates Seite (Wrapper für GitHub Updater)
+ */
+function parkourone_theme_updates_page() {
+	// Verwende die existierende Render-Funktion vom GitHub Updater
+	if (class_exists('ParkourONE_GitHub_Updater')) {
+		$updater = new ParkourONE_GitHub_Updater();
+		$updater->render_admin_page();
+	} else {
+		echo '<div class="wrap"><h1>Theme Updates</h1><p>GitHub Updater nicht verfügbar.</p></div>';
+	}
 }
 
 /**

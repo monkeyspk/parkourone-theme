@@ -107,25 +107,15 @@ function parkourone_maintenance_admin_bar($wp_admin_bar) {
 		'title' => $is_active
 			? '<span style="color: #ffb900;">🚧 Maintenance AN</span>'
 			: '<span style="color: #72aee6;">✓ Seite Live</span>',
-		'href' => admin_url('themes.php?page=parkourone-maintenance'),
+		'href' => admin_url('admin.php?page=parkourone-maintenance'),
 	]);
 }
 add_action('admin_bar_menu', 'parkourone_maintenance_admin_bar', 100);
 
 /**
  * Admin-Seite für Maintenance Mode
+ * Menü-Registrierung erfolgt in inc/admin-menu.php
  */
-function parkourone_maintenance_admin_page() {
-	add_theme_page(
-		'Maintenance Mode',
-		'Maintenance Mode',
-		'manage_options',
-		'parkourone-maintenance',
-		'parkourone_maintenance_admin_page_html'
-	);
-}
-add_action('admin_menu', 'parkourone_maintenance_admin_page');
-
 function parkourone_maintenance_admin_page_html() {
 	if (!current_user_can('manage_options')) return;
 
