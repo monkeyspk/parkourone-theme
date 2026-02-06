@@ -1,202 +1,201 @@
 <?php
 /**
- * Cart Page - Clean & Modern Design
- *
+ * Cart Page
  * @package ParkourONE
  */
-
 defined('ABSPATH') || exit;
 
 do_action('woocommerce_before_cart');
 ?>
 
 <div class="wc-cart">
-	<?php if (WC()->cart->is_empty()) : ?>
+<?php if (WC()->cart->is_empty()) : ?>
 
-		<div class="wc-cart__empty">
-			<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
-				<circle cx="9" cy="21" r="1"></circle>
-				<circle cx="20" cy="21" r="1"></circle>
-				<path d="m1 1 4 4 2.68 11.69a2 2 0 0 0 2 1.31h9.72a2 2 0 0 0 2-1.31L23 6H6"></path>
-			</svg>
-			<p>Dein Warenkorb ist leer.</p>
-			<a href="<?php echo esc_url(home_url('/angebote/')); ?>" class="wc-cart__btn wc-cart__btn--primary">
-				Angebote entdecken
-			</a>
+	<div class="wc-cart__empty">
+		<p>Dein Warenkorb ist leer.</p>
+		<a href="<?php echo esc_url(wc_get_page_permalink('shop')); ?>" class="wc-cart__btn">
+			Weiter einkaufen
+		</a>
+	</div>
+
+<?php else : ?>
+
+	<form class="woocommerce-cart-form" action="<?php echo esc_url(wc_get_cart_url()); ?>" method="post">
+		<?php do_action('woocommerce_before_cart_table'); ?>
+
+		<div class="wc-cart__header">
+			<h1>Warenkorb</h1>
+			<a href="<?php echo esc_url(wc_get_page_permalink('shop')); ?>">Weiter einkaufen</a>
 		</div>
 
-	<?php else : ?>
+		<table class="wc-cart__table">
+			<thead>
+				<tr>
+					<th class="product-thumbnail">&nbsp;</th>
+					<th class="product-name">Produkt</th>
+					<th class="product-price">Preis</th>
+					<th class="product-quantity">Anzahl</th>
+					<th class="product-subtotal">Gesamt</th>
+					<th class="product-remove">&nbsp;</th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php
+			foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
+				$_product = apply_filters('woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key);
+				$product_id = apply_filters('woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key);
 
-		<form class="woocommerce-cart-form" action="<?php echo esc_url(wc_get_cart_url()); ?>" method="post">
+				if ($_product && $_product->exists() && $cart_item['quantity'] > 0 && apply_filters('woocommerce_cart_item_visible', true, $cart_item, $cart_item_key)) {
+					$product_permalink = apply_filters('woocommerce_cart_item_permalink', $_product->is_visible() ? $_product->get_permalink($cart_item) : '', $cart_item, $cart_item_key);
+					?>
+					<tr class="woocommerce-cart-form__cart-item <?php echo esc_attr(apply_filters('woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key)); ?>">
 
-			<!-- Header -->
-			<div class="wc-cart__header">
-				<h1 class="wc-cart__title">Warenkorb</h1>
-				<a href="<?php echo esc_url(home_url('/angebote/')); ?>" class="wc-cart__continue">
-					Weiter einkaufen
-				</a>
-			</div>
+						<td class="product-thumbnail">
+							<?php
+							$thumbnail = apply_filters('woocommerce_cart_item_thumbnail', $_product->get_image(), $cart_item, $cart_item_key);
+							if (!$product_permalink) {
+								echo $thumbnail;
+							} else {
+								printf('<a href="%s">%s</a>', esc_url($product_permalink), $thumbnail);
+							}
+							?>
+						</td>
 
-			<!-- Table Header -->
-			<div class="wc-cart__table-header">
-				<span class="wc-cart__col-product">Produkt</span>
-				<span class="wc-cart__col-price">Preis</span>
-				<span class="wc-cart__col-qty">Anzahl</span>
-				<span class="wc-cart__col-total">Gesamt</span>
-			</div>
+						<td class="product-name" data-title="<?php esc_attr_e('Produkt', 'woocommerce'); ?>">
+							<?php
+							if (!$product_permalink) {
+								echo wp_kses_post(apply_filters('woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key) . '&nbsp;');
+							} else {
+								echo wp_kses_post(apply_filters('woocommerce_cart_item_name', sprintf('<a href="%s">%s</a>', esc_url($product_permalink), $_product->get_name()), $cart_item, $cart_item_key));
+							}
+							do_action('woocommerce_after_cart_item_name', $cart_item, $cart_item_key);
+							echo wc_get_formatted_cart_item_data($cart_item);
+							?>
+						</td>
 
-			<!-- Cart Items -->
-			<div class="wc-cart__items">
-				<?php
-				foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
-					$_product = apply_filters('woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key);
-					$product_id = apply_filters('woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key);
+						<td class="product-price" data-title="<?php esc_attr_e('Preis', 'woocommerce'); ?>">
+							<?php echo apply_filters('woocommerce_cart_item_price', WC()->cart->get_product_price($_product), $cart_item, $cart_item_key); ?>
+						</td>
 
-					if ($_product && $_product->exists() && $cart_item['quantity'] > 0 && apply_filters('woocommerce_cart_item_visible', true, $cart_item, $cart_item_key)) {
-						$product_permalink = apply_filters('woocommerce_cart_item_permalink', $_product->is_visible() ? $_product->get_permalink($cart_item) : '', $cart_item, $cart_item_key);
-						$product_name = apply_filters('woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key);
-						?>
+						<td class="product-quantity" data-title="<?php esc_attr_e('Anzahl', 'woocommerce'); ?>">
+							<?php
+							if ($_product->is_sold_individually()) {
+								$product_quantity = sprintf('1 <input type="hidden" name="cart[%s][qty]" value="1" />', $cart_item_key);
+							} else {
+								$product_quantity = woocommerce_quantity_input(
+									array(
+										'input_name'   => "cart[{$cart_item_key}][qty]",
+										'input_value'  => $cart_item['quantity'],
+										'max_value'    => $_product->get_max_purchase_quantity(),
+										'min_value'    => '0',
+										'product_name' => $_product->get_name(),
+									),
+									$_product,
+									false
+								);
+							}
+							echo apply_filters('woocommerce_cart_item_quantity', $product_quantity, $cart_item_key, $cart_item);
+							?>
+						</td>
 
-						<div class="wc-cart__item <?php echo esc_attr(apply_filters('woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key)); ?>">
+						<td class="product-subtotal" data-title="<?php esc_attr_e('Gesamt', 'woocommerce'); ?>">
+							<?php echo apply_filters('woocommerce_cart_item_subtotal', WC()->cart->get_product_subtotal($_product, $cart_item['quantity']), $cart_item, $cart_item_key); ?>
+						</td>
 
-							<!-- Product (Image + Name) -->
-							<div class="wc-cart__col-product">
-								<div class="wc-cart__item-image">
-									<?php
-									$thumbnail = $_product->get_image('thumbnail');
-									if ($product_permalink) {
-										echo '<a href="' . esc_url($product_permalink) . '">' . $thumbnail . '</a>';
-									} else {
-										echo $thumbnail;
-									}
-									?>
-								</div>
-								<div class="wc-cart__item-info">
-									<span class="wc-cart__item-name">
-										<?php
-										if ($product_permalink) {
-											echo '<a href="' . esc_url($product_permalink) . '">' . wp_kses_post($product_name) . '</a>';
-										} else {
-											echo wp_kses_post($product_name);
-										}
-										?>
-									</span>
-									<?php echo wc_get_formatted_cart_item_data($cart_item); ?>
-								</div>
-							</div>
-
-							<!-- Price -->
-							<div class="wc-cart__col-price">
-								<?php echo apply_filters('woocommerce_cart_item_price', WC()->cart->get_product_price($_product), $cart_item, $cart_item_key); ?>
-							</div>
-
-							<!-- Quantity -->
-							<div class="wc-cart__col-qty">
-								<?php
-								if ($_product->is_sold_individually()) {
-									echo '<span class="wc-cart__qty-single">1</span>';
-								} else {
-									$max_qty = $_product->get_max_purchase_quantity();
-									?>
-									<div class="wc-cart__qty-wrapper">
-										<button type="button" class="wc-cart__qty-btn wc-cart__qty-minus" aria-label="Minus">−</button>
-										<input type="number"
-											name="cart[<?php echo esc_attr($cart_item_key); ?>][qty]"
-											value="<?php echo esc_attr($cart_item['quantity']); ?>"
-											min="0"
-											max="<?php echo esc_attr($max_qty > 0 ? $max_qty : ''); ?>"
-											class="wc-cart__qty-input"
-											aria-label="Anzahl"
-										/>
-										<button type="button" class="wc-cart__qty-btn wc-cart__qty-plus" aria-label="Plus">+</button>
-									</div>
-									<?php
-								}
-								?>
-							</div>
-
-							<!-- Total + Remove -->
-							<div class="wc-cart__col-total">
-								<span class="wc-cart__item-total">
-									<?php echo apply_filters('woocommerce_cart_item_subtotal', WC()->cart->get_product_subtotal($_product, $cart_item['quantity']), $cart_item, $cart_item_key); ?>
-								</span>
-								<a href="<?php echo esc_url(wc_get_cart_remove_url($cart_item_key)); ?>"
-								   class="wc-cart__remove"
-								   aria-label="<?php esc_attr_e('Entfernen', 'parkourone'); ?>"
-								   data-product_id="<?php echo esc_attr($product_id); ?>"
-								   data-cart_item_key="<?php echo esc_attr($cart_item_key); ?>">
-									<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-										<path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-									</svg>
-								</a>
-							</div>
-
-						</div>
-						<?php
-					}
+						<td class="product-remove">
+							<?php
+							echo apply_filters(
+								'woocommerce_cart_item_remove_link',
+								sprintf(
+									'<a href="%s" class="remove" aria-label="%s" data-product_id="%s" data-product_sku="%s">&times;</a>',
+									esc_url(wc_get_cart_remove_url($cart_item_key)),
+									esc_html__('Entfernen', 'woocommerce'),
+									esc_attr($product_id),
+									esc_attr($_product->get_sku())
+								),
+								$cart_item_key
+							);
+							?>
+						</td>
+					</tr>
+					<?php
 				}
-				?>
-			</div>
+			}
+			?>
+			</tbody>
+		</table>
 
-			<?php wp_nonce_field('woocommerce-cart', 'woocommerce-cart-nonce'); ?>
-			<button type="submit" class="wc-cart__update" name="update_cart" value="1">Aktualisieren</button>
-
-			<!-- Summary -->
-			<div class="wc-cart__summary">
-				<div class="wc-cart__summary-row">
-					<span>Zwischensumme</span>
-					<span><?php wc_cart_totals_subtotal_html(); ?></span>
+		<div class="wc-cart__actions">
+			<?php if (wc_coupons_enabled()) : ?>
+				<div class="coupon">
+					<input type="text" name="coupon_code" class="input-text" placeholder="<?php esc_attr_e('Gutscheincode', 'woocommerce'); ?>" />
+					<button type="submit" class="button" name="apply_coupon" value="<?php esc_attr_e('Einlösen', 'woocommerce'); ?>"><?php esc_html_e('Einlösen', 'woocommerce'); ?></button>
 				</div>
+			<?php endif; ?>
+			<button type="submit" class="button" name="update_cart" value="<?php esc_attr_e('Aktualisieren', 'woocommerce'); ?>"><?php esc_html_e('Warenkorb aktualisieren', 'woocommerce'); ?></button>
+			<?php wp_nonce_field('woocommerce-cart', 'woocommerce-cart-nonce'); ?>
+		</div>
+
+		<?php do_action('woocommerce_after_cart_table'); ?>
+	</form>
+
+	<div class="wc-cart__totals">
+		<?php do_action('woocommerce_before_cart_collaterals'); ?>
+
+		<div class="cart_totals">
+			<h2><?php esc_html_e('Zusammenfassung', 'woocommerce'); ?></h2>
+
+			<table>
+				<tr class="cart-subtotal">
+					<th><?php esc_html_e('Zwischensumme', 'woocommerce'); ?></th>
+					<td><?php wc_cart_totals_subtotal_html(); ?></td>
+				</tr>
 
 				<?php foreach (WC()->cart->get_coupons() as $code => $coupon) : ?>
-					<div class="wc-cart__summary-row wc-cart__summary-row--coupon">
-						<span><?php wc_cart_totals_coupon_label($coupon); ?></span>
-						<span><?php wc_cart_totals_coupon_html($coupon); ?></span>
-					</div>
+					<tr class="cart-discount coupon-<?php echo esc_attr(sanitize_title($code)); ?>">
+						<th><?php wc_cart_totals_coupon_label($coupon); ?></th>
+						<td><?php wc_cart_totals_coupon_html($coupon); ?></td>
+					</tr>
 				<?php endforeach; ?>
 
-				<?php if (WC()->cart->needs_shipping() && WC()->cart->show_shipping()) : ?>
-					<?php wc_cart_totals_shipping_html(); ?>
-				<?php endif; ?>
-
 				<?php foreach (WC()->cart->get_fees() as $fee) : ?>
-					<div class="wc-cart__summary-row">
-						<span><?php echo esc_html($fee->name); ?></span>
-						<span><?php wc_cart_totals_fee_html($fee); ?></span>
-					</div>
+					<tr class="fee">
+						<th><?php echo esc_html($fee->name); ?></th>
+						<td><?php wc_cart_totals_fee_html($fee); ?></td>
+					</tr>
 				<?php endforeach; ?>
 
 				<?php if (wc_tax_enabled() && !WC()->cart->display_prices_including_tax()) : ?>
-					<div class="wc-cart__summary-row">
-						<span><?php echo esc_html(WC()->countries->tax_or_vat()); ?></span>
-						<span><?php wc_cart_totals_taxes_total_html(); ?></span>
-					</div>
+					<?php if ('itemized' === get_option('woocommerce_tax_total_display')) : ?>
+						<?php foreach (WC()->cart->get_tax_totals() as $code => $tax) : ?>
+							<tr class="tax-rate tax-rate-<?php echo esc_attr(sanitize_title($code)); ?>">
+								<th><?php echo esc_html($tax->label); ?></th>
+								<td><?php echo wp_kses_post($tax->formatted_amount); ?></td>
+							</tr>
+						<?php endforeach; ?>
+					<?php else : ?>
+						<tr class="tax-total">
+							<th><?php echo esc_html(WC()->countries->tax_or_vat()); ?></th>
+							<td><?php wc_cart_totals_taxes_total_html(); ?></td>
+						</tr>
+					<?php endif; ?>
 				<?php endif; ?>
 
-				<div class="wc-cart__summary-row wc-cart__summary-row--total">
-					<span>Gesamt</span>
-					<span><?php wc_cart_totals_order_total_html(); ?></span>
-				</div>
+				<tr class="order-total">
+					<th><?php esc_html_e('Gesamt', 'woocommerce'); ?></th>
+					<td><?php wc_cart_totals_order_total_html(); ?></td>
+				</tr>
+			</table>
 
-				<p class="wc-cart__tax-note">
-					<?php echo wp_kses_post(wc_get_price_suffix()); ?>
-				</p>
-
-				<?php if (wc_coupons_enabled()) : ?>
-					<div class="wc-cart__coupon">
-						<input type="text" name="coupon_code" class="wc-cart__coupon-input" placeholder="Gutscheincode" />
-						<button type="submit" name="apply_coupon" class="wc-cart__coupon-btn">Einlösen</button>
-					</div>
-				<?php endif; ?>
-
-				<a href="<?php echo esc_url(wc_get_checkout_url()); ?>" class="wc-cart__btn wc-cart__btn--checkout">
-					Zur Kasse
+			<div class="wc-proceed-to-checkout">
+				<a href="<?php echo esc_url(wc_get_checkout_url()); ?>" class="checkout-button button">
+					<?php esc_html_e('Zur Kasse', 'woocommerce'); ?>
 				</a>
 			</div>
+		</div>
+	</div>
 
-		</form>
-
-	<?php endif; ?>
+<?php endif; ?>
 </div>
 
 <?php do_action('woocommerce_after_cart'); ?>

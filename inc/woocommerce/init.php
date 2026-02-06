@@ -75,17 +75,6 @@ function parkourone_wc_enqueue_assets() {
 		true
 	);
 
-	// JavaScript - Cart Page
-	if (is_cart()) {
-		wp_enqueue_script(
-			'parkourone-wc-cart',
-			get_template_directory_uri() . '/assets/js/wc-cart.js',
-			[],
-			filemtime(get_template_directory() . '/assets/js/wc-cart.js'),
-			true
-		);
-	}
-
 	// Pass data to JavaScript
 	wp_localize_script('parkourone-side-cart', 'poSideCart', [
 		'ajaxUrl' => admin_url('admin-ajax.php'),
