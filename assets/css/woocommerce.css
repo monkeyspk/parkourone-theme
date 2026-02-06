@@ -822,21 +822,17 @@ p#referrer_field {
 
 /* ---------- Page layout — break out of WP container ---------- */
 
-/* Let checkout break out of narrow WP post-content container */
-.woocommerce-checkout .entry-content,
-.woocommerce-checkout .wp-block-post-content,
-.woocommerce-checkout .wp-block-post-content > * {
-	max-width: none !important;
-	width: 100% !important;
-}
-
 .woocommerce-checkout .woocommerce {
-	max-width: 1400px;
-	margin: 0 auto;
-	padding: 48px 48px 96px;
+	/* Break out of narrow WP post-content container */
+	width: 100vw;
+	max-width: 100vw;
+	margin-left: calc(50% - 50vw);
+	box-sizing: border-box;
+	padding: 48px max(48px, calc((100vw - 1200px) / 2)) 96px;
 	font-family: var(--wc-font);
 	-webkit-font-smoothing: antialiased;
 	color: var(--wc-text);
+	overflow: hidden;
 }
 
 /* ---------- Coupon banner — subtle ---------- */
@@ -875,7 +871,7 @@ p#referrer_field {
 
 .woocommerce-checkout form.checkout.woocommerce-checkout {
 	display: grid;
-	grid-template-columns: 1fr 480px;
+	grid-template-columns: 1fr minmax(0, 440px);
 	gap: 0 48px;
 	align-items: start;
 }
@@ -1507,12 +1503,10 @@ p#referrer_field {
 	}
 
 	.woocommerce-checkout .woocommerce {
+		width: 100%;
+		max-width: 100%;
+		margin-left: 0;
 		padding: 24px 16px 64px;
-	}
-
-	.woocommerce-checkout .woocommerce-additional-fields {
-		padding: 20px 16px;
-		border-radius: var(--wc-radius-sm);
 	}
 
 	.woocommerce-checkout #order_review {
