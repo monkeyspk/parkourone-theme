@@ -187,6 +187,7 @@ require_once get_template_directory() . '/inc/github-updater.php';
 require_once get_template_directory() . '/inc/theme-images.php';
 require_once get_template_directory() . '/inc/admin-menu.php';
 require_once get_template_directory() . '/inc/cookie-consent/init.php';
+require_once get_template_directory() . '/inc/analytics/init.php';
 
 /**
  * Menü-Positionen registrieren
