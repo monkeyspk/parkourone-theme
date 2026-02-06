@@ -262,19 +262,19 @@
 		 * Bind event handlers
 		 */
 		bindEvents() {
-			// Delegate click events
+			// Delegate click events - use closest() to handle clicks on child elements (e.g., SVG icons)
 			document.addEventListener('click', (e) => {
-				const action = e.target.dataset.consentAction;
-				const acceptCategory = e.target.dataset.consentAccept;
+				const actionElement = e.target.closest('[data-consent-action]');
+				const acceptElement = e.target.closest('[data-consent-accept]');
 
-				if (action) {
+				if (actionElement) {
 					e.preventDefault();
-					this.handleAction(action);
+					this.handleAction(actionElement.dataset.consentAction);
 				}
 
-				if (acceptCategory) {
+				if (acceptElement) {
 					e.preventDefault();
-					this.acceptCategory(acceptCategory);
+					this.acceptCategory(acceptElement.dataset.consentAccept);
 				}
 			});
 

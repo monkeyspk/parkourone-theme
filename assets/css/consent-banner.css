@@ -62,11 +62,13 @@
 	background: var(--po-consent-overlay);
 	backdrop-filter: blur(4px);
 	-webkit-backdrop-filter: blur(4px);
+	pointer-events: none; /* Prevent overlay from capturing clicks */
 }
 
 /* Container - Floating Card */
 .po-consent-banner__container {
 	position: relative;
+	z-index: 1; /* Ensure container is above overlay */
 	width: 100%;
 	max-width: 480px;
 	max-height: calc(100vh - 32px);
