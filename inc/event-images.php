@@ -309,21 +309,8 @@ add_action('save_post_event', 'parkourone_save_event_image');
 
 // =====================================================
 // Admin-Seite für Bulk-Bildverwaltung
+// Menü-Registrierung erfolgt in inc/admin-menu.php
 // =====================================================
-
-function parkourone_add_event_images_admin_page() {
-	if (!post_type_exists('event')) return;
-
-	add_submenu_page(
-		'edit.php?post_type=event',
-		'Kurs-Bilder verwalten',
-		'Bilder verwalten',
-		'edit_posts',
-		'parkourone-event-images',
-		'parkourone_event_images_admin_page'
-	);
-}
-add_action('admin_menu', 'parkourone_add_event_images_admin_page');
 
 function parkourone_event_images_admin_page() {
 	// Handle save

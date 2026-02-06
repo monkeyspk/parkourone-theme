@@ -427,19 +427,8 @@ function parkourone_get_target_groups() {
 
 // =====================================================
 // Admin-Seite: Auto-Generator Wizard
+// Menü-Registrierung erfolgt in inc/admin-menu.php
 // =====================================================
-
-function parkourone_add_auto_pages_menu() {
-	add_submenu_page(
-		'themes.php',
-		'Seiten Auto-Generator',
-		'Seiten Generator',
-		'manage_options',
-		'parkourone-auto-pages',
-		'parkourone_auto_pages_admin_page'
-	);
-}
-add_action('admin_menu', 'parkourone_add_auto_pages_menu');
 
 // =====================================================
 // Prüfen ob Seiten veraltet sind (ohne neue Features)

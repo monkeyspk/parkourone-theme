@@ -1,18 +1,24 @@
 <?php
-$companyName = $attributes['companyName'] ?? 'ParkourONE Berlin';
-$companyAddress = $attributes['companyAddress'] ?? '';
-$socialInstagram = $attributes['socialInstagram'] ?? '#';
-$socialYoutube = $attributes['socialYoutube'] ?? '#';
-$socialPodcast = $attributes['socialPodcast'] ?? '#';
-$phone = $attributes['phone'] ?? '';
-$email = $attributes['email'] ?? '';
-$contactFormUrl = $attributes['contactFormUrl'] ?? '#';
-$phoneHours = $attributes['phoneHours'] ?? '';
-$standorte = $attributes['standorte'] ?? [];
-$zentraleName = $attributes['zentraleName'] ?? '';
-$zentraleUrl = $attributes['zentraleUrl'] ?? '#';
-$newsletterHeadline = $attributes['newsletterHeadline'] ?? '';
-$newsletterText = $attributes['newsletterText'] ?? '';
+// Footer-Optionen aus der Datenbank laden
+$footer_options = get_option('parkourone_footer', []);
+
+// Werte mit Priorität: Block-Attribute > Options > Defaults
+$companyName = $attributes['companyName'] ?? $footer_options['company_name'] ?? 'ParkourONE';
+$companyAddress = $attributes['companyAddress'] ?? $footer_options['company_address'] ?? '';
+$socialInstagram = $attributes['socialInstagram'] ?? $footer_options['social_instagram'] ?? '';
+$socialYoutube = $attributes['socialYoutube'] ?? $footer_options['social_youtube'] ?? '';
+$socialPodcast = $attributes['socialPodcast'] ?? $footer_options['social_podcast'] ?? '';
+$phone = $attributes['phone'] ?? $footer_options['phone'] ?? '';
+$email = $attributes['email'] ?? $footer_options['email'] ?? '';
+$contactFormUrl = $attributes['contactFormUrl'] ?? $footer_options['contact_form_url'] ?? '';
+$phoneHours = $attributes['phoneHours'] ?? $footer_options['phone_hours'] ?? '';
+$standorte = $attributes['standorte'] ?? $footer_options['standorte'] ?? [];
+$zentraleName = $attributes['zentraleName'] ?? $footer_options['zentrale_name'] ?? '';
+$zentraleUrl = $attributes['zentraleUrl'] ?? $footer_options['zentrale_url'] ?? '';
+$newsletterHeadline = $attributes['newsletterHeadline'] ?? $footer_options['newsletter_headline'] ?? '';
+$newsletterText = $attributes['newsletterText'] ?? $footer_options['newsletter_text'] ?? '';
+$copyrightYear = $attributes['copyrightYear'] ?? $footer_options['copyright_year'] ?? date('Y');
+
 // Legal Pages - automatisch verlinken wenn vorhanden
 $impressumUrl = $attributes['impressumUrl'] ?? '';
 $datenschutzUrl = $attributes['datenschutzUrl'] ?? '';
@@ -31,7 +37,6 @@ if (empty($cookiesUrl) || $cookiesUrl === '#') {
 	// Cookies-Info ist Teil der Datenschutzseite (Abschnitt 4)
 	$cookiesUrl = $datenschutzUrl . '#cookies';
 }
-$copyrightYear = $attributes['copyrightYear'] ?? date('Y');
 ?>
 <footer class="po-footer alignfull">
 	<div class="po-footer__main">

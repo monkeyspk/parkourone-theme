@@ -1,0 +1,520 @@
+<?php
+/**
+ * ParkourONE Admin Menu
+ * Zentrales Admin-Menü für alle Theme-Funktionen
+ */
+
+if (!defined('ABSPATH')) exit;
+
+/**
+ * Haupt-Menü und Untermenüs registrieren
+ */
+function parkourone_register_admin_menu() {
+	// Hauptmenü
+	add_menu_page(
+		'ParkourONE',
+		'ParkourONE',
+		'manage_options',
+		'parkourone',
+		'parkourone_admin_dashboard',
+		'dashicons-superhero-alt',
+		3
+	);
+
+	// Dashboard (erstes Untermenü umbenennen)
+	add_submenu_page(
+		'parkourone',
+		'Dashboard',
+		'Dashboard',
+		'manage_options',
+		'parkourone',
+		'parkourone_admin_dashboard'
+	);
+
+	// Menü & Footer
+	add_submenu_page(
+		'parkourone',
+		'Menü & Footer',
+		'Menü & Footer',
+		'manage_options',
+		'parkourone-menu-footer',
+		'parkourone_menu_footer_page'
+	);
+
+	// Seiten Generator
+	add_submenu_page(
+		'parkourone',
+		'Seiten Generator',
+		'Seiten Generator',
+		'manage_options',
+		'parkourone-pages',
+		'parkourone_auto_pages_admin_page'
+	);
+
+	// Kurs-Bilder
+	add_submenu_page(
+		'parkourone',
+		'Kurs-Bilder',
+		'Kurs-Bilder',
+		'manage_options',
+		'parkourone-images',
+		'parkourone_event_images_admin_page'
+	);
+
+	// Einstellungen
+	add_submenu_page(
+		'parkourone',
+		'Einstellungen',
+		'Einstellungen',
+		'manage_options',
+		'parkourone-settings',
+		'parkourone_settings_page'
+	);
+}
+add_action('admin_menu', 'parkourone_register_admin_menu', 5);
+
+/**
+ * CPTs zum ParkourONE Menü hinzufügen
+ */
+function parkourone_add_cpts_to_menu() {
+	global $menu, $submenu;
+
+	// CPT Slugs die wir verschieben wollen
+	$cpts = ['coach', 'faq', 'testimonial', 'job', 'angebot'];
+
+	foreach ($cpts as $cpt) {
+		$cpt_obj = get_post_type_object($cpt);
+		if (!$cpt_obj) continue;
+
+		// Submenu zum ParkourONE Menü hinzufügen
+		add_submenu_page(
+			'parkourone',
+			$cpt_obj->labels->name,
+			$cpt_obj->labels->menu_name,
+			'edit_posts',
+			'edit.php?post_type=' . $cpt
+		);
+	}
+}
+add_action('admin_menu', 'parkourone_add_cpts_to_menu', 20);
+
+/**
+ * Original CPT Menüs ausblenden
+ */
+function parkourone_hide_original_cpt_menus() {
+	$cpts = ['coach', 'faq', 'testimonial', 'job', 'angebot'];
+
+	foreach ($cpts as $cpt) {
+		remove_menu_page('edit.php?post_type=' . $cpt);
+	}
+}
+add_action('admin_menu', 'parkourone_hide_original_cpt_menus', 999);
+
+/**
+ * Dashboard Seite
+ */
+function parkourone_admin_dashboard() {
+	$counts = [
+		'coach' => wp_count_posts('coach')->publish ?? 0,
+		'faq' => wp_count_posts('faq')->publish ?? 0,
+		'testimonial' => wp_count_posts('testimonial')->publish ?? 0,
+		'job' => wp_count_posts('job')->publish ?? 0,
+		'angebot' => wp_count_posts('angebot')->publish ?? 0,
+		'event' => wp_count_posts('event')->publish ?? 0,
+	];
+	?>
+	<div class="wrap">
+		<h1>ParkourONE Dashboard</h1>
+		<div class="po-admin-dashboard">
+			<style>
+				.po-admin-dashboard { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; }
+				.po-admin-card { background: #fff; border: 1px solid #c3c4c7; border-radius: 8px; padding: 20px; text-align: center; }
+				.po-admin-card h3 { margin: 0 0 10px; font-size: 14px; color: #646970; text-transform: uppercase; letter-spacing: 0.5px; }
+				.po-admin-card .count { font-size: 48px; font-weight: 600; color: #1d2327; line-height: 1; }
+				.po-admin-card a { display: inline-block; margin-top: 15px; text-decoration: none; }
+			</style>
+
+			<div class="po-admin-card">
+				<h3>Coaches</h3>
+				<div class="count"><?php echo esc_html($counts['coach']); ?></div>
+				<a href="<?php echo admin_url('edit.php?post_type=coach'); ?>" class="button">Verwalten</a>
+			</div>
+
+			<div class="po-admin-card">
+				<h3>FAQs</h3>
+				<div class="count"><?php echo esc_html($counts['faq']); ?></div>
+				<a href="<?php echo admin_url('edit.php?post_type=faq'); ?>" class="button">Verwalten</a>
+			</div>
+
+			<div class="po-admin-card">
+				<h3>Testimonials</h3>
+				<div class="count"><?php echo esc_html($counts['testimonial']); ?></div>
+				<a href="<?php echo admin_url('edit.php?post_type=testimonial'); ?>" class="button">Verwalten</a>
+			</div>
+
+			<div class="po-admin-card">
+				<h3>Jobs</h3>
+				<div class="count"><?php echo esc_html($counts['job']); ?></div>
+				<a href="<?php echo admin_url('edit.php?post_type=job'); ?>" class="button">Verwalten</a>
+			</div>
+
+			<div class="po-admin-card">
+				<h3>Angebote</h3>
+				<div class="count"><?php echo esc_html($counts['angebot']); ?></div>
+				<a href="<?php echo admin_url('edit.php?post_type=angebot'); ?>" class="button">Verwalten</a>
+			</div>
+
+			<div class="po-admin-card">
+				<h3>Events/Kurse</h3>
+				<div class="count"><?php echo esc_html($counts['event']); ?></div>
+				<a href="<?php echo admin_url('edit.php?post_type=event'); ?>" class="button">Verwalten</a>
+			</div>
+		</div>
+	</div>
+	<?php
+}
+
+/**
+ * Menü & Footer Seite
+ */
+function parkourone_menu_footer_page() {
+	// Speichern
+	if (isset($_POST['parkourone_footer_save']) && check_admin_referer('parkourone_footer_nonce')) {
+		$footer_options = [
+			'company_name' => sanitize_text_field($_POST['footer_company_name'] ?? ''),
+			'company_address' => sanitize_textarea_field($_POST['footer_company_address'] ?? ''),
+			'phone' => sanitize_text_field($_POST['footer_phone'] ?? ''),
+			'phone_hours' => sanitize_textarea_field($_POST['footer_phone_hours'] ?? ''),
+			'email' => sanitize_email($_POST['footer_email'] ?? ''),
+			'contact_form_url' => esc_url_raw($_POST['footer_contact_form_url'] ?? ''),
+			'social_instagram' => esc_url_raw($_POST['footer_social_instagram'] ?? ''),
+			'social_youtube' => esc_url_raw($_POST['footer_social_youtube'] ?? ''),
+			'social_podcast' => esc_url_raw($_POST['footer_social_podcast'] ?? ''),
+			'zentrale_name' => sanitize_text_field($_POST['footer_zentrale_name'] ?? ''),
+			'zentrale_url' => esc_url_raw($_POST['footer_zentrale_url'] ?? ''),
+			'newsletter_headline' => sanitize_text_field($_POST['footer_newsletter_headline'] ?? ''),
+			'newsletter_text' => sanitize_text_field($_POST['footer_newsletter_text'] ?? ''),
+			'copyright_year' => sanitize_text_field($_POST['footer_copyright_year'] ?? date('Y')),
+		];
+
+		// Standorte als Array speichern
+		$standorte = [];
+		if (!empty($_POST['footer_standorte_name']) && is_array($_POST['footer_standorte_name'])) {
+			foreach ($_POST['footer_standorte_name'] as $i => $name) {
+				if (!empty($name)) {
+					$standorte[] = [
+						'name' => sanitize_text_field($name),
+						'url' => esc_url_raw($_POST['footer_standorte_url'][$i] ?? '')
+					];
+				}
+			}
+		}
+		$footer_options['standorte'] = $standorte;
+
+		update_option('parkourone_footer', $footer_options);
+		echo '<div class="notice notice-success"><p>Footer-Einstellungen gespeichert!</p></div>';
+	}
+
+	// Aktuelle Werte laden
+	$options = get_option('parkourone_footer', []);
+	$defaults = [
+		'company_name' => '',
+		'company_address' => '',
+		'phone' => '',
+		'phone_hours' => '',
+		'email' => '',
+		'contact_form_url' => '',
+		'social_instagram' => '',
+		'social_youtube' => '',
+		'social_podcast' => '',
+		'standorte' => [],
+		'zentrale_name' => '',
+		'zentrale_url' => '',
+		'newsletter_headline' => '',
+		'newsletter_text' => '',
+		'copyright_year' => date('Y'),
+	];
+	$options = wp_parse_args($options, $defaults);
+	?>
+	<div class="wrap">
+		<h1>Menü & Footer</h1>
+
+		<style>
+			.po-admin-tabs { display: flex; gap: 0; border-bottom: 1px solid #c3c4c7; margin-bottom: 20px; }
+			.po-admin-tab { padding: 12px 20px; background: #f0f0f1; border: 1px solid #c3c4c7; border-bottom: none; margin-bottom: -1px; cursor: pointer; text-decoration: none; color: #1d2327; }
+			.po-admin-tab.active { background: #fff; border-bottom-color: #fff; font-weight: 600; }
+			.po-admin-tab:hover { background: #fff; }
+			.po-admin-panel { display: none; background: #fff; padding: 20px; border: 1px solid #c3c4c7; border-top: none; }
+			.po-admin-panel.active { display: block; }
+			.po-form-section { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+			.po-form-section:last-child { border-bottom: none; margin-bottom: 0; }
+			.po-form-section h3 { margin: 0 0 15px; font-size: 14px; text-transform: uppercase; color: #646970; letter-spacing: 0.5px; }
+			.po-form-row { display: grid; grid-template-columns: 200px 1fr; gap: 10px; margin-bottom: 15px; align-items: start; }
+			.po-form-row label { font-weight: 500; padding-top: 8px; }
+			.po-form-row input[type="text"],
+			.po-form-row input[type="email"],
+			.po-form-row input[type="url"],
+			.po-form-row textarea { width: 100%; max-width: 500px; }
+			.po-form-row textarea { min-height: 80px; }
+			.po-standorte-list { display: flex; flex-direction: column; gap: 10px; }
+			.po-standort-row { display: flex; gap: 10px; align-items: center; }
+			.po-standort-row input { flex: 1; max-width: 240px; }
+			.po-standort-row .button { flex-shrink: 0; }
+			.po-menu-preview { background: #1d1d1f; color: #fff; padding: 20px; border-radius: 8px; }
+			.po-menu-preview ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 20px; flex-wrap: wrap; }
+			.po-menu-preview li a { color: #fff; text-decoration: none; }
+			.po-footer-preview { background: #1d1d1f; color: #fff; padding: 30px; border-radius: 8px; margin-top: 20px; }
+		</style>
+
+		<div class="po-admin-tabs">
+			<a href="#footer" class="po-admin-tab active" data-tab="footer">Footer-Einstellungen</a>
+			<a href="#menu" class="po-admin-tab" data-tab="menu">Menü-Vorschau</a>
+			<a href="#preview" class="po-admin-tab" data-tab="preview">Footer-Vorschau</a>
+		</div>
+
+		<!-- Footer Einstellungen -->
+		<div class="po-admin-panel active" id="panel-footer">
+			<form method="post">
+				<?php wp_nonce_field('parkourone_footer_nonce'); ?>
+
+				<div class="po-form-section">
+					<h3>Unternehmen</h3>
+					<div class="po-form-row">
+						<label>Firmenname</label>
+						<input type="text" name="footer_company_name" value="<?php echo esc_attr($options['company_name']); ?>" placeholder="ParkourONE Berlin">
+					</div>
+					<div class="po-form-row">
+						<label>Adresse</label>
+						<textarea name="footer_company_address" placeholder="Strasse Nr.&#10;PLZ Stadt"><?php echo esc_textarea($options['company_address']); ?></textarea>
+					</div>
+				</div>
+
+				<div class="po-form-section">
+					<h3>Kontakt</h3>
+					<div class="po-form-row">
+						<label>Telefon</label>
+						<input type="text" name="footer_phone" value="<?php echo esc_attr($options['phone']); ?>" placeholder="+49 30 123456">
+					</div>
+					<div class="po-form-row">
+						<label>Telefonzeiten</label>
+						<textarea name="footer_phone_hours" placeholder="Mo-Fr: 9-17 Uhr"><?php echo esc_textarea($options['phone_hours']); ?></textarea>
+					</div>
+					<div class="po-form-row">
+						<label>E-Mail</label>
+						<input type="email" name="footer_email" value="<?php echo esc_attr($options['email']); ?>" placeholder="info@parkourone.com">
+					</div>
+					<div class="po-form-row">
+						<label>Kontaktformular URL</label>
+						<input type="url" name="footer_contact_form_url" value="<?php echo esc_attr($options['contact_form_url']); ?>" placeholder="/kontakt">
+					</div>
+				</div>
+
+				<div class="po-form-section">
+					<h3>Social Media</h3>
+					<div class="po-form-row">
+						<label>Instagram</label>
+						<input type="url" name="footer_social_instagram" value="<?php echo esc_attr($options['social_instagram']); ?>" placeholder="https://instagram.com/...">
+					</div>
+					<div class="po-form-row">
+						<label>YouTube</label>
+						<input type="url" name="footer_social_youtube" value="<?php echo esc_attr($options['social_youtube']); ?>" placeholder="https://youtube.com/...">
+					</div>
+					<div class="po-form-row">
+						<label>Podcast</label>
+						<input type="url" name="footer_social_podcast" value="<?php echo esc_attr($options['social_podcast']); ?>" placeholder="https://...">
+					</div>
+				</div>
+
+				<div class="po-form-section">
+					<h3>Standorte</h3>
+					<div class="po-standorte-list" id="standorte-list">
+						<?php if (!empty($options['standorte'])): ?>
+							<?php foreach ($options['standorte'] as $i => $standort): ?>
+								<div class="po-standort-row">
+									<input type="text" name="footer_standorte_name[]" value="<?php echo esc_attr($standort['name']); ?>" placeholder="Name">
+									<input type="url" name="footer_standorte_url[]" value="<?php echo esc_attr($standort['url']); ?>" placeholder="URL">
+									<button type="button" class="button po-remove-standort">×</button>
+								</div>
+							<?php endforeach; ?>
+						<?php else: ?>
+							<div class="po-standort-row">
+								<input type="text" name="footer_standorte_name[]" placeholder="Name">
+								<input type="url" name="footer_standorte_url[]" placeholder="URL">
+								<button type="button" class="button po-remove-standort">×</button>
+							</div>
+						<?php endif; ?>
+					</div>
+					<button type="button" class="button" id="add-standort">+ Standort hinzufügen</button>
+				</div>
+
+				<div class="po-form-section">
+					<h3>Zentrale</h3>
+					<div class="po-form-row">
+						<label>Name</label>
+						<input type="text" name="footer_zentrale_name" value="<?php echo esc_attr($options['zentrale_name']); ?>" placeholder="ParkourONE Schweiz">
+					</div>
+					<div class="po-form-row">
+						<label>URL</label>
+						<input type="url" name="footer_zentrale_url" value="<?php echo esc_attr($options['zentrale_url']); ?>" placeholder="https://parkourone.com">
+					</div>
+				</div>
+
+				<div class="po-form-section">
+					<h3>Newsletter</h3>
+					<div class="po-form-row">
+						<label>Überschrift</label>
+						<input type="text" name="footer_newsletter_headline" value="<?php echo esc_attr($options['newsletter_headline']); ?>" placeholder="Newsletter abonnieren">
+					</div>
+					<div class="po-form-row">
+						<label>Text</label>
+						<input type="text" name="footer_newsletter_text" value="<?php echo esc_attr($options['newsletter_text']); ?>" placeholder="Bleib auf dem Laufenden!">
+					</div>
+				</div>
+
+				<div class="po-form-section">
+					<h3>Sonstiges</h3>
+					<div class="po-form-row">
+						<label>Copyright Jahr</label>
+						<input type="text" name="footer_copyright_year" value="<?php echo esc_attr($options['copyright_year']); ?>" placeholder="<?php echo date('Y'); ?>">
+					</div>
+				</div>
+
+				<p>
+					<button type="submit" name="parkourone_footer_save" class="button button-primary button-large">Speichern</button>
+				</p>
+			</form>
+		</div>
+
+		<!-- Menü Vorschau -->
+		<div class="po-admin-panel" id="panel-menu">
+			<h2>Menü-Vorschau</h2>
+			<p>Das Menü wird automatisch aus den Event-Kategorien generiert.</p>
+			<?php
+			// Menü-Vorschau laden (bestehende Funktion)
+			if (function_exists('parkourone_render_menu_preview_content')) {
+				parkourone_render_menu_preview_content();
+			} else {
+				echo '<p>Menü-Vorschau nicht verfügbar.</p>';
+			}
+			?>
+		</div>
+
+		<!-- Footer Vorschau -->
+		<div class="po-admin-panel" id="panel-preview">
+			<h2>Footer-Vorschau</h2>
+			<p>So sieht der Footer mit den aktuellen Einstellungen aus:</p>
+			<div class="po-footer-preview">
+				<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px;">
+					<div>
+						<strong><?php echo esc_html($options['company_name'] ?: 'Firmenname'); ?></strong>
+						<p style="white-space: pre-line; margin-top: 10px; opacity: 0.8;"><?php echo esc_html($options['company_address'] ?: 'Adresse'); ?></p>
+					</div>
+					<div>
+						<strong>Kontakt</strong>
+						<?php if ($options['phone']): ?><p style="margin-top: 10px;"><?php echo esc_html($options['phone']); ?></p><?php endif; ?>
+						<?php if ($options['email']): ?><p><?php echo esc_html($options['email']); ?></p><?php endif; ?>
+					</div>
+					<div>
+						<strong>Standorte</strong>
+						<?php if (!empty($options['standorte'])): ?>
+							<?php foreach ($options['standorte'] as $s): ?>
+								<p style="margin-top: 5px;"><?php echo esc_html($s['name']); ?></p>
+							<?php endforeach; ?>
+						<?php else: ?>
+							<p style="opacity: 0.5; margin-top: 10px;">Keine Standorte</p>
+						<?php endif; ?>
+					</div>
+					<div>
+						<strong><?php echo esc_html($options['newsletter_headline'] ?: 'Newsletter'); ?></strong>
+						<p style="margin-top: 10px; opacity: 0.8;"><?php echo esc_html($options['newsletter_text']); ?></p>
+					</div>
+				</div>
+				<div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); display: flex; justify-content: space-between; opacity: 0.7; font-size: 14px;">
+					<span>ParkourONE</span>
+					<span>Impressum · Datenschutz · Cookies</span>
+					<span>© <?php echo esc_html($options['copyright_year'] ?: date('Y')); ?> ParkourONE</span>
+				</div>
+			</div>
+		</div>
+
+		<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			// Tabs
+			document.querySelectorAll('.po-admin-tab').forEach(function(tab) {
+				tab.addEventListener('click', function(e) {
+					e.preventDefault();
+					document.querySelectorAll('.po-admin-tab').forEach(t => t.classList.remove('active'));
+					document.querySelectorAll('.po-admin-panel').forEach(p => p.classList.remove('active'));
+					this.classList.add('active');
+					document.getElementById('panel-' + this.dataset.tab).classList.add('active');
+				});
+			});
+
+			// Standorte hinzufügen
+			document.getElementById('add-standort').addEventListener('click', function() {
+				var row = document.createElement('div');
+				row.className = 'po-standort-row';
+				row.innerHTML = '<input type="text" name="footer_standorte_name[]" placeholder="Name">' +
+					'<input type="url" name="footer_standorte_url[]" placeholder="URL">' +
+					'<button type="button" class="button po-remove-standort">×</button>';
+				document.getElementById('standorte-list').appendChild(row);
+			});
+
+			// Standorte entfernen
+			document.getElementById('standorte-list').addEventListener('click', function(e) {
+				if (e.target.classList.contains('po-remove-standort')) {
+					var rows = this.querySelectorAll('.po-standort-row');
+					if (rows.length > 1) {
+						e.target.closest('.po-standort-row').remove();
+					}
+				}
+			});
+		});
+		</script>
+	</div>
+	<?php
+}
+
+/**
+ * Einstellungen Seite (Platzhalter für zukünftige Optionen)
+ */
+function parkourone_settings_page() {
+	?>
+	<div class="wrap">
+		<h1>ParkourONE Einstellungen</h1>
+		<p>Weitere Einstellungen werden hier in Zukunft verfügbar sein.</p>
+	</div>
+	<?php
+}
+
+/**
+ * Highlight das aktuelle Menü korrekt für CPTs
+ */
+function parkourone_fix_admin_menu_highlight($parent_file) {
+	global $current_screen;
+
+	$cpts = ['coach', 'faq', 'testimonial', 'job', 'angebot'];
+
+	if (in_array($current_screen->post_type, $cpts)) {
+		return 'parkourone';
+	}
+
+	return $parent_file;
+}
+add_filter('parent_file', 'parkourone_fix_admin_menu_highlight');
+
+/**
+ * Submenu Highlighting für CPTs
+ */
+function parkourone_fix_submenu_highlight($submenu_file) {
+	global $current_screen;
+
+	$cpts = ['coach', 'faq', 'testimonial', 'job', 'angebot'];
+
+	if (in_array($current_screen->post_type, $cpts)) {
+		return 'edit.php?post_type=' . $current_screen->post_type;
+	}
+
+	return $submenu_file;
+}
+add_filter('submenu_file', 'parkourone_fix_submenu_highlight');

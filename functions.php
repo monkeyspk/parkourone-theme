@@ -195,6 +195,7 @@ require_once get_template_directory() . '/inc/auto-pages.php';
 require_once get_template_directory() . '/inc/event-images.php';
 require_once get_template_directory() . '/inc/github-updater.php';
 require_once get_template_directory() . '/inc/theme-images.php';
+require_once get_template_directory() . '/inc/admin-menu.php';
 
 /**
  * Menü-Positionen registrieren
@@ -402,94 +403,77 @@ function parkourone_menu_item_description($item_id, $item) {
 add_action('wp_nav_menu_item_custom_fields', 'parkourone_menu_item_description', 10, 2);
 
 /**
- * Admin-Seite: Menü-Vorschau
+ * Menü-Vorschau Content (wiederverwendbar)
  */
-function parkourone_menu_preview_page() {
-    add_submenu_page(
-        'themes.php',
-        'Menü-Vorschau',
-        'Menü-Vorschau',
-        'edit_theme_options',
-        'po-menu-preview',
-        'parkourone_menu_preview_render'
-    );
-}
-add_action('admin_menu', 'parkourone_menu_preview_page');
-
-function parkourone_menu_preview_render() {
+function parkourone_render_menu_preview_content() {
     ?>
-    <div class="wrap">
-        <h1>Menü-Vorschau</h1>
-        <p>So sieht das Hauptmenü im Frontend aus:</p>
-
-        <div style="background: #fff; border: 1px solid #c3c4c7; border-radius: 8px; padding: 40px; margin-top: 20px; max-width: 1000px;">
-            <style>
-                .po-preview .po-menu__columns {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 3rem;
-                }
-                .po-preview .po-menu__column {
-                    min-width: 180px;
-                    padding: 1rem;
-                    background: #f9f9f9;
-                    border-radius: 8px;
-                }
-                .po-preview .po-menu__column::before {
-                    display: block;
-                    font-size: 0.75rem;
-                    color: #666;
-                    margin-bottom: 0.5rem;
-                    font-weight: 600;
-                    text-transform: uppercase;
-                }
-                .po-preview .po-menu__column:nth-child(1)::before {
-                    content: 'Spalte 1 (automatisch)';
-                }
-                .po-preview .po-menu__column:nth-child(2)::before {
-                    content: 'Spalte 2 (automatisch)';
-                }
-                .po-preview .po-menu__column--manual::before {
-                    content: 'Spalte 3 (manuell)' !important;
-                    color: #2271b1;
-                }
-                .po-preview .po-menu__list {
-                    list-style: none;
-                    margin: 0;
-                    padding: 0;
-                }
-                .po-preview .po-menu__item {
-                    margin-bottom: 0.5rem;
-                }
-                .po-preview .po-menu__link {
-                    font-size: 1rem;
-                    color: #1d1d1f;
-                    text-decoration: none;
-                }
-                .po-preview .po-menu__link:hover {
-                    text-decoration: underline;
-                }
-                .po-preview .po-menu__link--highlight {
-                    font-weight: 700;
-                }
-                .po-preview .po-menu__empty {
-                    color: #666;
-                }
-            </style>
-            <div class="po-preview">
-                <?php echo parkourone_render_main_menu(); ?>
-            </div>
+    <div style="background: #fff; border: 1px solid #c3c4c7; border-radius: 8px; padding: 40px; max-width: 1000px;">
+        <style>
+            .po-preview .po-menu__columns {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 3rem;
+            }
+            .po-preview .po-menu__column {
+                min-width: 180px;
+                padding: 1rem;
+                background: #f9f9f9;
+                border-radius: 8px;
+            }
+            .po-preview .po-menu__column::before {
+                display: block;
+                font-size: 0.75rem;
+                color: #666;
+                margin-bottom: 0.5rem;
+                font-weight: 600;
+                text-transform: uppercase;
+            }
+            .po-preview .po-menu__column:nth-child(1)::before {
+                content: 'Spalte 1 (automatisch)';
+            }
+            .po-preview .po-menu__column:nth-child(2)::before {
+                content: 'Spalte 2 (automatisch)';
+            }
+            .po-preview .po-menu__column--manual::before {
+                content: 'Spalte 3 (manuell)' !important;
+                color: #2271b1;
+            }
+            .po-preview .po-menu__list {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+            .po-preview .po-menu__item {
+                margin-bottom: 0.5rem;
+            }
+            .po-preview .po-menu__link {
+                font-size: 1rem;
+                color: #1d1d1f;
+                text-decoration: none;
+            }
+            .po-preview .po-menu__link:hover {
+                text-decoration: underline;
+            }
+            .po-preview .po-menu__link--highlight {
+                font-weight: 700;
+            }
+            .po-preview .po-menu__empty {
+                color: #666;
+            }
+        </style>
+        <div class="po-preview">
+            <?php echo parkourone_render_main_menu(); ?>
         </div>
-
-        <div style="margin-top: 20px; padding: 15px; background: #f0f6fc; border-radius: 4px; max-width: 1000px;">
-            <strong>Hinweis:</strong> Spalte 1 und 2 werden automatisch aus den Event-Kategorien generiert.
-            Spalte 3 kannst du unter <a href="<?php echo admin_url('nav-menus.php'); ?>">Design → Menüs</a> bearbeiten.
-        </div>
-
-        <p style="margin-top: 20px;">
-            <a href="<?php echo admin_url('nav-menus.php'); ?>" class="button button-primary">Spalte 3 bearbeiten</a>
-        </p>
     </div>
+
+    <div style="margin-top: 20px; padding: 15px; background: #f0f6fc; border-radius: 4px; max-width: 1000px;">
+        <strong>Hinweis:</strong> Spalte 1 und 2 werden automatisch aus den Event-Kategorien generiert.
+        Spalte 3 kannst du unter <a href="<?php echo admin_url('nav-menus.php'); ?>">Design → Menüs</a> bearbeiten.
+    </div>
+
+    <p style="margin-top: 20px;">
+        <a href="<?php echo admin_url('nav-menus.php'); ?>" class="button button-primary">Spalte 3 bearbeiten</a>
+    </p>
     <?php
 }
 
