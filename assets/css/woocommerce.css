@@ -858,33 +858,45 @@ p#referrer_field {
 
 /* ---------- 2-column grid layout ---------- */
 
-.woocommerce-checkout form.woocommerce-checkout {
+.woocommerce-checkout form.checkout.woocommerce-checkout {
 	display: grid;
-	grid-template-columns: 1fr 420px;
-	gap: 32px;
+	grid-template-columns: 1fr 400px;
+	gap: 0 32px;
 	align-items: start;
 }
 
-/* Coupon toggle + coupon form span full width */
-.woocommerce-checkout .woocommerce-form-coupon-toggle,
-.woocommerce-checkout .checkout_coupon {
-	grid-column: 1 / -1;
-}
-
-/* Left column: customer details */
+/* Customer details: left column, starts at row 1 */
 .woocommerce-checkout #customer_details {
 	grid-column: 1;
+	grid-row: 1 / span 3;
 }
 
-/* Right column: order review */
-.woocommerce-checkout #order_review_heading {
+/* col2-set fix: hide empty col-2 (shipping disabled), col-1 full width */
+.woocommerce-checkout #customer_details.col2-set {
+	display: block;
+}
+
+.woocommerce-checkout #customer_details.col2-set .col-1 {
+	width: 100%;
+	max-width: 100%;
+	float: none;
+}
+
+.woocommerce-checkout #customer_details.col2-set .col-2 {
+	display: none;
+}
+
+/* Order review heading: right column */
+.woocommerce-checkout h3#order_review_heading {
 	grid-column: 2;
-	grid-row: 2;
+	grid-row: 1;
+	margin-bottom: 16px;
 }
 
+/* Order review: right column, below heading */
 .woocommerce-checkout #order_review {
 	grid-column: 2;
-	grid-row: 3;
+	grid-row: 2 / span 2;
 }
 
 /* ---------- Section headings ---------- */
@@ -912,6 +924,11 @@ p#referrer_field {
 }
 
 .woocommerce-checkout .woocommerce-additional-fields h3 {
+	margin-top: 0;
+}
+
+/* Billing fields heading inside card */
+.woocommerce-checkout .woocommerce-billing-fields h3 {
 	margin-top: 0;
 }
 
@@ -1283,14 +1300,20 @@ p#referrer_field {
 
 @media (max-width: 768px) {
 	/* Switch to single column */
-	.woocommerce-checkout form.woocommerce-checkout {
+	.woocommerce-checkout form.checkout.woocommerce-checkout {
 		grid-template-columns: 1fr;
-		gap: 16px;
+		gap: 0;
 	}
 
-	.woocommerce-checkout #order_review_heading {
+	.woocommerce-checkout #customer_details {
 		grid-column: 1;
 		grid-row: auto;
+	}
+
+	.woocommerce-checkout h3#order_review_heading {
+		grid-column: 1;
+		grid-row: auto;
+		margin-top: 24px;
 	}
 
 	.woocommerce-checkout #order_review {
