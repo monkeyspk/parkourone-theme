@@ -982,16 +982,14 @@ p#referrer_field {
 	background: transparent;
 }
 
+/* Hide additional fields section (referral moved into accordion) */
 .woocommerce-checkout .woocommerce-additional-fields {
-	border: 1px solid var(--wc-border);
-	border-radius: var(--wc-radius);
-	padding: 24px;
-	margin-bottom: 16px;
-	background: var(--wc-bg);
+	display: none !important;
 }
 
-.woocommerce-checkout .woocommerce-additional-fields h3 {
-	margin-top: 0;
+/* Hidden fields */
+.po-hidden-field {
+	display: none !important;
 }
 
 /* Hide billing fields heading (replaced by accordion headers) */
@@ -1008,15 +1006,10 @@ p#referrer_field {
 }
 
 .po-accordion-section {
-	border: 1px solid var(--wc-border);
+	border: none;
 	border-radius: var(--wc-radius);
-	background: var(--wc-bg);
+	background: var(--wc-bg-subtle);
 	overflow: hidden;
-	transition: border-color 0.2s ease;
-}
-
-.po-accordion-section:hover {
-	border-color: #d0d0d5;
 }
 
 .po-accordion-header {

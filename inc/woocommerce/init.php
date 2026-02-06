@@ -89,36 +89,45 @@ add_action('woocommerce_before_checkout_billing_form', function() {
 	echo '<div class="po-accordion-body">';
 });
 
-// Close Kontaktdaten, open Adresse after phone field, close Adresse after state field
-// We use a field counter approach via woocommerce_form_field_* hooks
-add_action('woocommerce_after_checkout_billing_form', function() {
-	// Close the last section + accordion wrapper
-	// (sections are opened/closed inline via JS that moves fields into sections)
-	echo '</div></div>'; // close last section body + section
-	echo '</div>'; // close accordion wrapper
-});
+// Note: woocommerce_after_checkout_billing_form is handled below
+// in the referral source section (closes Adresse, opens/closes Sonstiges, closes wrapper)
 
 // Insert section breaks between field groups using output buffer manipulation
 add_filter('woocommerce_form_field', function($field, $key, $args, $value) {
+	$chevron = '<svg class="po-accordion-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+
 	// After phone (end of Kontaktdaten) → close section, open Adresse
 	if ($key === 'billing_phone') {
 		$field .= '</div></div>'; // close Kontaktdaten body + section
 		$field .= '<div class="po-accordion-section" data-accordion-section>';
 		$field .= '<button type="button" class="po-accordion-header" data-accordion-toggle>';
-		$field .= '<span>Adresse</span>';
-		$field .= '<svg class="po-accordion-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+		$field .= '<span>Adresse</span>' . $chevron;
 		$field .= '</button>';
 		$field .= '<div class="po-accordion-body">';
 	}
+
 	return $field;
 }, 10, 4);
 
 // =====================================================
-// Referral Source — rendered inside its own accordion
+// Referral Source — own accordion section after Adresse
 // =====================================================
 
-// Render referral inside additional fields (woocommerce_after_order_notes is inside .woocommerce-additional-fields)
-add_action('woocommerce_after_order_notes', function($checkout) {
+// Close Adresse section, open Sonstiges section, render referral fields, close Sonstiges
+add_action('woocommerce_after_checkout_billing_form', function($checkout) {
+	$chevron = '<svg class="po-accordion-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+
+	// Close Adresse section body + section
+	echo '</div></div>';
+
+	// Open Sonstiges section
+	echo '<div class="po-accordion-section" data-accordion-section>';
+	echo '<button type="button" class="po-accordion-header" data-accordion-toggle>';
+	echo '<span>Sonstiges</span>' . $chevron;
+	echo '</button>';
+	echo '<div class="po-accordion-body">';
+
+	// Referral source dropdown
 	woocommerce_form_field('po_referral_source', [
 		'type'     => 'select',
 		'label'    => 'Wie hast du von uns erfahren?',
@@ -135,7 +144,13 @@ add_action('woocommerce_after_order_notes', function($checkout) {
 			'sonstiges' => 'Sonstiges',
 		],
 	], $checkout->get_value('po_referral_source'));
-});
+
+	// Close Sonstiges body + section
+	echo '</div></div>';
+
+	// Close accordion wrapper
+	echo '</div>';
+}, 10);
 
 // Save the field value to order meta
 add_action('woocommerce_checkout_update_order_meta', function($order_id) {
