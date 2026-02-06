@@ -124,7 +124,27 @@ class PO_Consent_Manager {
 			$cookie_value = sanitize_text_field($_COOKIE[self::CONSENT_COOKIE]);
 			$decoded = json_decode(base64_decode($cookie_value), true);
 
-			if ($decoded && isset($decoded['version']) && $decoded['version'] === self::CONSENT_VERSION) {
+			if (!$decoded) {
+				return;
+			}
+
+			// Neues kompaktes Format (v, c, t)
+			if (isset($decoded['v']) && $decoded['v'] === self::CONSENT_VERSION) {
+				$this->current_consent = [
+					'version' => $decoded['v'],
+					'timestamp' => $decoded['t'] ?? time(),
+					'categories' => [
+						self::CATEGORY_NECESSARY => true,
+						self::CATEGORY_FUNCTIONAL => !empty($decoded['c']['f']),
+						self::CATEGORY_ANALYTICS => !empty($decoded['c']['a']),
+						self::CATEGORY_MARKETING => !empty($decoded['c']['m']),
+					],
+				];
+				return;
+			}
+
+			// Legacy-Format (version, categories) - für Übergangszeit
+			if (isset($decoded['version']) && $decoded['version'] === self::CONSENT_VERSION) {
 				$this->current_consent = $decoded;
 			}
 		}
@@ -488,8 +508,26 @@ class PO_Consent_Manager {
 		// User ID für eingeloggte Benutzer (DSGVO Art. 15 - Auskunftsrecht)
 		$user_id = is_user_logged_in() ? get_current_user_id() : null;
 
-		// Consent-Objekt erstellen
-		$consent = [
+		// Consent-ID generieren
+		$consent_id = wp_generate_uuid4();
+
+		// MINIMALES Cookie-Objekt (nur was der Browser braucht)
+		// Alle anderen Daten gehören in die Datenbank!
+		$cookie_data = [
+			'v' => self::CONSENT_VERSION,
+			'c' => [
+				'n' => 1, // necessary - immer true
+				'f' => $sanitized_categories[self::CATEGORY_FUNCTIONAL] ? 1 : 0,
+				'a' => $sanitized_categories[self::CATEGORY_ANALYTICS] ? 1 : 0,
+				'm' => $sanitized_categories[self::CATEGORY_MARKETING] ? 1 : 0,
+			],
+			't' => time(),
+			'id' => substr($consent_id, 0, 8), // Kurz-ID für Referenz
+		];
+
+		// VOLLSTÄNDIGES Audit-Objekt für Datenbank
+		$audit_data = [
+			'consent_id' => $consent_id,
 			'version' => self::CONSENT_VERSION,
 			'legal_version' => self::LEGAL_TEXT_VERSION,
 			'timestamp' => current_time('c'),
@@ -504,13 +542,13 @@ class PO_Consent_Manager {
 
 		// Letzten Hash für Verkettung holen (Blockchain-ähnliche Integrität)
 		$last_hash = $this->get_last_consent_hash();
-		$consent['previous_hash'] = $last_hash;
+		$audit_data['previous_hash'] = $last_hash;
 
 		// Integrity Hash für Audit (inkl. vorherigem Hash = Kette)
-		$consent['integrity'] = hash('sha256', wp_json_encode($consent) . wp_salt('auth'));
+		$audit_data['integrity'] = hash('sha256', wp_json_encode($audit_data) . wp_salt('auth'));
 
-		// Cookie setzen
-		$cookie_value = base64_encode(wp_json_encode($consent));
+		// Cookie setzen - KOMPAKT (ca. 80-100 Bytes statt 800+)
+		$cookie_value = base64_encode(wp_json_encode($cookie_data));
 		$expiry = time() + (self::CONSENT_EXPIRY_DAYS * DAY_IN_SECONDS);
 
 		// Cross-Domain Cookie für alle ParkourONE Standorte
@@ -529,13 +567,16 @@ class PO_Consent_Manager {
 			]
 		);
 
-		// In Datenbank loggen (für Audit-Trail)
-		$this->log_consent($consent);
+		// In Datenbank loggen (für Audit-Trail) - mit vollständigen Daten
+		$this->log_consent($audit_data);
 
 		// Google Consent Mode Update zurückgeben
 		$response = [
 			'success' => true,
-			'consent' => $consent,
+			'consent' => [
+				'categories' => $sanitized_categories,
+				'version' => self::CONSENT_VERSION,
+			],
 			'googleConsentUpdate' => [
 				'ad_storage' => $sanitized_categories[self::CATEGORY_MARKETING] ? 'granted' : 'denied',
 				'ad_user_data' => $sanitized_categories[self::CATEGORY_MARKETING] ? 'granted' : 'denied',
