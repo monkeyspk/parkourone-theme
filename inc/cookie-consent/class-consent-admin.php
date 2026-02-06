@@ -37,6 +37,7 @@ class PO_Consent_Admin {
 		add_action('admin_init', [$this, 'register_settings']);
 		add_action('admin_init', [$this, 'handle_export']);
 		add_action('admin_init', [$this, 'handle_mu_plugin_download']);
+		add_action('admin_init', [$this, 'handle_mu_plugin_install']);
 		add_action('admin_notices', [$this, 'mu_plugin_notice']);
 	}
 
@@ -49,6 +50,66 @@ class PO_Consent_Admin {
 	}
 
 	/**
+	 * Prüfen ob MU-Plugin automatisch installiert werden kann
+	 */
+	public static function can_auto_install_mu_plugin() {
+		// Prüfen ob wp-content beschreibbar ist
+		$wp_content = WP_CONTENT_DIR;
+
+		// Prüfen ob mu-plugins existiert und beschreibbar ist
+		if (is_dir(WPMU_PLUGIN_DIR)) {
+			return is_writable(WPMU_PLUGIN_DIR);
+		}
+
+		// Wenn mu-plugins nicht existiert, prüfen ob wir es erstellen können
+		return is_writable($wp_content);
+	}
+
+	/**
+	 * MU-Plugin automatisch installieren
+	 */
+	public function handle_mu_plugin_install() {
+		if (!isset($_GET['page']) || $_GET['page'] !== 'parkourone-consent') {
+			return;
+		}
+
+		if (!isset($_GET['action']) || $_GET['action'] !== 'install_mu_plugin') {
+			return;
+		}
+
+		if (!wp_verify_nonce($_GET['_wpnonce'] ?? '', 'po_install_mu_plugin')) {
+			wp_die('Sicherheitsprüfung fehlgeschlagen.');
+		}
+
+		if (!current_user_can('manage_options')) {
+			wp_die('Keine Berechtigung.');
+		}
+
+		$mu_plugin_source = get_template_directory() . '/mu-plugins/parkourone-consent-early.php';
+		$mu_plugin_dest = WPMU_PLUGIN_DIR . '/parkourone-consent-early.php';
+
+		if (!file_exists($mu_plugin_source)) {
+			wp_die('MU-Plugin Quelldatei nicht gefunden.');
+		}
+
+		// mu-plugins Ordner erstellen falls nicht vorhanden
+		if (!is_dir(WPMU_PLUGIN_DIR)) {
+			if (!wp_mkdir_p(WPMU_PLUGIN_DIR)) {
+				wp_die('Konnte Ordner mu-plugins nicht erstellen. Bitte manuell erstellen: ' . WPMU_PLUGIN_DIR);
+			}
+		}
+
+		// Datei kopieren
+		if (!copy($mu_plugin_source, $mu_plugin_dest)) {
+			wp_die('Konnte MU-Plugin nicht installieren. Bitte manuell kopieren.');
+		}
+
+		// Zurück zur Seite mit Erfolgsmeldung
+		wp_redirect(admin_url('admin.php?page=parkourone-consent&mu_installed=1'));
+		exit;
+	}
+
+	/**
 	 * Admin Notice wenn MU-Plugin fehlt
 	 */
 	public function mu_plugin_notice() {
@@ -58,15 +119,25 @@ class PO_Consent_Admin {
 			return;
 		}
 
+		// Erfolgsmeldung nach Installation
+		if (isset($_GET['mu_installed']) && $_GET['mu_installed'] === '1') {
+			?>
+			<div class="notice notice-success is-dismissible">
+				<p><strong>✓ MU-Plugin erfolgreich installiert!</strong> Server-seitiges Cookie-Blocking ist jetzt aktiv.</p>
+			</div>
+			<?php
+		}
+
 		// Prüfen ob installiert
 		if (self::is_mu_plugin_installed()) {
 			return;
 		}
 
-		$download_url = wp_nonce_url(
-			admin_url('admin.php?page=parkourone-consent&action=download_mu_plugin'),
-			'po_download_mu_plugin'
+		$install_url = wp_nonce_url(
+			admin_url('admin.php?page=parkourone-consent&action=install_mu_plugin'),
+			'po_install_mu_plugin'
 		);
+		$can_auto_install = self::can_auto_install_mu_plugin();
 		?>
 		<div class="notice notice-error">
 			<p>
@@ -77,19 +148,24 @@ class PO_Consent_Admin {
 				Es blockiert Tracking-Cookies bevor WordPress lädt.
 			</p>
 			<p>
-				<a href="<?php echo esc_url($download_url); ?>" class="button button-primary">
-					MU-Plugin herunterladen
-				</a>
-				<span style="margin-left: 10px; color: #666;">
-					→ Dann nach <code>wp-content/mu-plugins/</code> hochladen
-				</span>
+				<?php if ($can_auto_install): ?>
+					<a href="<?php echo esc_url($install_url); ?>" class="button button-primary">
+						Jetzt automatisch installieren
+					</a>
+				<?php else: ?>
+					<span style="color: #666;">Automatische Installation nicht möglich (keine Schreibrechte).</span>
+					<br><br>
+					<a href="<?php echo esc_url(admin_url('admin.php?page=parkourone-consent')); ?>" class="button">
+						Manuelle Anleitung anzeigen
+					</a>
+				<?php endif; ?>
 			</p>
 		</div>
 		<?php
 	}
 
 	/**
-	 * MU-Plugin Download Handler
+	 * MU-Plugin Download Handler (Fallback für manuelle Installation)
 	 */
 	public function handle_mu_plugin_download() {
 		if (!isset($_GET['page']) || $_GET['page'] !== 'parkourone-consent') {
@@ -574,6 +650,13 @@ class PO_Consent_Admin {
 
 					<!-- Info Tab -->
 					<div class="po-admin-panel" id="panel-info">
+						<?php
+						$install_url = wp_nonce_url(
+							admin_url('admin.php?page=parkourone-consent&action=install_mu_plugin'),
+							'po_install_mu_plugin'
+						);
+						$can_auto_install = self::can_auto_install_mu_plugin();
+						?>
 						<!-- MU-Plugin Installation -->
 						<div class="po-form-section" style="<?php echo $mu_plugin_installed ? 'background: #d4edda; padding: 20px; margin: -20px -20px 20px; border-bottom: 2px solid #28a745;' : 'background: #f8d7da; padding: 20px; margin: -20px -20px 20px; border-bottom: 2px solid #dc3545;'; ?>">
 							<h3 style="margin-top: 0; <?php echo $mu_plugin_installed ? 'color: #155724;' : 'color: #721c24;'; ?>">
@@ -584,6 +667,9 @@ class PO_Consent_Admin {
 								<p style="color: #155724; margin: 0;">
 									Das MU-Plugin ist korrekt installiert. Server-seitiges Cookie-Blocking ist aktiv.
 								</p>
+								<p style="color: #155724; margin: 10px 0 0; font-size: 13px;">
+									<strong>Installationspfad:</strong> <code><?php echo esc_html(WPMU_PLUGIN_DIR . '/parkourone-consent-early.php'); ?></code>
+								</p>
 							<?php else: ?>
 								<p style="color: #721c24;">
 									<strong>Das MU-Plugin muss installiert werden für vollständige DSGVO-Compliance!</strong>
@@ -591,11 +677,32 @@ class PO_Consent_Admin {
 								<p style="color: #721c24;">Es blockiert Tracking-Cookies <em>bevor</em> WordPress lädt - das kann das Theme alleine nicht.</p>
 
 								<div style="background: #fff; padding: 15px; border-radius: 4px; margin-top: 15px;">
-									<p style="margin: 0 0 10px;"><strong>Installation in 2 Schritten:</strong></p>
-									<ol style="margin: 0; padding-left: 20px;">
+									<?php if ($can_auto_install): ?>
+										<!-- Automatische Installation möglich -->
+										<p style="margin: 0 0 15px;"><strong>Automatische Installation:</strong></p>
+										<p style="margin: 0 0 15px;">
+											<a href="<?php echo esc_url($install_url); ?>" class="button button-primary button-large">
+												Jetzt automatisch installieren
+											</a>
+										</p>
+										<p style="margin: 0; font-size: 12px; color: #666;">
+											Der Ordner <code>mu-plugins</code> wird automatisch erstellt und die Datei kopiert.
+										</p>
+
+										<hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;">
+
+										<p style="margin: 0 0 10px; color: #666;"><strong>Alternative: Manuelle Installation</strong></p>
+									<?php else: ?>
+										<p style="margin: 0 0 10px; color: #dc3545;">
+											<strong>Automatische Installation nicht möglich</strong> (keine Schreibrechte auf den Server-Ordner)
+										</p>
+										<p style="margin: 0 0 15px;"><strong>Manuelle Installation in 2 Schritten:</strong></p>
+									<?php endif; ?>
+
+									<ol style="margin: 0; padding-left: 20px; <?php echo $can_auto_install ? 'color: #666;' : ''; ?>">
 										<li style="margin-bottom: 10px;">
-											<a href="<?php echo esc_url($download_url); ?>" class="button button-primary">
-												1. Datei herunterladen
+											<a href="<?php echo esc_url($download_url); ?>" class="button <?php echo $can_auto_install ? '' : 'button-primary'; ?>">
+												Datei herunterladen
 											</a>
 										</li>
 										<li>
