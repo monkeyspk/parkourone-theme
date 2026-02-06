@@ -23,6 +23,11 @@ if (!class_exists('WooCommerce')) {
 // Disable shipping (we sell courses, not physical products)
 add_filter('woocommerce_cart_needs_shipping', '__return_false');
 
+// Force billing country to Germany (no country selector needed)
+add_filter('default_checkout_billing_country', function() {
+	return 'DE';
+});
+
 // Change "Place order" button text
 add_filter('woocommerce_order_button_text', function() {
 	return 'Kostenpflichtig bestellen';
@@ -51,28 +56,31 @@ add_filter('woocommerce_checkout_fields', function($fields) {
 		$fields['billing']['billing_phone']['class'] = ['form-row-last'];
 	}
 
-	// Group 2: Adresse
-	if (isset($fields['billing']['billing_country'])) {
-		$fields['billing']['billing_country']['priority'] = 50;
-	}
+	// Group 2: Adresse (no country/state — only Germany)
 	if (isset($fields['billing']['billing_address_1'])) {
-		$fields['billing']['billing_address_1']['priority'] = 60;
+		$fields['billing']['billing_address_1']['priority'] = 50;
 	}
 	if (isset($fields['billing']['billing_address_2'])) {
-		$fields['billing']['billing_address_2']['priority'] = 70;
+		$fields['billing']['billing_address_2']['priority'] = 60;
 	}
 	if (isset($fields['billing']['billing_postcode'])) {
-		$fields['billing']['billing_postcode']['priority'] = 80;
+		$fields['billing']['billing_postcode']['priority'] = 70;
 	}
 	if (isset($fields['billing']['billing_city'])) {
-		$fields['billing']['billing_city']['priority'] = 90;
-	}
-	if (isset($fields['billing']['billing_state'])) {
-		$fields['billing']['billing_state']['priority'] = 100;
+		$fields['billing']['billing_city']['priority'] = 80;
 	}
 
-	// Remove company field if present (not needed for courses)
+	// Remove fields not needed for German-only course sales
 	unset($fields['billing']['billing_company']);
+	unset($fields['billing']['billing_country']);
+	unset($fields['billing']['billing_state']);
+
+	// Remove referrer field if added by a plugin (we handle it in Sonstiges accordion)
+	unset($fields['billing']['referrer']);
+	unset($fields['order']['referrer']);
+	if (isset($fields['account'])) {
+		unset($fields['account']['referrer']);
+	}
 
 	return $fields;
 });
