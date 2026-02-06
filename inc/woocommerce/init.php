@@ -178,27 +178,50 @@ function parkourone_get_side_cart_items_html() {
 			$product_price = WC()->cart->get_product_subtotal($product, $quantity);
 			$product_permalink = $product->get_permalink();
 
-			// Bild: WC-Produkt → Angebots-Featured-Image → Placeholder
-			$has_image = has_post_thumbnail($product_id);
+			// Quell-IDs ermitteln
 			$angebot_id = isset($cart_item['angebot_id']) ? $cart_item['angebot_id'] : get_post_meta($product_id, '_angebot_id', true);
+			$event_id = isset($cart_item['event_id']) ? $cart_item['event_id'] : get_post_meta($product_id, '_event_id', true);
 
-			if ($has_image) {
-				$thumbnail = $product->get_image('thumbnail');
-			} elseif ($angebot_id && function_exists('parkourone_get_angebot_image')) {
+			// Bild: Event-Bild → Angebots-Bild → WC-Produkt-Bild
+			$thumbnail = '';
+			if ($event_id && function_exists('parkourone_get_event_image')) {
+				$image_url = parkourone_get_event_image($event_id);
+				if ($image_url) {
+					$thumbnail = '<img src="' . esc_url($image_url) . '" alt="' . esc_attr($product->get_name()) . '">';
+				}
+			}
+			if (!$thumbnail && $angebot_id && function_exists('parkourone_get_angebot_image')) {
 				$image_url = parkourone_get_angebot_image($angebot_id, 'thumbnail');
-				$thumbnail = '<img src="' . esc_url($image_url) . '" alt="' . esc_attr($product->get_name()) . '">';
-			} else {
+				if ($image_url) {
+					$thumbnail = '<img src="' . esc_url($image_url) . '" alt="' . esc_attr($product->get_name()) . '">';
+				}
+			}
+			if (!$thumbnail) {
 				$thumbnail = $product->get_image('thumbnail');
 			}
 
-			// Angebots-Daten
-			$participants = isset($cart_item['angebot_teilnehmer']) ? $cart_item['angebot_teilnehmer'] : [];
+			// Teilnehmer-Daten (Events vs. Angebote)
+			$participants = [];
+			if (!empty($cart_item['event_participant_data'])) {
+				foreach ($cart_item['event_participant_data'] as $p) {
+					$participants[] = ['vorname' => $p['vorname'] ?? '', 'name' => $p['name'] ?? ''];
+				}
+			} elseif (!empty($cart_item['angebot_teilnehmer'])) {
+				$participants = $cart_item['angebot_teilnehmer'];
+			}
 
-			// Sauberen Angebots-Namen und Termin-Details extrahieren
-			$angebot_title = $angebot_id ? get_the_title($angebot_id) : '';
-			$termin_ort = get_post_meta($product_id, '_angebot_termin_ort', true);
-			$termin_datum = get_post_meta($product_id, '_angebot_termin_datum', true);
-			$display_name = $angebot_title ?: $product->get_name();
+			// Anzeigename und Details
+			if ($event_id) {
+				$display_name = get_the_title($event_id);
+				$details = isset($cart_item['minimal_event_details']) ? $cart_item['minimal_event_details'] : [];
+				$termin_datum = !empty($details['date']) ? $details['date'] : get_post_meta($product_id, '_event_date', true);
+				$termin_ort = !empty($details['venue']) ? $details['venue'] : '';
+			} else {
+				$angebot_title = $angebot_id ? get_the_title($angebot_id) : '';
+				$display_name = $angebot_title ?: $product->get_name();
+				$termin_ort = get_post_meta($product_id, '_angebot_termin_ort', true);
+				$termin_datum = get_post_meta($product_id, '_angebot_termin_datum', true);
+			}
 		?>
 			<div class="po-side-cart__item" data-cart-item-key="<?php echo esc_attr($cart_item_key); ?>">
 				<div class="po-side-cart__item-image">

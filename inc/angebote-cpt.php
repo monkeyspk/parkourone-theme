@@ -944,58 +944,88 @@ function parkourone_angebot_cart_item_name($name, $cart_item, $cart_item_key) {
 }
 add_filter('woocommerce_cart_item_name', 'parkourone_angebot_cart_item_name', 10, 3);
 
-// Produktbild im Warenkorb: Angebots-Bild als Fallback
-function parkourone_angebot_cart_item_thumbnail($thumbnail, $cart_item, $cart_item_key) {
+// Produktbild im Warenkorb: Event-Bild → Angebots-Bild als Fallback
+function parkourone_cart_item_thumbnail($thumbnail, $cart_item, $cart_item_key) {
 	$product_id = $cart_item['product_id'];
 
 	if (!has_post_thumbnail($product_id)) {
-		$angebot_id = isset($cart_item['angebot_id']) ? $cart_item['angebot_id'] : get_post_meta($product_id, '_angebot_id', true);
-
-		if ($angebot_id && function_exists('parkourone_get_angebot_image')) {
-			$image_url = parkourone_get_angebot_image($angebot_id, 'woocommerce_thumbnail');
-			if ($image_url) {
-				$alt = esc_attr(get_the_title($angebot_id));
-				return '<img src="' . esc_url($image_url) . '" alt="' . $alt . '" class="woocommerce-placeholder">';
-			}
+		$image_url = parkourone_get_cart_item_image_url($cart_item, 'woocommerce_thumbnail');
+		if ($image_url) {
+			$alt = esc_attr(parkourone_get_cart_item_source_title($cart_item));
+			return '<img src="' . esc_url($image_url) . '" alt="' . $alt . '" class="woocommerce-placeholder">';
 		}
 	}
 
 	return $thumbnail;
 }
-add_filter('woocommerce_cart_item_thumbnail', 'parkourone_angebot_cart_item_thumbnail', 10, 3);
+add_filter('woocommerce_cart_item_thumbnail', 'parkourone_cart_item_thumbnail', 10, 3);
 
-// Produktbild im Cart Block (Store API): Angebots-Bild als Fallback
-function parkourone_angebot_store_api_cart_images($product_images, $cart_item, $cart_item_key) {
+// Produktbild im Cart Block (Store API): Event-Bild → Angebots-Bild als Fallback
+function parkourone_store_api_cart_images($product_images, $cart_item, $cart_item_key) {
 	$product_id = $cart_item['product_id'];
 
-	// Nur eingreifen wenn das Produkt kein eigenes Bild hat
 	if (has_post_thumbnail($product_id)) {
 		return $product_images;
 	}
 
-	$angebot_id = isset($cart_item['angebot_id']) ? $cart_item['angebot_id'] : get_post_meta($product_id, '_angebot_id', true);
-
-	if ($angebot_id && function_exists('parkourone_get_angebot_image')) {
-		$image_url = parkourone_get_angebot_image($angebot_id, 'woocommerce_thumbnail');
-		if ($image_url) {
-			$alt = get_the_title($angebot_id);
-			return [
-				(object) [
-					'id'        => 0,
-					'src'       => $image_url,
-					'thumbnail' => $image_url,
-					'srcset'    => '',
-					'sizes'     => '',
-					'name'      => $alt,
-					'alt'       => $alt,
-				]
-			];
-		}
+	$image_url = parkourone_get_cart_item_image_url($cart_item, 'woocommerce_thumbnail');
+	if ($image_url) {
+		$alt = parkourone_get_cart_item_source_title($cart_item);
+		return [
+			(object) [
+				'id'        => 0,
+				'src'       => $image_url,
+				'thumbnail' => $image_url,
+				'srcset'    => '',
+				'sizes'     => '',
+				'name'      => $alt,
+				'alt'       => $alt,
+			]
+		];
 	}
 
 	return $product_images;
 }
-add_filter('woocommerce_store_api_cart_item_images', 'parkourone_angebot_store_api_cart_images', 10, 3);
+add_filter('woocommerce_store_api_cart_item_images', 'parkourone_store_api_cart_images', 10, 3);
+
+/**
+ * Zentrale Bild-URL für ein Cart-Item ermitteln
+ * Prüft: Event-Bild → Angebots-Bild
+ */
+function parkourone_get_cart_item_image_url($cart_item, $size = 'thumbnail') {
+	$product_id = $cart_item['product_id'];
+
+	// 1. Academyboard Event
+	$event_id = isset($cart_item['event_id']) ? $cart_item['event_id'] : get_post_meta($product_id, '_event_id', true);
+	if ($event_id && function_exists('parkourone_get_event_image')) {
+		$url = parkourone_get_event_image($event_id);
+		if ($url) return $url;
+	}
+
+	// 2. Angebot
+	$angebot_id = isset($cart_item['angebot_id']) ? $cart_item['angebot_id'] : get_post_meta($product_id, '_angebot_id', true);
+	if ($angebot_id && function_exists('parkourone_get_angebot_image')) {
+		$url = parkourone_get_angebot_image($angebot_id, $size);
+		if ($url) return $url;
+	}
+
+	return '';
+}
+
+/**
+ * Quell-Titel für ein Cart-Item (Event-Titel oder Angebot-Titel)
+ */
+function parkourone_get_cart_item_source_title($cart_item) {
+	$product_id = $cart_item['product_id'];
+
+	$event_id = isset($cart_item['event_id']) ? $cart_item['event_id'] : get_post_meta($product_id, '_event_id', true);
+	if ($event_id) return get_the_title($event_id);
+
+	$angebot_id = isset($cart_item['angebot_id']) ? $cart_item['angebot_id'] : get_post_meta($product_id, '_angebot_id', true);
+	if ($angebot_id) return get_the_title($angebot_id);
+
+	return get_the_title($product_id);
+}
 
 // Teilnehmerdaten in Bestellung speichern
 function parkourone_angebot_order_item_meta($item, $cart_item_key, $values, $order) {
