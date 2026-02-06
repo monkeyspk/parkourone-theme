@@ -121,11 +121,20 @@
 	color: var(--wc-text-secondary) !important;
 }
 
-/* Product metadata */
+/* Product metadata (Datum, Ort, Teilnehmer) */
 .wc-block-cart-items__row .wc-block-components-product-metadata {
-	font-size: 14px !important;
+	font-size: 13px !important;
 	color: var(--wc-text-secondary) !important;
-	margin-top: 4px !important;
+	margin-top: 6px !important;
+}
+
+.wc-block-cart-items__row .wc-block-components-product-metadata .wc-block-components-product-metadata__description {
+	margin: 2px 0 !important;
+}
+
+.wc-block-cart-items__row .wc-block-components-product-metadata .wc-block-components-product-metadata__description > p {
+	margin: 0 !important;
+	line-height: 1.5;
 }
 
 /* Product price */

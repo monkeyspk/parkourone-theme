@@ -175,14 +175,30 @@ function parkourone_get_side_cart_items_html() {
 			$product = $cart_item['data'];
 			$product_id = $cart_item['product_id'];
 			$quantity = $cart_item['quantity'];
-			$product_name = $product->get_name();
 			$product_price = WC()->cart->get_product_subtotal($product, $quantity);
 			$product_permalink = $product->get_permalink();
-			$thumbnail = $product->get_image('thumbnail');
 
-			// Participant data for Angebote
+			// Bild: WC-Produkt → Angebots-Featured-Image → Placeholder
+			$has_image = has_post_thumbnail($product_id);
+			$angebot_id = isset($cart_item['angebot_id']) ? $cart_item['angebot_id'] : get_post_meta($product_id, '_angebot_id', true);
+
+			if ($has_image) {
+				$thumbnail = $product->get_image('thumbnail');
+			} elseif ($angebot_id && function_exists('parkourone_get_angebot_image')) {
+				$image_url = parkourone_get_angebot_image($angebot_id, 'thumbnail');
+				$thumbnail = '<img src="' . esc_url($image_url) . '" alt="' . esc_attr($product->get_name()) . '">';
+			} else {
+				$thumbnail = $product->get_image('thumbnail');
+			}
+
+			// Angebots-Daten
 			$participants = isset($cart_item['angebot_teilnehmer']) ? $cart_item['angebot_teilnehmer'] : [];
-			$event_date = isset($cart_item['angebot_termin']) ? $cart_item['angebot_termin'] : '';
+
+			// Sauberen Angebots-Namen und Termin-Details extrahieren
+			$angebot_title = $angebot_id ? get_the_title($angebot_id) : '';
+			$termin_ort = get_post_meta($product_id, '_angebot_termin_ort', true);
+			$termin_datum = get_post_meta($product_id, '_angebot_termin_datum', true);
+			$display_name = $angebot_title ?: $product->get_name();
 		?>
 			<div class="po-side-cart__item" data-cart-item-key="<?php echo esc_attr($cart_item_key); ?>">
 				<div class="po-side-cart__item-image">
@@ -190,17 +206,16 @@ function parkourone_get_side_cart_items_html() {
 				</div>
 				<div class="po-side-cart__item-details">
 					<a href="<?php echo esc_url($product_permalink); ?>" class="po-side-cart__item-name">
-						<?php echo esc_html($product_name); ?>
+						<?php echo esc_html($display_name); ?>
 					</a>
-					<?php if ($event_date) : ?>
-						<div class="po-side-cart__item-date">
-							<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-								<line x1="16" y1="2" x2="16" y2="6"></line>
-								<line x1="8" y1="2" x2="8" y2="6"></line>
-								<line x1="3" y1="10" x2="21" y2="10"></line>
-							</svg>
-							<?php echo esc_html($event_date); ?>
+					<?php if ($termin_datum || $termin_ort) : ?>
+						<div class="po-side-cart__item-event">
+							<?php if ($termin_datum) : ?>
+								<span class="po-side-cart__item-date"><?php echo esc_html(date_i18n('d. M Y', strtotime($termin_datum))); ?></span>
+							<?php endif; ?>
+							<?php if ($termin_ort) : ?>
+								<span class="po-side-cart__item-location"><?php echo esc_html($termin_ort); ?></span>
+							<?php endif; ?>
 						</div>
 					<?php endif; ?>
 					<?php if (!empty($participants)) : ?>
@@ -210,10 +225,7 @@ function parkourone_get_side_cart_items_html() {
 							<?php endforeach; ?>
 						</div>
 					<?php endif; ?>
-					<div class="po-side-cart__item-meta">
-						<span class="po-side-cart__item-qty">Anzahl: <?php echo esc_html($quantity); ?></span>
-						<span class="po-side-cart__item-price"><?php echo $product_price; ?></span>
-					</div>
+					<div class="po-side-cart__item-price"><?php echo $product_price; ?></div>
 				</div>
 				<button type="button" class="po-side-cart__item-remove" data-remove-item="<?php echo esc_attr($cart_item_key); ?>" aria-label="Entfernen">
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

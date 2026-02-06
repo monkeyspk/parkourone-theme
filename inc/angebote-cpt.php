@@ -743,6 +743,13 @@ function parkourone_angebot_create_woo_products($post_id) {
 
 		$product_id = $product->save();
 
+		// Bild vom Angebot übernehmen
+		$featured_image_id = get_post_thumbnail_id($post_id);
+		if ($featured_image_id) {
+			$product->set_image_id($featured_image_id);
+			$product->save();
+		}
+
 		// Meta speichern
 		update_post_meta($product_id, '_angebot_id', $post_id);
 		update_post_meta($product_id, '_angebot_termin_index', $index);
@@ -884,18 +891,78 @@ add_action('wp_ajax_nopriv_po_angebot_add_to_cart', 'parkourone_angebot_add_to_c
 
 // Teilnehmerdaten im Warenkorb anzeigen
 function parkourone_angebot_cart_item_data($item_data, $cart_item) {
-	if (isset($cart_item['angebot_teilnehmer'])) {
-		foreach ($cart_item['angebot_teilnehmer'] as $i => $teilnehmer) {
-			$label = count($cart_item['angebot_teilnehmer']) > 1 ? 'Teilnehmer ' . ($i + 1) : 'Teilnehmer';
-			$item_data[] = [
-				'key' => $label,
-				'value' => $teilnehmer['vorname'] . ' ' . $teilnehmer['name'] . ' (' . $teilnehmer['geburtsdatum'] . ')'
-			];
-		}
+	$product_id = $cart_item['product_id'];
+	$angebot_id = isset($cart_item['angebot_id']) ? $cart_item['angebot_id'] : get_post_meta($product_id, '_angebot_id', true);
+
+	// Event-Details (Ort + Datum) – kompakt
+	$termin_ort = get_post_meta($product_id, '_angebot_termin_ort', true);
+	$termin_datum = get_post_meta($product_id, '_angebot_termin_datum', true);
+
+	if ($termin_datum) {
+		$item_data[] = [
+			'key' => 'Datum',
+			'value' => date_i18n('d. M Y', strtotime($termin_datum))
+		];
 	}
+
+	if ($termin_ort) {
+		$item_data[] = [
+			'key' => 'Ort',
+			'value' => $termin_ort
+		];
+	}
+
+	// Teilnehmer – nur Name, kein Geburtsdatum
+	if (isset($cart_item['angebot_teilnehmer'])) {
+		$namen = [];
+		foreach ($cart_item['angebot_teilnehmer'] as $teilnehmer) {
+			$namen[] = $teilnehmer['vorname'] . ' ' . $teilnehmer['name'];
+		}
+		$item_data[] = [
+			'key' => count($namen) > 1 ? 'Teilnehmer' : 'Teilnehmer',
+			'value' => implode(', ', $namen)
+		];
+	}
+
 	return $item_data;
 }
 add_filter('woocommerce_get_item_data', 'parkourone_angebot_cart_item_data', 10, 2);
+
+// Produktname im Warenkorb: Angebots-Titel statt WC-Produktname
+function parkourone_angebot_cart_item_name($name, $cart_item, $cart_item_key) {
+	$product_id = $cart_item['product_id'];
+	$angebot_id = isset($cart_item['angebot_id']) ? $cart_item['angebot_id'] : get_post_meta($product_id, '_angebot_id', true);
+
+	if ($angebot_id) {
+		$angebot_title = get_the_title($angebot_id);
+		if ($angebot_title) {
+			return $angebot_title;
+		}
+	}
+
+	return $name;
+}
+add_filter('woocommerce_cart_item_name', 'parkourone_angebot_cart_item_name', 10, 3);
+
+// Produktbild im Warenkorb: Angebots-Bild als Fallback
+function parkourone_angebot_cart_item_thumbnail($thumbnail, $cart_item, $cart_item_key) {
+	$product_id = $cart_item['product_id'];
+
+	if (!has_post_thumbnail($product_id)) {
+		$angebot_id = isset($cart_item['angebot_id']) ? $cart_item['angebot_id'] : get_post_meta($product_id, '_angebot_id', true);
+
+		if ($angebot_id && function_exists('parkourone_get_angebot_image')) {
+			$image_url = parkourone_get_angebot_image($angebot_id, 'woocommerce_thumbnail');
+			if ($image_url) {
+				$alt = esc_attr(get_the_title($angebot_id));
+				return '<img src="' . esc_url($image_url) . '" alt="' . $alt . '" class="woocommerce-placeholder">';
+			}
+		}
+	}
+
+	return $thumbnail;
+}
+add_filter('woocommerce_cart_item_thumbnail', 'parkourone_angebot_cart_item_thumbnail', 10, 3);
 
 // Teilnehmerdaten in Bestellung speichern
 function parkourone_angebot_order_item_meta($item, $cart_item_key, $values, $order) {
