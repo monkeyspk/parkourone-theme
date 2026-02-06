@@ -49,11 +49,11 @@ add_filter('woocommerce_checkout_fields', function($fields) {
 	}
 	if (isset($fields['billing']['billing_email'])) {
 		$fields['billing']['billing_email']['priority'] = 30;
-		$fields['billing']['billing_email']['class'] = ['form-row-first'];
+		$fields['billing']['billing_email']['class'] = ['form-row-wide'];
 	}
 	if (isset($fields['billing']['billing_phone'])) {
 		$fields['billing']['billing_phone']['priority'] = 40;
-		$fields['billing']['billing_phone']['class'] = ['form-row-last'];
+		$fields['billing']['billing_phone']['class'] = ['form-row-wide'];
 	}
 
 	// Group 2: Adresse (no country/state — only Germany)

@@ -905,58 +905,13 @@ p#referrer_field {
 	display: none !important;
 }
 
-/* Form rows: default full width */
-.woocommerce-checkout form .form-row {
-	float: none !important;
-}
-
-/* Half-width fields side by side where WC uses form-row-first / form-row-last */
+/* All form fields: single column, full width */
+.woocommerce-checkout form .form-row,
 .woocommerce-checkout form.checkout .form-row.form-row-first,
-.woocommerce-checkout form.checkout .form-row.form-row-last {
-	width: 48% !important;
-	float: left !important;
-}
-
-.woocommerce-checkout form.checkout .form-row.form-row-last {
-	float: right !important;
-}
-
+.woocommerce-checkout form.checkout .form-row.form-row-last,
 .woocommerce-checkout form.checkout .form-row.form-row-wide {
 	width: 100% !important;
 	float: none !important;
-	clear: both !important;
-}
-
-/* Straße + Hausnr (address_1 + address_2) nebeneinander */
-.woocommerce-checkout form.checkout #billing_address_1_field {
-	width: 68% !important;
-	float: left !important;
-	clear: both !important;
-}
-
-.woocommerce-checkout form.checkout #billing_address_2_field {
-	width: 28% !important;
-	float: right !important;
-	margin-top: 0 !important;
-	padding-top: 0 !important;
-}
-
-/* E-Mail + Telefon nebeneinander */
-.woocommerce-checkout form.checkout #billing_email_field {
-	width: 48% !important;
-	float: left !important;
-	clear: both !important;
-}
-
-.woocommerce-checkout form.checkout #billing_phone_field {
-	width: 48% !important;
-	float: right !important;
-}
-
-/* Clearfix nach paired rows */
-.woocommerce-checkout form.checkout #billing_address_2_field + .form-row,
-.woocommerce-checkout form.checkout #billing_city_field + .form-row,
-.woocommerce-checkout form.checkout #billing_phone_field + .form-row {
 	clear: both !important;
 }
 
@@ -1218,34 +1173,58 @@ p#referrer_field {
 	padding-right: 16px;
 }
 
-/* Product name in order table */
+/* Product name in order table — larger title */
 .woocommerce-checkout .woocommerce-checkout-review-order-table .product-name {
-	font-size: 14px;
-	font-weight: 500;
+	font-size: 16px;
+	font-weight: 600;
 	color: var(--wc-text);
+	line-height: 1.35;
 }
 
-/* Product metadata (participants, dates, etc.) */
+/* Quantity indicator (× 1) */
+.woocommerce-checkout .woocommerce-checkout-review-order-table .product-name .product-quantity {
+	font-size: 13px;
+	font-weight: 400;
+	color: var(--wc-text-secondary);
+}
+
+/* Product metadata (participants, dates, etc.) — clean list layout */
 .woocommerce-checkout .woocommerce-checkout-review-order-table .product-name .variation,
 .woocommerce-checkout .woocommerce-checkout-review-order-table .product-name dl.variation {
-	font-size: 12px;
-	color: var(--wc-text-tertiary);
-	margin: 4px 0 0;
+	font-size: 13px;
+	color: var(--wc-text-secondary);
+	margin: 10px 0 0;
+	padding: 10px 0 0;
+	border-top: 1px solid var(--wc-border);
 }
 
-.woocommerce-checkout .woocommerce-checkout-review-order-table .product-name dl.variation dt,
-.woocommerce-checkout .woocommerce-checkout-review-order-table .product-name dl.variation dd {
-	display: inline;
+.woocommerce-checkout .woocommerce-checkout-review-order-table .product-name dl.variation {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 4px 8px;
+}
+
+.woocommerce-checkout .woocommerce-checkout-review-order-table .product-name dl.variation dt {
 	font-size: 12px;
+	font-weight: 600;
+	color: var(--wc-text-secondary);
+	margin: 0;
+	padding: 0;
+}
+
+.woocommerce-checkout .woocommerce-checkout-review-order-table .product-name dl.variation dd {
+	font-size: 12px;
+	font-weight: 400;
+	color: var(--wc-text);
 	margin: 0;
 	padding: 0;
 }
 
 .woocommerce-checkout .woocommerce-checkout-review-order-table .product-name p {
 	font-size: 12px;
-	color: var(--wc-text-tertiary);
-	margin: 2px 0;
-	line-height: 1.4;
+	color: var(--wc-text-secondary);
+	margin: 4px 0;
+	line-height: 1.5;
 }
 
 /* Product price */
@@ -1538,14 +1517,6 @@ p#referrer_field {
 		border-radius: var(--wc-radius-sm);
 	}
 
-	/* Stack paired fields on small screens */
-	.woocommerce-checkout form.checkout #billing_email_field,
-	.woocommerce-checkout form.checkout #billing_phone_field,
-	.woocommerce-checkout form.checkout #billing_address_1_field,
-	.woocommerce-checkout form.checkout #billing_address_2_field {
-		width: 100% !important;
-		float: none !important;
-	}
 }
 
 @media (max-width: 480px) {
