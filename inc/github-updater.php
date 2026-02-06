@@ -110,12 +110,12 @@ class ParkourONE_GitHub_Updater {
             $cleared[] = 'Elementor';
         }
 
-        // Redirect mit Erfolgs-Parameter
+        // Redirect mit Erfolgs-Parameter (admin.php für custom menu pages)
         wp_redirect(add_query_arg([
             'page' => 'parkourone-updates',
             'cache_cleared' => '1',
             'cleared' => implode(',', $cleared)
-        ], admin_url('themes.php')));
+        ], admin_url('admin.php')));
         exit;
     }
 
@@ -285,12 +285,14 @@ class ParkourONE_GitHub_Updater {
         $local_version = $this->get_local_version();
 
         $redirect_args = ['page' => 'parkourone-updates'];
+        $was_updated = false;
 
         if ($remote_version && $remote_version !== $local_version) {
             $result = $this->do_update();
             if ($result) {
                 $redirect_args['updated'] = '1';
                 $redirect_args['version'] = $remote_version;
+                $was_updated = true;
             } else {
                 $redirect_args['error'] = '1';
             }
@@ -304,8 +306,14 @@ class ParkourONE_GitHub_Updater {
         // Transient neu setzen
         set_transient($this->transient_key, time(), $this->check_interval);
 
-        // Redirect mit Feedback-Parametern
-        wp_redirect(add_query_arg($redirect_args, admin_url('themes.php')));
+        // Nach Update: Zur Dashboard-Seite redirecten (sicherer nach Datei-Ersetzung)
+        // Dann zeigt admin_notices dort die Erfolgs-Meldung
+        if ($was_updated) {
+            set_transient('parkourone_update_success', $remote_version, 60);
+            wp_redirect(admin_url('index.php'));
+        } else {
+            wp_redirect(add_query_arg($redirect_args, admin_url('admin.php')));
+        }
         exit;
     }
     
@@ -524,7 +532,12 @@ class ParkourONE_GitHub_Updater {
         ]);
         
         error_log('ParkourONE Updater: Theme erfolgreich auf ' . $new_version . ' aktualisiert');
-        
+
+        // OPcache leeren nach Update (wichtig!)
+        if (function_exists('opcache_reset')) {
+            opcache_reset();
+        }
+
         return true;
     }
     
@@ -600,8 +613,19 @@ class ParkourONE_GitHub_Updater {
      * Zeigt Info über letztes Update
      */
     public function show_update_notice() {
+        // Erfolgs-Nachricht nach Update anzeigen (auf jeder Admin-Seite)
+        $update_success = get_transient('parkourone_update_success');
+        if ($update_success) {
+            delete_transient('parkourone_update_success');
+            echo '<div class="notice notice-success is-dismissible"><p>';
+            echo '<strong>ParkourONE Theme erfolgreich aktualisiert!</strong> ';
+            echo 'Neue Version: <code>' . esc_html($update_success) . '</code>';
+            echo ' <a href="' . esc_url(admin_url('admin.php?page=parkourone-updates')) . '">→ Zum Theme Updater</a>';
+            echo '</p></div>';
+        }
+
+        // Standard-Info auf der Settings-Seite
         $last_update = get_option('parkourone_last_update');
-        
         if ($last_update && isset($_GET['page']) && $_GET['page'] === 'parkourone-settings') {
             $time = human_time_diff(strtotime($last_update['time']), current_time('timestamp'));
             echo '<div class="notice notice-success"><p>';

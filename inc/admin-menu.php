@@ -101,20 +101,47 @@ add_action('admin_menu', 'parkourone_register_admin_menu', 5);
 function parkourone_admin_menu_logo_styles() {
 	?>
 	<style>
-		/* ParkourONE Admin Menu Logo */
+		/* ParkourONE Admin Menu Logo - Full Width Banner */
+		#adminmenu .toplevel_page_parkourone {
+			margin-bottom: 5px;
+		}
+		#adminmenu .toplevel_page_parkourone > a.menu-top {
+			height: auto !important;
+			padding: 15px 12px !important;
+			background: #1d1d1f !important;
+		}
+		#adminmenu .toplevel_page_parkourone > a.menu-top:hover {
+			background: #2c2c2e !important;
+		}
+		#adminmenu .toplevel_page_parkourone .wp-menu-image {
+			float: none !important;
+			width: 100% !important;
+			height: auto !important;
+			margin: 0 !important;
+			padding: 0 !important;
+			text-align: center !important;
+			display: block !important;
+		}
 		#adminmenu .toplevel_page_parkourone .wp-menu-image img {
-			width: 20px;
+			width: 100%;
+			max-width: 160px;
 			height: auto;
-			padding: 7px 0;
-			opacity: 1;
-		}
-		#adminmenu .toplevel_page_parkourone:hover .wp-menu-image img,
-		#adminmenu .toplevel_page_parkourone.current .wp-menu-image img {
-			opacity: 1;
-		}
-		/* Invertieren für dunkles Admin-Menü */
-		#adminmenu .toplevel_page_parkourone .wp-menu-image img {
+			padding: 0 !important;
+			margin: 0 auto;
+			display: block;
 			filter: invert(1);
+		}
+		#adminmenu .toplevel_page_parkourone .wp-menu-name {
+			display: none !important;
+		}
+		/* Collapsed Sidebar - kleines Icon */
+		.folded #adminmenu .toplevel_page_parkourone > a.menu-top {
+			padding: 10px 0 !important;
+		}
+		.folded #adminmenu .toplevel_page_parkourone .wp-menu-image img {
+			width: 28px;
+			max-width: 28px;
+			padding: 0 4px !important;
 		}
 	</style>
 	<?php
