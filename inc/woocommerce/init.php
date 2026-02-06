@@ -16,6 +16,34 @@ if (!class_exists('WooCommerce')) {
 	return;
 }
 
+// =====================================================
+// Custom Checkout Fields (WC 8.9+ Additional Fields API)
+// =====================================================
+
+add_action('woocommerce_init', function() {
+	if (!function_exists('woocommerce_register_additional_checkout_field')) {
+		return;
+	}
+
+	woocommerce_register_additional_checkout_field([
+		'id'       => 'parkourone/referral-source',
+		'label'    => 'Wie hast du von uns erfahren?',
+		'location' => 'order',
+		'type'     => 'select',
+		'required' => false,
+		'options'  => [
+			['value' => '',          'label' => 'Bitte wählen...'],
+			['value' => 'instagram', 'label' => 'Instagram'],
+			['value' => 'google',    'label' => 'Google'],
+			['value' => 'freunde',   'label' => 'Freunde / Bekannte'],
+			['value' => 'facebook',  'label' => 'Facebook'],
+			['value' => 'tiktok',    'label' => 'TikTok'],
+			['value' => 'flyer',     'label' => 'Flyer / Plakat'],
+			['value' => 'sonstiges', 'label' => 'Sonstiges'],
+		],
+	]);
+});
+
 /**
  * Disable XOO Side Cart Plugin (if still installed)
  */
@@ -78,6 +106,17 @@ function parkourone_wc_enqueue_assets() {
 		'cartUrl' => wc_get_cart_url(),
 		'checkoutUrl' => wc_get_checkout_url(),
 	]);
+
+	// Checkout Block filters (button text etc.)
+	if (is_checkout()) {
+		wp_enqueue_script(
+			'parkourone-checkout-filters',
+			get_template_directory_uri() . '/assets/js/checkout-filters.js',
+			['wc-blocks-checkout'],
+			filemtime(get_template_directory() . '/assets/js/checkout-filters.js'),
+			true
+		);
+	}
 }
 add_action('wp_enqueue_scripts', 'parkourone_wc_enqueue_assets');
 
