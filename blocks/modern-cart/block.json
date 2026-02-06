@@ -1,0 +1,47 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/modern-cart",
+	"version": "1.0.0",
+	"title": "Modern Warenkorb",
+	"category": "parkourone",
+	"icon": "cart",
+	"description": "Eleganter Warenkorb mit modernem Design",
+	"keywords": ["cart", "warenkorb", "shop", "einkaufen"],
+	"supports": {
+		"html": false,
+		"align": ["wide", "full"],
+		"spacing": {
+			"margin": true,
+			"padding": true
+		}
+	},
+	"attributes": {
+		"showCoupon": {
+			"type": "boolean",
+			"default": true
+		},
+		"showThumbnails": {
+			"type": "boolean",
+			"default": true
+		},
+		"checkoutButtonText": {
+			"type": "string",
+			"default": "Zur Kasse"
+		},
+		"emptyCartText": {
+			"type": "string",
+			"default": "Dein Warenkorb ist leer"
+		},
+		"continueShoppingUrl": {
+			"type": "string",
+			"default": "/angebote/"
+		}
+	},
+	"textdomain": "parkourone",
+	"editorScript": "file:./editor.js",
+	"editorStyle": "file:./editor.css",
+	"render": "file:./render.php",
+	"style": "file:./style.css",
+	"viewScript": "file:./view.js"
+}
