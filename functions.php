@@ -976,6 +976,32 @@ function parkourone_exclude_uncategorized_events($query) {
 }
 add_action('pre_get_posts', 'parkourone_exclude_uncategorized_events');
 
+/**
+ * Ensure 'ferienkurs' term exists under 'angebot' parent in event_category taxonomy.
+ * Runs once on init; uses a transient to avoid repeated DB lookups.
+ */
+function parkourone_ensure_ferienkurs_term() {
+    if (get_transient('po_ferienkurs_term_exists')) {
+        return;
+    }
+
+    $angebot_parent = get_term_by('slug', 'angebot', 'event_category');
+    if (!$angebot_parent || is_wp_error($angebot_parent)) {
+        return;
+    }
+
+    $existing = get_term_by('slug', 'ferienkurs', 'event_category');
+    if (!$existing) {
+        wp_insert_term('Ferienkurs', 'event_category', [
+            'slug'   => 'ferienkurs',
+            'parent' => $angebot_parent->term_id,
+        ]);
+    }
+
+    set_transient('po_ferienkurs_term_exists', true, DAY_IN_SECONDS);
+}
+add_action('init', 'parkourone_ensure_ferienkurs_term', 20);
+
 function parkourone_get_event_filters() {
     $filters = [];
     

@@ -47,6 +47,22 @@ foreach ($events as $event) {
 	$dates = get_post_meta($event_id, '_event_dates', true);
 	$first_date = is_array($dates) && !empty($dates) ? $dates[0] : null;
 
+	// Skip Ferienkurse – they don't belong in the class selector
+	$event_cats = wp_get_post_terms($event_id, 'event_category', ['fields' => 'all']);
+	$is_ferienkurs = false;
+	foreach ($event_cats as $ecat) {
+		if ($ecat->parent) {
+			$ecat_parent = get_term($ecat->parent, 'event_category');
+			if ($ecat_parent && !is_wp_error($ecat_parent) && $ecat_parent->slug === 'angebot' && $ecat->slug === 'ferienkurs') {
+				$is_ferienkurs = true;
+				break;
+			}
+		}
+	}
+	if ($is_ferienkurs) {
+		continue;
+	}
+
 	// Determine group key
 	$group_key = '';
 	$group_label = '';

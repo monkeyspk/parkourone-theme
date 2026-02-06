@@ -110,6 +110,20 @@ body.po-no-scroll {
 	z-index: 2;
 }
 
+.po-card__badge {
+	display: inline-block;
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	padding: 3px 8px;
+	border-radius: 4px;
+	margin-bottom: 6px;
+}
+.po-card__badge--ferienkurs {
+	background: #ff9500;
+	color: #fff;
+}
 .po-card__eyebrow {
 	display: block;
 	font-size: 12px;

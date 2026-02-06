@@ -128,6 +128,7 @@ if ($query->have_posts()) {
 			'image' => $event_image,
 			'category' => $age_term,
 			'location' => $location_term,
+			'offer' => $offer_term,
 			'coach_id' => null,
 			'coach_has_profile' => false
 		];
@@ -325,6 +326,9 @@ $hasFilters = $showAgeFilter || $showLocationFilter;
 					<?php endif; ?>
 				</div>
 				<div class="po-card__body">
+					<?php if ($klasse['offer'] === 'ferienkurs'): ?>
+						<span class="po-card__badge po-card__badge--ferienkurs">Ferienkurs</span>
+					<?php endif; ?>
 					<span class="po-card__eyebrow"><?php echo esc_html($klasse['weekday']); ?></span>
 					<h3 class="po-card__title"><?php echo esc_html($klasse['title']); ?></h3>
 				</div>
@@ -386,7 +390,7 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 
 				<div class="po-steps__slide is-active" data-slide="0">
 					<header class="po-steps__header">
-						<span class="po-steps__eyebrow"><?php echo esc_html($klasse['weekday']); ?></span>
+						<span class="po-steps__eyebrow"><?php echo (($klasse['offer'] ?? '') === 'ferienkurs') ? 'Ferienkurs' : esc_html($klasse['weekday']); ?></span>
 						<h2 class="po-steps__heading"><?php echo esc_html($klasse['title']); ?></h2>
 					</header>
 
@@ -407,7 +411,11 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 
 					<?php if ($category && isset($mood_texts[$category])): ?>
 					<p class="po-steps__description">
+						<?php if (($klasse['offer'] ?? '') === 'ferienkurs'): ?>
+						Dieser Ferienkurs wird<?php echo $coach_text; ?> findet von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($klasse['venue'])): ?> Treffpunkt ist <?php echo esc_html($klasse['venue']); ?>.<?php endif; ?> <?php echo esc_html($mood_texts[$category]); ?>
+						<?php else: ?>
 						Dieses Training wird<?php echo $coach_text; ?> findet wöchentlich <?php echo esc_html($klasse['weekday']); ?> von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($klasse['venue'])): ?> Treffpunkt ist <?php echo esc_html($klasse['venue']); ?>.<?php endif; ?> <?php echo esc_html($mood_texts[$category]); ?>
+						<?php endif; ?>
 					</p>
 					<?php endif; ?>
 

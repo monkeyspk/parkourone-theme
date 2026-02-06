@@ -71,7 +71,8 @@ if ($query->have_posts()) {
 		$age_term_slug = '';
 		$age_term_name = '';
 		$location_term_slug = '';
-		
+		$offer_term_slug = '';
+
 		foreach ($terms as $term) {
 			if ($term->parent) {
 				$parent = get_term($term->parent, 'event_category');
@@ -83,8 +84,16 @@ if ($query->have_posts()) {
 					if ($parent->slug === 'ortschaft') {
 						$location_term_slug = $term->slug;
 					}
+					if ($parent->slug === 'angebot') {
+						$offer_term_slug = $term->slug;
+					}
 				}
 			}
+		}
+
+		// Skip Ferienkurse – they don't belong in the weekly Stundenplan
+		if ($offer_term_slug === 'ferienkurs') {
+			continue;
 		}
 		
 		$headcoach_name = get_post_meta($event_id, '_event_headcoach', true);

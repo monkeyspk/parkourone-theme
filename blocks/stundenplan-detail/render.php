@@ -99,6 +99,7 @@ foreach ($events as $event) {
 	$age_slug = '';
 	$location_slug = '';
 
+	$offer_slug = '';
 	foreach ($categories as $cat) {
 		$cat_parent = $cat->parent ? get_term($cat->parent, 'event_category') : null;
 		if ($cat_parent) {
@@ -108,8 +109,15 @@ foreach ($events as $event) {
 			} elseif ($cat_parent->slug === 'ortschaft') {
 				$location_name = $cat->name;
 				$location_slug = $cat->slug;
+			} elseif ($cat_parent->slug === 'angebot') {
+				$offer_slug = $cat->slug;
 			}
 		}
+	}
+
+	// Skip Ferienkurse – they don't belong in the weekly Stundenplan
+	if ($offer_slug === 'ferienkurs') {
+		continue;
 	}
 
 	$weekdays[$day_num]['events'][] = [
