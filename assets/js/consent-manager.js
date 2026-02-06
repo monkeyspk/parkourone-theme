@@ -18,6 +18,33 @@
 	const COOKIE_EXPIRY_DAYS = 365;
 
 	// ========================================
+	// IMMEDIATE: Clean up oversized cookies on page load
+	// This runs before anything else to prevent 403 errors
+	// ========================================
+	(function cleanupOversizedCookie() {
+		try {
+			const cookies = document.cookie.split(';');
+			for (const cookie of cookies) {
+				const [name, value] = cookie.trim().split('=');
+				if (name === 'po_consent' && value && value.length > 500) {
+					// Cookie is too large (old format), delete it immediately
+					document.cookie = 'po_consent=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+					document.cookie = 'po_consent=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=' + location.hostname + ';';
+					document.cookie = 'po_consent=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.' + location.hostname + ';';
+					console.log('PO Consent: Deleted oversized legacy cookie');
+					// Reload to clear request headers
+					if (!sessionStorage.getItem('po_cookie_cleaned')) {
+						sessionStorage.setItem('po_cookie_cleaned', '1');
+						location.reload();
+					}
+				}
+			}
+		} catch (e) {
+			console.warn('PO Consent: Cookie cleanup failed', e);
+		}
+	})();
+
+	// ========================================
 	// Consent Manager Class
 	// ========================================
 	class POConsentManager {
@@ -455,11 +482,22 @@
 		}
 
 		/**
-		 * Delete old/oversized cookie
+		 * Delete old/oversized cookie from all possible domains
 		 */
 		deleteOldCookie() {
-			// Delete cookie by setting it expired
-			document.cookie = 'po_consent=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+			const expiry = 'expires=Thu, 01 Jan 1970 00:00:00 UTC';
+			// Delete from current path
+			document.cookie = `po_consent=; ${expiry}; path=/;`;
+			// Delete with domain
+			document.cookie = `po_consent=; ${expiry}; path=/; domain=${location.hostname};`;
+			// Delete with wildcard domain (for subdomains)
+			document.cookie = `po_consent=; ${expiry}; path=/; domain=.${location.hostname};`;
+			// Try parent domain for subdomains like berlin.parkourone.com
+			const parts = location.hostname.split('.');
+			if (parts.length > 2) {
+				const parentDomain = parts.slice(-2).join('.');
+				document.cookie = `po_consent=; ${expiry}; path=/; domain=.${parentDomain};`;
+			}
 		}
 
 		/**
