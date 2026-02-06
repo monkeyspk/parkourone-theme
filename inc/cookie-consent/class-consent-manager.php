@@ -133,6 +133,7 @@ class PO_Consent_Manager {
 				$this->current_consent = [
 					'version' => $decoded['v'],
 					'timestamp' => $decoded['t'] ?? time(),
+					'legal_version' => $decoded['l'] ?? self::LEGAL_TEXT_VERSION, // Legal version from cookie or current
 					'categories' => [
 						self::CATEGORY_NECESSARY => true,
 						self::CATEGORY_FUNCTIONAL => !empty($decoded['c']['f']),
@@ -515,6 +516,7 @@ class PO_Consent_Manager {
 		// Alle anderen Daten gehören in die Datenbank!
 		$cookie_data = [
 			'v' => self::CONSENT_VERSION,
+			'l' => self::LEGAL_TEXT_VERSION, // Legal text version for re-consent check
 			'c' => [
 				'n' => 1, // necessary - immer true
 				'f' => $sanitized_categories[self::CATEGORY_FUNCTIONAL] ? 1 : 0,

@@ -508,6 +508,7 @@
 			// Build minimal cookie data (same format as PHP)
 			const cookieData = {
 				v: this.config.version || '1.0',
+				l: '2024-01', // Legal text version - must match PHP LEGAL_TEXT_VERSION
 				c: {
 					n: 1,
 					f: categories.includes('functional') ? 1 : 0,
