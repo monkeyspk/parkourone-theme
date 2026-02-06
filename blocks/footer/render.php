@@ -29,11 +29,12 @@ $phoneHours = po_footer_value('phone_hours', $attributes['phoneHours'] ?? '', $f
 // Zentrale entfernt - Schweiz ist jetzt Teil der automatischen Standorte-Liste
 $newsletterHeadline = po_footer_value('newsletter_headline', $attributes['newsletterHeadline'] ?? '', $footer_options);
 $newsletterText = po_footer_value('newsletter_text', $attributes['newsletterText'] ?? '', $footer_options);
-$copyrightYear = po_footer_value('copyright_year', $attributes['copyrightYear'] ?? '', $footer_options, date('Y'));
+// Copyright Jahr immer automatisch aktuelles Jahr
+$copyrightYear = date('Y');
 
 // Alle ParkourONE Standorte (automatisch generiert)
 $alle_standorte = [
-	'schweiz' => ['name' => 'Schweiz', 'url' => 'https://parkourone.com'],
+	'schweiz' => ['name' => 'Schweiz', 'url' => 'https://schweiz.parkourone.com'],
 	'berlin' => ['name' => 'Berlin', 'url' => 'https://berlin.parkourone.com'],
 	'hannover' => ['name' => 'Hannover', 'url' => 'https://hannover.parkourone.com'],
 	'muenster' => ['name' => 'Münster', 'url' => 'https://muenster.parkourone.com'],
@@ -42,6 +43,10 @@ $alle_standorte = [
 	'augsburg' => ['name' => 'Augsburg', 'url' => 'https://augsburg.parkourone.com'],
 ];
 
+// Zentrale (immer gleich)
+$zentraleName = 'ParkourONE Academy';
+$zentraleUrl = 'https://parkourone.com';
+
 // Aktuellen Standort aus URL/Subdomain erkennen
 $current_host = $_SERVER['HTTP_HOST'] ?? '';
 $current_site = '';
@@ -49,10 +54,6 @@ $current_site = '';
 // Subdomain extrahieren (z.B. "berlin" aus "berlin.parkourone.com")
 if (preg_match('/^([a-z]+)\.parkourone\.com$/i', $current_host, $matches)) {
 	$current_site = strtolower($matches[1]);
-}
-// Für Hauptdomain parkourone.com → Schweiz
-if ($current_host === 'parkourone.com' || $current_host === 'www.parkourone.com') {
-	$current_site = 'schweiz';
 }
 // Für lokale Entwicklung: aus Site-URL erkennen
 if (empty($current_site)) {
@@ -140,6 +141,10 @@ if (empty($cookiesUrl) || $cookiesUrl === '#') {
 				<?php foreach ($standorte as $s): ?>
 					<a href="<?php echo esc_url($s['url'] ?? '#'); ?>"><?php echo esc_html($s['name']); ?></a>
 				<?php endforeach; ?>
+			</div>
+			<div class="po-footer__zentrale">
+				<strong>Zentrale</strong>
+				<a href="<?php echo esc_url($zentraleUrl); ?>"><?php echo esc_html($zentraleName); ?></a>
 			</div>
 		</div>
 		

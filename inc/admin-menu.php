@@ -345,8 +345,7 @@ function parkourone_menu_footer_page() {
 			'social_podcast' => esc_url_raw($_POST['footer_social_podcast'] ?? ''),
 			'newsletter_headline' => sanitize_text_field($_POST['footer_newsletter_headline'] ?? ''),
 			'newsletter_text' => sanitize_text_field($_POST['footer_newsletter_text'] ?? ''),
-			'copyright_year' => sanitize_text_field($_POST['footer_copyright_year'] ?? date('Y')),
-			// Standorte werden automatisch generiert - keine manuelle Eingabe mehr
+			// Standorte + Copyright Jahr werden automatisch generiert
 		];
 
 		update_option('parkourone_footer', $footer_options);
@@ -377,10 +376,9 @@ function parkourone_menu_footer_page() {
 		'social_instagram' => '',
 		'social_youtube' => '',
 		'social_podcast' => '',
-		// Standorte werden automatisch generiert (siehe footer/render.php)
 		'newsletter_headline' => '',
 		'newsletter_text' => '',
-		'copyright_year' => date('Y'),
+		// Automatisch: Standorte, Zentrale, Copyright Jahr (siehe footer/render.php)
 	];
 	$options = wp_parse_args($options, $defaults);
 	?>
@@ -560,10 +558,10 @@ function parkourone_menu_footer_page() {
 				</div>
 
 				<div class="po-form-section">
-					<h3>Sonstiges</h3>
-					<div class="po-form-row">
-						<label>Copyright Jahr</label>
-						<input type="text" name="footer_copyright_year" value="<?php echo esc_attr($options['copyright_year']); ?>" placeholder="<?php echo date('Y'); ?>">
+					<h3>Automatisch</h3>
+					<div style="background: #f0f6fc; padding: 15px; border-radius: 4px; border-left: 4px solid #2271b1;">
+						<p style="margin: 0;"><strong>Copyright Jahr:</strong> <?php echo date('Y'); ?> (automatisch aktuelles Jahr)</p>
+						<p style="margin: 10px 0 0;"><strong>Zentrale:</strong> ParkourONE Academy → parkourone.com</p>
 					</div>
 				</div>
 
