@@ -1152,12 +1152,9 @@ p#referrer_field {
 	position: sticky;
 	top: 100px;
 	width: 100% !important;
+	min-width: 0 !important;
 	box-sizing: border-box !important;
-}
-
-/* Ensure order review table + payment take full width */
-.woocommerce-checkout #order_review * {
-	max-width: 100%;
+	overflow: hidden;
 }
 
 .woocommerce-checkout .woocommerce-checkout-review-order {
@@ -1170,14 +1167,25 @@ p#referrer_field {
 
 /* Order table */
 .woocommerce-checkout .woocommerce-checkout-review-order-table {
-	border: none;
+	border: none !important;
 	margin: 0 0 20px;
-	width: 100%;
+	width: 100% !important;
 	border-collapse: collapse;
+	table-layout: fixed !important;
 }
 
-/* Hide table header (PRODUKT / ZWISCHENSUMME) — redundant, saves space */
+/* Hide table header (PRODUKT / ZWISCHENSUMME) — redundant */
 .woocommerce-checkout .woocommerce-checkout-review-order-table thead {
+	display: none !important;
+}
+
+/* Hide per-product price column — redundant with totals below */
+.woocommerce-checkout .woocommerce-checkout-review-order-table .product-total {
+	display: none !important;
+}
+
+/* Hide Zwischensumme row — redundant with Gesamtsumme */
+.woocommerce-checkout .woocommerce-checkout-review-order-table tfoot .cart-subtotal {
 	display: none !important;
 }
 
