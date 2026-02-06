@@ -1214,6 +1214,22 @@ function parkourone_get_template_pages() {
 			'pattern_file' => 'page-impressum.php',
 			'page_slug' => 'impressum',
 		],
+		[
+			'slug' => 'warenkorb',
+			'title' => 'Warenkorb',
+			'description' => 'WooCommerce Warenkorb mit Apple-Style Design',
+			'blocks' => 'WooCommerce Cart',
+			'pattern_file' => 'page-warenkorb.php',
+			'page_slug' => 'warenkorb',
+		],
+		[
+			'slug' => 'checkout',
+			'title' => 'Checkout / Kasse',
+			'description' => 'WooCommerce Checkout mit Apple-Style Design',
+			'blocks' => 'WooCommerce Checkout',
+			'pattern_file' => 'page-checkout.php',
+			'page_slug' => 'kasse',
+		],
 	];
 
 	// Prüfen ob Seiten bereits existieren
