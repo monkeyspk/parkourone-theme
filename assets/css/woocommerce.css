@@ -820,12 +820,20 @@ p#referrer_field {
 	display: block !important;
 }
 
-/* ---------- Page layout — centered ---------- */
+/* ---------- Page layout — break out of WP container ---------- */
+
+/* Let checkout break out of narrow WP post-content container */
+.woocommerce-checkout .entry-content,
+.woocommerce-checkout .wp-block-post-content,
+.woocommerce-checkout .wp-block-post-content > * {
+	max-width: none !important;
+	width: 100% !important;
+}
 
 .woocommerce-checkout .woocommerce {
-	max-width: 1100px;
+	max-width: 1400px;
 	margin: 0 auto;
-	padding: 48px 24px 96px;
+	padding: 48px 48px 96px;
 	font-family: var(--wc-font);
 	-webkit-font-smoothing: antialiased;
 	color: var(--wc-text);
@@ -867,8 +875,8 @@ p#referrer_field {
 
 .woocommerce-checkout form.checkout.woocommerce-checkout {
 	display: grid;
-	grid-template-columns: 1fr 400px;
-	gap: 0 32px;
+	grid-template-columns: 1fr 480px;
+	gap: 0 48px;
 	align-items: start;
 }
 
@@ -951,18 +959,15 @@ p#referrer_field {
 	clear: both !important;
 }
 
-/* Order review heading: right column */
+/* Order review heading: hidden */
 .woocommerce-checkout h3#order_review_heading {
-	grid-column: 2;
-	grid-row: 1;
-	margin-bottom: 16px;
-	width: 100% !important;
+	display: none !important;
 }
 
-/* Order review: right column, below heading */
+/* Order review: right column, starts at top */
 .woocommerce-checkout #order_review {
 	grid-column: 2;
-	grid-row: 2 / span 2;
+	grid-row: 1 / -1;
 	width: 100% !important;
 	min-width: 0 !important;
 }
@@ -1477,7 +1482,7 @@ p#referrer_field {
    Responsive — Classic Checkout
    ========================================================================== */
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
 	/* Switch to single column */
 	.woocommerce-checkout form.checkout.woocommerce-checkout {
 		grid-template-columns: 1fr;
