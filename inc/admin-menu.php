@@ -343,26 +343,11 @@ function parkourone_menu_footer_page() {
 			'social_instagram' => esc_url_raw($_POST['footer_social_instagram'] ?? ''),
 			'social_youtube' => esc_url_raw($_POST['footer_social_youtube'] ?? ''),
 			'social_podcast' => esc_url_raw($_POST['footer_social_podcast'] ?? ''),
-			'zentrale_name' => sanitize_text_field($_POST['footer_zentrale_name'] ?? ''),
-			'zentrale_url' => esc_url_raw($_POST['footer_zentrale_url'] ?? ''),
 			'newsletter_headline' => sanitize_text_field($_POST['footer_newsletter_headline'] ?? ''),
 			'newsletter_text' => sanitize_text_field($_POST['footer_newsletter_text'] ?? ''),
 			'copyright_year' => sanitize_text_field($_POST['footer_copyright_year'] ?? date('Y')),
+			// Standorte werden automatisch generiert - keine manuelle Eingabe mehr
 		];
-
-		// Standorte als Array speichern
-		$standorte = [];
-		if (!empty($_POST['footer_standorte_name']) && is_array($_POST['footer_standorte_name'])) {
-			foreach ($_POST['footer_standorte_name'] as $i => $name) {
-				if (!empty($name)) {
-					$standorte[] = [
-						'name' => sanitize_text_field($name),
-						'url' => esc_url_raw($_POST['footer_standorte_url'][$i] ?? '')
-					];
-				}
-			}
-		}
-		$footer_options['standorte'] = $standorte;
 
 		update_option('parkourone_footer', $footer_options);
 		echo '<div class="notice notice-success"><p>Footer-Einstellungen gespeichert!</p></div>';
@@ -392,9 +377,7 @@ function parkourone_menu_footer_page() {
 		'social_instagram' => '',
 		'social_youtube' => '',
 		'social_podcast' => '',
-		'standorte' => [],
-		'zentrale_name' => '',
-		'zentrale_url' => '',
+		// Standorte werden automatisch generiert (siehe footer/render.php)
 		'newsletter_headline' => '',
 		'newsletter_text' => '',
 		'copyright_year' => date('Y'),
@@ -557,35 +540,10 @@ function parkourone_menu_footer_page() {
 
 				<div class="po-form-section">
 					<h3>Standorte</h3>
-					<div class="po-standorte-list" id="standorte-list">
-						<?php if (!empty($options['standorte'])): ?>
-							<?php foreach ($options['standorte'] as $i => $standort): ?>
-								<div class="po-standort-row">
-									<input type="text" name="footer_standorte_name[]" value="<?php echo esc_attr($standort['name']); ?>" placeholder="Name">
-									<input type="url" name="footer_standorte_url[]" value="<?php echo esc_attr($standort['url']); ?>" placeholder="URL">
-									<button type="button" class="button po-remove-standort">×</button>
-								</div>
-							<?php endforeach; ?>
-						<?php else: ?>
-							<div class="po-standort-row">
-								<input type="text" name="footer_standorte_name[]" placeholder="Name">
-								<input type="url" name="footer_standorte_url[]" placeholder="URL">
-								<button type="button" class="button po-remove-standort">×</button>
-							</div>
-						<?php endif; ?>
-					</div>
-					<button type="button" class="button" id="add-standort">+ Standort hinzufügen</button>
-				</div>
-
-				<div class="po-form-section">
-					<h3>Zentrale</h3>
-					<div class="po-form-row">
-						<label>Name</label>
-						<input type="text" name="footer_zentrale_name" value="<?php echo esc_attr($options['zentrale_name']); ?>" placeholder="ParkourONE Schweiz">
-					</div>
-					<div class="po-form-row">
-						<label>URL</label>
-						<input type="url" name="footer_zentrale_url" value="<?php echo esc_attr($options['zentrale_url']); ?>" placeholder="https://parkourone.com">
+					<div style="background: #f0f6fc; padding: 15px; border-radius: 4px; border-left: 4px solid #2271b1;">
+						<strong>Automatisch generiert!</strong>
+						<p style="margin: 10px 0 0;">Die Standorte werden automatisch angezeigt. Der aktuelle Standort (basierend auf der URL/Subdomain) wird dabei ausgeblendet.</p>
+						<p style="margin: 10px 0 0; font-size: 13px; color: #646970;"><strong>Alle Standorte:</strong> Schweiz, Berlin, Hannover, Münster, Dresden, Rhein/Ruhr, Augsburg</p>
 					</div>
 				</div>
 
@@ -643,13 +601,12 @@ function parkourone_menu_footer_page() {
 					</div>
 					<div>
 						<strong>Standorte</strong>
-						<?php if (!empty($options['standorte'])): ?>
-							<?php foreach ($options['standorte'] as $s): ?>
-								<p style="margin-top: 5px;"><?php echo esc_html($s['name']); ?></p>
-							<?php endforeach; ?>
-						<?php else: ?>
-							<p style="opacity: 0.5; margin-top: 10px;">Keine Standorte</p>
-						<?php endif; ?>
+						<p style="margin-top: 5px; font-size: 12px; color: #aaa;">(automatisch generiert)</p>
+						<p style="margin-top: 5px;">Schweiz</p>
+						<p style="margin-top: 5px;">Berlin</p>
+						<p style="margin-top: 5px;">Hannover</p>
+						<p style="margin-top: 5px;">...</p>
+						<p style="margin-top: 5px; font-size: 11px; opacity: 0.7;">Aktueller Standort wird ausgeblendet</p>
 					</div>
 					<div>
 						<strong><?php echo esc_html($options['newsletter_headline'] ?: 'Newsletter'); ?></strong>
@@ -716,26 +673,6 @@ function parkourone_menu_footer_page() {
 					this.classList.add('active');
 					document.getElementById('panel-' + this.dataset.tab).classList.add('active');
 				});
-			});
-
-			// Standorte hinzufügen
-			document.getElementById('add-standort').addEventListener('click', function() {
-				var row = document.createElement('div');
-				row.className = 'po-standort-row';
-				row.innerHTML = '<input type="text" name="footer_standorte_name[]" placeholder="Name">' +
-					'<input type="url" name="footer_standorte_url[]" placeholder="URL">' +
-					'<button type="button" class="button po-remove-standort">×</button>';
-				document.getElementById('standorte-list').appendChild(row);
-			});
-
-			// Standorte entfernen
-			document.getElementById('standorte-list').addEventListener('click', function(e) {
-				if (e.target.classList.contains('po-remove-standort')) {
-					var rows = this.querySelectorAll('.po-standort-row');
-					if (rows.length > 1) {
-						e.target.closest('.po-standort-row').remove();
-					}
-				}
 			});
 
 			// Menü-Links hinzufügen
