@@ -214,6 +214,7 @@ body.po-no-scroll {
 .po-steps__cta {
 	display: block;
 	width: 100%;
+	box-sizing: border-box;
 	padding: 16px 24px;
 	background: var(--po-color-link);
 	color: #fff;

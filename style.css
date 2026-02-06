@@ -12,3 +12,24 @@ License: GPL-2.0-or-later
 Text Domain: parkourone
 Tags: block-patterns, full-site-editing
 */
+
+/* ==========================================================================
+   Global Base Styles
+   ========================================================================== */
+
+/* Prevent horizontal overflow on mobile */
+html {
+	overflow-x: hidden;
+}
+
+/* Ensure all interactive elements respect container bounds */
+a,
+button,
+input,
+select,
+textarea,
+.wp-element-button,
+.wp-block-button__link {
+	box-sizing: border-box;
+	max-width: 100%;
+}
