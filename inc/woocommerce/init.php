@@ -17,31 +17,63 @@ if (!class_exists('WooCommerce')) {
 }
 
 // =====================================================
-// Custom Checkout Fields (WC 8.9+ Additional Fields API)
+// Classic Checkout Customizations
 // =====================================================
 
-add_action('woocommerce_init', function() {
-	if (!function_exists('woocommerce_register_additional_checkout_field')) {
-		return;
-	}
+// Disable shipping (we sell courses, not physical products)
+add_filter('woocommerce_cart_needs_shipping', '__return_false');
 
-	woocommerce_register_additional_checkout_field([
-		'id'       => 'parkourone/referral-source',
-		'label'    => 'Wie hast du von uns erfahren?',
-		'location' => 'order',
+// Change "Place order" button text
+add_filter('woocommerce_order_button_text', function() {
+	return 'Kostenpflichtig bestellen';
+});
+
+// =====================================================
+// Referral Source Dropdown (Classic Checkout)
+// =====================================================
+
+// Render the dropdown after order notes
+add_action('woocommerce_after_order_notes', function($checkout) {
+	woocommerce_form_field('po_referral_source', [
 		'type'     => 'select',
+		'label'    => 'Wie hast du von uns erfahren?',
 		'required' => false,
+		'class'    => ['form-row-wide'],
 		'options'  => [
-			['value' => '',          'label' => 'Bitte wählen...'],
-			['value' => 'instagram', 'label' => 'Instagram'],
-			['value' => 'google',    'label' => 'Google'],
-			['value' => 'freunde',   'label' => 'Freunde / Bekannte'],
-			['value' => 'facebook',  'label' => 'Facebook'],
-			['value' => 'tiktok',    'label' => 'TikTok'],
-			['value' => 'flyer',     'label' => 'Flyer / Plakat'],
-			['value' => 'sonstiges', 'label' => 'Sonstiges'],
+			''          => 'Bitte wählen...',
+			'instagram' => 'Instagram',
+			'google'    => 'Google',
+			'freunde'   => 'Freunde / Bekannte',
+			'facebook'  => 'Facebook',
+			'tiktok'    => 'TikTok',
+			'flyer'     => 'Flyer / Plakat',
+			'sonstiges' => 'Sonstiges',
 		],
-	]);
+	], $checkout->get_value('po_referral_source'));
+});
+
+// Save the field value to order meta
+add_action('woocommerce_checkout_update_order_meta', function($order_id) {
+	if (!empty($_POST['po_referral_source'])) {
+		update_post_meta($order_id, '_po_referral_source', sanitize_text_field($_POST['po_referral_source']));
+	}
+});
+
+// Display in admin order detail
+add_action('woocommerce_admin_order_data_after_billing_address', function($order) {
+	$source = get_post_meta($order->get_id(), '_po_referral_source', true);
+	if ($source) {
+		$labels = [
+			'instagram' => 'Instagram',
+			'google'    => 'Google',
+			'freunde'   => 'Freunde / Bekannte',
+			'facebook'  => 'Facebook',
+			'tiktok'    => 'TikTok',
+			'flyer'     => 'Flyer / Plakat',
+			'sonstiges' => 'Sonstiges',
+		];
+		echo '<p><strong>Referral:</strong> ' . esc_html($labels[$source] ?? $source) . '</p>';
+	}
 });
 
 // =====================================================
@@ -128,16 +160,17 @@ function parkourone_wc_enqueue_assets() {
 		'checkoutUrl' => wc_get_checkout_url(),
 	]);
 
-	// Checkout Block filters (button text, payment method filtering)
-	if (is_checkout()) {
-		wp_enqueue_script(
-			'parkourone-checkout-filters',
-			get_template_directory_uri() . '/assets/js/checkout-filters.js',
-			['wc-blocks-checkout', 'wc-blocks-registry'],
-			filemtime(get_template_directory() . '/assets/js/checkout-filters.js'),
-			true
-		);
-	}
+	// Block Checkout filters — only load if block checkout is active
+	// Currently using classic shortcode checkout, so this is disabled
+	// if (is_checkout()) {
+	// 	wp_enqueue_script(
+	// 		'parkourone-checkout-filters',
+	// 		get_template_directory_uri() . '/assets/js/checkout-filters.js',
+	// 		['wc-blocks-checkout', 'wc-blocks-registry'],
+	// 		filemtime(get_template_directory() . '/assets/js/checkout-filters.js'),
+	// 		true
+	// 	);
+	// }
 }
 add_action('wp_enqueue_scripts', 'parkourone_wc_enqueue_assets');
 
