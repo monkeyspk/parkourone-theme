@@ -845,6 +845,12 @@ function parkourone_render_header() {
     $home_url = home_url('/');
     $probetraining_url = home_url('/probetraining-buchen/');
 
+    // Cart count for WooCommerce
+    $cart_count = 0;
+    if (class_exists('WooCommerce') && WC()->cart) {
+        $cart_count = WC()->cart->get_cart_contents_count();
+    }
+
     ?>
     <header class="po-header" id="po-header">
         <div class="po-header__inner">
@@ -854,6 +860,18 @@ function parkourone_render_header() {
 
             <div class="po-header__actions">
                 <a href="<?php echo esc_url($probetraining_url); ?>" class="po-header__cta">Probetraining buchen</a>
+
+                <?php if (class_exists('WooCommerce')) : ?>
+                <button type="button" class="po-header__cart" data-open-cart aria-label="Warenkorb öffnen">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="m1 1 4 4 2.68 11.69a2 2 0 0 0 2 1.31h9.72a2 2 0 0 0 2-1.31L23 6H6"></path>
+                    </svg>
+                    <span class="po-header__cart-count" data-cart-count="<?php echo esc_attr($cart_count); ?>"><?php echo esc_html($cart_count); ?></span>
+                </button>
+                <?php endif; ?>
+
                 <button class="po-header__toggle" id="po-menu-toggle" aria-label="Menü öffnen" aria-expanded="false">
                     <span class="po-header__toggle-bar"></span>
                     <span class="po-header__toggle-bar"></span>

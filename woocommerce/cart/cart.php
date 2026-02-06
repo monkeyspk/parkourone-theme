@@ -319,17 +319,6 @@ do_action('woocommerce_before_cart');
 
 		<?php do_action('woocommerce_after_cart_table'); ?>
 	</form>
-
-	<?php do_action('woocommerce_before_cart_collaterals'); ?>
-
-	<?php
-	/**
-	 * Cart collaterals hook.
-	 *
-	 * @hooked woocommerce_cross_sell_display
-	 */
-	do_action('woocommerce_cart_collaterals');
-	?>
 </div>
 
 <?php do_action('woocommerce_after_cart'); ?>

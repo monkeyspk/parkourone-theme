@@ -42,6 +42,15 @@ function parkourone_disable_xoo_side_cart() {
 add_action('plugins_loaded', 'parkourone_disable_xoo_side_cart', 20);
 
 /**
+ * Remove default WooCommerce cart totals from collaterals
+ * We have our own custom totals in the cart template
+ */
+function parkourone_remove_default_cart_totals() {
+	remove_action('woocommerce_cart_collaterals', 'woocommerce_cart_totals', 10);
+}
+add_action('init', 'parkourone_remove_default_cart_totals');
+
+/**
  * Enqueue WooCommerce custom assets
  */
 function parkourone_wc_enqueue_assets() {
@@ -289,8 +298,11 @@ function parkourone_wc_cart_fragments($fragments) {
 	// Cart total
 	$fragments['.po-side-cart__total'] = '<span class="po-side-cart__total" data-cart-total>' . WC()->cart->get_cart_subtotal() . '</span>';
 
-	// Cart count in header
+	// Cart count in side cart header
 	$fragments['.po-side-cart__count'] = '<span class="po-side-cart__count" data-cart-count>' . $cart_count . '</span>';
+
+	// Cart count in main header
+	$fragments['.po-header__cart-count'] = '<span class="po-header__cart-count" data-cart-count="' . esc_attr($cart_count) . '">' . esc_html($cart_count) . '</span>';
 
 	return $fragments;
 }
