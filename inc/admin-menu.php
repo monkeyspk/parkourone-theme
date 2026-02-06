@@ -10,14 +10,16 @@ if (!defined('ABSPATH')) exit;
  * Haupt-Menü und Untermenüs registrieren
  */
 function parkourone_register_admin_menu() {
-	// Hauptmenü
+	// Hauptmenü mit Logo
+	$logo_url = get_template_directory_uri() . '/assets/images/admin-logo.png';
+
 	add_menu_page(
 		'ParkourONE',
-		'ParkourONE',
+		'', // Kein Text, nur Logo
 		'manage_options',
 		'parkourone',
 		'parkourone_admin_dashboard',
-		'dashicons-superhero-alt',
+		$logo_url,
 		3
 	);
 
@@ -92,6 +94,32 @@ function parkourone_register_admin_menu() {
 	);
 }
 add_action('admin_menu', 'parkourone_register_admin_menu', 5);
+
+/**
+ * Admin Menu Logo Styling
+ */
+function parkourone_admin_menu_logo_styles() {
+	?>
+	<style>
+		/* ParkourONE Admin Menu Logo */
+		#adminmenu .toplevel_page_parkourone .wp-menu-image img {
+			width: 20px;
+			height: auto;
+			padding: 7px 0;
+			opacity: 1;
+		}
+		#adminmenu .toplevel_page_parkourone:hover .wp-menu-image img,
+		#adminmenu .toplevel_page_parkourone.current .wp-menu-image img {
+			opacity: 1;
+		}
+		/* Invertieren für dunkles Admin-Menü */
+		#adminmenu .toplevel_page_parkourone .wp-menu-image img {
+			filter: invert(1);
+		}
+	</style>
+	<?php
+}
+add_action('admin_head', 'parkourone_admin_menu_logo_styles');
 
 /**
  * CPTs zum ParkourONE Menü hinzufügen
