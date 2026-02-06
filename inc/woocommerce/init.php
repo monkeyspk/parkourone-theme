@@ -44,6 +44,27 @@ add_action('woocommerce_init', function() {
 	]);
 });
 
+// =====================================================
+// Payment Gateway Filter — only allow enabled methods
+// =====================================================
+// PayPal Payments registers many sub-gateways (Bancontact, Blik, EPS, etc.)
+// even when they are not set up. Whitelist only the methods we actually use.
+
+add_filter('woocommerce_available_payment_gateways', function($gateways) {
+	$allowed = [
+		'woocommerce_payments', // WooPayments (Karte)
+		'ppcp-gateway',         // PayPal
+	];
+
+	foreach ($gateways as $id => $gateway) {
+		if (!in_array($id, $allowed, true)) {
+			unset($gateways[$id]);
+		}
+	}
+
+	return $gateways;
+});
+
 /**
  * Disable XOO Side Cart Plugin (if still installed)
  */
