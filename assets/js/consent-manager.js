@@ -413,12 +413,20 @@
 			formData.append('nonce', this.config.nonce);
 			categories.forEach(cat => formData.append('categories[]', cat));
 
+			// First, delete any existing oversized cookie
+			this.deleteOldCookie();
+
 			fetch(this.config.ajaxUrl, {
 				method: 'POST',
 				body: formData,
 				credentials: 'same-origin'
 			})
-			.then(response => response.json())
+			.then(response => {
+				if (!response.ok) {
+					throw new Error('HTTP ' + response.status);
+				}
+				return response.json();
+			})
 			.then(data => {
 				if (data.success) {
 					this.consent = data.data.consent;
@@ -436,20 +444,67 @@
 					this.hideBanner();
 
 					// Reload to activate blocked content
-					// (nur wenn neue Kategorien akzeptiert wurden)
-					const needsReload = categories.some(cat =>
-						cat !== 'necessary' && !this.consent?.categories?.[cat]
-					);
-
-					if (needsReload) {
-						// Kurze Verzögerung für Cookie-Speicherung
-						setTimeout(() => location.reload(), 100);
-					}
+					setTimeout(() => location.reload(), 100);
 				}
 			})
 			.catch(error => {
-				console.error('PO Consent: Save failed', error);
+				console.warn('PO Consent: AJAX failed, using fallback cookie', error);
+				// Fallback: Set cookie directly in JavaScript
+				this.setFallbackCookie(categories);
 			});
+		}
+
+		/**
+		 * Delete old/oversized cookie
+		 */
+		deleteOldCookie() {
+			// Delete cookie by setting it expired
+			document.cookie = 'po_consent=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+		}
+
+		/**
+		 * Fallback: Set cookie directly via JavaScript
+		 * Used when AJAX fails (e.g., blocked by security plugin)
+		 */
+		setFallbackCookie(categories) {
+			// Build minimal cookie data (same format as PHP)
+			const cookieData = {
+				v: this.config.version || '1.0',
+				c: {
+					n: 1,
+					f: categories.includes('functional') ? 1 : 0,
+					a: categories.includes('analytics') ? 1 : 0,
+					m: categories.includes('marketing') ? 1 : 0
+				},
+				t: Math.floor(Date.now() / 1000),
+				id: Math.random().toString(36).substr(2, 8)
+			};
+
+			// Base64 encode
+			const cookieValue = btoa(JSON.stringify(cookieData));
+
+			// Set cookie (365 days)
+			const expires = new Date();
+			expires.setFullYear(expires.getFullYear() + 1);
+			document.cookie = `po_consent=${cookieValue}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
+
+			// Update local state
+			this.consent = {
+				version: cookieData.v,
+				categories: {
+					necessary: true,
+					functional: cookieData.c.f === 1,
+					analytics: cookieData.c.a === 1,
+					marketing: cookieData.c.m === 1
+				}
+			};
+			window.poConsent = this.consent;
+
+			console.log('PO Consent: Fallback cookie set successfully');
+
+			// Hide banner and reload
+			this.hideBanner();
+			setTimeout(() => location.reload(), 100);
 		}
 
 		/**
