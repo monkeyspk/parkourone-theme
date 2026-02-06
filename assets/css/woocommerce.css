@@ -871,7 +871,7 @@ p#referrer_field {
 
 .woocommerce-checkout form.checkout.woocommerce-checkout {
 	display: grid;
-	grid-template-columns: 1fr minmax(0, 440px);
+	grid-template-columns: 1fr minmax(0, 600px);
 	gap: 0 48px;
 	align-items: start;
 }
