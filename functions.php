@@ -834,6 +834,12 @@ add_action('wp_enqueue_scripts', 'parkourone_enqueue_theme_styles');
 function parkourone_render_header() {
     $logo_id = get_theme_mod('custom_logo');
     $logo_url = $logo_id ? wp_get_attachment_image_url($logo_id, 'full') : '';
+
+    // Fallback: Theme-Logo verwenden wenn kein Custom Logo gesetzt
+    if (!$logo_url) {
+        $logo_url = get_template_directory_uri() . '/assets/images/admin-logo.png';
+    }
+
     $site_name = get_bloginfo('name');
     $home_url = home_url('/');
     $probetraining_url = home_url('/probetraining-buchen/');
@@ -842,11 +848,7 @@ function parkourone_render_header() {
     <header class="po-header" id="po-header">
         <div class="po-header__inner">
             <a href="<?php echo esc_url($home_url); ?>" class="po-header__logo">
-                <?php if ($logo_url) : ?>
-                    <img src="<?php echo esc_url($logo_url); ?>" alt="<?php echo esc_attr($site_name); ?>" class="po-header__logo-img">
-                <?php else : ?>
-                    <span class="po-header__logo-text"><?php echo esc_html($site_name); ?></span>
-                <?php endif; ?>
+                <img src="<?php echo esc_url($logo_url); ?>" alt="<?php echo esc_attr($site_name); ?>" class="po-header__logo-img">
             </a>
 
             <div class="po-header__actions">
