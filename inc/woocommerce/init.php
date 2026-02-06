@@ -66,7 +66,7 @@ function parkourone_wc_enqueue_assets() {
 		filemtime(get_template_directory() . '/assets/css/woocommerce.css')
 	);
 
-	// JavaScript
+	// JavaScript - Side Cart
 	wp_enqueue_script(
 		'parkourone-side-cart',
 		get_template_directory_uri() . '/assets/js/side-cart.js',
@@ -74,6 +74,17 @@ function parkourone_wc_enqueue_assets() {
 		filemtime(get_template_directory() . '/assets/js/side-cart.js'),
 		true
 	);
+
+	// JavaScript - Cart Page
+	if (is_cart()) {
+		wp_enqueue_script(
+			'parkourone-wc-cart',
+			get_template_directory_uri() . '/assets/js/wc-cart.js',
+			[],
+			filemtime(get_template_directory() . '/assets/js/wc-cart.js'),
+			true
+		);
+	}
 
 	// Pass data to JavaScript
 	wp_localize_script('parkourone-side-cart', 'poSideCart', [
