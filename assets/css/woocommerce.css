@@ -889,26 +889,43 @@ p#referrer_field {
 	display: none !important;
 }
 
-/* Form rows: full width */
+/* Form rows: default full width */
 .woocommerce-checkout form .form-row {
-	width: 100% !important;
 	float: none !important;
 }
 
 /* Half-width fields side by side where WC uses form-row-first / form-row-last */
-.woocommerce-checkout form .form-row-first,
-.woocommerce-checkout form .form-row-last {
+.woocommerce-checkout form.checkout .form-row.form-row-first,
+.woocommerce-checkout form.checkout .form-row.form-row-last {
 	width: 48% !important;
 	float: left !important;
 }
 
-.woocommerce-checkout form .form-row-last {
+.woocommerce-checkout form.checkout .form-row.form-row-last {
 	float: right !important;
 }
 
-.woocommerce-checkout form .form-row-wide {
+.woocommerce-checkout form.checkout .form-row.form-row-wide {
 	width: 100% !important;
 	float: none !important;
+	clear: both !important;
+}
+
+/* Straße + Hausnr (address_1 + address_2) nebeneinander */
+.woocommerce-checkout form.checkout #billing_address_1_field {
+	width: 68% !important;
+	float: left !important;
+	clear: both !important;
+}
+
+.woocommerce-checkout form.checkout #billing_address_2_field {
+	width: 28% !important;
+	float: right !important;
+}
+
+/* Clearfix nach paired rows */
+.woocommerce-checkout form.checkout #billing_address_2_field + .form-row,
+.woocommerce-checkout form.checkout #billing_city_field + .form-row {
 	clear: both !important;
 }
 
@@ -917,12 +934,15 @@ p#referrer_field {
 	grid-column: 2;
 	grid-row: 1;
 	margin-bottom: 16px;
+	width: 100% !important;
 }
 
 /* Order review: right column, below heading */
 .woocommerce-checkout #order_review {
 	grid-column: 2;
 	grid-row: 2 / span 2;
+	width: 100% !important;
+	min-width: 0 !important;
 }
 
 /* ---------- Section headings ---------- */
@@ -1039,6 +1059,21 @@ p#referrer_field {
 	background: var(--wc-bg);
 	position: sticky;
 	top: 100px;
+	width: 100% !important;
+	box-sizing: border-box !important;
+}
+
+/* Ensure order review table + payment take full width */
+.woocommerce-checkout #order_review * {
+	max-width: 100%;
+}
+
+.woocommerce-checkout .woocommerce-checkout-review-order {
+	width: 100% !important;
+}
+
+.woocommerce-checkout .woocommerce-checkout-payment {
+	width: 100% !important;
 }
 
 /* Order table */
@@ -1140,6 +1175,15 @@ p#referrer_field {
 	border: none;
 	padding: 0;
 	margin-top: 20px;
+	width: 100% !important;
+	box-sizing: border-box !important;
+}
+
+/* Stripe payment iframe full width */
+.woocommerce-checkout .woocommerce-checkout-payment .payment_box iframe,
+.woocommerce-checkout .woocommerce-checkout-payment .payment_box .StripeElement,
+.woocommerce-checkout .woocommerce-checkout-payment .payment_box .wc-stripe-elements-field {
+	width: 100% !important;
 }
 
 .woocommerce-checkout .wc_payment_methods {
