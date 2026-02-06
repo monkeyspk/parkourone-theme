@@ -873,17 +873,43 @@ p#referrer_field {
 
 /* col2-set fix: hide empty col-2 (shipping disabled), col-1 full width */
 .woocommerce-checkout #customer_details.col2-set {
-	display: block;
+	display: block !important;
+	width: 100% !important;
 }
 
 .woocommerce-checkout #customer_details.col2-set .col-1 {
-	width: 100%;
-	max-width: 100%;
-	float: none;
+	width: 100% !important;
+	max-width: 100% !important;
+	float: none !important;
+	padding: 0 !important;
+	margin: 0 !important;
 }
 
 .woocommerce-checkout #customer_details.col2-set .col-2 {
-	display: none;
+	display: none !important;
+}
+
+/* Form rows: full width */
+.woocommerce-checkout form .form-row {
+	width: 100% !important;
+	float: none !important;
+}
+
+/* Half-width fields side by side where WC uses form-row-first / form-row-last */
+.woocommerce-checkout form .form-row-first,
+.woocommerce-checkout form .form-row-last {
+	width: 48% !important;
+	float: left !important;
+}
+
+.woocommerce-checkout form .form-row-last {
+	float: right !important;
+}
+
+.woocommerce-checkout form .form-row-wide {
+	width: 100% !important;
+	float: none !important;
+	clear: both !important;
 }
 
 /* Order review heading: right column */
@@ -954,15 +980,15 @@ p#referrer_field {
 .woocommerce-checkout form .form-row input.input-text,
 .woocommerce-checkout form .form-row select,
 .woocommerce-checkout form .form-row textarea {
-	border: 1px solid var(--wc-border);
-	border-radius: var(--wc-radius-sm);
-	padding: 14px 16px;
-	font-size: 15px;
-	font-family: var(--wc-font);
-	color: var(--wc-text);
-	background: var(--wc-bg);
-	width: 100%;
-	box-sizing: border-box;
+	border: 1px solid var(--wc-border) !important;
+	border-radius: var(--wc-radius-sm) !important;
+	padding: 14px 16px !important;
+	font-size: 15px !important;
+	font-family: var(--wc-font) !important;
+	color: var(--wc-text) !important;
+	background: var(--wc-bg) !important;
+	width: 100% !important;
+	box-sizing: border-box !important;
 	transition: border-color var(--wc-transition);
 }
 
@@ -975,12 +1001,16 @@ p#referrer_field {
 }
 
 /* Select2 (WooCommerce country/state dropdowns) */
+.woocommerce-checkout .select2-container {
+	width: 100% !important;
+}
+
 .woocommerce-checkout .select2-container .select2-selection--single {
-	border: 1px solid var(--wc-border);
-	border-radius: var(--wc-radius-sm);
-	height: 50px;
-	padding: 14px 16px;
-	background: var(--wc-bg);
+	border: 1px solid var(--wc-border) !important;
+	border-radius: var(--wc-radius-sm) !important;
+	height: 50px !important;
+	padding: 14px 16px !important;
+	background: var(--wc-bg) !important;
 }
 
 .woocommerce-checkout .select2-container .select2-selection--single .select2-selection__rendered {
