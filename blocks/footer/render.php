@@ -111,8 +111,7 @@ if (empty($cookiesUrl) || $cookiesUrl === '#') {
 	
 	<div class="po-footer__bottom">
 		<div class="po-footer__logo">
-			<svg viewBox="0 0 24 24" fill="currentColor"><rect width="24" height="24" rx="4"/></svg>
-			<span>ParkourONE</span>
+			<img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/admin-logo.png'); ?>" alt="ParkourONE">
 		</div>
 		<div class="po-footer__legal">
 			<a href="<?php echo esc_url($impressumUrl); ?>">Impressum</a>

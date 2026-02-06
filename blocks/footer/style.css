@@ -124,9 +124,10 @@
 	font-weight: 700;
 }
 
-.po-footer__logo svg {
-	width: 24px;
+.po-footer__logo img {
 	height: 24px;
+	width: auto;
+	filter: invert(1);
 }
 
 .po-footer__legal {
