@@ -1084,6 +1084,11 @@ p#referrer_field {
 	border-collapse: collapse;
 }
 
+/* Hide table header (PRODUKT / ZWISCHENSUMME) — redundant, saves space */
+.woocommerce-checkout .woocommerce-checkout-review-order-table thead {
+	display: none !important;
+}
+
 .woocommerce-checkout .woocommerce-checkout-review-order-table thead th {
 	font-size: 12px;
 	font-weight: 600;
