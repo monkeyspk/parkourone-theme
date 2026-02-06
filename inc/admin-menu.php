@@ -223,9 +223,96 @@ function parkourone_admin_dashboard() {
 }
 
 /**
+ * Schul-Vorlagen für Footer
+ */
+function parkourone_get_school_presets() {
+	return [
+		'' => ['label' => '— Vorlage wählen —'],
+		'schweiz' => [
+			'label' => 'Schweiz (Münsingen)',
+			'company_name' => 'ParkourONE Schweiz',
+			'company_address' => "ParkourONE GmbH\nSüdstrasse 16, SPOT 101\n3110 Münsingen",
+			'phone' => '+41 31 371 74 90',
+			'phone_hours' => "Mo, Di & Do\n09:00 – 12:00 Uhr\n13:30 – 16:00 Uhr",
+			'email' => 'schweiz@parkourone.com',
+			'social_instagram' => 'https://instagram.com/parkourone_ch',
+			'zentrale_name' => '',
+			'zentrale_url' => '',
+		],
+		'berlin' => [
+			'label' => 'Berlin',
+			'company_name' => 'ParkourONE Berlin',
+			'company_address' => "Scheffler & Gessinger GbR\nDietzinger Straße 25\n13156 Berlin",
+			'phone' => '+49 30 48 49 42 40',
+			'phone_hours' => "Montag: 09:00 – 10:00 Uhr, 13:00 – 15:30 Uhr\nDi. – Do.: 09:00 – 12:00 Uhr, 13:00 – 16:30 Uhr",
+			'email' => 'berlin@parkourone.com',
+			'social_instagram' => 'https://instagram.com/parkourone_berlin',
+			'zentrale_name' => 'ParkourONE Schweiz',
+			'zentrale_url' => 'https://parkourone.com',
+		],
+		'hannover' => [
+			'label' => 'Hannover',
+			'company_name' => 'ParkourONE Hannover',
+			'company_address' => "Stamm & Kaiser GbR\nBernhard-Caspar-Straße 20\n30453 Hannover",
+			'phone' => '+49 176 54 22 10 70',
+			'phone_hours' => '',
+			'email' => 'hannover@parkourone.com',
+			'social_instagram' => 'https://instagram.com/parkourone_hannover',
+			'zentrale_name' => 'ParkourONE Schweiz',
+			'zentrale_url' => 'https://parkourone.com',
+		],
+		'muenster' => [
+			'label' => 'Münster',
+			'company_name' => 'ParkourONE Münster',
+			'company_address' => "Fabian Schubert\nParkourONE Münster",
+			'phone' => '+49 176 84 84 33 00',
+			'phone_hours' => '',
+			'email' => 'muenster@parkourone.com',
+			'social_instagram' => 'https://instagram.com/parkourone_muenster',
+			'zentrale_name' => 'ParkourONE Schweiz',
+			'zentrale_url' => 'https://parkourone.com',
+		],
+		'dresden' => [
+			'label' => 'Dresden',
+			'company_name' => 'ParkourONE Dresden',
+			'company_address' => "Dr. Jonas Jung\nRennplatzstraße 47\n01237 Dresden",
+			'phone' => '+49 151 412 40 155',
+			'phone_hours' => '',
+			'email' => 'dresden@parkourone.com',
+			'social_instagram' => 'https://instagram.com/parkourone_dresden',
+			'zentrale_name' => 'ParkourONE Schweiz',
+			'zentrale_url' => 'https://parkourone.com',
+		],
+		'rheinruhr' => [
+			'label' => 'Rhein/Ruhr (Krefeld)',
+			'company_name' => 'ParkourONE Rhein/Ruhr',
+			'company_address' => "Deniz Bozkurtan\nAugustastrasse 22\n47829 Krefeld",
+			'phone' => '+49 157 525 18 774',
+			'phone_hours' => "Mo – Fr: 10:00 Uhr – 15:30 Uhr",
+			'email' => 'deniz@parkourone.com',
+			'social_instagram' => 'https://instagram.com/parkourone_rheinruhr',
+			'zentrale_name' => 'ParkourONE Schweiz',
+			'zentrale_url' => 'https://parkourone.com',
+		],
+		'augsburg' => [
+			'label' => 'Augsburg',
+			'company_name' => 'ParkourONE Augsburg',
+			'company_address' => "Michael Thümmler\nAmmerseestraße 24\n86163 Augsburg",
+			'phone' => '+49 17 05 85 60 09',
+			'phone_hours' => '',
+			'email' => 'augsburg@parkourone.com',
+			'social_instagram' => 'https://instagram.com/parkourone_augsburg',
+			'zentrale_name' => 'ParkourONE Schweiz',
+			'zentrale_url' => 'https://parkourone.com',
+		],
+	];
+}
+
+/**
  * Menü & Footer Seite
  */
 function parkourone_menu_footer_page() {
+	$presets = parkourone_get_school_presets();
 	// Speichern
 	if (isset($_POST['parkourone_footer_save']) && check_admin_referer('parkourone_footer_nonce')) {
 		$footer_options = [
@@ -312,6 +399,8 @@ function parkourone_menu_footer_page() {
 			.po-menu-preview ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 20px; flex-wrap: wrap; }
 			.po-menu-preview li a { color: #fff; text-decoration: none; }
 			.po-footer-preview { background: #1d1d1f; color: #fff; padding: 30px; border-radius: 8px; margin-top: 20px; }
+			.po-preset-section { background: #f0f6fc; margin: -20px -20px 20px; padding: 20px; border-bottom: 2px solid #2271b1; }
+			.po-preset-select { min-width: 250px; }
 		</style>
 
 		<div class="po-admin-tabs">
@@ -324,6 +413,22 @@ function parkourone_menu_footer_page() {
 		<div class="po-admin-panel active" id="panel-footer">
 			<form method="post">
 				<?php wp_nonce_field('parkourone_footer_nonce'); ?>
+
+				<div class="po-form-section po-preset-section">
+					<h3>Schul-Vorlage</h3>
+					<div class="po-form-row">
+						<label>Vorlage laden</label>
+						<div>
+							<select id="school-preset" class="po-preset-select">
+								<?php foreach ($presets as $key => $preset): ?>
+									<option value="<?php echo esc_attr($key); ?>"><?php echo esc_html($preset['label']); ?></option>
+								<?php endforeach; ?>
+							</select>
+							<button type="button" id="load-preset" class="button" style="margin-left: 10px;">Vorlage laden</button>
+							<p class="description" style="margin-top: 8px;">Wähle eine Schule aus und klicke "Vorlage laden" um die Felder automatisch auszufüllen.</p>
+						</div>
+					</div>
+				</div>
 
 				<div class="po-form-section">
 					<h3>Unternehmen</h3>
@@ -487,6 +592,47 @@ function parkourone_menu_footer_page() {
 
 		<script>
 		document.addEventListener('DOMContentLoaded', function() {
+			// Schul-Vorlagen
+			var presets = <?php echo json_encode($presets, JSON_UNESCAPED_UNICODE); ?>;
+
+			document.getElementById('load-preset').addEventListener('click', function() {
+				var selected = document.getElementById('school-preset').value;
+				if (!selected || !presets[selected]) {
+					alert('Bitte wähle eine Vorlage aus.');
+					return;
+				}
+
+				var preset = presets[selected];
+
+				// Felder ausfüllen
+				if (preset.company_name !== undefined) {
+					document.querySelector('[name="footer_company_name"]').value = preset.company_name;
+				}
+				if (preset.company_address !== undefined) {
+					document.querySelector('[name="footer_company_address"]').value = preset.company_address;
+				}
+				if (preset.phone !== undefined) {
+					document.querySelector('[name="footer_phone"]').value = preset.phone;
+				}
+				if (preset.phone_hours !== undefined) {
+					document.querySelector('[name="footer_phone_hours"]').value = preset.phone_hours;
+				}
+				if (preset.email !== undefined) {
+					document.querySelector('[name="footer_email"]').value = preset.email;
+				}
+				if (preset.social_instagram !== undefined) {
+					document.querySelector('[name="footer_social_instagram"]').value = preset.social_instagram;
+				}
+				if (preset.zentrale_name !== undefined) {
+					document.querySelector('[name="footer_zentrale_name"]').value = preset.zentrale_name;
+				}
+				if (preset.zentrale_url !== undefined) {
+					document.querySelector('[name="footer_zentrale_url"]').value = preset.zentrale_url;
+				}
+
+				alert('Vorlage "' + preset.label + '" geladen! Vergiss nicht zu speichern.');
+			});
+
 			// Tabs
 			document.querySelectorAll('.po-admin-tab').forEach(function(tab) {
 				tab.addEventListener('click', function(e) {
