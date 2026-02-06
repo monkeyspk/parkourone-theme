@@ -44,7 +44,7 @@
 <div class="wp-block-woocommerce-checkout-order-note-block"></div>
 <!-- /wp:woocommerce/checkout-order-note-block -->
 
-<!-- wp:woocommerce/checkout-terms-block -->
+<!-- wp:woocommerce/checkout-terms-block {"checkbox":true,"showSeparator":"none"} -->
 <div class="wp-block-woocommerce-checkout-terms-block"></div>
 <!-- /wp:woocommerce/checkout-terms-block -->
 
