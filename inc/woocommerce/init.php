@@ -286,3 +286,18 @@ function parkourone_side_cart_remove() {
 add_action('wp_ajax_po_side_cart_remove', 'parkourone_side_cart_remove');
 add_action('wp_ajax_nopriv_po_side_cart_remove', 'parkourone_side_cart_remove');
 
+/**
+ * Side Cart - AJAX: Refresh content
+ */
+function parkourone_side_cart_refresh() {
+	check_ajax_referer('po_side_cart_nonce', 'nonce');
+
+	wp_send_json_success([
+		'content_html' => parkourone_get_side_cart_items_html(),
+		'cart_total' => WC()->cart->get_cart_total(),
+		'cart_count' => WC()->cart->get_cart_contents_count(),
+	]);
+}
+add_action('wp_ajax_po_side_cart_refresh', 'parkourone_side_cart_refresh');
+add_action('wp_ajax_nopriv_po_side_cart_refresh', 'parkourone_side_cart_refresh');
+

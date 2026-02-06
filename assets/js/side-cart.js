@@ -83,25 +83,36 @@
 		initWooCommerceHooks: function() {
 			const self = this;
 
-			// jQuery event for WooCommerce add to cart
 			if (typeof $ !== 'undefined') {
+				// WooCommerce standard add-to-cart (returns fragments)
 				$(document.body).on('added_to_cart', function(e, fragments, cart_hash) {
-					// Update fragments
-					self.updateFragments(fragments);
-
-					// Open side cart
-					self.open();
+					if (fragments) {
+						// Standard WC flow: fragments available
+						self.updateFragments(fragments);
+						self.open();
+					} else {
+						// Custom AJAX (booking.js): no fragments, refresh manually
+						self.refresh(function() {
+							self.open();
+						});
+					}
 				});
 
-				// Update fragments on cart update
-				$(document.body).on('wc_fragments_refreshed', function() {
-					// Fragments already updated by WooCommerce
+				// WooCommerce fragments refreshed (after wc_fragment_refresh)
+				$(document.body).on('wc_fragments_refreshed wc_fragments_loaded', function() {
+					self.updateReferences();
+					self.updateFooterVisibility();
 				});
 			}
 
 			// Native event listener as fallback
-			document.body.addEventListener('added_to_cart', function() {
-				self.open();
+			document.body.addEventListener('added_to_cart', function(e) {
+				// Only handle if jQuery didn't already
+				if (!e._jQueryHandled) {
+					self.refresh(function() {
+						self.open();
+					});
+				}
 			});
 		},
 
@@ -139,6 +150,49 @@
 		},
 
 		/**
+		 * Refresh side cart content via AJAX
+		 */
+		refresh: function(callback) {
+			const self = this;
+
+			$.ajax({
+				type: 'POST',
+				url: poSideCart.ajaxUrl,
+				data: {
+					action: 'po_side_cart_refresh',
+					nonce: poSideCart.nonce
+				},
+				success: function(response) {
+					if (response.success) {
+						// Update content
+						const content = document.querySelector('[data-side-cart-content]');
+						if (content) {
+							content.innerHTML = response.data.content_html;
+						}
+
+						// Update counts
+						self.updateCounts(response.data.cart_count);
+
+						// Update total
+						self.updateTotal(response.data.cart_total);
+
+						// Show footer
+						self.updateFooterVisibility();
+					}
+
+					if (typeof callback === 'function') {
+						callback();
+					}
+				},
+				error: function() {
+					if (typeof callback === 'function') {
+						callback();
+					}
+				}
+			});
+		},
+
+		/**
 		 * Update cart fragments from WooCommerce
 		 */
 		updateFragments: function(fragments) {
@@ -148,7 +202,6 @@
 			for (const selector in fragments) {
 				const el = document.querySelector(selector);
 				if (el) {
-					// Create a temporary container to parse the HTML
 					const temp = document.createElement('div');
 					temp.innerHTML = fragments[selector];
 					const newEl = temp.firstElementChild;
@@ -161,12 +214,16 @@
 				}
 			}
 
-			// Update references after DOM changes
+			this.updateReferences();
+			this.updateFooterVisibility();
+		},
+
+		/**
+		 * Update DOM references after content changes
+		 */
+		updateReferences: function() {
 			this.content = document.querySelector('[data-side-cart-content]');
 			this.footer = document.querySelector('[data-side-cart-footer]');
-
-			// Show/hide footer based on cart count
-			this.updateFooterVisibility();
 		},
 
 		/**
@@ -205,8 +262,9 @@
 
 						setTimeout(function() {
 							// Update content
-							if (self.content) {
-								self.content.innerHTML = response.data.content_html;
+							const content = document.querySelector('[data-side-cart-content]');
+							if (content) {
+								content.innerHTML = response.data.content_html;
 							}
 
 							// Update counts
