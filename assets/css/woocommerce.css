@@ -921,11 +921,26 @@ p#referrer_field {
 .woocommerce-checkout form.checkout #billing_address_2_field {
 	width: 28% !important;
 	float: right !important;
+	margin-top: 0 !important;
+	padding-top: 0 !important;
+}
+
+/* E-Mail + Telefon nebeneinander */
+.woocommerce-checkout form.checkout #billing_email_field {
+	width: 48% !important;
+	float: left !important;
+	clear: both !important;
+}
+
+.woocommerce-checkout form.checkout #billing_phone_field {
+	width: 48% !important;
+	float: right !important;
 }
 
 /* Clearfix nach paired rows */
 .woocommerce-checkout form.checkout #billing_address_2_field + .form-row,
-.woocommerce-checkout form.checkout #billing_city_field + .form-row {
+.woocommerce-checkout form.checkout #billing_city_field + .form-row,
+.woocommerce-checkout form.checkout #billing_phone_field + .form-row {
 	clear: both !important;
 }
 
@@ -960,7 +975,13 @@ p#referrer_field {
 
 /* ---------- Card containers ---------- */
 
-.woocommerce-checkout .woocommerce-billing-fields,
+.woocommerce-checkout .woocommerce-billing-fields {
+	border: none;
+	padding: 0;
+	margin-bottom: 0;
+	background: transparent;
+}
+
 .woocommerce-checkout .woocommerce-additional-fields {
 	border: 1px solid var(--wc-border);
 	border-radius: var(--wc-radius);
@@ -973,9 +994,80 @@ p#referrer_field {
 	margin-top: 0;
 }
 
-/* Billing fields heading inside card */
+/* Hide billing fields heading (replaced by accordion headers) */
 .woocommerce-checkout .woocommerce-billing-fields h3 {
-	margin-top: 0;
+	display: none !important;
+}
+
+/* ---------- Accordion sections ---------- */
+
+.po-checkout-accordion {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.po-accordion-section {
+	border: 1px solid var(--wc-border);
+	border-radius: var(--wc-radius);
+	background: var(--wc-bg);
+	overflow: hidden;
+	transition: border-color 0.2s ease;
+}
+
+.po-accordion-section:hover {
+	border-color: #d0d0d5;
+}
+
+.po-accordion-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	padding: 20px 24px;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--wc-text-secondary);
+	font-family: var(--wc-font);
+	-webkit-font-smoothing: antialiased;
+	transition: color 0.2s ease;
+}
+
+.po-accordion-header:hover {
+	color: var(--wc-text);
+}
+
+.po-accordion-chevron {
+	transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+	flex-shrink: 0;
+}
+
+.po-accordion-section--open .po-accordion-chevron {
+	transform: rotate(180deg);
+}
+
+.po-accordion-body {
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.35s cubic-bezier(0.25, 0.1, 0.25, 1), padding 0.35s ease;
+	padding: 0 24px;
+}
+
+.po-accordion-section--open .po-accordion-body {
+	max-height: 800px;
+	padding: 0 24px 24px;
+}
+
+/* Clearfix inside accordion body for floated fields */
+.po-accordion-body::after {
+	content: '';
+	display: table;
+	clear: both;
 }
 
 /* ---------- Form fields ---------- */
@@ -1405,7 +1497,6 @@ p#referrer_field {
 		padding: 24px 16px 64px;
 	}
 
-	.woocommerce-checkout .woocommerce-billing-fields,
 	.woocommerce-checkout .woocommerce-additional-fields {
 		padding: 20px 16px;
 		border-radius: var(--wc-radius-sm);
@@ -1420,6 +1511,32 @@ p#referrer_field {
 	.woocommerce-checkout h3#order_review_heading {
 		font-size: 12px;
 	}
+
+	/* Accordion responsive */
+	.po-accordion-header {
+		padding: 16px;
+	}
+
+	.po-accordion-body {
+		padding: 0 16px;
+	}
+
+	.po-accordion-section--open .po-accordion-body {
+		padding: 0 16px 20px;
+	}
+
+	.po-accordion-section {
+		border-radius: var(--wc-radius-sm);
+	}
+
+	/* Stack paired fields on small screens */
+	.woocommerce-checkout form.checkout #billing_email_field,
+	.woocommerce-checkout form.checkout #billing_phone_field,
+	.woocommerce-checkout form.checkout #billing_address_1_field,
+	.woocommerce-checkout form.checkout #billing_address_2_field {
+		width: 100% !important;
+		float: none !important;
+	}
 }
 
 @media (max-width: 480px) {
@@ -1427,7 +1544,6 @@ p#referrer_field {
 		padding: 16px 12px 48px;
 	}
 
-	.woocommerce-checkout .woocommerce-billing-fields,
 	.woocommerce-checkout .woocommerce-additional-fields,
 	.woocommerce-checkout #order_review {
 		padding: 16px 14px;

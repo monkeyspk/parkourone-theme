@@ -29,10 +29,95 @@ add_filter('woocommerce_order_button_text', function() {
 });
 
 // =====================================================
-// Referral Source Dropdown (Classic Checkout)
+// Checkout Field Groups (Accordion Sections)
 // =====================================================
 
-// Render the dropdown after order notes
+// Reorder billing fields and assign them to groups
+add_filter('woocommerce_checkout_fields', function($fields) {
+	// Set field priorities to control order within groups
+	// Group 1: Kontaktdaten
+	if (isset($fields['billing']['billing_first_name'])) {
+		$fields['billing']['billing_first_name']['priority'] = 10;
+	}
+	if (isset($fields['billing']['billing_last_name'])) {
+		$fields['billing']['billing_last_name']['priority'] = 20;
+	}
+	if (isset($fields['billing']['billing_email'])) {
+		$fields['billing']['billing_email']['priority'] = 30;
+		$fields['billing']['billing_email']['class'] = ['form-row-first'];
+	}
+	if (isset($fields['billing']['billing_phone'])) {
+		$fields['billing']['billing_phone']['priority'] = 40;
+		$fields['billing']['billing_phone']['class'] = ['form-row-last'];
+	}
+
+	// Group 2: Adresse
+	if (isset($fields['billing']['billing_country'])) {
+		$fields['billing']['billing_country']['priority'] = 50;
+	}
+	if (isset($fields['billing']['billing_address_1'])) {
+		$fields['billing']['billing_address_1']['priority'] = 60;
+	}
+	if (isset($fields['billing']['billing_address_2'])) {
+		$fields['billing']['billing_address_2']['priority'] = 70;
+	}
+	if (isset($fields['billing']['billing_postcode'])) {
+		$fields['billing']['billing_postcode']['priority'] = 80;
+	}
+	if (isset($fields['billing']['billing_city'])) {
+		$fields['billing']['billing_city']['priority'] = 90;
+	}
+	if (isset($fields['billing']['billing_state'])) {
+		$fields['billing']['billing_state']['priority'] = 100;
+	}
+
+	// Remove company field if present (not needed for courses)
+	unset($fields['billing']['billing_company']);
+
+	return $fields;
+});
+
+// Render accordion wrapper: open Kontaktdaten before billing form
+add_action('woocommerce_before_checkout_billing_form', function() {
+	echo '<div class="po-checkout-accordion">';
+	// Section 1: Kontaktdaten (open by default)
+	echo '<div class="po-accordion-section po-accordion-section--open" data-accordion-section>';
+	echo '<button type="button" class="po-accordion-header" data-accordion-toggle>';
+	echo '<span>Kontaktdaten</span>';
+	echo '<svg class="po-accordion-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+	echo '</button>';
+	echo '<div class="po-accordion-body">';
+});
+
+// Close Kontaktdaten, open Adresse after phone field, close Adresse after state field
+// We use a field counter approach via woocommerce_form_field_* hooks
+add_action('woocommerce_after_checkout_billing_form', function() {
+	// Close the last section + accordion wrapper
+	// (sections are opened/closed inline via JS that moves fields into sections)
+	echo '</div></div>'; // close last section body + section
+	echo '</div>'; // close accordion wrapper
+});
+
+// Insert section breaks between field groups using output buffer manipulation
+add_filter('woocommerce_form_field', function($field, $key, $args, $value) {
+	// After phone (end of Kontaktdaten) → close section, open Adresse
+	if ($key === 'billing_phone') {
+		$field .= '</div></div>'; // close Kontaktdaten body + section
+		$field .= '<div class="po-accordion-section" data-accordion-section>';
+		$field .= '<button type="button" class="po-accordion-header" data-accordion-toggle>';
+		$field .= '<span>Adresse</span>';
+		$field .= '<svg class="po-accordion-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+		$field .= '</button>';
+		$field .= '<div class="po-accordion-body">';
+	}
+	return $field;
+}, 10, 4);
+
+// =====================================================
+// Referral Source — rendered inside its own accordion
+// =====================================================
+
+// Render referral inside additional fields (woocommerce_after_order_notes is inside .woocommerce-additional-fields)
 add_action('woocommerce_after_order_notes', function($checkout) {
 	woocommerce_form_field('po_referral_source', [
 		'type'     => 'select',
@@ -159,6 +244,17 @@ function parkourone_wc_enqueue_assets() {
 		'cartUrl' => wc_get_cart_url(),
 		'checkoutUrl' => wc_get_checkout_url(),
 	]);
+
+	// Checkout accordion toggle
+	if (is_checkout()) {
+		wp_enqueue_script(
+			'parkourone-checkout-accordion',
+			get_template_directory_uri() . '/assets/js/checkout-accordion.js',
+			[],
+			filemtime(get_template_directory() . '/assets/js/checkout-accordion.js'),
+			true
+		);
+	}
 
 	// Block Checkout filters — only load if block checkout is active
 	// Currently using classic shortcode checkout, so this is disabled
