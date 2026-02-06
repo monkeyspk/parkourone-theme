@@ -7,6 +7,16 @@
    Reset & Page Layout
    ========================================================================== */
 
+/* Fix header/footer logo size on WooCommerce pages */
+.woocommerce-cart .po-header__logo-img,
+.woocommerce-checkout .po-header__logo-img,
+.woocommerce-cart .po-footer img,
+.woocommerce-checkout .po-footer img {
+	height: 36px !important;
+	width: auto !important;
+	max-height: 36px !important;
+}
+
 /* Hide duplicate page titles on cart/checkout */
 .woocommerce-cart .entry-title,
 .woocommerce-cart .page-title,
