@@ -313,7 +313,25 @@ function parkourone_get_school_presets() {
  */
 function parkourone_menu_footer_page() {
 	$presets = parkourone_get_school_presets();
-	// Speichern
+
+	// Menü-Links speichern
+	if (isset($_POST['parkourone_menu_save']) && check_admin_referer('parkourone_menu_nonce')) {
+		$menu_links = [];
+		if (!empty($_POST['menu_link_name']) && is_array($_POST['menu_link_name'])) {
+			foreach ($_POST['menu_link_name'] as $i => $name) {
+				if (!empty($name)) {
+					$menu_links[] = [
+						'name' => sanitize_text_field($name),
+						'url' => sanitize_text_field($_POST['menu_link_url'][$i] ?? '')
+					];
+				}
+			}
+		}
+		update_option('parkourone_menu_links', $menu_links);
+		echo '<div class="notice notice-success"><p>Menü-Links gespeichert!</p></div>';
+	}
+
+	// Footer speichern
 	if (isset($_POST['parkourone_footer_save']) && check_admin_referer('parkourone_footer_nonce')) {
 		$footer_options = [
 			'company_name' => sanitize_text_field($_POST['footer_company_name'] ?? ''),
@@ -348,6 +366,18 @@ function parkourone_menu_footer_page() {
 
 		update_option('parkourone_footer', $footer_options);
 		echo '<div class="notice notice-success"><p>Footer-Einstellungen gespeichert!</p></div>';
+	}
+
+	// Menü-Links laden
+	$menu_links = get_option('parkourone_menu_links', []);
+	if (empty($menu_links)) {
+		// Standard-Links als Fallback
+		$menu_links = [
+			['name' => 'Über uns', 'url' => '/ueber-uns/'],
+			['name' => 'Angebote', 'url' => '/angebote/'],
+			['name' => 'Team', 'url' => '/team/'],
+			['name' => 'Kontakt', 'url' => '/kontakt/'],
+		];
 	}
 
 	// Aktuelle Werte laden
@@ -401,16 +431,63 @@ function parkourone_menu_footer_page() {
 			.po-footer-preview { background: #1d1d1f; color: #fff; padding: 30px; border-radius: 8px; margin-top: 20px; }
 			.po-preset-section { background: #f0f6fc; margin: -20px -20px 20px; padding: 20px; border-bottom: 2px solid #2271b1; }
 			.po-preset-select { min-width: 250px; }
+			.po-menu-links-list { display: flex; flex-direction: column; gap: 10px; }
+			.po-menu-link-row { display: flex; gap: 10px; align-items: center; }
+			.po-menu-link-row input { flex: 1; max-width: 280px; }
+			.po-menu-link-row .button { flex-shrink: 0; }
 		</style>
 
 		<div class="po-admin-tabs">
-			<a href="#footer" class="po-admin-tab active" data-tab="footer">Footer-Einstellungen</a>
-			<a href="#menu" class="po-admin-tab" data-tab="menu">Menü-Vorschau</a>
-			<a href="#preview" class="po-admin-tab" data-tab="preview">Footer-Vorschau</a>
+			<a href="#menu3" class="po-admin-tab active" data-tab="menu3">Menü (3. Spalte)</a>
+			<a href="#footer" class="po-admin-tab" data-tab="footer">Footer-Einstellungen</a>
+			<a href="#preview" class="po-admin-tab" data-tab="preview">Vorschau</a>
+		</div>
+
+		<!-- Menü 3. Spalte -->
+		<div class="po-admin-panel active" id="panel-menu3">
+			<h2>Menü - 3. Spalte</h2>
+			<p>Das Hauptmenü hat 3 Spalten:</p>
+			<ul style="margin-bottom: 20px;">
+				<li><strong>Spalte 1:</strong> Stundenplan + Altersgruppen (automatisch aus Events)</li>
+				<li><strong>Spalte 2:</strong> Standorte (automatisch aus Event-Kategorien)</li>
+				<li><strong>Spalte 3:</strong> Diese Links hier (manuell)</li>
+			</ul>
+
+			<form method="post">
+				<?php wp_nonce_field('parkourone_menu_nonce'); ?>
+
+				<div class="po-form-section">
+					<h3>Links für Spalte 3</h3>
+					<p class="description" style="margin-bottom: 15px;">Füge hier Seiten wie "Über uns", "Angebote", "Team", "Kontakt" hinzu.</p>
+
+					<div class="po-menu-links-list" id="menu-links-list">
+						<?php if (!empty($menu_links)): ?>
+							<?php foreach ($menu_links as $link): ?>
+								<div class="po-menu-link-row">
+									<input type="text" name="menu_link_name[]" value="<?php echo esc_attr($link['name']); ?>" placeholder="Link-Text (z.B. Über uns)">
+									<input type="text" name="menu_link_url[]" value="<?php echo esc_attr($link['url']); ?>" placeholder="URL (z.B. /ueber-uns/)">
+									<button type="button" class="button po-remove-menu-link">×</button>
+								</div>
+							<?php endforeach; ?>
+						<?php else: ?>
+							<div class="po-menu-link-row">
+								<input type="text" name="menu_link_name[]" placeholder="Link-Text (z.B. Über uns)">
+								<input type="text" name="menu_link_url[]" placeholder="URL (z.B. /ueber-uns/)">
+								<button type="button" class="button po-remove-menu-link">×</button>
+							</div>
+						<?php endif; ?>
+					</div>
+					<button type="button" class="button" id="add-menu-link" style="margin-top: 10px;">+ Link hinzufügen</button>
+				</div>
+
+				<p>
+					<button type="submit" name="parkourone_menu_save" class="button button-primary button-large">Menü speichern</button>
+				</p>
+			</form>
 		</div>
 
 		<!-- Footer Einstellungen -->
-		<div class="po-admin-panel active" id="panel-footer">
+		<div class="po-admin-panel" id="panel-footer">
 			<form method="post">
 				<?php wp_nonce_field('parkourone_footer_nonce'); ?>
 
@@ -538,23 +615,20 @@ function parkourone_menu_footer_page() {
 			</form>
 		</div>
 
-		<!-- Menü Vorschau -->
-		<div class="po-admin-panel" id="panel-menu">
-			<h2>Menü-Vorschau</h2>
-			<p>Das Menü wird automatisch aus den Event-Kategorien generiert.</p>
+		<!-- Vorschau -->
+		<div class="po-admin-panel" id="panel-preview">
+			<h2>Menü-Vorschau (3 Spalten)</h2>
+			<p>So sieht das Menü mit den aktuellen Einstellungen aus:</p>
 			<?php
-			// Menü-Vorschau laden (bestehende Funktion)
+			// Menü-Vorschau laden
 			if (function_exists('parkourone_render_menu_preview_content')) {
 				parkourone_render_menu_preview_content();
 			} else {
 				echo '<p>Menü-Vorschau nicht verfügbar.</p>';
 			}
 			?>
-		</div>
 
-		<!-- Footer Vorschau -->
-		<div class="po-admin-panel" id="panel-preview">
-			<h2>Footer-Vorschau</h2>
+			<h2 style="margin-top: 40px;">Footer-Vorschau</h2>
 			<p>So sieht der Footer mit den aktuellen Einstellungen aus:</p>
 			<div class="po-footer-preview">
 				<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px;">
@@ -660,6 +734,26 @@ function parkourone_menu_footer_page() {
 					var rows = this.querySelectorAll('.po-standort-row');
 					if (rows.length > 1) {
 						e.target.closest('.po-standort-row').remove();
+					}
+				}
+			});
+
+			// Menü-Links hinzufügen
+			document.getElementById('add-menu-link').addEventListener('click', function() {
+				var row = document.createElement('div');
+				row.className = 'po-menu-link-row';
+				row.innerHTML = '<input type="text" name="menu_link_name[]" placeholder="Link-Text (z.B. Über uns)">' +
+					'<input type="text" name="menu_link_url[]" placeholder="URL (z.B. /ueber-uns/)">' +
+					'<button type="button" class="button po-remove-menu-link">×</button>';
+				document.getElementById('menu-links-list').appendChild(row);
+			});
+
+			// Menü-Links entfernen
+			document.getElementById('menu-links-list').addEventListener('click', function(e) {
+				if (e.target.classList.contains('po-remove-menu-link')) {
+					var rows = this.querySelectorAll('.po-menu-link-row');
+					if (rows.length > 1) {
+						e.target.closest('.po-menu-link-row').remove();
 					}
 				}
 			});

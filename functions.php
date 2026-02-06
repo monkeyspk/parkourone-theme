@@ -576,61 +576,36 @@ function parkourone_get_age_display_name($slug, $fallback) {
 
 /**
  * Rendert die manuelle Menü-Spalte (Über uns, Kontakt, etc.)
+ * Liest Links aus ParkourONE > Menü & Footer Einstellungen
  */
 function parkourone_render_manual_menu_column() {
-    // Prüfen ob manuelles Menü existiert
-    if (!has_nav_menu('main-menu')) {
-        // Fallback: Standard-Links
-        return parkourone_render_default_menu_column();
-    }
+    // Links aus Options laden
+    $menu_links = get_option('parkourone_menu_links', []);
 
-    $menu_locations = get_nav_menu_locations();
-    $menu_id = $menu_locations['main-menu'] ?? 0;
-
-    if (!$menu_id) {
-        return parkourone_render_default_menu_column();
-    }
-
-    $menu_items = wp_get_nav_menu_items($menu_id);
-
-    if (!$menu_items || empty($menu_items)) {
-        return parkourone_render_default_menu_column();
+    // Fallback: Standard-Links wenn nichts konfiguriert
+    if (empty($menu_links)) {
+        $menu_links = [
+            ['name' => 'Über uns', 'url' => '/ueber-uns/'],
+            ['name' => 'Angebote', 'url' => '/angebote/'],
+            ['name' => 'Team', 'url' => '/team/'],
+            ['name' => 'Kontakt', 'url' => '/kontakt/'],
+        ];
     }
 
     $output = '<div class="po-menu__column po-menu__column--manual">';
     $output .= '<ul class="po-menu__list">';
 
-    foreach ($menu_items as $item) {
-        // Nur Top-Level Items (keine verschachtelten)
-        if ((int) $item->menu_item_parent === 0) {
-            $output .= '<li class="po-menu__item">';
-            $output .= '<a href="' . esc_url($item->url) . '" class="po-menu__link">' . esc_html($item->title) . '</a>';
-            $output .= '</li>';
+    foreach ($menu_links as $link) {
+        if (empty($link['name'])) continue;
+
+        // URL mit home_url() wenn relativ (beginnt mit /)
+        $url = $link['url'] ?? '#';
+        if (strpos($url, '/') === 0) {
+            $url = home_url($url);
         }
-    }
 
-    $output .= '</ul>';
-    $output .= '</div>';
-
-    return $output;
-}
-
-/**
- * Fallback Menü-Spalte wenn kein manuelles Menü existiert
- */
-function parkourone_render_default_menu_column() {
-    $output = '<div class="po-menu__column po-menu__column--manual">';
-    $output .= '<ul class="po-menu__list">';
-
-    $default_links = [
-        'Über uns' => '/ueber-uns/',
-        'Angebote' => '/angebote/',
-        'Kontakt' => '/kontakt/',
-    ];
-
-    foreach ($default_links as $title => $path) {
         $output .= '<li class="po-menu__item">';
-        $output .= '<a href="' . esc_url(home_url($path)) . '" class="po-menu__link">' . esc_html($title) . '</a>';
+        $output .= '<a href="' . esc_url($url) . '" class="po-menu__link">' . esc_html($link['name']) . '</a>';
         $output .= '</li>';
     }
 
