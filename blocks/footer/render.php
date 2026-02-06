@@ -29,6 +29,7 @@ $phoneHours = po_footer_value('phone_hours', $attributes['phoneHours'] ?? '', $f
 // Zentrale entfernt - Schweiz ist jetzt Teil der automatischen Standorte-Liste
 $newsletterHeadline = po_footer_value('newsletter_headline', $attributes['newsletterHeadline'] ?? '', $footer_options);
 $newsletterText = po_footer_value('newsletter_text', $attributes['newsletterText'] ?? '', $footer_options);
+$newsletterEmbed = $footer_options['newsletter_embed'] ?? '';
 // Copyright Jahr immer automatisch aktuelles Jahr
 $copyrightYear = date('Y');
 
@@ -148,17 +149,24 @@ if (empty($cookiesUrl) || $cookiesUrl === '#') {
 			</div>
 		</div>
 		
-		<div class="po-footer__col">
+		<div class="po-footer__col po-footer__col--newsletter">
 			<?php if ($newsletterHeadline): ?>
 				<strong><?php echo esc_html($newsletterHeadline); ?></strong>
 			<?php endif; ?>
 			<?php if ($newsletterText): ?>
 				<p><?php echo esc_html($newsletterText); ?></p>
 			<?php endif; ?>
-			<form class="po-footer__newsletter-form" action="#" method="post">
-				<input type="email" class="po-footer__newsletter-input" placeholder="E-Mail Adresse" required>
-				<button type="submit" class="po-footer__newsletter-btn">Jetzt eintragen</button>
-			</form>
+			<?php if (!empty($newsletterEmbed)): ?>
+				<!-- MailerLite/Newsletter Embed -->
+				<div class="po-footer__newsletter-embed">
+					<?php echo $newsletterEmbed; ?>
+				</div>
+			<?php else: ?>
+				<!-- Platzhalter wenn kein Newsletter konfiguriert -->
+				<p class="po-footer__newsletter-placeholder" style="opacity: 0.5; font-size: 0.875rem;">
+					Newsletter-Formular nicht konfiguriert
+				</p>
+			<?php endif; ?>
 		</div>
 	</div>
 	

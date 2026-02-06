@@ -345,6 +345,7 @@ function parkourone_menu_footer_page() {
 			'social_podcast' => esc_url_raw($_POST['footer_social_podcast'] ?? ''),
 			'newsletter_headline' => sanitize_text_field($_POST['footer_newsletter_headline'] ?? ''),
 			'newsletter_text' => sanitize_text_field($_POST['footer_newsletter_text'] ?? ''),
+			'newsletter_embed' => wp_kses_post($_POST['footer_newsletter_embed'] ?? ''),
 			// Standorte + Copyright Jahr werden automatisch generiert
 		];
 
@@ -378,6 +379,7 @@ function parkourone_menu_footer_page() {
 		'social_podcast' => '',
 		'newsletter_headline' => '',
 		'newsletter_text' => '',
+		'newsletter_embed' => '',
 		// Automatisch: Standorte, Zentrale, Copyright Jahr (siehe footer/render.php)
 	];
 	$options = wp_parse_args($options, $defaults);
@@ -554,6 +556,18 @@ function parkourone_menu_footer_page() {
 					<div class="po-form-row">
 						<label>Text</label>
 						<input type="text" name="footer_newsletter_text" value="<?php echo esc_attr($options['newsletter_text']); ?>" placeholder="Bleib auf dem Laufenden!">
+					</div>
+					<div class="po-form-row">
+						<label>MailerLite Embed Code</label>
+						<div>
+							<textarea name="footer_newsletter_embed" rows="6" style="width: 100%; max-width: 600px; font-family: monospace; font-size: 12px;" placeholder="<!-- MailerLite Embed Code hier einfügen -->"><?php echo esc_textarea($options['newsletter_embed']); ?></textarea>
+							<p class="description" style="margin-top: 8px;">
+								<strong>So geht's:</strong><br>
+								1. In MailerLite → Sites → Signup Forms → Embedded forms<br>
+								2. Formular erstellen und "HTML code" kopieren<br>
+								3. Hier einfügen - das Design wird automatisch angepasst
+							</p>
+						</div>
 					</div>
 				</div>
 
