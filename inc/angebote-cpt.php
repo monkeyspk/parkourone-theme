@@ -964,6 +964,39 @@ function parkourone_angebot_cart_item_thumbnail($thumbnail, $cart_item, $cart_it
 }
 add_filter('woocommerce_cart_item_thumbnail', 'parkourone_angebot_cart_item_thumbnail', 10, 3);
 
+// Produktbild im Cart Block (Store API): Angebots-Bild als Fallback
+function parkourone_angebot_store_api_cart_images($product_images, $cart_item, $cart_item_key) {
+	$product_id = $cart_item['product_id'];
+
+	// Nur eingreifen wenn das Produkt kein eigenes Bild hat
+	if (has_post_thumbnail($product_id)) {
+		return $product_images;
+	}
+
+	$angebot_id = isset($cart_item['angebot_id']) ? $cart_item['angebot_id'] : get_post_meta($product_id, '_angebot_id', true);
+
+	if ($angebot_id && function_exists('parkourone_get_angebot_image')) {
+		$image_url = parkourone_get_angebot_image($angebot_id, 'woocommerce_thumbnail');
+		if ($image_url) {
+			$alt = get_the_title($angebot_id);
+			return [
+				(object) [
+					'id'        => 0,
+					'src'       => $image_url,
+					'thumbnail' => $image_url,
+					'srcset'    => '',
+					'sizes'     => '',
+					'name'      => $alt,
+					'alt'       => $alt,
+				]
+			];
+		}
+	}
+
+	return $product_images;
+}
+add_filter('woocommerce_store_api_cart_item_images', 'parkourone_angebot_store_api_cart_images', 10, 3);
+
 // Teilnehmerdaten in Bestellung speichern
 function parkourone_angebot_order_item_meta($item, $cart_item_key, $values, $order) {
 	if (isset($values['angebot_teilnehmer'])) {
