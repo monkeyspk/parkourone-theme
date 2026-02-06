@@ -449,8 +449,7 @@ body:not(.wp-admin) .wp-site-blocks > .po-hero:first-child {
     }
 
     .po-header__cta {
-        padding: 0.5rem 0.875rem;
-        font-size: 0.75rem;
+        display: none;
     }
 
     .po-menu-overlay__inner {
@@ -505,11 +504,6 @@ body:not(.wp-admin) .wp-site-blocks > .po-hero:first-child {
 
     .po-header__logo-img {
         height: 28px;
-    }
-
-    .po-header__cta {
-        padding: 0.5rem 0.75rem;
-        font-size: 0.6875rem;
     }
 
     .po-header__actions {
