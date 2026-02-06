@@ -20,17 +20,9 @@
 <div class="wp-block-woocommerce-checkout-contact-information-block"></div>
 <!-- /wp:woocommerce/checkout-contact-information-block -->
 
-<!-- wp:woocommerce/checkout-shipping-address-block -->
-<div class="wp-block-woocommerce-checkout-shipping-address-block"></div>
-<!-- /wp:woocommerce/checkout-shipping-address-block -->
-
 <!-- wp:woocommerce/checkout-billing-address-block -->
 <div class="wp-block-woocommerce-checkout-billing-address-block"></div>
 <!-- /wp:woocommerce/checkout-billing-address-block -->
-
-<!-- wp:woocommerce/checkout-shipping-methods-block -->
-<div class="wp-block-woocommerce-checkout-shipping-methods-block"></div>
-<!-- /wp:woocommerce/checkout-shipping-methods-block -->
 
 <!-- wp:woocommerce/checkout-payment-block -->
 <div class="wp-block-woocommerce-checkout-payment-block"></div>
