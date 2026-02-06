@@ -128,12 +128,12 @@ function parkourone_wc_enqueue_assets() {
 		'checkoutUrl' => wc_get_checkout_url(),
 	]);
 
-	// Checkout Block filters (button text etc.)
+	// Checkout Block filters (button text, payment method filtering)
 	if (is_checkout()) {
 		wp_enqueue_script(
 			'parkourone-checkout-filters',
 			get_template_directory_uri() . '/assets/js/checkout-filters.js',
-			['wc-blocks-checkout'],
+			['wc-blocks-checkout', 'wc-blocks-registry'],
 			filemtime(get_template_directory() . '/assets/js/checkout-filters.js'),
 			true
 		);
