@@ -940,6 +940,42 @@ function parkourone_register_api_endpoints() {
 }
 add_action('rest_api_init', 'parkourone_register_api_endpoints');
 
+/**
+ * Exclude events without any event_category from all front-end queries.
+ * Events must be assigned to at least one category to appear.
+ */
+function parkourone_exclude_uncategorized_events($query) {
+    if (is_admin()) {
+        return;
+    }
+
+    // Only apply to event queries
+    $post_type = $query->get('post_type');
+    if ($post_type !== 'event') {
+        return;
+    }
+
+    $existing = $query->get('tax_query') ?: [];
+
+    // Wrap existing conditions + our new one in AND relation
+    $tax_query = [
+        'relation' => 'AND',
+        // Must have at least one event_category term
+        [
+            'taxonomy' => 'event_category',
+            'operator' => 'EXISTS',
+        ],
+    ];
+
+    // Preserve any existing tax_query conditions
+    if (!empty($existing)) {
+        $tax_query[] = $existing;
+    }
+
+    $query->set('tax_query', $tax_query);
+}
+add_action('pre_get_posts', 'parkourone_exclude_uncategorized_events');
+
 function parkourone_get_event_filters() {
     $filters = [];
     
