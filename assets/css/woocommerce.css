@@ -820,19 +820,24 @@ p#referrer_field {
 	display: block !important;
 }
 
-/* ---------- Page layout — break out of WP container ---------- */
+/* ---------- Page layout ---------- */
+
+/* Force WP content container to full width on checkout */
+.woocommerce-checkout .entry-content,
+.woocommerce-checkout .wp-block-post-content {
+	max-width: 100% !important;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
 
 .woocommerce-checkout .woocommerce {
-	/* Break out of narrow WP post-content container */
-	width: 100vw;
-	max-width: 100vw;
-	margin-left: calc(50% - 50vw);
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 48px 48px 96px;
 	box-sizing: border-box;
-	padding: 48px max(48px, calc((100vw - 1200px) / 2)) 96px;
 	font-family: var(--wc-font);
 	-webkit-font-smoothing: antialiased;
 	color: var(--wc-text);
-	overflow: hidden;
 }
 
 /* ---------- Coupon banner — subtle ---------- */
@@ -1503,9 +1508,6 @@ p#referrer_field {
 	}
 
 	.woocommerce-checkout .woocommerce {
-		width: 100%;
-		max-width: 100%;
-		margin-left: 0;
 		padding: 24px 16px 64px;
 	}
 
