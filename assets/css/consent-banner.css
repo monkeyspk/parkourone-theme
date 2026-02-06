@@ -39,7 +39,7 @@
 	left: 0;
 	right: 0;
 	z-index: 999999;
-	padding: 16px;
+	padding: 0;
 	pointer-events: none; /* Allow clicks through padding */
 	font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
 	font-size: 15px;
@@ -59,44 +59,19 @@
 	display: none;
 }
 
-/* Container - Floating Card */
+/* Container - Full-width Bottom Bar */
 .po-consent-banner__container {
 	position: relative;
 	pointer-events: auto; /* Restore clicks for the banner itself */
-	max-width: 520px;
-	margin: 0 auto;
+	max-width: 100%;
+	margin: 0;
 	background: var(--po-consent-bg);
 	backdrop-filter: var(--po-consent-blur);
 	-webkit-backdrop-filter: var(--po-consent-blur);
 	color: var(--po-consent-text);
-	border-radius: var(--po-consent-radius);
+	border-radius: var(--po-consent-radius) var(--po-consent-radius) 0 0;
 	box-shadow: var(--po-consent-shadow);
 	overflow: hidden;
-}
-
-/* Desktop: Wider and positioned bottom-right or center */
-@media (min-width: 768px) {
-	.po-consent-banner {
-		padding: 20px;
-	}
-
-	.po-consent-banner__container {
-		max-width: 600px;
-	}
-}
-
-/* Large screens: Position bottom-right for less intrusion */
-@media (min-width: 1024px) {
-	.po-consent-banner {
-		display: flex;
-		justify-content: flex-end;
-		padding: 24px;
-	}
-
-	.po-consent-banner__container {
-		max-width: 480px;
-		margin: 0;
-	}
 }
 
 /* ========================================
@@ -111,10 +86,10 @@
 
 @media (min-width: 600px) {
 	.po-consent-banner__main {
-		flex-direction: row;
+		padding: 14px 32px;
+		gap: 12px;
 		align-items: center;
-		gap: 20px;
-		padding: 16px 20px;
+		text-align: center;
 	}
 }
 
@@ -160,6 +135,8 @@
 @media (min-width: 600px) {
 	.po-consent-banner__actions {
 		flex-wrap: nowrap;
+		gap: 10px;
+		justify-content: center;
 	}
 }
 
@@ -233,13 +210,14 @@
 	align-items: center;
 	justify-content: center;
 	background: rgba(0, 0, 0, 0.4);
-	backdrop-filter: blur(4px);
-	-webkit-backdrop-filter: blur(4px);
+	pointer-events: auto;
 }
 
 .po-consent-banner:has(.po-consent-banner__settings:not([style*="display: none"])) .po-consent-banner__container {
 	max-width: 520px;
 	max-height: calc(100vh - 40px);
+	margin: 0 auto;
+	border-radius: var(--po-consent-radius);
 }
 
 .po-consent-banner__settings {
