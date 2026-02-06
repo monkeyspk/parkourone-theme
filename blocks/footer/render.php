@@ -1,23 +1,39 @@
 <?php
-// Footer-Optionen aus der Datenbank laden
+// Footer-Optionen aus der Datenbank laden (Backend-Einstellungen haben Priorität)
 $footer_options = get_option('parkourone_footer', []);
 
-// Werte mit Priorität: Block-Attribute > Options > Defaults
-$companyName = $attributes['companyName'] ?? $footer_options['company_name'] ?? 'ParkourONE';
-$companyAddress = $attributes['companyAddress'] ?? $footer_options['company_address'] ?? '';
-$socialInstagram = $attributes['socialInstagram'] ?? $footer_options['social_instagram'] ?? '';
-$socialYoutube = $attributes['socialYoutube'] ?? $footer_options['social_youtube'] ?? '';
-$socialPodcast = $attributes['socialPodcast'] ?? $footer_options['social_podcast'] ?? '';
-$phone = $attributes['phone'] ?? $footer_options['phone'] ?? '';
-$email = $attributes['email'] ?? $footer_options['email'] ?? '';
-$contactFormUrl = $attributes['contactFormUrl'] ?? $footer_options['contact_form_url'] ?? '';
-$phoneHours = $attributes['phoneHours'] ?? $footer_options['phone_hours'] ?? '';
-$standorte = $attributes['standorte'] ?? $footer_options['standorte'] ?? [];
-$zentraleName = $attributes['zentraleName'] ?? $footer_options['zentrale_name'] ?? '';
-$zentraleUrl = $attributes['zentraleUrl'] ?? $footer_options['zentrale_url'] ?? '';
-$newsletterHeadline = $attributes['newsletterHeadline'] ?? $footer_options['newsletter_headline'] ?? '';
-$newsletterText = $attributes['newsletterText'] ?? $footer_options['newsletter_text'] ?? '';
-$copyrightYear = $attributes['copyrightYear'] ?? $footer_options['copyright_year'] ?? date('Y');
+// Hilfsfunktion: Backend-Einstellungen > Block-Attribute > Default
+// Backend hat Priorität, damit zentrale Einstellungen nicht von leeren Block-Defaults überschrieben werden
+function po_footer_value($options_key, $attribute_value, $footer_options, $default = '') {
+	// 1. Backend-Einstellungen (wenn nicht leer)
+	if (!empty($footer_options[$options_key])) {
+		return $footer_options[$options_key];
+	}
+	// 2. Block-Attribute (wenn nicht leer)
+	if (!empty($attribute_value)) {
+		return $attribute_value;
+	}
+	// 3. Default
+	return $default;
+}
+
+$companyName = po_footer_value('company_name', $attributes['companyName'] ?? '', $footer_options, 'ParkourONE');
+$companyAddress = po_footer_value('company_address', $attributes['companyAddress'] ?? '', $footer_options);
+$socialInstagram = po_footer_value('social_instagram', $attributes['socialInstagram'] ?? '', $footer_options);
+$socialYoutube = po_footer_value('social_youtube', $attributes['socialYoutube'] ?? '', $footer_options);
+$socialPodcast = po_footer_value('social_podcast', $attributes['socialPodcast'] ?? '', $footer_options);
+$phone = po_footer_value('phone', $attributes['phone'] ?? '', $footer_options);
+$email = po_footer_value('email', $attributes['email'] ?? '', $footer_options);
+$contactFormUrl = po_footer_value('contact_form_url', $attributes['contactFormUrl'] ?? '', $footer_options);
+$phoneHours = po_footer_value('phone_hours', $attributes['phoneHours'] ?? '', $footer_options);
+$zentraleName = po_footer_value('zentrale_name', $attributes['zentraleName'] ?? '', $footer_options);
+$zentraleUrl = po_footer_value('zentrale_url', $attributes['zentraleUrl'] ?? '', $footer_options);
+$newsletterHeadline = po_footer_value('newsletter_headline', $attributes['newsletterHeadline'] ?? '', $footer_options);
+$newsletterText = po_footer_value('newsletter_text', $attributes['newsletterText'] ?? '', $footer_options);
+$copyrightYear = po_footer_value('copyright_year', $attributes['copyrightYear'] ?? '', $footer_options, date('Y'));
+
+// Standorte: Backend hat Priorität, sonst Block-Attribute
+$standorte = !empty($footer_options['standorte']) ? $footer_options['standorte'] : ($attributes['standorte'] ?? []);
 
 // Legal Pages - automatisch verlinken wenn vorhanden
 $impressumUrl = $attributes['impressumUrl'] ?? '';
