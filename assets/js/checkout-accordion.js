@@ -1,10 +1,12 @@
 /**
  * Checkout Accordion – toggle sections open/closed
+ * + move plugin-rendered referrer field into Sonstiges section
  */
 (function () {
 	'use strict';
 
 	document.addEventListener('DOMContentLoaded', function () {
+		// Accordion toggle
 		var toggles = document.querySelectorAll('[data-accordion-toggle]');
 
 		toggles.forEach(function (btn) {
@@ -22,5 +24,14 @@
 				}
 			});
 		});
+
+		// Move plugin-rendered #referrer_field into Sonstiges accordion
+		var referrerField = document.getElementById('referrer_field');
+		var placeholder = document.getElementById('po-referrer-placeholder');
+
+		if (referrerField && placeholder) {
+			placeholder.appendChild(referrerField);
+			referrerField.style.display = '';
+		}
 	});
 })();

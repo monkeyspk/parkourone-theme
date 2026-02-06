@@ -153,6 +153,9 @@ add_action('woocommerce_after_checkout_billing_form', function($checkout) {
 		],
 	], $checkout->get_value('po_referral_source'));
 
+	// Placeholder for plugin-rendered referrer field (moved here via JS)
+	echo '<div id="po-referrer-placeholder"></div>';
+
 	// Close Sonstiges body + section
 	echo '</div></div>';
 

@@ -808,9 +808,16 @@
 	display: none !important;
 }
 
+/* Hide referrer field at original position; JS moves it into Sonstiges accordion */
 #referrer_field,
 p#referrer_field {
-	display: none !important;
+	display: none;
+}
+
+/* Show once moved into accordion placeholder */
+#po-referrer-placeholder #referrer_field,
+#po-referrer-placeholder p#referrer_field {
+	display: block !important;
 }
 
 /* ---------- Page layout — centered ---------- */
