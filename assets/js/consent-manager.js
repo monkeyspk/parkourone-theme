@@ -469,9 +469,6 @@
 
 					// Hide banner
 					this.hideBanner();
-
-					// Reload to activate blocked content
-					setTimeout(() => location.reload(), 100);
 				}
 			})
 			.catch(error => {
@@ -541,9 +538,9 @@
 
 			console.log('PO Consent: Fallback cookie set successfully');
 
-			// Hide banner and reload
+			// Activate consented scripts and hide banner
+			this.activateConsentedScripts();
 			this.hideBanner();
-			setTimeout(() => location.reload(), 100);
 		}
 
 		/**
