@@ -295,3 +295,159 @@ function parkourone_wc_cart_fragments($fragments) {
 	return $fragments;
 }
 add_filter('woocommerce_add_to_cart_fragments', 'parkourone_wc_cart_fragments');
+
+/**
+ * Enqueue Cart Page JavaScript
+ */
+function parkourone_wc_cart_checkout_scripts() {
+	if (!class_exists('WooCommerce')) {
+		return;
+	}
+
+	// Only load on cart and checkout pages
+	if (!is_cart() && !is_checkout()) {
+		return;
+	}
+
+	// Inline JavaScript for cart and checkout enhancements
+	$inline_js = "
+	(function() {
+		'use strict';
+
+		// Coupon toggle on checkout
+		const couponToggle = document.querySelector('.po-checkout__coupon-toggle');
+		const couponForm = document.querySelector('.po-checkout__coupon-form');
+
+		if (couponToggle && couponForm) {
+			couponToggle.addEventListener('click', function() {
+				couponForm.style.display = couponForm.style.display === 'none' ? 'flex' : 'none';
+			});
+		}
+
+		// Apply coupon via AJAX on checkout
+		const applyCouponBtn = document.getElementById('apply_coupon_btn');
+		const couponInput = document.getElementById('checkout_coupon_code');
+
+		if (applyCouponBtn && couponInput) {
+			applyCouponBtn.addEventListener('click', function() {
+				const couponCode = couponInput.value.trim();
+				if (!couponCode) return;
+
+				applyCouponBtn.disabled = true;
+				applyCouponBtn.textContent = '...';
+
+				// Use WooCommerce's built-in coupon application
+				const formData = new FormData();
+				formData.append('coupon_code', couponCode);
+				formData.append('security', wc_checkout_params?.apply_coupon_nonce || '');
+
+				fetch(wc_checkout_params?.ajax_url || '/wp-admin/admin-ajax.php', {
+					method: 'POST',
+					body: new URLSearchParams({
+						action: 'woocommerce_apply_coupon',
+						coupon_code: couponCode,
+						security: wc_checkout_params?.apply_coupon_nonce || ''
+					})
+				})
+				.then(response => response.text())
+				.then(() => {
+					// Refresh the checkout
+					if (typeof jQuery !== 'undefined') {
+						jQuery(document.body).trigger('update_checkout');
+					}
+					couponInput.value = '';
+				})
+				.finally(() => {
+					applyCouponBtn.disabled = false;
+					applyCouponBtn.textContent = 'Einlösen';
+				});
+			});
+		}
+
+		// Cart page: AJAX remove item
+		document.querySelectorAll('.po-cart__remove').forEach(function(btn) {
+			btn.addEventListener('click', function(e) {
+				e.preventDefault();
+				const cartItemKey = this.dataset.cartItemKey;
+				const item = this.closest('.po-cart__item');
+
+				if (!cartItemKey || !item) return;
+
+				item.style.opacity = '0.5';
+				item.style.pointerEvents = 'none';
+
+				fetch(poSideCart?.ajaxUrl || '/wp-admin/admin-ajax.php', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+					},
+					body: new URLSearchParams({
+						action: 'po_remove_cart_item',
+						nonce: poSideCart?.nonce || '',
+						cart_item_key: cartItemKey
+					})
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						// Animate removal
+						item.style.transform = 'translateX(-20px)';
+						item.style.transition = 'all 0.3s ease';
+
+						setTimeout(() => {
+							item.remove();
+
+							// Update totals
+							if (data.data.cart_count === 0) {
+								location.reload();
+							} else {
+								// Trigger WooCommerce update
+								if (typeof jQuery !== 'undefined') {
+									jQuery('[name=\"update_cart\"]').prop('disabled', false).trigger('click');
+								}
+							}
+						}, 300);
+					}
+				})
+				.catch(() => {
+					item.style.opacity = '1';
+					item.style.pointerEvents = 'auto';
+				});
+			});
+		});
+
+		// Auto-submit cart on quantity change
+		const qtyInputs = document.querySelectorAll('.po-cart__quantity .qty');
+		qtyInputs.forEach(function(input) {
+			let timeout;
+			input.addEventListener('change', function() {
+				clearTimeout(timeout);
+				timeout = setTimeout(function() {
+					const updateBtn = document.querySelector('[name=\"update_cart\"]');
+					if (updateBtn) {
+						updateBtn.disabled = false;
+						updateBtn.click();
+					}
+				}, 500);
+			});
+		});
+	})();
+	";
+
+	wp_add_inline_script('parkourone-side-cart', $inline_js);
+}
+add_action('wp_enqueue_scripts', 'parkourone_wc_cart_checkout_scripts', 20);
+
+/**
+ * Custom proceed to checkout button
+ */
+function parkourone_wc_proceed_to_checkout_button() {
+	?>
+	<a href="<?php echo esc_url(wc_get_checkout_url()); ?>" class="checkout-button button alt wc-forward">
+		<?php esc_html_e('Zur Kasse', 'parkourone'); ?>
+	</a>
+	<?php
+}
+// Remove default button and add custom one
+remove_action('woocommerce_proceed_to_checkout', 'woocommerce_button_proceed_to_checkout', 20);
+add_action('woocommerce_proceed_to_checkout', 'parkourone_wc_proceed_to_checkout_button', 20);
