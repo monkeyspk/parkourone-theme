@@ -333,6 +333,20 @@ body.po-tg-no-scroll {
 	margin-bottom: 40px;
 }
 
+.po-tg-coach__avatar {
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	overflow: hidden;
+	margin-bottom: 16px;
+}
+
+.po-tg-coach__avatar img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
 .po-tg-coach__name {
 	font-size: 48px;
 	font-weight: 700;
@@ -817,7 +831,13 @@ body.po-tg-no-scroll {
 	.po-tg-coach__header {
 		margin-bottom: 28px;
 	}
-	
+
+	.po-tg-coach__avatar {
+		width: 64px;
+		height: 64px;
+		margin-bottom: 12px;
+	}
+
 	.po-tg-coach__name {
 		font-size: 32px;
 	}

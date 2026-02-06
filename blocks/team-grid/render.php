@@ -55,8 +55,9 @@ foreach ($all_coaches as $coach) {
 	$philosophie_bild = get_post_meta($coach_id, '_coach_philosophie_bild', true);
 	$moment_bild = get_post_meta($coach_id, '_coach_moment_bild', true);
 	$api_image = get_post_meta($coach_id, '_coach_api_image', true);
-	
-	$card_image = $hero_bild ?: $philosophie_bild ?: $moment_bild ?: $api_image;
+
+	// Grid-Karte zeigt immer nur das API-Image
+	$card_image = $api_image;
 	
 	$coach_key = strtolower(trim($coach->post_title));
 	$locations = $coach_locations[$coach_key] ?? [];
@@ -245,10 +246,15 @@ $trainings = parkourone_get_coach_trainings_with_dates($m['name']);
 		
 		<div class="po-tg-coach">
 			<div class="po-tg-coach__header">
+				<?php if (!empty($m['api_image'])): ?>
+				<div class="po-tg-coach__avatar">
+					<img src="<?php echo esc_url($m['api_image']); ?>" alt="<?php echo esc_attr($m['name']); ?>">
+				</div>
+				<?php endif; ?>
 				<h2 class="po-tg-coach__name"><?php echo esc_html($m['name']); ?></h2>
 				<?php if (!empty($m['rolle']) || !empty($m['standort'])): ?>
 					<p class="po-tg-coach__meta">
-						<?php 
+						<?php
 						$meta_parts = [];
 						if (!empty($m['rolle'])) $meta_parts[] = $m['rolle'];
 						if (!empty($m['standort'])) $meta_parts[] = $m['standort'];
