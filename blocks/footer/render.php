@@ -177,7 +177,7 @@ if (empty($cookiesUrl) || $cookiesUrl === '#') {
 		<div class="po-footer__legal">
 			<a href="<?php echo esc_url($impressumUrl); ?>">Impressum</a>
 			<a href="<?php echo esc_url($datenschutzUrl); ?>">Datenschutz</a>
-			<a href="<?php echo esc_url($cookiesUrl); ?>">Cookies</a>
+			<a href="#" data-open-consent-settings>Cookie-Einstellungen</a>
 		</div>
 		<div class="po-footer__copyright">
 			© <?php echo esc_html($copyrightYear); ?> ParkourONE All rights reserved.
