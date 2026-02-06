@@ -594,6 +594,21 @@
    Express Payment
    ========================================================================== */
 
+/* Hide express payment when no methods are active */
+.wc-block-components-express-payment--cart:not(:has(.wc-block-components-express-payment__event-buttons > *)),
+.wc-block-components-express-payment--checkout:not(:has(.wc-block-components-express-payment__event-buttons > *)),
+.wp-block-woocommerce-cart-express-payment-block:empty,
+.wp-block-woocommerce-checkout-express-payment-block:empty,
+.wc-block-components-express-payment[hidden] {
+	display: none !important;
+}
+
+/* Also hide the "OR" separator when express payment is hidden */
+.wc-block-components-express-payment-continue-rule:has(+ .wc-block-components-express-payment:not(:has(.wc-block-components-express-payment__event-buttons > *))),
+.wc-block-components-express-payment:not(:has(.wc-block-components-express-payment__event-buttons > *)) + .wc-block-components-express-payment-continue-rule {
+	display: none !important;
+}
+
 .wc-block-components-express-payment {
 	border: 1px solid var(--wc-border) !important;
 	border-radius: var(--wc-radius) !important;
