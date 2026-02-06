@@ -519,10 +519,11 @@
 			// Base64 encode
 			const cookieValue = btoa(JSON.stringify(cookieData));
 
-			// Set cookie (365 days)
+			// Set cookie (365 days) with correct domain
 			const expires = new Date();
 			expires.setFullYear(expires.getFullYear() + 1);
-			document.cookie = `po_consent=${cookieValue}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
+			const domain = this.config.cookieDomain ? `; domain=${this.config.cookieDomain}` : '';
+			document.cookie = `po_consent=${cookieValue}; expires=${expires.toUTCString()}; path=/${domain}; SameSite=Lax`;
 
 			// Update local state
 			this.consent = {

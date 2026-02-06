@@ -121,7 +121,8 @@ class PO_Consent_Manager {
 	 */
 	private function load_consent_from_cookie() {
 		if (isset($_COOKIE[self::CONSENT_COOKIE])) {
-			$cookie_value = sanitize_text_field($_COOKIE[self::CONSENT_COOKIE]);
+			// Use wp_unslash instead of sanitize_text_field to preserve base64 characters (+, /, =)
+			$cookie_value = wp_unslash($_COOKIE[self::CONSENT_COOKIE]);
 			$decoded = json_decode(base64_decode($cookie_value), true);
 
 			if (!$decoded) {
@@ -346,6 +347,7 @@ class PO_Consent_Manager {
 			'consent' => $this->current_consent,
 			'showBanner' => $this->should_show_banner(),
 			'version' => self::CONSENT_VERSION,
+			'cookieDomain' => $this->get_cross_domain_cookie_domain(),
 			'categories' => $this->get_category_info(),
 			'services' => $this->get_services_by_category(),
 			'i18n' => [
