@@ -19,9 +19,10 @@ $accent_color = $attributes['accentColor'] ?? '#0066cc';
 $overlay_opacity = $attributes['overlayOpacity'] ?? 50;
 $rotation = $attributes['imageRotation'] ?? 2;
 
-// Fallback-Bild (Landscape für Header)
+// Fallback-Bild: Portrait für Split-Variante, Landscape für andere
 if (empty($image)) {
-	$image = parkourone_get_fallback_image('juniors', 'landscape');
+	$orientation = ($variant === 'split') ? 'portrait' : 'landscape';
+	$image = parkourone_get_fallback_image('juniors', $orientation);
 }
 
 // CTA Arrow SVG
