@@ -208,7 +208,8 @@
    ======================================== */
 
 .po-overlay__panel--trust {
-	max-width: 720px;
+	width: 80vw;
+	max-width: 1200px;
 	padding: 0;
 	max-height: 90vh;
 	overflow-y: auto;
