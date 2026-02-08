@@ -35,16 +35,15 @@ $unique_id = 'po-faqone-' . uniqid();
 		<h2 class="po-faqone__headline"><?php echo esc_html($headline); ?></h2>
 	<?php endif; ?>
 
-	<div class="po-faqone__list" itemscope itemtype="https://schema.org/FAQPage">
+	<div class="po-faqone__list">
 		<?php foreach ($faqs as $index => $faq): ?>
-			<div class="po-faqone__item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+			<div class="po-faqone__item">
 				<button
 					type="button"
 					class="po-faqone__question"
 					id="<?php echo esc_attr($unique_id . '-q-' . $index); ?>"
 					aria-expanded="false"
 					aria-controls="<?php echo esc_attr($unique_id . '-a-' . $index); ?>"
-					itemprop="name"
 				>
 					<span class="po-faqone__question-text"><?php echo esc_html($faq['question']); ?></span>
 					<span class="po-faqone__icon" aria-hidden="true">
@@ -58,10 +57,9 @@ $unique_id = 'po-faqone-' . uniqid();
 					id="<?php echo esc_attr($unique_id . '-a-' . $index); ?>"
 					role="region"
 					aria-labelledby="<?php echo esc_attr($unique_id . '-q-' . $index); ?>"
-					itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"
 				>
 					<div class="po-faqone__answer-inner">
-						<div class="po-faqone__answer-content" itemprop="text">
+						<div class="po-faqone__answer-content">
 							<?php echo wp_kses_post($faq['answer']); ?>
 						</div>
 					</div>
