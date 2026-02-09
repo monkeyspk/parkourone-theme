@@ -342,6 +342,15 @@ $hasFilters = $showAgeFilter || $showLocationFilter;
 		<?php endforeach; ?>
 	</div>
 
+	<div class="po-klassen-slider__nav">
+		<button type="button" class="po-klassen-slider__nav-btn po-klassen-slider__nav-prev" aria-label="Zurück" disabled>
+			<svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+		</button>
+		<button type="button" class="po-klassen-slider__nav-btn po-klassen-slider__nav-next" aria-label="Weiter">
+			<svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+		</button>
+	</div>
+
 	<div class="po-klassen-slider__empty-message" style="display: none;">
 		<p>Keine Klassen für diese Auswahl gefunden.</p>
 	</div>
@@ -813,6 +822,43 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 		var walk = (x - startX) * 1.5;
 		track.scrollLeft = scrollLeft - walk;
 	});
+
+	// ========================================
+	// NAV BUTTONS
+	// ========================================
+	var prevBtn = section.querySelector('.po-klassen-slider__nav-prev');
+	var nextBtn = section.querySelector('.po-klassen-slider__nav-next');
+
+	if (prevBtn && nextBtn) {
+		function getCardWidth() {
+			var firstCard = track.querySelector('.po-card');
+			if (!firstCard) return 300;
+			return firstCard.offsetWidth + 20; // card width + gap
+		}
+
+		function getVisibleCards() {
+			return Math.max(1, Math.floor(track.offsetWidth / getCardWidth()));
+		}
+
+		function updateNav() {
+			var sl = track.scrollLeft;
+			var maxScroll = track.scrollWidth - track.offsetWidth;
+			prevBtn.disabled = sl <= 0;
+			nextBtn.disabled = sl >= maxScroll - 10;
+		}
+
+		prevBtn.addEventListener('click', function() {
+			track.scrollBy({ left: -getCardWidth() * getVisibleCards(), behavior: 'smooth' });
+		});
+
+		nextBtn.addEventListener('click', function() {
+			track.scrollBy({ left: getCardWidth() * getVisibleCards(), behavior: 'smooth' });
+		});
+
+		track.addEventListener('scroll', updateNav);
+		window.addEventListener('resize', updateNav);
+		updateNav();
+	}
 })();
 </script>
 <?php else: ?>

@@ -53,6 +53,40 @@ function parkourone_faq_meta_box() {
 }
 add_action('add_meta_boxes', 'parkourone_faq_meta_box');
 
+/**
+ * Liefert alle FAQ-Kategorien: Standard-Kategorien + custom aus der DB
+ */
+function parkourone_get_all_faq_categories() {
+	// Standard-Kategorien (für Auto-Pages relevant)
+	$default_categories = [
+		'allgemein' => 'Allgemein',
+		'probetraining' => 'Probetraining',
+		'mitgliedschaft' => 'Mitgliedschaft',
+		'kids' => 'Kids & Minis',
+		'juniors' => 'Juniors',
+		'adults' => 'Adults',
+		'workshops' => 'Workshops & Kurse',
+		'standort' => 'Standort',
+	];
+
+	// Alle verwendeten Kategorien aus der DB lesen
+	global $wpdb;
+	$db_categories = $wpdb->get_col(
+		"SELECT DISTINCT meta_value FROM {$wpdb->postmeta}
+		 WHERE meta_key = '_faq_category' AND meta_value != ''
+		 ORDER BY meta_value ASC"
+	);
+
+	// Custom-Kategorien hinzufügen (die nicht in den Standards sind)
+	foreach ($db_categories as $cat) {
+		if (!isset($default_categories[$cat])) {
+			$default_categories[$cat] = ucfirst($cat);
+		}
+	}
+
+	return $default_categories;
+}
+
 function parkourone_faq_meta_box_html($post) {
 	wp_nonce_field('faq_meta', 'faq_meta_nonce');
 
@@ -61,18 +95,8 @@ function parkourone_faq_meta_box_html($post) {
 	$additional_categories = get_post_meta($post->ID, '_faq_additional_categories', true) ?: [];
 	$order = get_post_meta($post->ID, '_faq_order', true) ?: 0;
 
-	// Haupt-Kategorien (eine muss gewählt werden)
-	$main_categories = [
-		'' => '-- Bitte wählen --',
-		'allgemein' => '🌐 Allgemein (Startseite + überall als Ergänzung)',
-		'probetraining' => '🎯 Probetraining',
-		'mitgliedschaft' => '📋 Mitgliedschaft',
-		'kids' => '👶 Kids & Minis',
-		'juniors' => '🧑 Juniors',
-		'adults' => '👤 Adults',
-		'workshops' => '🎪 Workshops & Kurse',
-		'standort' => '📍 Standort',
-	];
+	// Alle Kategorien (Standard + Custom aus DB)
+	$all_categories = parkourone_get_all_faq_categories();
 
 	// Zusätzliche Seiten (optional)
 	$extra_pages = [
@@ -102,12 +126,13 @@ function parkourone_faq_meta_box_html($post) {
 		<tr>
 			<th><label for="_faq_category">Haupt-Kategorie</label></th>
 			<td>
-				<select id="_faq_category" name="_faq_category" class="regular-text">
-					<?php foreach ($main_categories as $value => $label): ?>
-						<option value="<?php echo esc_attr($value); ?>" <?php selected($category, $value); ?>><?php echo esc_html($label); ?></option>
+				<input type="text" id="_faq_category" name="_faq_category" value="<?php echo esc_attr($category); ?>" class="regular-text" list="faq-categories-list" placeholder="Kategorie wählen oder neue eingeben...">
+				<datalist id="faq-categories-list">
+					<?php foreach ($all_categories as $value => $label): ?>
+						<option value="<?php echo esc_attr($value); ?>"><?php echo esc_html($label); ?></option>
 					<?php endforeach; ?>
-				</select>
-				<p class="description">Bestimmt die primäre Zuordnung dieser FAQ.</p>
+				</datalist>
+				<p class="description">Bestehende Kategorie wählen oder neuen Slug eingeben (z.B. "klassenwechsel").</p>
 			</td>
 		</tr>
 		<tr>
@@ -214,8 +239,8 @@ function parkourone_get_faq_appearances($post_id) {
 
 	// Haupt-Kategorie
 	$main_category = get_post_meta($post_id, '_faq_category', true);
-	if (!empty($main_category) && isset($category_map[$main_category])) {
-		$appearances['main'] = $category_map[$main_category];
+	if (!empty($main_category)) {
+		$appearances['main'] = $category_map[$main_category] ?? ucfirst($main_category);
 	}
 
 	// Zusätzliche Kategorien
@@ -242,19 +267,8 @@ function parkourone_faq_column_content($column, $post_id) {
 
 		case 'category':
 			$cat = get_post_meta($post_id, '_faq_category', true);
-			$labels = [
-				'allgemein' => 'Allgemein',
-				'probetraining' => 'Probetraining',
-				'mitgliedschaft' => 'Mitgliedschaft',
-				'kurse' => 'Kurse & Training',
-				'workshops' => 'Workshops & Camps',
-				'preise' => 'Preise & Bezahlung',
-				'kids' => 'Kids & Minis',
-				'juniors' => 'Juniors',
-				'adults' => 'Adults',
-				'standort' => 'Standort'
-			];
-			$label = $labels[$cat] ?? '—';
+			$all_categories = parkourone_get_all_faq_categories();
+			$label = $all_categories[$cat] ?? ($cat ? ucfirst($cat) : '—');
 
 			// Farbcodierung nach Kategorie
 			$colors = [
@@ -965,3 +979,25 @@ function parkourone_faq_import_success_notice() {
 	<?php
 }
 add_action('admin_notices', 'parkourone_faq_import_success_notice');
+
+// =====================================================
+// REST API: FAQ-Kategorien dynamisch liefern
+// =====================================================
+
+function parkourone_register_faq_categories_endpoint() {
+	register_rest_route('parkourone/v1', '/faq-categories', [
+		'methods' => 'GET',
+		'callback' => function() {
+			$categories = parkourone_get_all_faq_categories();
+			$result = [];
+			foreach ($categories as $slug => $label) {
+				$result[] = ['value' => $slug, 'label' => $label];
+			}
+			return $result;
+		},
+		'permission_callback' => function() {
+			return current_user_can('edit_posts');
+		}
+	]);
+}
+add_action('rest_api_init', 'parkourone_register_faq_categories_endpoint');

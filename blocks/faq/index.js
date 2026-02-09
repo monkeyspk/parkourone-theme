@@ -2,22 +2,27 @@
 	const { registerBlockType } = wp.blocks;
 	const { useBlockProps, InspectorControls } = wp.blockEditor;
 	const { PanelBody, TextControl, SelectControl, RangeControl } = wp.components;
-	const { createElement: el } = wp.element;
+	const { createElement: el, useState, useEffect } = wp.element;
 
 	registerBlockType('parkourone/faq', {
 		edit: function(props) {
 			const { attributes, setAttributes } = props;
 			const blockProps = useBlockProps({ className: 'po-faq-editor' });
 
-			const categoryOptions = [
-				{ value: '', label: 'Alle Kategorien' },
-				{ value: 'probetraining', label: 'Probetraining' },
-				{ value: 'mitgliedschaft', label: 'Mitgliedschaft' },
-				{ value: 'kurse', label: 'Kurse & Training' },
-				{ value: 'workshops', label: 'Workshops & Camps' },
-				{ value: 'preise', label: 'Preise & Bezahlung' },
-				{ value: 'allgemein', label: 'Allgemein' }
-			];
+			// Kategorien dynamisch aus REST API laden
+			const [categoryOptions, setCategoryOptions] = useState([
+				{ value: '', label: 'Alle Kategorien' }
+			]);
+
+			useEffect(function() {
+				wp.apiFetch({ path: '/parkourone/v1/faq-categories' }).then(function(categories) {
+					var options = [{ value: '', label: 'Alle Kategorien' }];
+					categories.forEach(function(cat) {
+						options.push({ value: cat.value, label: cat.label });
+					});
+					setCategoryOptions(options);
+				});
+			}, []);
 
 			const bgOptions = [
 				{ value: 'white', label: 'Weiss' },
