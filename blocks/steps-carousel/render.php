@@ -6,6 +6,11 @@ $background_color = $attributes['backgroundColor'] ?? 'light';
 $age_category = $attributes['ageCategory'] ?? 'default';
 $align = $attributes['align'] ?? 'full';
 
+// Fallback auf globale Probetraining Steps aus dem Backend
+if (empty($steps) && function_exists('parkourone_get_global_steps')) {
+	$steps = parkourone_get_global_steps();
+}
+
 if (empty($steps)) return;
 
 $unique_id = 'steps-timeline-' . uniqid();

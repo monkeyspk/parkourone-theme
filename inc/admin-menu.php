@@ -73,6 +73,16 @@ function parkourone_register_admin_menu() {
 		'parkourone_fallback_images_page'
 	);
 
+	// Probetraining Steps
+	add_submenu_page(
+		'parkourone',
+		'Probetraining Steps',
+		'Probetraining Steps',
+		'manage_options',
+		'parkourone-steps',
+		'parkourone_probetraining_steps_page'
+	);
+
 	// Maintenance Mode
 	add_submenu_page(
 		'parkourone',
@@ -737,6 +747,181 @@ function parkourone_menu_footer_page() {
 		</script>
 	</div>
 	<?php
+}
+
+/**
+ * Probetraining Steps Seite
+ */
+function parkourone_probetraining_steps_page() {
+	// Speichern
+	if (isset($_POST['parkourone_steps_save']) && check_admin_referer('parkourone_steps_nonce')) {
+		$steps = [];
+		if (!empty($_POST['step_title']) && is_array($_POST['step_title'])) {
+			foreach ($_POST['step_title'] as $i => $title) {
+				if (!empty($title)) {
+					$steps[] = [
+						'title' => sanitize_text_field($title),
+						'description' => sanitize_text_field($_POST['step_description'][$i] ?? ''),
+						'icon' => sanitize_text_field($_POST['step_icon'][$i] ?? 'check'),
+					];
+				}
+			}
+		}
+		update_option('parkourone_probetraining_steps', $steps);
+		echo '<div class="notice notice-success"><p>Probetraining Steps gespeichert!</p></div>';
+	}
+
+	// Aktuelle Werte laden
+	$steps = get_option('parkourone_probetraining_steps', []);
+	if (empty($steps)) {
+		$steps = [
+			['title' => 'Standort wählen', 'description' => 'Wähle einen Standort aus, an dem du trainieren möchtest.', 'icon' => 'location'],
+			['title' => 'Klasse wählen', 'description' => 'Wähle die passende Klasse basierend auf der Altersgruppe aus.', 'icon' => 'users'],
+			['title' => 'Termin buchen', 'description' => 'Das Probetraining kostet 15 CHF und ist dafür gedacht, dass du die Gruppendynamik und das Training kennenlernst.', 'icon' => 'calendar'],
+			['title' => 'Loslegen', 'description' => 'Nach dem Probetraining kannst du entscheiden, ob du Mitglied werden möchtest.', 'icon' => 'check'],
+		];
+	}
+
+	$available_icons = ['location', 'users', 'calendar', 'check', 'star', 'heart'];
+	?>
+	<div class="wrap">
+		<h1>Probetraining Steps</h1>
+		<p>Diese Schritte werden auf allen Seiten angezeigt, die den Steps-Block <strong>ohne eigene Steps</strong> verwenden.<br>
+		Wenn du auf einer einzelnen Seite individuelle Steps brauchst, kannst du sie dort im Block-Editor überschreiben.</p>
+
+		<style>
+			.po-steps-admin { max-width: 800px; margin-top: 20px; }
+			.po-step-card { background: #fff; border: 1px solid #c3c4c7; border-radius: 8px; padding: 20px; margin-bottom: 16px; position: relative; }
+			.po-step-card__header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+			.po-step-card__number { width: 36px; height: 36px; background: #1d1d1f; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0; }
+			.po-step-card__fields { display: flex; flex-direction: column; gap: 12px; }
+			.po-step-card__fields label { font-weight: 500; display: block; margin-bottom: 4px; }
+			.po-step-card__fields input[type="text"],
+			.po-step-card__fields textarea { width: 100%; }
+			.po-step-card__fields textarea { min-height: 60px; resize: vertical; }
+			.po-step-card__fields select { min-width: 150px; }
+			.po-step-card__row { display: grid; grid-template-columns: 1fr 150px; gap: 16px; }
+			.po-step-card__actions { position: absolute; top: 16px; right: 16px; display: flex; gap: 4px; }
+		</style>
+
+		<form method="post">
+			<?php wp_nonce_field('parkourone_steps_nonce'); ?>
+
+			<div class="po-steps-admin" id="steps-list">
+				<?php foreach ($steps as $i => $step): ?>
+				<div class="po-step-card" data-index="<?php echo $i; ?>">
+					<div class="po-step-card__actions">
+						<button type="button" class="button button-small po-step-up" <?php echo $i === 0 ? 'disabled' : ''; ?> title="Nach oben">&#x25B2;</button>
+						<button type="button" class="button button-small po-step-down" <?php echo $i === count($steps) - 1 ? 'disabled' : ''; ?> title="Nach unten">&#x25BC;</button>
+						<button type="button" class="button button-small po-step-remove" title="Entfernen" style="color: #a00;">&#x2715;</button>
+					</div>
+					<div class="po-step-card__header">
+						<span class="po-step-card__number"><?php echo $i + 1; ?></span>
+						<strong class="po-step-card__title-preview"><?php echo esc_html($step['title']); ?></strong>
+					</div>
+					<div class="po-step-card__fields">
+						<div class="po-step-card__row">
+							<div>
+								<label>Titel</label>
+								<input type="text" name="step_title[]" value="<?php echo esc_attr($step['title']); ?>">
+							</div>
+							<div>
+								<label>Icon</label>
+								<select name="step_icon[]">
+									<?php foreach ($available_icons as $icon): ?>
+									<option value="<?php echo esc_attr($icon); ?>" <?php selected($step['icon'] ?? '', $icon); ?>><?php echo esc_html(ucfirst($icon)); ?></option>
+									<?php endforeach; ?>
+								</select>
+							</div>
+						</div>
+						<div>
+							<label>Beschreibung</label>
+							<textarea name="step_description[]"><?php echo esc_textarea($step['description']); ?></textarea>
+						</div>
+					</div>
+				</div>
+				<?php endforeach; ?>
+			</div>
+
+			<button type="button" class="button" id="add-step" style="margin-bottom: 20px;">+ Schritt hinzufügen</button>
+
+			<p>
+				<button type="submit" name="parkourone_steps_save" class="button button-primary button-large">Steps speichern</button>
+			</p>
+		</form>
+	</div>
+
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		var list = document.getElementById('steps-list');
+		var icons = <?php echo json_encode($available_icons); ?>;
+
+		function renumber() {
+			var cards = list.querySelectorAll('.po-step-card');
+			cards.forEach(function(card, i) {
+				card.querySelector('.po-step-card__number').textContent = i + 1;
+				card.querySelector('.po-step-up').disabled = (i === 0);
+				card.querySelector('.po-step-down').disabled = (i === cards.length - 1);
+			});
+		}
+
+		document.getElementById('add-step').addEventListener('click', function() {
+			var count = list.querySelectorAll('.po-step-card').length;
+			var card = document.createElement('div');
+			card.className = 'po-step-card';
+			card.innerHTML = '<div class="po-step-card__actions">' +
+				'<button type="button" class="button button-small po-step-up" title="Nach oben">&#x25B2;</button>' +
+				'<button type="button" class="button button-small po-step-down" title="Nach unten" disabled>&#x25BC;</button>' +
+				'<button type="button" class="button button-small po-step-remove" title="Entfernen" style="color: #a00;">&#x2715;</button>' +
+				'</div>' +
+				'<div class="po-step-card__header"><span class="po-step-card__number">' + (count + 1) + '</span><strong class="po-step-card__title-preview">Neuer Schritt</strong></div>' +
+				'<div class="po-step-card__fields">' +
+				'<div class="po-step-card__row"><div><label>Titel</label><input type="text" name="step_title[]" value=""></div>' +
+				'<div><label>Icon</label><select name="step_icon[]">' + icons.map(function(ic) { return '<option value="' + ic + '">' + ic.charAt(0).toUpperCase() + ic.slice(1) + '</option>'; }).join('') + '</select></div></div>' +
+				'<div><label>Beschreibung</label><textarea name="step_description[]"></textarea></div></div>';
+			list.appendChild(card);
+			renumber();
+		});
+
+		list.addEventListener('click', function(e) {
+			var btn = e.target.closest('button');
+			if (!btn) return;
+			var card = btn.closest('.po-step-card');
+
+			if (btn.classList.contains('po-step-remove')) {
+				if (list.querySelectorAll('.po-step-card').length > 1) {
+					card.remove();
+					renumber();
+				}
+			} else if (btn.classList.contains('po-step-up')) {
+				var prev = card.previousElementSibling;
+				if (prev) { list.insertBefore(card, prev); renumber(); }
+			} else if (btn.classList.contains('po-step-down')) {
+				var next = card.nextElementSibling;
+				if (next) { list.insertBefore(next, card); renumber(); }
+			}
+		});
+	});
+	</script>
+	<?php
+}
+
+/**
+ * Holt die globalen Probetraining Steps
+ */
+function parkourone_get_global_steps() {
+	$steps = get_option('parkourone_probetraining_steps', []);
+	if (!empty($steps)) {
+		return $steps;
+	}
+
+	// Hardcoded Fallback falls noch nichts gespeichert
+	return [
+		['title' => 'Standort wählen', 'description' => 'Wähle einen Standort aus, an dem du trainieren möchtest.', 'icon' => 'location'],
+		['title' => 'Klasse wählen', 'description' => 'Wähle die passende Klasse basierend auf der Altersgruppe aus.', 'icon' => 'users'],
+		['title' => 'Termin buchen', 'description' => 'Das Probetraining kostet 15 CHF und ist dafür gedacht, dass du die Gruppendynamik und das Training kennenlernst.', 'icon' => 'calendar'],
+		['title' => 'Loslegen', 'description' => 'Nach dem Probetraining kannst du entscheiden, ob du Mitglied werden möchtest.', 'icon' => 'check'],
+	];
 }
 
 /**

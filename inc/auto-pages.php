@@ -1528,14 +1528,6 @@ function parkourone_generate_city_page_content($city_slug, $city, $header_varian
 	// Probetraining-Preis dynamisch
 	$probetraining_price = parkourone_get_probetraining_price();
 
-	// Probetraining-Steps für Steps-Carousel (JSON)
-	$probetraining_steps = json_encode([
-		["title" => "Standort wählen", "description" => "Wähle einen unserer Trainingsstandorte in {$city_name} aus, der für dich am besten erreichbar ist.", "icon" => "location"],
-		["title" => "Klasse auswählen", "description" => "Wähle die passende Klasse basierend auf deiner Altersgruppe und deinem Erfahrungslevel.", "icon" => "users"],
-		["title" => "Termin buchen", "description" => "Buche online deinen Wunschtermin. Das Probetraining kostet {$probetraining_price}.", "icon" => "calendar"],
-		["title" => "Loslegen", "description" => "Nach dem Probetraining kannst du entscheiden, ob du Teil unserer Community werden möchtest.", "icon" => "check"]
-	], JSON_UNESCAPED_UNICODE);
-
 	// Header-Variante Attribute für Page-Header Block
 	$header_variant = in_array($header_variant, ['centered', 'split', 'fullscreen']) ? $header_variant : 'split';
 
@@ -1574,7 +1566,7 @@ function parkourone_generate_city_page_content($city_slug, $city, $header_varian
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:parkourone/steps-carousel {"headline":"So startest du mit Parkour in {$city_name}","subheadline":"In 4 einfachen Schritten zum ersten Training","steps":{$probetraining_steps},"ageCategory":"default","backgroundColor":"light","align":"full"} /-->
+<!-- wp:parkourone/steps-carousel {"headline":"So startest du mit Parkour in {$city_name}","subheadline":"In 4 einfachen Schritten zum ersten Training","ageCategory":"default","backgroundColor":"light","align":"full"} /-->
 
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
@@ -1680,14 +1672,6 @@ function parkourone_generate_location_page_content($location_slug, $location_nam
 	// Probetraining-Preis
 	$probetraining_price = parkourone_get_probetraining_price();
 
-	// Probetraining-Steps für Steps-Carousel (JSON)
-	$probetraining_steps = json_encode([
-		["title" => "Altersgruppe wählen", "description" => "Wähle die passende Klasse basierend auf deinem Alter: Minis, Kids, Juniors oder Adults.", "icon" => "users"],
-		["title" => "Klasse auswählen", "description" => "Finde die perfekte Klasse für deinen Zeitplan an unserem Standort in {$location_name}.", "icon" => "calendar"],
-		["title" => "Termin buchen", "description" => "Buche online dein Probetraining. Es kostet {$probetraining_price} und wird bei Anmeldung verrechnet.", "icon" => "check"],
-		["title" => "Loslegen", "description" => "Komm in bequemer Sportkleidung zu unserem Training in {$location_name}. Wir freuen uns auf dich!", "icon" => "location"]
-	], JSON_UNESCAPED_UNICODE);
-
 	// Altersgruppen abrufen für Anzahl
 	$age_groups = parkourone_get_ordered_age_groups();
 	$age_count = count($age_groups);
@@ -1710,7 +1694,7 @@ function parkourone_generate_location_page_content($location_slug, $location_nam
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:parkourone/steps-carousel {"headline":"Parkour Probetraining in {$location_name}","subheadline":"In 4 einfachen Schritten zum ersten Training","steps":{$probetraining_steps},"backgroundColor":"light","align":"full"} /-->
+<!-- wp:parkourone/steps-carousel {"headline":"Parkour Probetraining in {$location_name}","subheadline":"In 4 einfachen Schritten zum ersten Training","backgroundColor":"light","align":"full"} /-->
 
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
@@ -1880,14 +1864,6 @@ function parkourone_generate_category_page_content($cat_slug, $seo, $header_vari
 	// Probetraining-Preis dynamisch
 	$probetraining_price = parkourone_get_probetraining_price();
 
-	// Probetraining-Steps für Steps-Carousel (JSON)
-	$probetraining_steps = json_encode([
-		["title" => "Standort wählen", "description" => "Wähle einen unserer Trainingsstandorte in {$site_name} aus, der für dich am besten erreichbar ist.", "icon" => "location"],
-		["title" => "Klasse auswählen", "description" => "Wähle die passende Klasse basierend auf deiner Altersgruppe und deinem Erfahrungslevel.", "icon" => "users"],
-		["title" => "Termin buchen", "description" => "Buche online deinen Wunschtermin. Das Probetraining kostet {$probetraining_price}.", "icon" => "calendar"],
-		["title" => "Loslegen", "description" => "Nach dem Probetraining kannst du entscheiden, ob du Teil unserer Community werden möchtest.", "icon" => "check"]
-	], JSON_UNESCAPED_UNICODE);
-
 	// Alle Standorte abrufen (fuer Statistiken)
 	$locations = parkourone_get_all_locations();
 
@@ -1926,7 +1902,7 @@ function parkourone_generate_category_page_content($cat_slug, $seo, $header_vari
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:parkourone/steps-carousel {"headline":"Parkour {$display_name} Probetraining in {$site_name}","subheadline":"In 4 einfachen Schritten zum ersten Training","steps":{$probetraining_steps},"ageCategory":"{$cat_slug}","backgroundColor":"light","align":"full"} /-->
+<!-- wp:parkourone/steps-carousel {"headline":"Parkour {$display_name} Probetraining in {$site_name}","subheadline":"In 4 einfachen Schritten zum ersten Training","ageCategory":"{$cat_slug}","backgroundColor":"light","align":"full"} /-->
 
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
