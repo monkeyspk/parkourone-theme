@@ -21,17 +21,19 @@ if ($align === 'wide') $align_class = 'alignwide';
 if ($align === 'full') $align_class = 'alignfull';
 
 // Bilder-Mapping nach Kategorie - 4 zufällige Landscape-Bilder holen
-function parkourone_get_step_images($category, $count = 4) {
-	$all_images = parkourone_get_theme_images($category, 'landscape');
-	if (empty($all_images)) {
-		$all_images = parkourone_get_theme_images('adults', 'landscape');
+if (!function_exists('parkourone_get_step_images')) {
+	function parkourone_get_step_images($category, $count = 4) {
+		$all_images = parkourone_get_theme_images($category, 'landscape');
+		if (empty($all_images)) {
+			$all_images = parkourone_get_theme_images('adults', 'landscape');
+		}
+		if (empty($all_images)) {
+			return [];
+		}
+		shuffle($all_images);
+		$selected = array_slice($all_images, 0, $count);
+		return array_map(function($img) { return $img['url']; }, $selected);
 	}
-	if (empty($all_images)) {
-		return [];
-	}
-	shuffle($all_images);
-	$selected = array_slice($all_images, 0, $count);
-	return array_map(function($img) { return $img['url']; }, $selected);
 }
 
 // Bilder für aktuelle Kategorie
