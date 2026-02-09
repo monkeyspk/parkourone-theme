@@ -12,13 +12,20 @@
 
     let isOpen = false;
 
+    function isMobile() {
+        return window.innerWidth <= 768;
+    }
+
     function openMenu() {
         isOpen = true;
         overlay.classList.add('is-open');
         toggle.classList.add('is-active');
         toggle.setAttribute('aria-expanded', 'true');
         overlay.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
+        // Only lock scroll on mobile (fullscreen overlay)
+        if (isMobile()) {
+            document.body.style.overflow = 'hidden';
+        }
     }
 
     function closeMenu() {

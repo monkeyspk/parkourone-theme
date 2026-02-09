@@ -167,7 +167,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   FULLSCREEN MENU OVERLAY
+   MENU OVERLAY
    -------------------------------------------------------------------------- */
 
 .po-menu-overlay {
@@ -194,6 +194,28 @@
     padding: 120px 2rem 4rem;
     max-width: 1200px;
     margin: 0 auto;
+}
+
+/* Desktop: Compact dropdown instead of fullscreen overlay */
+@media (min-width: 769px) {
+    .po-menu-overlay {
+        bottom: auto;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+        transform: translateY(-10px);
+        transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    }
+
+    .po-menu-overlay.is-open {
+        transform: translateY(0);
+    }
+
+    .po-menu-overlay__inner {
+        min-height: auto;
+        padding: 100px 2rem 3rem;
+    }
 }
 
 /* Menu Columns Layout */
