@@ -30,6 +30,16 @@
 				}
 			}
 
+			function moveCategory(index, direction) {
+				const newIndex = index + direction;
+				if (newIndex < 0 || newIndex >= attributes.categories.length) return;
+				const newCategories = [...attributes.categories];
+				const temp = newCategories[index];
+				newCategories[index] = newCategories[newIndex];
+				newCategories[newIndex] = temp;
+				setAttributes({ categories: newCategories });
+			}
+
 			return el('div', null, [
 				el(InspectorControls, { key: 'controls' },
 					el(PanelBody, { title: 'Zielgruppen', initialOpen: true },
@@ -38,11 +48,27 @@
 								el(CardBody, null,
 									el('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' } },
 										el('strong', null, 'Zielgruppe ' + (index + 1)),
-										attributes.categories.length > 3 && el(Button, {
-											isDestructive: true,
-											isSmall: true,
-											onClick: function() { removeCategory(index); }
-										}, 'Entfernen')
+										el('div', { style: { display: 'flex', gap: '4px' } },
+											el(Button, {
+												isSmall: true,
+												icon: 'arrow-up-alt2',
+												label: 'Nach oben',
+												disabled: index === 0,
+												onClick: function() { moveCategory(index, -1); }
+											}),
+											el(Button, {
+												isSmall: true,
+												icon: 'arrow-down-alt2',
+												label: 'Nach unten',
+												disabled: index === attributes.categories.length - 1,
+												onClick: function() { moveCategory(index, 1); }
+											}),
+											attributes.categories.length > 3 && el(Button, {
+												isDestructive: true,
+												isSmall: true,
+												onClick: function() { removeCategory(index); }
+											}, '×')
+										)
 									),
 									el(TextControl, {
 										label: 'Label',
