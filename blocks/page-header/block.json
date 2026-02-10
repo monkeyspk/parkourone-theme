@@ -71,6 +71,10 @@
 		"imageRotation": {
 			"type": "number",
 			"default": 2
+		},
+		"ageCategory": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"supports": {

@@ -38,27 +38,39 @@ function parkourone_get_fallback_image($age_category = 'adults', $orientation = 
 	$folder_map = parkourone_get_age_folder_map();
 	$folder = $folder_map[strtolower($age_category)] ?? 'adults';
 
-	$base_dir = get_template_directory() . '/assets/images/fallback/' . $orientation . '/' . $folder;
-	$base_url = get_template_directory_uri() . '/assets/images/fallback/' . $orientation . '/' . $folder;
+	// Fallback-Kette: Kategorie → verwandte Kategorie → adults
+	$related_map = [
+		'minis' => 'kids',
+		'kids' => 'minis',
+		'seniors' => 'adults',
+		'masters' => 'adults',
+		'women' => 'adults',
+	];
 
-	if (!is_dir($base_dir)) {
-		// Fallback zu adults wenn Ordner nicht existiert
-		$base_dir = get_template_directory() . '/assets/images/fallback/' . $orientation . '/adults';
-		$base_url = get_template_directory_uri() . '/assets/images/fallback/' . $orientation . '/adults';
+	$folders_to_try = [$folder];
+	if (isset($related_map[$folder])) {
+		$folders_to_try[] = $related_map[$folder];
+	}
+	if (!in_array('adults', $folders_to_try)) {
+		$folders_to_try[] = 'adults';
 	}
 
-	if (!is_dir($base_dir)) {
-		return null;
+	$template_dir = get_template_directory();
+	$template_uri = get_template_directory_uri();
+
+	foreach ($folders_to_try as $try_folder) {
+		$base_dir = $template_dir . '/assets/images/fallback/' . $orientation . '/' . $try_folder;
+
+		if (!is_dir($base_dir)) continue;
+
+		$images = glob($base_dir . '/*.{jpg,jpeg,png,webp}', GLOB_BRACE);
+		if (!empty($images)) {
+			$random_image = $images[array_rand($images)];
+			return $template_uri . '/assets/images/fallback/' . $orientation . '/' . $try_folder . '/' . basename($random_image);
+		}
 	}
 
-	$images = glob($base_dir . '/*.{jpg,jpeg,png,webp}', GLOB_BRACE);
-
-	if (empty($images)) {
-		return null;
-	}
-
-	$random_image = $images[array_rand($images)];
-	return $base_url . '/' . basename($random_image);
+	return null;
 }
 
 /**

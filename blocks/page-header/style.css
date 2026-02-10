@@ -20,6 +20,13 @@
 	display: block;
 }
 
+/* Titel nie mitten im Wort umbrechen */
+[class*="po-ph__title--"] {
+	overflow-wrap: normal;
+	word-break: keep-all;
+	hyphens: none;
+}
+
 .po-ph__cta {
 	display: inline-flex;
 	align-items: center;

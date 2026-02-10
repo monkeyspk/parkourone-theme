@@ -18,11 +18,27 @@ $stats = $attributes['stats'] ?? [];
 $accent_color = $attributes['accentColor'] ?? '#0066cc';
 $overlay_opacity = $attributes['overlayOpacity'] ?? 50;
 $rotation = $attributes['imageRotation'] ?? 2;
+$age_category = $attributes['ageCategory'] ?? '';
+
+// Altersgruppe aus URL ableiten wenn nicht explizit gesetzt
+if (empty($age_category)) {
+	$url_path = trim(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
+	$slug = explode('/', $url_path);
+	$slug = end($slug);
+	$age_slugs = ['minis', 'kids', 'juniors', 'adults', 'seniors', 'masters', 'women'];
+	foreach ($age_slugs as $age) {
+		if (strpos($slug, $age) === 0) {
+			$age_category = $age;
+			break;
+		}
+	}
+}
 
 // Fallback-Bild: Portrait für Split-Variante, Landscape für andere
 if (empty($image)) {
 	$orientation = ($variant === 'split') ? 'portrait' : 'landscape';
-	$image = parkourone_get_fallback_image('juniors', $orientation);
+	$fallback_category = $age_category ?: 'juniors';
+	$image = parkourone_get_fallback_image($fallback_category, $orientation);
 }
 
 // CTA Arrow SVG
