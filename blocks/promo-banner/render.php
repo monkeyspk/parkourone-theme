@@ -6,13 +6,14 @@ $buttonText = $attributes['buttonText'] ?? '';
 $buttonUrl = $attributes['buttonUrl'] ?? '#';
 $buttonIcon = $attributes['buttonIcon'] ?? 'play';
 $imageUrl = $attributes['imageUrl'] ?? '';
+$imageAlt = $attributes['imageAlt'] ?? '';
 ?>
 
 <section class="po-pb">
 	<div class="po-pb__inner">
 		<div class="po-pb__content">
 			<?php if ($badgeUrl): ?>
-				<img src="<?php echo esc_url($badgeUrl); ?>" alt="" class="po-pb__badge">
+				<img src="<?php echo esc_url($badgeUrl); ?>" alt="" role="presentation" class="po-pb__badge">
 			<?php endif; ?>
 			<div class="po-pb__text">
 				<?php if ($headline): ?>
@@ -41,7 +42,7 @@ $imageUrl = $attributes['imageUrl'] ?? '';
 			<?php endif; ?>
 			<?php if ($imageUrl): ?>
 				<div class="po-pb__image-wrapper">
-					<img src="<?php echo esc_url($imageUrl); ?>" alt="" class="po-pb__image">
+					<img src="<?php echo esc_url($imageUrl); ?>" alt="<?php echo esc_attr($imageAlt ?: wp_strip_all_tags($headline ?: 'ParkourONE')); ?>" class="po-pb__image">
 				</div>
 			<?php endif; ?>
 		</div>

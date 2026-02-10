@@ -48,10 +48,29 @@
     // Toggle Button Click
     toggle.addEventListener('click', toggleMenu);
 
-    // Close on Escape
+    // Close on Escape + Focus Trap (WCAG 2.1)
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && isOpen) {
             closeMenu();
+            toggle.focus();
+        }
+
+        // Focus trap when menu is open
+        if (e.key === 'Tab' && isOpen) {
+            var focusable = overlay.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])');
+            var visible = Array.prototype.filter.call(focusable, function(el) {
+                return el.offsetParent !== null;
+            });
+            if (visible.length === 0) return;
+            var first = visible[0];
+            var last = visible[visible.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
         }
     });
 

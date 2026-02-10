@@ -44,7 +44,7 @@
 
 .po-steps-timeline__subheadline {
 	font-size: 17px;
-	color: #86868b;
+	color: #6e6e73;
 	margin: 0;
 	max-width: 500px;
 	margin: 0 auto;
@@ -177,7 +177,7 @@
 .po-steps-timeline__desc {
 	font-size: 14px;
 	line-height: 1.5;
-	color: #86868b;
+	color: #6e6e73;
 	margin: 0;
 	max-width: 180px;
 }

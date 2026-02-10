@@ -180,7 +180,7 @@
 	font-weight: 500;
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
-	color: var(--po-color-text-secondary, #86868b);
+	color: var(--po-color-text-secondary, #6e6e73);
 	margin-bottom: 12px;
 }
 
@@ -196,7 +196,7 @@
 .po-usp-modal__text {
 	font-size: 16px;
 	line-height: 1.6;
-	color: var(--po-color-text-secondary, #86868b);
+	color: var(--po-color-text-secondary, #6e6e73);
 	margin: 0 0 28px;
 }
 

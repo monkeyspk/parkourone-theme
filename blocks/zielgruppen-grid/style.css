@@ -18,7 +18,7 @@
 
 .po-cg__subtext {
 	font-size: 17px;
-	color: var(--po-color-text-secondary, #86868b);
+	color: var(--po-color-text-secondary, #6e6e73);
 	margin: 0;
 }
 
@@ -40,7 +40,7 @@
 	aspect-ratio: 3/4;
 	background-size: cover;
 	background-position: center;
-	background-color: #86868b;
+	background-color: #6e6e73;
 	border-radius: 16px;
 	display: flex;
 	align-items: flex-end;
@@ -94,7 +94,7 @@
 	aspect-ratio: 3/4;
 	background-size: cover;
 	background-position: center;
-	background-color: #86868b;
+	background-color: #6e6e73;
 	border-radius: 16px;
 	display: flex;
 	align-items: flex-end;
@@ -124,7 +124,7 @@
 
 .po-cg-editor__subtext {
 	font-size: 15px;
-	color: #86868b;
+	color: #6e6e73;
 	margin: 0 0 24px;
 }
 

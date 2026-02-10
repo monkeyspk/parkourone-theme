@@ -298,7 +298,7 @@ $trainings = parkourone_get_coach_trainings_with_dates($m['name']);
 				<div class="po-tg-coach__content">
 					<p><strong>Meine Geschichte.</strong> <?php echo esc_html($m['kurzvorstellung']); ?></p>
 					<?php if (!empty($m['philosophie_bild'])): ?>
-					<img src="<?php echo esc_url($m['philosophie_bild']); ?>" alt="" class="po-tg-coach__image">
+					<img src="<?php echo esc_url($m['philosophie_bild']); ?>" alt="<?php echo esc_attr($m['name']); ?>" class="po-tg-coach__image">
 					<?php endif; ?>
 					<?php if (!empty($m['video_url'])): ?>
 					<div class="po-tg-coach__video">
@@ -314,7 +314,7 @@ $trainings = parkourone_get_coach_trainings_with_dates($m['name']);
 				<div class="po-tg-coach__content">
 					<p><strong>Ein Parkour Moment, der mich geprägt hat.</strong> <?php echo esc_html($m['moment']); ?></p>
 					<?php if (!empty($m['moment_bild'])): ?>
-					<img src="<?php echo esc_url($m['moment_bild']); ?>" alt="" class="po-tg-coach__image">
+					<img src="<?php echo esc_url($m['moment_bild']); ?>" alt="<?php echo esc_attr($m['name']); ?> - Parkour Moment" class="po-tg-coach__image">
 					<?php endif; ?>
 				</div>
 			</div>

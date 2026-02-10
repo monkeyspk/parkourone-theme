@@ -112,7 +112,7 @@
 }
 
 .po-quote-highlight--light .po-quote-highlight__role {
-	color: #86868b;
+	color: #6e6e73;
 }
 
 .po-quote-highlight--dark .po-quote-highlight__role {
@@ -163,5 +163,5 @@
 
 .po-quote-highlight-editor__author {
 	font-size: 14px;
-	color: #86868b;
+	color: #6e6e73;
 }

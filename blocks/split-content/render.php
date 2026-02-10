@@ -2,6 +2,7 @@
 $headline = $attributes['headline'] ?? '';
 $text = $attributes['text'] ?? '';
 $imageUrl = $attributes['imageUrl'] ?? '';
+$imageAlt = $attributes['imageAlt'] ?? '';
 $imageRight = $attributes['imageRight'] ?? true;
 $showCta = $attributes['showCta'] ?? false;
 $ctaText = $attributes['ctaText'] ?? 'Mehr erfahren';
@@ -27,7 +28,7 @@ if ($imageRight) {
 	</div>
 	<div class="po-split__media">
 		<?php if ($imageUrl): ?>
-			<img src="<?php echo esc_url($imageUrl); ?>" alt="" loading="lazy">
+			<img src="<?php echo esc_url($imageUrl); ?>" alt="<?php echo esc_attr($imageAlt ?: wp_strip_all_tags($headline ?? 'ParkourONE')); ?>" loading="lazy">
 		<?php endif; ?>
 	</div>
 </section>

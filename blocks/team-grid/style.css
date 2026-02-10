@@ -18,7 +18,7 @@
 
 .po-tg__intro {
 	font-size: 1.125rem;
-	color: #86868b;
+	color: #6e6e73;
 	margin: 0;
 	line-height: 1.5;
 }
@@ -184,7 +184,7 @@
 .po-tg__card-initials {
 	font-size: 2.5rem;
 	font-weight: 600;
-	color: #86868b;
+	color: #6e6e73;
 	letter-spacing: 0.02em;
 }
 
@@ -206,7 +206,7 @@
 .po-tg__card-role {
 	display: block;
 	font-size: 0.875rem;
-	color: #86868b;
+	color: #6e6e73;
 	font-weight: 400;
 }
 
@@ -358,7 +358,7 @@ body.po-tg-no-scroll {
 
 .po-tg-coach__meta {
 	font-size: 19px;
-	color: #86868b;
+	color: #6e6e73;
 	margin: 0;
 	font-weight: 400;
 }
@@ -440,7 +440,7 @@ body.po-tg-no-scroll {
 .po-tg-coach__fact dt {
 	font-size: 13px;
 	font-weight: 500;
-	color: #86868b;
+	color: #6e6e73;
 	text-transform: uppercase;
 	letter-spacing: 0.02em;
 }
@@ -502,7 +502,7 @@ body.po-tg-no-scroll {
 
 .po-tg-coach__training-time {
 	font-size: 15px;
-	color: #86868b;
+	color: #6e6e73;
 }
 
 .po-tg-coach__training-cta {
@@ -581,7 +581,7 @@ body.po-tg-no-scroll {
 	font-weight: 500;
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
-	color: #86868b;
+	color: #6e6e73;
 	margin-bottom: 8px;
 }
 
@@ -596,7 +596,7 @@ body.po-tg-no-scroll {
 
 .po-tg-booking__subheading {
 	font-size: 15px;
-	color: #86868b;
+	color: #6e6e73;
 	margin: 8px 0 0;
 }
 
@@ -663,7 +663,7 @@ body.po-tg-no-scroll {
 
 .po-tg-booking__date-stock {
 	font-size: 13px;
-	color: #86868b;
+	color: #6e6e73;
 	background: rgba(0, 0, 0, 0.05);
 	padding: 4px 10px;
 	border-radius: 20px;
@@ -680,7 +680,7 @@ body.po-tg-no-scroll {
 .po-tg-booking__empty p {
 	margin: 0 0 8px;
 	font-size: 15px;
-	color: #86868b;
+	color: #6e6e73;
 }
 
 .po-tg-booking__empty p:last-child {

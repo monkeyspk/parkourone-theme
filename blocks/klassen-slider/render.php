@@ -526,7 +526,7 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 					<div class="po-ks-coach">
 						<header class="po-ks-coach__header">
 							<?php if (!empty($coach['card_image'])): ?>
-							<img src="<?php echo esc_url($coach['card_image']); ?>" alt="" class="po-ks-coach__avatar">
+							<img src="<?php echo esc_url($coach['card_image']); ?>" alt="Coach <?php echo esc_attr($coach['name']); ?>" class="po-ks-coach__avatar">
 							<?php endif; ?>
 							<div class="po-ks-coach__info">
 								<h2 class="po-ks-coach__name"><?php echo esc_html($coach['name']); ?></h2>
@@ -538,7 +538,7 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 
 						<?php if (!empty($coach['hero_bild'])): ?>
 						<div class="po-ks-coach__hero">
-							<img src="<?php echo esc_url($coach['hero_bild']); ?>" alt="">
+							<img src="<?php echo esc_url($coach['hero_bild']); ?>" alt="<?php echo esc_attr($coach['name']); ?> beim Training">
 						</div>
 						<?php endif; ?>
 
@@ -569,7 +569,7 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 						<div class="po-ks-coach__section">
 							<p><?php echo esc_html($coach['kurzvorstellung']); ?></p>
 							<?php if (!empty($coach['philosophie_bild'])): ?>
-							<img src="<?php echo esc_url($coach['philosophie_bild']); ?>" alt="" class="po-ks-coach__image">
+							<img src="<?php echo esc_url($coach['philosophie_bild']); ?>" alt="<?php echo esc_attr($coach['name']); ?>" class="po-ks-coach__image">
 							<?php endif; ?>
 						</div>
 						<?php endif; ?>
@@ -578,7 +578,7 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 						<div class="po-ks-coach__section">
 							<p><strong>Ein Parkour Moment, der mich geprägt hat:</strong> <?php echo esc_html($coach['moment']); ?></p>
 							<?php if (!empty($coach['moment_bild'])): ?>
-							<img src="<?php echo esc_url($coach['moment_bild']); ?>" alt="" class="po-ks-coach__image">
+							<img src="<?php echo esc_url($coach['moment_bild']); ?>" alt="<?php echo esc_attr($coach['name']); ?> - Parkour Moment" class="po-ks-coach__image">
 							<?php endif; ?>
 						</div>
 						<?php endif; ?>

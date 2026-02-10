@@ -210,7 +210,7 @@ unset($day);
 											<?php if ($event['headcoach']): ?>
 												<span class="po-schedule-event__coach">
 													<?php if ($event['headcoach_image']): ?>
-														<img src="<?php echo esc_url($event['headcoach_image']); ?>" alt="">
+														<img src="<?php echo esc_url($event['headcoach_image']); ?>" alt="<?php echo esc_attr($event['headcoach']); ?>">
 													<?php endif; ?>
 													<?php echo esc_html($event['headcoach']); ?>
 												</span>

@@ -96,6 +96,7 @@ class PO_Consent_Manager {
 		$this->register_default_services();
 
 		add_action('init', [$this, 'init']);
+		add_action('template_redirect', [$this, 'handle_nojs_consent']);
 		add_action('wp_enqueue_scripts', [$this, 'enqueue_assets'], 1);
 		add_action('wp_head', [$this, 'output_consent_config'], 1);
 		add_action('wp_footer', [$this, 'output_banner'], 100);
@@ -485,6 +486,120 @@ class PO_Consent_Manager {
 		}
 
 		return false;
+	}
+
+	/**
+	 * No-JS Fallback: Consent per POST-Formular speichern
+	 * Wird ausgelöst wenn JavaScript deaktiviert ist
+	 */
+	public function handle_nojs_consent() {
+		if (empty($_POST['po_consent_nojs_action'])) {
+			return;
+		}
+
+		// Nonce prüfen (zwei mögliche Felder: Hauptansicht oder Einstellungen)
+		$nonce_valid = false;
+		if (!empty($_POST['po_consent_nojs_nonce']) && wp_verify_nonce($_POST['po_consent_nojs_nonce'], 'po_consent_nojs')) {
+			$nonce_valid = true;
+		}
+		if (!empty($_POST['po_consent_nojs_nonce_settings']) && wp_verify_nonce($_POST['po_consent_nojs_nonce_settings'], 'po_consent_nojs')) {
+			$nonce_valid = true;
+		}
+
+		if (!$nonce_valid) {
+			return;
+		}
+
+		$action = sanitize_text_field($_POST['po_consent_nojs_action']);
+
+		// Kategorien je nach Aktion bestimmen
+		$sanitized_categories = [
+			self::CATEGORY_NECESSARY => true,
+			self::CATEGORY_FUNCTIONAL => false,
+			self::CATEGORY_ANALYTICS => false,
+			self::CATEGORY_MARKETING => false,
+		];
+
+		if ($action === 'accept-all') {
+			$sanitized_categories[self::CATEGORY_FUNCTIONAL] = true;
+			$sanitized_categories[self::CATEGORY_ANALYTICS] = true;
+			$sanitized_categories[self::CATEGORY_MARKETING] = true;
+		} elseif ($action === 'save-selection') {
+			// Checkboxes aus dem Einstellungen-Formular auslesen
+			$sanitized_categories[self::CATEGORY_FUNCTIONAL] = !empty($_POST['consent_functional']);
+			$sanitized_categories[self::CATEGORY_ANALYTICS] = !empty($_POST['consent_analytics']);
+			$sanitized_categories[self::CATEGORY_MARKETING] = !empty($_POST['consent_marketing']);
+		}
+		// reject-all: Standardwerte behalten (nur necessary)
+
+		// Consent-ID generieren
+		$consent_id = wp_generate_uuid4();
+
+		// Cookie-Daten (kompakt)
+		$cookie_data = [
+			'v' => self::CONSENT_VERSION,
+			'l' => self::LEGAL_TEXT_VERSION,
+			'c' => [
+				'n' => 1,
+				'f' => $sanitized_categories[self::CATEGORY_FUNCTIONAL] ? 1 : 0,
+				'a' => $sanitized_categories[self::CATEGORY_ANALYTICS] ? 1 : 0,
+				'm' => $sanitized_categories[self::CATEGORY_MARKETING] ? 1 : 0,
+			],
+			't' => time(),
+			'id' => substr($consent_id, 0, 8),
+		];
+
+		// Cookie setzen
+		$cookie_value = base64_encode(wp_json_encode($cookie_data));
+		$expiry = time() + (self::CONSENT_EXPIRY_DAYS * DAY_IN_SECONDS);
+		$cookie_domain = $this->get_cross_domain_cookie_domain();
+
+		setcookie(
+			self::CONSENT_COOKIE,
+			$cookie_value,
+			[
+				'expires' => $expiry,
+				'path' => '/',
+				'domain' => $cookie_domain,
+				'secure' => is_ssl(),
+				'httponly' => false,
+				'samesite' => 'Lax',
+			]
+		);
+
+		// Audit-Log
+		$user_id = is_user_logged_in() ? get_current_user_id() : null;
+		$audit_data = [
+			'consent_id' => $consent_id,
+			'version' => self::CONSENT_VERSION,
+			'legal_version' => self::LEGAL_TEXT_VERSION,
+			'timestamp' => current_time('c'),
+			'categories' => $sanitized_categories,
+			'user_agent' => sanitize_text_field($_SERVER['HTTP_USER_AGENT'] ?? ''),
+			'ip_hash' => hash('sha256', $this->get_anonymized_ip()),
+			'user_id' => $user_id,
+			'domain' => $_SERVER['HTTP_HOST'] ?? '',
+			'dnt' => !empty($_SERVER['HTTP_DNT']),
+			'gpc' => !empty($_SERVER['HTTP_SEC_GPC']),
+		];
+
+		$last_hash = $this->get_last_consent_hash();
+		$audit_data['previous_hash'] = $last_hash;
+		$audit_data['integrity'] = hash('sha256', wp_json_encode($audit_data) . wp_salt('auth'));
+
+		$this->log_consent($audit_data);
+
+		// Zurück zur gleichen Seite redirecten
+		$redirect_path = !empty($_POST['po_consent_nojs_redirect'])
+			? sanitize_text_field($_POST['po_consent_nojs_redirect'])
+			: '/';
+
+		// Absolute URL aus relativem Pfad erstellen und validieren
+		$redirect = home_url($redirect_path);
+		$redirect = wp_validate_redirect($redirect, home_url('/'));
+
+		wp_safe_redirect($redirect);
+		exit;
 	}
 
 	/**

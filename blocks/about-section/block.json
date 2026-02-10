@@ -21,6 +21,7 @@
 		"ctaUrl": { "type": "string", "default": "#" },
 		"mediaType": { "type": "string", "default": "video" },
 		"imageUrl": { "type": "string", "default": "" },
+		"imageAlt": { "type": "string", "default": "" },
 		"videoUrl": { "type": "string", "default": "" },
 		"videoType": { "type": "string", "default": "embed" },
 		"mediaRight": { "type": "boolean", "default": true },

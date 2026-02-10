@@ -1,0 +1,133 @@
+/* ==========================================================================
+   Health Data Consent (DSGVO Art. 9)
+   ========================================================================== */
+
+.po-health-consent {
+	background: #fff;
+	border: 1px solid #e5e5e7;
+	border-radius: 12px;
+	padding: 24px;
+	margin: 24px 0;
+	font-family: var(--po-font-sans, -apple-system, BlinkMacSystemFont, sans-serif);
+}
+
+.po-health-consent__header {
+	margin-bottom: 16px;
+	padding-bottom: 12px;
+	border-bottom: 1px solid #e5e5e7;
+}
+
+.po-health-consent__title {
+	font-size: 18px;
+	font-weight: 600;
+	color: #1d1d1f;
+	margin: 0 0 4px;
+}
+
+.po-health-consent__subtitle {
+	font-size: 13px;
+	color: #6e6e73;
+	margin: 0;
+}
+
+.po-health-consent__info {
+	font-size: 14px;
+	line-height: 1.6;
+	color: #1d1d1f;
+	margin-bottom: 20px;
+}
+
+.po-health-consent__info p {
+	margin: 0 0 8px;
+}
+
+.po-health-consent__info ul {
+	margin: 0 0 16px;
+	padding-left: 20px;
+}
+
+.po-health-consent__info li {
+	margin-bottom: 4px;
+}
+
+.po-health-consent__purpose,
+.po-health-consent__storage,
+.po-health-consent__rights,
+.po-health-consent__hosting {
+	background: #f5f5f7;
+	padding: 12px 16px;
+	border-radius: 8px;
+	margin: 12px 0;
+}
+
+.po-health-consent__purpose strong,
+.po-health-consent__storage strong,
+.po-health-consent__rights strong,
+.po-health-consent__hosting strong {
+	display: block;
+	margin-bottom: 4px;
+	font-size: 14px;
+}
+
+.po-health-consent__checkbox-wrapper {
+	background: #fafafa;
+	border: 2px solid #e5e5e7;
+	border-radius: 8px;
+	padding: 16px;
+	transition: border-color 0.2s ease;
+}
+
+.po-health-consent__checkbox-wrapper:has(input:checked) {
+	border-color: #28a745;
+	background: #f0fff4;
+}
+
+.po-health-consent__label {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	cursor: pointer;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.po-health-consent__input {
+	margin-top: 3px;
+	width: 18px;
+	height: 18px;
+	flex-shrink: 0;
+	accent-color: #28a745;
+}
+
+.po-health-consent__input:focus-visible {
+	outline: 3px solid rgba(0, 102, 204, 0.3);
+	outline-offset: 2px;
+}
+
+.po-health-consent__required {
+	color: #dc3545;
+	font-weight: 600;
+}
+
+/* Inline variant (for embedding in existing forms) */
+.po-health-consent__field {
+	margin: 16px 0;
+}
+
+.po-health-consent__field label {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+.po-health-consent__field input[type="checkbox"] {
+	margin-top: 3px;
+	flex-shrink: 0;
+}
+
+.po-health-consent__field a {
+	color: #0066cc;
+	text-decoration: underline;
+}

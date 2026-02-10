@@ -36,7 +36,7 @@
 .po-filter label {
 	font-size: 0.75rem;
 	font-weight: 600;
-	color: #86868b;
+	color: #6e6e73;
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
 }
@@ -102,7 +102,7 @@
 .po-stundenplan-day__count {
 	display: inline-block;
 	font-size: 0.75rem;
-	color: #86868b;
+	color: #6e6e73;
 	background: #f0f0f0;
 	padding: 0.125rem 0.5rem;
 	border-radius: 10px;
@@ -156,7 +156,7 @@
 
 .po-schedule-event__time-end {
 	font-weight: 400;
-	color: #86868b;
+	color: #6e6e73;
 }
 
 .po-schedule-event__content {
@@ -176,7 +176,7 @@
 	flex-direction: column;
 	gap: 0.25rem;
 	font-size: 0.75rem;
-	color: #86868b;
+	color: #6e6e73;
 }
 
 .po-schedule-event__coach {
@@ -214,7 +214,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	color: #86868b;
+	color: #6e6e73;
 	opacity: 0;
 	transition: opacity 0.2s, background 0.2s, color 0.2s;
 }

@@ -4,7 +4,7 @@
 	--po-card-radius: 18px;
 	--po-font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
 	--po-color-text: #1d1d1f;
-	--po-color-text-secondary: #86868b;
+	--po-color-text-secondary: #6e6e73;
 	--po-color-link: #0066cc;
 	--po-color-surface: #f5f5f7;
 	--po-transition-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -882,7 +882,7 @@ body.po-no-scroll {
 .po-klassen-slider__empty-message {
 	text-align: center;
 	padding: 40px 24px;
-	color: var(--po-color-text-secondary, #86868b);
+	color: var(--po-color-text-secondary, #6e6e73);
 }
 
 .po-klassen-slider__empty-message p {
@@ -1021,7 +1021,7 @@ body.po-no-scroll {
 
 .po-ks-coach__role {
 	font-size: 14px;
-	color: #86868b;
+	color: #6e6e73;
 	margin: 4px 0 0;
 }
 
@@ -1060,7 +1060,7 @@ body.po-no-scroll {
 	font-weight: 500;
 	text-transform: uppercase;
 	letter-spacing: 0.03em;
-	color: #86868b;
+	color: #6e6e73;
 	margin-bottom: 4px;
 }
 

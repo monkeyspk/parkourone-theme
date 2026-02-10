@@ -189,6 +189,7 @@ require_once get_template_directory() . '/inc/admin-menu.php';
 require_once get_template_directory() . '/inc/cookie-consent/init.php';
 require_once get_template_directory() . '/inc/analytics/init.php';
 require_once get_template_directory() . '/inc/woocommerce/init.php';
+require_once get_template_directory() . '/inc/health-data-consent.php';
 
 /**
  * Menü-Positionen registrieren
@@ -862,6 +863,23 @@ function parkourone_enqueue_theme_styles() {
         filemtime(get_template_directory() . '/assets/js/scroll-animations.js'),
         true
     );
+
+    // Accessibility Utilities (WCAG 2.1 AA)
+    wp_enqueue_script(
+        'parkourone-accessibility',
+        get_template_directory_uri() . '/assets/js/accessibility.js',
+        [],
+        filemtime(get_template_directory() . '/assets/js/accessibility.js'),
+        true
+    );
+
+    // Health Data Consent CSS
+    wp_enqueue_style(
+        'parkourone-health-consent',
+        get_template_directory_uri() . '/assets/css/health-consent.css',
+        [],
+        filemtime(get_template_directory() . '/assets/css/health-consent.css')
+    );
 }
 add_action('wp_enqueue_scripts', 'parkourone_enqueue_theme_styles');
 
@@ -888,6 +906,9 @@ function parkourone_render_header() {
     }
 
     ?>
+    <!-- Skip-Link für Barrierefreiheit (WCAG 2.1) -->
+    <a class="po-skip-link" href="#po-main-content">Zum Inhalt springen</a>
+
     <header class="po-header" id="po-header">
         <div class="po-header__inner">
             <a href="<?php echo esc_url($home_url); ?>" class="po-header__logo">

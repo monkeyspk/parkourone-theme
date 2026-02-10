@@ -228,24 +228,24 @@ if ($group_by === 'weekday') {
 					<h3 class="po-booking-panel__title"></h3>
 
 					<div class="po-booking-panel__step po-booking-panel__step--date">
-						<label class="po-booking-panel__label">Datum wählen</label>
-						<select class="po-booking-panel__date-select">
+						<label class="po-booking-panel__label" for="po-booking-date">Datum wählen</label>
+						<select class="po-booking-panel__date-select" id="po-booking-date">
 							<option value="">Datum auswählen...</option>
 						</select>
 					</div>
 
 					<div class="po-booking-panel__step po-booking-panel__step--details" style="display: none;">
 						<div class="po-booking-panel__field">
-							<label>Vorname</label>
-							<input type="text" name="vorname" required>
+							<label for="po-booking-vorname">Vorname</label>
+							<input type="text" id="po-booking-vorname" name="vorname" required autocomplete="given-name">
 						</div>
 						<div class="po-booking-panel__field">
-							<label>Nachname</label>
-							<input type="text" name="name" required>
+							<label for="po-booking-nachname">Nachname</label>
+							<input type="text" id="po-booking-nachname" name="name" required autocomplete="family-name">
 						</div>
 						<div class="po-booking-panel__field">
-							<label>Geburtsdatum</label>
-							<input type="date" name="geburtsdatum" required>
+							<label for="po-booking-geburtsdatum">Geburtsdatum</label>
+							<input type="date" id="po-booking-geburtsdatum" name="geburtsdatum" required>
 						</div>
 					</div>
 

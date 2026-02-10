@@ -272,7 +272,7 @@
 .po-trust-modal__section-intro {
 	font-size: 0.9375rem;
 	line-height: 1.6;
-	color: #86868b;
+	color: #6e6e73;
 	margin: 0 0 1.5rem;
 }
 
@@ -347,7 +347,7 @@
 	font-weight: 600;
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
-	color: #86868b;
+	color: #6e6e73;
 	margin-bottom: 0.375rem;
 }
 
@@ -389,7 +389,7 @@
 .po-trust-modal__method-desc {
 	font-size: 0.8125rem;
 	line-height: 1.5;
-	color: #86868b;
+	color: #6e6e73;
 	margin: 0;
 }
 
@@ -452,7 +452,7 @@
 
 .po-trust-editor__intro {
 	font-size: 0.875rem;
-	color: #86868b;
+	color: #6e6e73;
 	margin: 0 0 1rem;
 }
 

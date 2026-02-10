@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSGVO Check - Meeting mit Thomas Rosin</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f5f5f7;
+    color: #1d1d1f;
+    line-height: 1.6;
+    padding: 1rem;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+  header {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    color: white;
+    padding: 2rem;
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  header h1 { font-size: 1.6rem; margin-bottom: 0.3rem; }
+  header p { opacity: 0.7; font-size: 0.9rem; }
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .badge--green { background: #d4edda; color: #155724; }
+  .badge--yellow { background: #fff3cd; color: #856404; }
+  .badge--red { background: #f8d7da; color: #721c24; }
+  .badge--blue { background: #d1ecf1; color: #0c5460; }
+
+  .section {
+    background: white;
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .section h2 {
+    font-size: 1.15rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .section h3 {
+    font-size: 0.95rem;
+    margin: 1rem 0 0.5rem;
+    color: #333;
+  }
+  ul { padding-left: 1.3rem; }
+  li { margin-bottom: 0.4rem; font-size: 0.92rem; }
+  li strong { color: #1d1d1f; }
+
+  .check { color: #28a745; }
+  .warn { color: #e67e22; }
+  .cross { color: #dc3545; }
+  .info { color: #3498db; }
+
+  .tldr {
+    background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+    border-left: 4px solid #28a745;
+    padding: 1.2rem 1.5rem;
+    border-radius: 0 14px 14px 0;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+  }
+  .tldr h2 { color: #2e7d32; }
+
+  .ask-thomas {
+    background: linear-gradient(135deg, #fff8e1, #fff3e0);
+    border-left: 4px solid #ff9800;
+    padding: 1.2rem 1.5rem;
+    border-radius: 0 14px 14px 0;
+    margin-bottom: 1rem;
+  }
+  .ask-thomas h2 { color: #e65100; }
+  .ask-thomas ol { padding-left: 1.3rem; }
+  .ask-thomas li { margin-bottom: 0.6rem; }
+
+  .detail-toggle {
+    cursor: pointer;
+    user-select: none;
+    color: #0066cc;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    display: inline-block;
+  }
+  .detail-toggle:hover { text-decoration: underline; }
+  .detail-content {
+    display: none;
+    margin-top: 0.5rem;
+    padding: 0.8rem;
+    background: #f9f9fb;
+    border-radius: 8px;
+    font-size: 0.88rem;
+  }
+  .detail-content.open { display: block; }
+
+  code {
+    background: #f0f0f5;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-family: 'SF Mono', Monaco, monospace;
+  }
+
+  .domains {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+  }
+  .domains span {
+    background: #eef2ff;
+    padding: 2px 10px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    color: #3730a3;
+  }
+
+  footer {
+    text-align: center;
+    padding: 1.5rem;
+    color: #999;
+    font-size: 0.8rem;
+  }
+
+  @media (max-width: 600px) {
+    body { padding: 0.5rem; }
+    header h1 { font-size: 1.3rem; }
+    .section { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>DSGVO-Check: ParkourONE Theme</h1>
+  <p>Vorbereitung Meeting mit Thomas Rosin &bull; Stand: Februar 2026</p>
+</header>
+
+<!-- TL;DR -->
+<div class="tldr">
+  <h2>TL;DR - Kurzfassung</h2>
+  <p style="margin-top:0.5rem">
+    Unser Theme ist insgesamt <strong>ziemlich gut aufgestellt</strong>. Wir haben ein eigenes Cookie-Consent-System gebaut, eigene Analytics ohne Google, und respektieren DNT/GPC-Signale.
+    <strong>Zwei Sachen sollten wir mit Thomas besprechen:</strong> Wir laden 2 JS-Bibliotheken von externen CDNs (jsdelivr, Cloudflare) - die sollten wir evtl. selbst hosten. Und wir sollten checken ob die Datenschutzerklaerung auf der Seite zu dem passt was wir tatsaechlich tun.
+  </p>
+</div>
+
+<!-- FRAGEN FÜR THOMAS -->
+<div class="ask-thomas">
+  <h2>Fragen fuer Thomas</h2>
+  <ol>
+    <li><strong>CDN-Bibliotheken:</strong> Wir laden Swiper.js (von jsdelivr) und Cropper.js (von Cloudflare CDN). Reicht ein Hinweis in der Datenschutzerklaerung, oder muessen wir die selbst hosten?</li>
+    <li><strong>Analytics-Daten:</strong> Wir tracken Browser-Typ, OS, Bildschirmgroesse, Scroll-Tiefe etc. in unserer eigenen DB. Kein Google Analytics. Wir hashen die IP taeglich neu (SHA256 von IP+UserAgent+Datum). Reicht das als Anonymisierung?</li>
+    <li><strong>Cross-Domain Cookies:</strong> Wir teilen den Consent-Cookie ueber alle ParkourONE-Subdomains (berlin., schweiz., hannover. etc.). Muss das extra erwaehnt werden?</li>
+    <li><strong>Coach-Profil Uploads:</strong> Coaches koennen Profilbilder hochladen. Brauchen wir dafuer eine separate Einwilligung oder reicht der Arbeitsvertrag/die Vereinbarung?</li>
+    <li><strong>Kontaktformular Angebote:</strong> Wir haben ein AJAX-Kontaktformular fuer Angebote. Brauchen wir da einen Consent-Haken oder reicht der Hinweis auf die Datenschutzerklaerung?</li>
+    <li><strong>Session-Storage statt Cookies:</strong> Fuer Analytics nutzen wir sessionStorage statt Cookies. Zaehlt das trotzdem als "Cookie-aequivalente Technologie"?</li>
+  </ol>
+</div>
+
+<!-- WAS LÄUFT GUT -->
+<div class="section">
+  <h2><span class="check">&#10003;</span> Was schon gut laeuft</h2>
+
+  <h3><span class="check">&#10003;</span> Eigenes Cookie-Consent-System <span class="badge badge--green">Top</span></h3>
+  <ul>
+    <li>Eigenes Consent-Banner mit <strong>4 Kategorien</strong>: Notwendig, Funktional, Analytics, Marketing</li>
+    <li>Cookie <code>po_consent</code> laeuft <strong>180 Tage</strong> (DSGVO-konform, max. empfohlen: 12 Monate)</li>
+    <li>Consent wird gespeichert mit Zeitstempel &amp; Version - also nachvollziehbar</li>
+    <li>User kann jederzeit seine Auswahl aendern</li>
+  </ul>
+
+  <h3><span class="check">&#10003;</span> Eigene Analytics - kein Google! <span class="badge badge--green">Top</span></h3>
+  <ul>
+    <li>Komplett <strong>selbst gehostete Analytics</strong> in unserer eigenen WordPress-Datenbank</li>
+    <li>Kein Google Analytics, kein Matomo SaaS, keine Daten gehen an Dritte</li>
+    <li>IP-Adressen werden <strong>nie gespeichert</strong> - nur ein taeglich wechselnder Hash (SHA256)</li>
+    <li>Nutzt <code>sessionStorage</code> statt Cookies fuer die Session-ID</li>
+  </ul>
+
+  <h3><span class="check">&#10003;</span> Privacy-Signale werden respektiert <span class="badge badge--green">Top</span></h3>
+  <ul>
+    <li><strong>Do Not Track (DNT)</strong> wird erkannt und beachtet</li>
+    <li><strong>Global Privacy Control (GPC)</strong> wird erkannt und beachtet</li>
+    <li>Bei aktivem DNT/GPC: automatisch nur notwendige Cookies, Rest wird blockiert</li>
+  </ul>
+
+  <h3><span class="check">&#10003;</span> Security Headers <span class="badge badge--green">Gut</span></h3>
+  <ul>
+    <li><strong>Referrer-Policy:</strong> <code>strict-origin-when-cross-origin</code> - limitiert Daten die an externe Seiten gehen</li>
+    <li><strong>Permissions-Policy:</strong> Kamera, Mikrofon, Geolocation, Payment etc. sind standardmaessig blockiert</li>
+    <li><strong>PHPSESSID</strong> wird aktiv entfernt wenn kein funktionaler Consent vorliegt</li>
+  </ul>
+
+  <h3><span class="check">&#10003;</span> Google Consent Mode v2 <span class="badge badge--green">Gut</span></h3>
+  <ul>
+    <li>Falls Google-Dienste aktiviert werden, ist <strong>Consent Mode v2</strong> schon eingebaut</li>
+    <li><code>gtag('consent', 'update', ...)</code> wird dynamisch mit den User-Praeferenzen aufgerufen</li>
+    <li>Aktuell sind keine Google-Dienste aktiv - aber wir sind vorbereitet</li>
+  </ul>
+
+  <span class="detail-toggle" onclick="toggleDetail(this)">&#9660; Technische Details anzeigen</span>
+  <div class="detail-content">
+    <p><strong>Consent-Cookie Format:</strong> Base64-encoded JSON mit Version, Zeitstempel und Kategorie-Flags.</p>
+    <p><strong>MU-Plugin:</strong> <code>parkourone-consent-early.php</code> laeuft als Must-Use Plugin ganz frueh im WordPress-Boot - noch bevor andere Plugins Cookies setzen koennen.</p>
+    <p><strong>Analytics Hash:</strong> <code>SHA256(IP + UserAgent + Datum)</code> - wechselt taeglich, nicht zurueckrechenbar.</p>
+  </div>
+</div>
+
+<!-- WAS WIR BESPRECHEN SOLLTEN -->
+<div class="section">
+  <h2><span class="warn">&#9888;</span> Sollten wir mit Thomas besprechen</h2>
+
+  <h3><span class="warn">&#9888;</span> Externe CDN-Bibliotheken <span class="badge badge--yellow">Pruefen</span></h3>
+  <ul>
+    <li><strong>Swiper.js</strong> wird von <code>cdn.jsdelivr.net</code> geladen (fuer Slider/Karussells)</li>
+    <li><strong>Cropper.js</strong> wird von <code>cdnjs.cloudflare.com</code> geladen (fuer Coach-Profilbild-Zuschnitt)</li>
+    <li>Bei jedem Seitenaufruf geht eine Anfrage an diese Server &rarr; die sehen die <strong>IP-Adresse</strong> des Besuchers</li>
+    <li><strong>Loesung:</strong> Bibliotheken lokal im Theme hosten. Dann geht nix mehr nach aussen.</li>
+  </ul>
+
+  <h3><span class="warn">&#9888;</span> Analytics-Datenumfang <span class="badge badge--yellow">Pruefen</span></h3>
+  <p style="margin-bottom:0.5rem">Unsere eigenen Analytics sammeln folgende Daten:</p>
+  <ul>
+    <li>Seiten-URL, Seitentitel, Referrer</li>
+    <li>Browser-Typ (Chrome, Firefox etc.), Betriebssystem</li>
+    <li>Geraetetyp (Mobile/Tablet/Desktop), Bildschirmbreite</li>
+    <li>Sprache des Browsers</li>
+    <li>Scroll-Tiefe (wie weit gescrollt), Zeit auf der Seite</li>
+    <li>Ladezeit der Seite</li>
+    <li>UTM-Parameter (utm_source, utm_medium, utm_campaign)</li>
+    <li>Klick-Events (ausgehende Links, Downloads, CTAs)</li>
+    <li>Formular-Absendungen (welches Formular, nicht die Inhalte)</li>
+  </ul>
+  <p style="margin-top:0.5rem"><strong>Frage an Thomas:</strong> Ist dieser Umfang okay wenn alles in unserer eigenen DB bleibt und IPs nur gehasht werden?</p>
+
+  <h3><span class="warn">&#9888;</span> Datenschutzerklaerung abgleichen <span class="badge badge--yellow">Todo</span></h3>
+  <ul>
+    <li>Checken ob die aktuelle Datenschutzerklaerung <strong>alle aktiven Dienste korrekt beschreibt</strong></li>
+    <li>Besonders: Eigene Analytics erwaehnen (nicht nur Google Analytics als Platzhalter)</li>
+    <li>CDN-Anbieter erwaehnen (jsdelivr/Cloudflare) solange wir die noch nutzen</li>
+    <li>sessionStorage-Nutzung erwaehnen</li>
+  </ul>
+
+  <span class="detail-toggle" onclick="toggleDetail(this)">&#9660; Welche Drittanbieter-Dienste sind konfiguriert?</span>
+  <div class="detail-content">
+    <p>Im Code sind folgende Dienste <strong>vorbereitet aber optional</strong> (muessen einzeln aktiviert werden):</p>
+    <ul>
+      <li>Google Analytics, Google Fonts, Google Maps, Google Ads</li>
+      <li>Facebook Pixel</li>
+      <li>YouTube / Vimeo Video-Einbettungen</li>
+      <li>MailerLite (Newsletter)</li>
+      <li>Tidio / Crisp (Live-Chat)</li>
+      <li>Plausible / Matomo (alternative Analytics)</li>
+      <li>OpenStreetMap</li>
+    </ul>
+    <p>Alle diese Dienste werden <strong>nur geladen wenn der User per Consent zustimmt</strong>. Aktuell scheint keiner davon aktiv zu sein.</p>
+  </div>
+</div>
+
+<!-- CROSS-DOMAIN -->
+<div class="section">
+  <h2><span class="info">&#8505;</span> Cross-Domain Cookie-Sharing</h2>
+  <p>Der Consent-Cookie wird ueber alle ParkourONE-Subdomains geteilt, damit User nicht auf jeder Subdomain neu zustimmen muessen:</p>
+  <div class="domains">
+    <span>parkourone.com</span>
+    <span>berlin.parkourone.com</span>
+    <span>schweiz.parkourone.com</span>
+    <span>hannover.parkourone.com</span>
+    <span>muenster.parkourone.com</span>
+    <span>dresden.parkourone.com</span>
+    <span>rheinruhr.parkourone.com</span>
+    <span>augsburg.parkourone.com</span>
+  </div>
+  <p style="margin-top:0.8rem"><strong>Frage an Thomas:</strong> Muss das in der Datenschutzerklaerung explizit erwaehnt werden, dass der Consent-Cookie subdomain-uebergreifend gilt?</p>
+</div>
+
+<!-- FORMULARE & DATENERFASSUNG -->
+<div class="section">
+  <h2><span class="info">&#8505;</span> Formulare &amp; Datenerfassung</h2>
+  <p>Diese Stellen im Theme erfassen User-Eingaben:</p>
+  <ul>
+    <li><strong>Angebote-Kontaktformular:</strong> AJAX-basiert, sendet Anfrage zu einem Angebot</li>
+    <li><strong>Warenkorb / Buchung:</strong> Klassen und Angebote koennen in den Warenkorb gelegt werden (WooCommerce)</li>
+    <li><strong>Coach-Profil:</strong> Coaches koennen ihr Profil bearbeiten und Bilder hochladen (nur eingeloggte User)</li>
+  </ul>
+  <p style="margin-top:0.5rem">Alle Formulare nutzen WordPress AJAX (<code>admin-ajax.php</code>) und bleiben auf unserem Server.</p>
+</div>
+
+<!-- REST API ENDPOINTS -->
+<div class="section">
+  <h2><span class="info">&#8505;</span> Oeffentliche API-Endpoints</h2>
+  <p>Folgende REST-API Endpoints sind oeffentlich erreichbar (liefern aber keine personenbezogenen Daten):</p>
+  <ul>
+    <li><code>/wp-json/parkourone/v1/event-filters</code> - Event-Filterkategorien</li>
+    <li><code>/wp-json/parkourone/v1/klassen</code> - Klassen-Uebersicht</li>
+    <li><code>/wp-json/parkourone/v1/angebote</code> - Angebote-Uebersicht</li>
+    <li><code>/wp-json/parkourone/v1/analytics/track</code> - Analytics-Events empfangen (POST)</li>
+  </ul>
+  <p style="margin-top:0.5rem">Endpoints die sensiblere Daten liefern (Theme-Images, FAQ-Kategorien) sind auf eingeloggte User mit <code>edit_posts</code>-Berechtigung beschraenkt.</p>
+</div>
+
+<!-- CHECKLISTE -->
+<div class="section">
+  <h2>&#9745; Checkliste fuer nach dem Meeting</h2>
+  <ul style="list-style: none; padding-left: 0;">
+    <li><label><input type="checkbox"> Swiper.js lokal hosten (jsdelivr CDN entfernen)</label></li>
+    <li><label><input type="checkbox"> Cropper.js lokal hosten (Cloudflare CDN entfernen)</label></li>
+    <li><label><input type="checkbox"> Datenschutzerklaerung aktualisieren (eigene Analytics beschreiben)</label></li>
+    <li><label><input type="checkbox"> Datenschutzerklaerung: CDN-Nutzung erwaehnen (solange noch aktiv)</label></li>
+    <li><label><input type="checkbox"> Datenschutzerklaerung: sessionStorage-Nutzung erwaehnen</label></li>
+    <li><label><input type="checkbox"> Datenschutzerklaerung: Cross-Domain Cookies erwaehnen</label></li>
+    <li><label><input type="checkbox"> Pruefen welche Drittanbieter-Dienste tatsaechlich aktiv sind</label></li>
+    <li><label><input type="checkbox"> MU-Plugin auf Produktiv-Server pruefen (ist es installiert?)</label></li>
+    <li><label><input type="checkbox"> Kontaktformular: Datenschutz-Hinweis/Checkbox hinzufuegen?</label></li>
+    <li><label><input type="checkbox"> AV-Vertrag mit Hosting-Anbieter pruefen</label></li>
+    <li><label><input type="checkbox"> Verzeichnis der Verarbeitungstaetigkeiten aktualisieren</label></li>
+  </ul>
+</div>
+
+<footer>
+  ParkourONE Theme DSGVO-Audit &bull; Generiert am 10. Februar 2026
+</footer>
+
+</div>
+
+<script>
+function toggleDetail(el) {
+  var content = el.nextElementSibling;
+  if (content.classList.contains('open')) {
+    content.classList.remove('open');
+    el.innerHTML = '&#9660; ' + el.textContent.replace(/[▲▼]\s*/, '').replace('Verstecken', 'anzeigen');
+  } else {
+    content.classList.add('open');
+    el.innerHTML = '&#9650; ' + el.textContent.replace(/[▲▼]\s*/, '').replace('anzeigen', 'Verstecken');
+  }
+}
+</script>
+</body>
+</html>

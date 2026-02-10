@@ -135,7 +135,7 @@
 }
 
 .po-stats--light .po-stats__subtext {
-	color: #86868b;
+	color: #6e6e73;
 }
 
 .po-stats--dark .po-stats__subtext {
@@ -210,6 +210,6 @@
 
 .po-stats-editor__subtext {
 	font-size: 12px;
-	color: #86868b;
+	color: #6e6e73;
 	margin-top: 4px;
 }

@@ -19,7 +19,8 @@
 		"buttonText": { "type": "string", "default": "SENDUNG SCHAUEN" },
 		"buttonUrl": { "type": "string", "default": "#" },
 		"buttonIcon": { "type": "string", "default": "play" },
-		"imageUrl": { "type": "string", "default": "" }
+		"imageUrl": { "type": "string", "default": "" },
+		"imageAlt": { "type": "string", "default": "" }
 	},
 	"supports": { "align": ["full", "wide"], "html": false }
 }

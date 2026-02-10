@@ -6,6 +6,7 @@ $ctaText = $attributes['ctaText'] ?? '';
 $ctaUrl = $attributes['ctaUrl'] ?? '#';
 $mediaType = $attributes['mediaType'] ?? 'video';
 $imageUrl = $attributes['imageUrl'] ?? '';
+$imageAlt = $attributes['imageAlt'] ?? 'ParkourONE Training';
 $videoUrl = $attributes['videoUrl'] ?? '';
 $videoType = $attributes['videoType'] ?? 'embed';
 $mediaRight = $attributes['mediaRight'] ?? true;
@@ -70,7 +71,7 @@ if (!function_exists('parkourone_get_embed_url')) {
 			<!-- Video ohne URL: Fallback-Bild anzeigen -->
 			<img src="<?php echo esc_url($fallback_image); ?>" alt="ParkourONE Training" loading="lazy" class="po-about__image">
 		<?php elseif ($mediaType === 'image' && $imageUrl): ?>
-			<img src="<?php echo esc_url($imageUrl); ?>" alt="" loading="lazy" class="po-about__image">
+			<img src="<?php echo esc_url($imageUrl); ?>" alt="<?php echo esc_attr($imageAlt); ?>" loading="lazy" class="po-about__image">
 		<?php elseif ($mediaType === 'image' && !$imageUrl): ?>
 			<!-- Bild ohne URL: Fallback-Bild anzeigen -->
 			<img src="<?php echo esc_url($fallback_image); ?>" alt="ParkourONE Training" loading="lazy" class="po-about__image">

@@ -48,6 +48,7 @@ $has_privacy_signal = $has_dnt || $has_gpc;
 					Wir verwenden Cookies und ähnliche Technologien, um Ihre Erfahrung zu verbessern.
 					Einige sind technisch notwendig, andere helfen uns die Website zu optimieren und Ihnen
 					personalisierte Inhalte anzubieten.
+					Ihre Daten werden auf Servern in der <strong>Schweiz</strong> verarbeitet (Angemessenheitsbeschluss der EU-Kommission).
 				</p>
 				<p class="po-consent-banner__links">
 					<a href="<?php echo esc_url($privacy_url); ?>" target="_blank" rel="noopener">Datenschutzerklärung</a>
@@ -57,17 +58,20 @@ $has_privacy_signal = $has_dnt || $has_gpc;
 			</div>
 
 			<!-- DSGVO: Alle Buttons müssen gleichwertig dargestellt werden (BGH Planet49) -->
-			<div class="po-consent-banner__actions">
-				<button type="button" class="po-consent-btn po-consent-btn--primary" data-consent-action="accept-all">
+			<!-- No-JS: Form-basierter Fallback, JS überschreibt mit AJAX -->
+			<form method="post" action="" class="po-consent-banner__actions">
+				<?php wp_nonce_field('po_consent_nojs', 'po_consent_nojs_nonce'); ?>
+				<input type="hidden" name="po_consent_nojs_redirect" value="<?php echo esc_attr($_SERVER['REQUEST_URI'] ?? '/'); ?>">
+				<button type="submit" name="po_consent_nojs_action" value="accept-all" class="po-consent-btn po-consent-btn--primary" data-consent-action="accept-all">
 					Alle akzeptieren
 				</button>
-				<button type="button" class="po-consent-btn po-consent-btn--secondary" data-consent-action="reject-all">
+				<button type="submit" name="po_consent_nojs_action" value="reject-all" class="po-consent-btn po-consent-btn--secondary" data-consent-action="reject-all">
 					Nur Notwendige
 				</button>
-				<button type="button" class="po-consent-btn po-consent-btn--secondary" data-consent-action="show-settings">
+				<button type="button" class="po-consent-btn po-consent-btn--secondary po-consent-btn--js-only" data-consent-action="show-settings">
 					Einstellungen
 				</button>
-			</div>
+			</form>
 		</div>
 
 		<!-- Detailansicht -->
@@ -82,6 +86,9 @@ $has_privacy_signal = $has_dnt || $has_gpc;
 				</button>
 			</div>
 
+			<form method="post" action="" id="po-consent-settings-form">
+			<?php wp_nonce_field('po_consent_nojs', 'po_consent_nojs_nonce_settings'); ?>
+			<input type="hidden" name="po_consent_nojs_redirect" value="<?php echo esc_attr($_SERVER['REQUEST_URI'] ?? '/'); ?>">
 			<div class="po-consent-banner__categories">
 				<?php foreach ($categories as $cat_id => $category): ?>
 					<?php
@@ -106,6 +113,7 @@ $has_privacy_signal = $has_dnt || $has_gpc;
 											value="<?php echo esc_attr($cat_id); ?>"
 											<?php checked($is_checked); ?>
 											data-consent-category="<?php echo esc_attr($cat_id); ?>"
+										aria-label="<?php echo esc_attr($category['name']); ?> Cookies"
 										>
 										<span class="po-consent-toggle__slider"></span>
 									</label>
@@ -169,20 +177,28 @@ $has_privacy_signal = $has_dnt || $has_gpc;
 
 			<div class="po-consent-banner__footer">
 				<div class="po-consent-banner__actions">
-					<button type="button" class="po-consent-btn po-consent-btn--secondary" data-consent-action="reject-all">
+					<button type="submit" name="po_consent_nojs_action" value="reject-all" class="po-consent-btn po-consent-btn--secondary" data-consent-action="reject-all">
 						Alle ablehnen
 					</button>
-					<button type="button" class="po-consent-btn po-consent-btn--primary" data-consent-action="save-selection">
+					<button type="submit" name="po_consent_nojs_action" value="save-selection" class="po-consent-btn po-consent-btn--primary" data-consent-action="save-selection">
 						Auswahl speichern
 					</button>
-					<button type="button" class="po-consent-btn po-consent-btn--primary" data-consent-action="accept-all">
+					<button type="submit" name="po_consent_nojs_action" value="accept-all" class="po-consent-btn po-consent-btn--primary" data-consent-action="accept-all">
 						Alle akzeptieren
 					</button>
 				</div>
 			</div>
+			</form>
 		</div>
 	</div>
 </div>
+
+<!-- No-JS: Einstellungen-Button ausblenden (benötigt JS) -->
+<noscript>
+<style>
+.po-consent-btn--js-only { display: none !important; }
+</style>
+</noscript>
 
 <!-- Consent Settings Trigger (für Footer/Header) -->
 <script>
