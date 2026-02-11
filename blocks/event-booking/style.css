@@ -140,9 +140,7 @@
 	to { background-position-x: -200%; }
 }
 
-.po-eb__skeleton[aria-hidden="false"] {
-	display: none;
-}
+/* Skeleton visibility controlled via inline styles in JS */
 
 /* ========================================
    Klassen-Liste
@@ -156,7 +154,7 @@
 }
 
 /* Klassen-Gruppe */
-.po-eb__klasse {
+.po-eb .po-eb__klasse {
 	background: #fff;
 	border-radius: 14px;
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -164,12 +162,12 @@
 	transition: box-shadow 0.2s ease;
 }
 
-.po-eb__klasse:hover {
+.po-eb .po-eb__klasse:hover {
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 /* Klassen-Header */
-.po-eb__klasse-header {
+.po-eb .po-eb__klasse-header {
 	display: flex;
 	align-items: center;
 	gap: 12px;
@@ -182,39 +180,42 @@
 	width: 100%;
 	text-align: left;
 	font-family: inherit;
+	box-sizing: border-box;
 }
 
-.po-eb__klasse-header:hover {
+.po-eb .po-eb__klasse-header:hover {
 	background: #fafafa;
 }
 
-.po-eb__klasse-dot {
+.po-eb .po-eb__klasse-dot {
 	width: 12px;
 	height: 12px;
 	border-radius: 50%;
 	flex-shrink: 0;
+	display: inline-block;
 }
 
-.po-eb__klasse-info {
+.po-eb .po-eb__klasse-info {
 	flex: 1;
 	min-width: 0;
 }
 
-.po-eb__klasse-title {
+.po-eb .po-eb__klasse-title {
 	font-size: 17px;
 	font-weight: 600;
 	color: #1d1d1f;
 	margin: 0;
+	padding: 0;
 	line-height: 1.3;
 }
 
-.po-eb__klasse-subtitle {
+.po-eb .po-eb__klasse-subtitle {
 	font-size: 13px;
 	color: #6e6e73;
 	margin-top: 2px;
 }
 
-.po-eb__klasse-badge {
+.po-eb .po-eb__klasse-badge {
 	display: inline-block;
 	padding: 3px 8px;
 	border-radius: 5px;
@@ -225,52 +226,53 @@
 	flex-shrink: 0;
 }
 
-.po-eb__klasse-badge--soldout {
+.po-eb .po-eb__klasse-badge--soldout {
 	background: #fff0f0;
 	color: #ff3b30;
 }
 
-.po-eb__klasse-badge--ferienkurs {
+.po-eb .po-eb__klasse-badge--ferienkurs {
 	background: #f0f0ff;
 	color: #5856d6;
 }
 
-.po-eb__klasse-count {
+.po-eb .po-eb__klasse-count {
 	font-size: 13px;
 	color: #8e8e93;
 	flex-shrink: 0;
 	white-space: nowrap;
 }
 
-.po-eb__klasse-chevron {
+.po-eb .po-eb__klasse-chevron {
 	width: 20px;
 	height: 20px;
 	color: #8e8e93;
 	flex-shrink: 0;
 	transition: transform 0.25s ease;
+	overflow: visible;
 }
 
-.po-eb__klasse.is-open .po-eb__klasse-chevron {
+.po-eb .po-eb__klasse.is-open .po-eb__klasse-chevron {
 	transform: rotate(180deg);
 }
 
 /* Termin-Body (Accordion) */
-.po-eb__klasse-body {
+.po-eb .po-eb__klasse-body {
 	max-height: 0;
 	overflow: hidden;
 	transition: max-height 0.3s ease;
 }
 
-.po-eb__klasse.is-open .po-eb__klasse-body {
+.po-eb .po-eb__klasse.is-open .po-eb__klasse-body {
 	max-height: 2000px;
 }
 
 /* Termin-Zeilen */
-.po-eb__termine {
+.po-eb .po-eb__termine {
 	border-top: 1px solid #f0f0f0;
 }
 
-.po-eb__termin {
+.po-eb .po-eb__termin {
 	display: flex;
 	align-items: center;
 	gap: 16px;
@@ -279,19 +281,19 @@
 	transition: background 0.1s ease;
 }
 
-.po-eb__termin:last-child {
+.po-eb .po-eb__termin:last-child {
 	border-bottom: none;
 }
 
-.po-eb__termin:hover {
+.po-eb .po-eb__termin:hover {
 	background: #fafafa;
 }
 
-.po-eb__termin.is-soldout {
+.po-eb .po-eb__termin.is-soldout {
 	opacity: 0.5;
 }
 
-.po-eb__termin-date {
+.po-eb .po-eb__termin-date {
 	font-size: 14px;
 	font-weight: 600;
 	color: #1d1d1f;
@@ -299,14 +301,14 @@
 	white-space: nowrap;
 }
 
-.po-eb__termin-time {
+.po-eb .po-eb__termin-time {
 	font-size: 14px;
 	color: #3a3a3c;
 	min-width: 110px;
 	white-space: nowrap;
 }
 
-.po-eb__termin-venue {
+.po-eb .po-eb__termin-venue {
 	font-size: 13px;
 	color: #6e6e73;
 	flex: 1;
@@ -316,7 +318,7 @@
 	white-space: nowrap;
 }
 
-.po-eb__termin-stock {
+.po-eb .po-eb__termin-stock {
 	font-size: 13px;
 	color: #34c759;
 	font-weight: 500;
@@ -325,15 +327,15 @@
 	text-align: right;
 }
 
-.po-eb__termin-stock--low {
+.po-eb .po-eb__termin-stock--low {
 	color: #ff9500;
 }
 
-.po-eb__termin-stock--none {
+.po-eb .po-eb__termin-stock--none {
 	color: #8e8e93;
 }
 
-.po-eb__termin-btn {
+.po-eb .po-eb__termin-btn {
 	padding: 8px 18px;
 	background: #1d1d1f;
 	color: #fff;
@@ -347,23 +349,23 @@
 	flex-shrink: 0;
 }
 
-.po-eb__termin-btn:hover {
+.po-eb .po-eb__termin-btn:hover {
 	background: #333;
 	transform: scale(1.02);
 }
 
-.po-eb__termin-btn:active {
+.po-eb .po-eb__termin-btn:active {
 	transform: scale(0.98);
 }
 
-.po-eb__termin-btn:disabled {
+.po-eb .po-eb__termin-btn:disabled {
 	background: #e5e5ea;
 	color: #8e8e93;
 	cursor: default;
 	transform: none;
 }
 
-.po-eb__termin-soldout {
+.po-eb .po-eb__termin-soldout {
 	font-size: 13px;
 	color: #8e8e93;
 	font-weight: 500;
@@ -375,7 +377,7 @@
    Inline Booking Form
    ======================================== */
 
-.po-eb__booking {
+.po-eb .po-eb__booking {
 	padding: 0 20px 20px;
 	animation: po-eb-slideDown 0.25s ease;
 }
@@ -391,26 +393,26 @@
 	}
 }
 
-.po-eb__booking-inner {
+.po-eb .po-eb__booking-inner {
 	background: #f5f5f7;
 	border-radius: 12px;
 	padding: 20px;
 }
 
-.po-eb__booking-header {
+.po-eb .po-eb__booking-header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	margin-bottom: 16px;
 }
 
-.po-eb__booking-title {
+.po-eb .po-eb__booking-title {
 	font-size: 15px;
 	font-weight: 600;
 	color: #1d1d1f;
 }
 
-.po-eb__booking-close {
+.po-eb .po-eb__booking-close {
 	width: 28px;
 	height: 28px;
 	border: none;
@@ -425,24 +427,24 @@
 	flex-shrink: 0;
 }
 
-.po-eb__booking-close:hover {
+.po-eb .po-eb__booking-close:hover {
 	background: #d1d1d6;
 }
 
-.po-eb__booking-close svg {
+.po-eb .po-eb__booking-close svg {
 	width: 14px;
 	height: 14px;
 	color: #3a3a3c;
 }
 
-.po-eb__booking-fields {
+.po-eb .po-eb__booking-fields {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
 	gap: 12px;
 	margin-bottom: 16px;
 }
 
-.po-eb__booking-field label {
+.po-eb .po-eb__booking-field label {
 	display: block;
 	font-size: 12px;
 	font-weight: 500;
@@ -450,7 +452,7 @@
 	margin-bottom: 6px;
 }
 
-.po-eb__booking-field input {
+.po-eb .po-eb__booking-field input {
 	width: 100%;
 	padding: 10px 12px;
 	border: 1px solid #d1d1d6;
@@ -463,13 +465,13 @@
 	box-sizing: border-box;
 }
 
-.po-eb__booking-field input:focus {
+.po-eb .po-eb__booking-field input:focus {
 	outline: none;
 	border-color: #007aff;
 	box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.12);
 }
 
-.po-eb__booking-submit {
+.po-eb .po-eb__booking-submit {
 	width: 100%;
 	padding: 12px;
 	background: #1d1d1f;
@@ -483,22 +485,22 @@
 	font-family: inherit;
 }
 
-.po-eb__booking-submit:hover {
+.po-eb .po-eb__booking-submit:hover {
 	background: #333;
 }
 
-.po-eb__booking-submit:active {
+.po-eb .po-eb__booking-submit:active {
 	transform: scale(0.99);
 }
 
-.po-eb__booking-submit:disabled {
+.po-eb .po-eb__booking-submit:disabled {
 	background: #8e8e93;
 	cursor: default;
 	transform: none;
 }
 
 /* Inline Erfolg */
-.po-eb__booking-success {
+.po-eb .po-eb__booking-success {
 	display: flex;
 	align-items: center;
 	gap: 12px;
@@ -506,7 +508,7 @@
 	animation: po-eb-slideDown 0.25s ease;
 }
 
-.po-eb__booking-success-icon {
+.po-eb .po-eb__booking-success-icon {
 	width: 36px;
 	height: 36px;
 	background: #34c759;
@@ -517,13 +519,13 @@
 	flex-shrink: 0;
 }
 
-.po-eb__booking-success-icon svg {
+.po-eb .po-eb__booking-success-icon svg {
 	width: 20px;
 	height: 20px;
 	color: #fff;
 }
 
-.po-eb__booking-success-text {
+.po-eb .po-eb__booking-success-text {
 	font-size: 15px;
 	font-weight: 600;
 	color: #1d1d1f;
@@ -544,47 +546,47 @@
    ======================================== */
 
 @media (max-width: 768px) {
-	.po-eb__termin {
+	.po-eb .po-eb__termin {
 		flex-wrap: wrap;
 		gap: 8px;
 		padding: 12px 16px;
 	}
 
-	.po-eb__termin-date {
+	.po-eb .po-eb__termin-date {
 		min-width: auto;
 		flex: 1;
 	}
 
-	.po-eb__termin-time {
+	.po-eb .po-eb__termin-time {
 		min-width: auto;
 	}
 
-	.po-eb__termin-venue {
+	.po-eb .po-eb__termin-venue {
 		flex-basis: 100%;
 		order: 4;
 	}
 
-	.po-eb__termin-stock {
+	.po-eb .po-eb__termin-stock {
 		min-width: auto;
 		text-align: left;
 	}
 
-	.po-eb__termin-btn {
+	.po-eb .po-eb__termin-btn {
 		width: 100%;
 		order: 5;
 		text-align: center;
 		padding: 10px;
 	}
 
-	.po-eb__booking-fields {
+	.po-eb .po-eb__booking-fields {
 		grid-template-columns: 1fr;
 	}
 
-	.po-eb__klasse-header {
+	.po-eb .po-eb__klasse-header {
 		padding: 14px 16px;
 	}
 
-	.po-eb__klasse-subtitle {
+	.po-eb .po-eb__klasse-subtitle {
 		display: none;
 	}
 }

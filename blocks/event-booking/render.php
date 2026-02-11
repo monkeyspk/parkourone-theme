@@ -113,7 +113,7 @@ $has_filters = !empty($age_terms) || !empty($location_terms) || !empty($offer_te
 	<?php endif; ?>
 
 	<!-- Loading Skeleton -->
-	<div class="po-eb__skeleton" aria-hidden="true">
+	<div class="po-eb__skeleton">
 		<div class="po-eb__skeleton-row"></div>
 		<div class="po-eb__skeleton-row"></div>
 		<div class="po-eb__skeleton-row"></div>

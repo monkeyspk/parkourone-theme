@@ -204,7 +204,7 @@
 				klasseEl.setAttribute('data-permalink', klasse.permalink || '');
 
 				klasseEl.innerHTML =
-					'<button type="button" class="po-eb__klasse-header">' +
+					'<div class="po-eb__klasse-header" role="button" tabindex="0">' +
 						'<span class="po-eb__klasse-dot" style="background: ' + dotColor + '"></span>' +
 						'<div class="po-eb__klasse-info">' +
 							'<h3 class="po-eb__klasse-title">' + escHtml(klasse.title) + '</h3>' +
@@ -212,8 +212,8 @@
 						'</div>' +
 						badgeHtml +
 						'<span class="po-eb__klasse-count">' + totalCount + (totalCount === 1 ? ' Termin' : ' Termine') + '</span>' +
-						'<svg class="po-eb__klasse-chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
-					'</button>' +
+						'<svg class="po-eb__klasse-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+					'</div>' +
 					'<div class="po-eb__klasse-body">' +
 						'<div class="po-eb__termine">' + termineHtml + '</div>' +
 					'</div>';
@@ -234,6 +234,13 @@
 				header.addEventListener('click', function() {
 					var klasse = header.closest('.po-eb__klasse');
 					klasse.classList.toggle('is-open');
+				});
+				header.addEventListener('keydown', function(e) {
+					if (e.key === 'Enter' || e.key === ' ') {
+						e.preventDefault();
+						var klasse = header.closest('.po-eb__klasse');
+						klasse.classList.toggle('is-open');
+					}
 				});
 			});
 
@@ -432,14 +439,12 @@
 
 		function showSkeleton() {
 			skeleton.style.display = '';
-			skeleton.setAttribute('aria-hidden', 'false');
 			listContainer.style.display = 'none';
 			emptyState.style.display = 'none';
 		}
 
 		function hideSkeleton() {
 			skeleton.style.display = 'none';
-			skeleton.setAttribute('aria-hidden', 'true');
 			listContainer.style.display = '';
 		}
 
