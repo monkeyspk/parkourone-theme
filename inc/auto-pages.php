@@ -1193,8 +1193,8 @@ function parkourone_get_template_pages() {
 		[
 			'slug' => 'probetraining-buchen',
 			'title' => 'Probetraining buchen',
-			'description' => 'Buchungsseite mit Steps, Event-Liste und FAQ',
-			'blocks' => 'Page-Header, Steps, Event-Liste (Shortcode), FAQ',
+			'description' => 'Buchungsseite mit Steps, Event-Buchung und FAQ',
+			'blocks' => 'Steps-Carousel, Event-Booking, FAQ',
 			'pattern_file' => 'page-probetraining-buchen.php',
 			'page_slug' => 'probetraining-buchen',
 		],
