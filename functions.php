@@ -868,6 +868,7 @@ function parkourone_register_blocks() {
         'text-reveal',
         'steps-carousel',
         'pricing-table',
+        'event-booking',
         // Ticket #2: Basis Building Blocks für Schulleiter
         'po-text',
         'po-image',
