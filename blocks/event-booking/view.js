@@ -42,7 +42,7 @@
 		// ========================================
 
 		function buildApiUrl() {
-			var params = [];
+			var params = ['per_page=-1'];
 			if (preFilterAge) params.push('age=' + encodeURIComponent(preFilterAge));
 			if (preFilterLocation) params.push('location=' + encodeURIComponent(preFilterLocation));
 			if (preFilterOffer) params.push('offer=' + encodeURIComponent(preFilterOffer));
@@ -55,8 +55,7 @@
 
 			if (deepLinkKlasse) params.push('klasse=' + encodeURIComponent(deepLinkKlasse));
 
-			var url = '/wp-json/events/v1/list';
-			if (params.length) url += '?' + params.join('&');
+			var url = '/wp-json/events/v1/list?' + params.join('&');
 			return url;
 		}
 
@@ -163,9 +162,9 @@
 				if (klasse.venue) subtitleParts.push(klasse.venue);
 				var subtitleHtml = subtitleParts.length ? '<div class="po-eb__klasse-subtitle">' + escHtml(subtitleParts.join(' \u00b7 ')) + '</div>' : '';
 
-				// Termin-Zeilen (max 10, erste 3 sichtbar)
-				var maxTermine = Math.min(klasse.events.length, 10);
-				var initialVisible = 3;
+				// Termin-Zeilen (erste 10 sichtbar, Rest hinter "Mehr anzeigen")
+				var initialVisible = 10;
+				var maxTermine = klasse.events.length;
 				var termineHtml = '';
 				for (var t = 0; t < maxTermine; t++) {
 					var ev = klasse.events[t];
@@ -203,7 +202,7 @@
 						'</div>';
 				}
 
-				// "Mehr anzeigen" Button wenn mehr als 3 Termine
+				// "Mehr anzeigen" Button wenn mehr als 10 Termine
 				var moreCount = maxTermine - initialVisible;
 				if (moreCount > 0) {
 					termineHtml += '<button type="button" class="po-eb__termine-more">Weitere ' + moreCount + ' Termine anzeigen</button>';
