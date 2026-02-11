@@ -1279,6 +1279,7 @@ function parkourone_enqueue_block_assets() {
         'trust-education',
         'text-reveal',
         'steps-carousel',
+        'event-booking',
         // Ticket #2: Basis Building Blocks für Schulleiter
         'po-text',
         'po-image',
@@ -1318,15 +1319,20 @@ function parkourone_enqueue_block_view_scripts() {
     // Hier nur Blocks ohne block.json viewScript oder mit speziellen Anforderungen
     $view_script_blocks = [
         'faq',
+        'event-booking',
     ];
 
     foreach ($view_script_blocks as $folder) {
         $view_file = $blocks_dir . $folder . '/view.js';
         if (file_exists($view_file)) {
+            $deps = [];
+            if ($folder === 'event-booking') {
+                $deps = ['jquery', 'parkourone-booking'];
+            }
             wp_enqueue_script(
                 'parkourone-' . $folder . '-view',
                 $blocks_url . $folder . '/view.js',
-                [],
+                $deps,
                 filemtime($view_file),
                 true // In footer laden
             );
