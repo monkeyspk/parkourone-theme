@@ -32,7 +32,8 @@ $has_filters = !empty($age_terms) || !empty($location_terms) || !empty($offer_te
 	data-filter-location="<?php echo esc_attr($filterLocation); ?>"
 	data-filter-offer="<?php echo esc_attr($filterOffer); ?>"
 	data-filter-weekday="<?php echo esc_attr($filterWeekday); ?>"
-	data-button-text="<?php echo esc_attr($buttonText); ?>">
+	data-button-text="<?php echo esc_attr($buttonText); ?>"
+	data-age-colors="<?php echo esc_attr(json_encode($age_colors)); ?>">
 
 	<?php if ($headline): ?>
 		<h2 class="po-eb__headline"><?php echo wp_kses_post($headline); ?></h2>
@@ -113,19 +114,17 @@ $has_filters = !empty($age_terms) || !empty($location_terms) || !empty($offer_te
 
 	<!-- Loading Skeleton -->
 	<div class="po-eb__skeleton" aria-hidden="true">
-		<div class="po-eb__skeleton-card"></div>
-		<div class="po-eb__skeleton-card"></div>
-		<div class="po-eb__skeleton-card"></div>
+		<div class="po-eb__skeleton-row"></div>
+		<div class="po-eb__skeleton-row"></div>
+		<div class="po-eb__skeleton-row"></div>
+		<div class="po-eb__skeleton-row"></div>
 	</div>
 
-	<!-- Cards Container (gefuellt via view.js) -->
-	<div class="po-eb__grid" data-event-grid></div>
+	<!-- List Container (gefuellt via view.js) -->
+	<div class="po-eb__list" data-event-list></div>
 
 	<!-- Empty State -->
 	<div class="po-eb__empty" style="display: none;">
 		<p>Keine Events gefunden.</p>
 	</div>
-
-	<!-- Modal Container (gefuellt via view.js) -->
-	<div data-event-modals></div>
 </section>
