@@ -163,9 +163,12 @@
 				if (klasse.venue) subtitleParts.push(klasse.venue);
 				var subtitleHtml = subtitleParts.length ? '<div class="po-eb__klasse-subtitle">' + escHtml(subtitleParts.join(' \u00b7 ')) + '</div>' : '';
 
-				// Termin-Zeilen
+				// Termin-Zeilen (max 10, erste 3 sichtbar)
+				var maxTermine = Math.min(klasse.events.length, 10);
+				var initialVisible = 3;
 				var termineHtml = '';
-				klasse.events.forEach(function(ev) {
+				for (var t = 0; t < maxTermine; t++) {
+					var ev = klasse.events[t];
 					var stock = parseInt(ev.stock) || 0;
 					var isSoldOut = stock <= 0;
 					var dateFormatted = formatDate(ev.date);
@@ -188,15 +191,23 @@
 						? '<span class="po-eb__termin-soldout">Ausgebucht</span>'
 						: '<button type="button" class="po-eb__termin-btn" data-product-id="' + escHtml(ev.product_id) + '" data-event-id="' + escHtml(ev.id) + '" data-date-text="' + escHtml(weekday + ', ' + dateFormatted) + '">' + escHtml(buttonText) + '</button>';
 
+					var hiddenClass = t >= initialVisible ? ' po-eb__termin--hidden' : '';
+
 					termineHtml +=
-						'<div class="po-eb__termin' + (isSoldOut ? ' is-soldout' : '') + '">' +
+						'<div class="po-eb__termin' + (isSoldOut ? ' is-soldout' : '') + hiddenClass + '">' +
 							'<span class="po-eb__termin-date">' + escHtml(weekday + ', ' + dateFormatted) + '</span>' +
 							'<span class="po-eb__termin-time">' + escHtml(timeText) + '</span>' +
 							'<span class="po-eb__termin-venue">' + escHtml(ev.venue || klasse.venue || '') + '</span>' +
 							'<span class="po-eb__termin-stock ' + stockClass + '">' + escHtml(stockText) + '</span>' +
 							actionHtml +
 						'</div>';
-				});
+				}
+
+				// "Mehr anzeigen" Button wenn mehr als 3 Termine
+				var moreCount = maxTermine - initialVisible;
+				if (moreCount > 0) {
+					termineHtml += '<button type="button" class="po-eb__termine-more">Weitere ' + moreCount + ' Termine anzeigen</button>';
+				}
 
 				// Klasse zusammenbauen
 				var klasseEl = document.createElement('div');
@@ -251,6 +262,18 @@
 					openBookingForm(btn);
 				});
 			});
+
+			// "Mehr anzeigen" Buttons
+			listContainer.querySelectorAll('.po-eb__termine-more').forEach(function(moreBtn) {
+				moreBtn.addEventListener('click', function(e) {
+					e.stopPropagation();
+					var termine = moreBtn.closest('.po-eb__termine');
+					termine.querySelectorAll('.po-eb__termin--hidden').forEach(function(row) {
+						row.classList.remove('po-eb__termin--hidden');
+					});
+					moreBtn.remove();
+				});
+			});
 		}
 
 		// ========================================
@@ -271,33 +294,31 @@
 			var formEl = document.createElement('div');
 			formEl.className = 'po-eb__booking';
 			formEl.innerHTML =
-				'<div class="po-eb__booking-inner">' +
-					'<div class="po-eb__booking-header">' +
-						'<span class="po-eb__booking-title">Teilnehmer f\u00fcr ' + escHtml(dateText) + '</span>' +
-						'<button type="button" class="po-eb__booking-close" aria-label="Schlie\u00dfen">' +
-							'<svg viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
-						'</button>' +
-					'</div>' +
-					'<form class="po-eb__booking-form">' +
-						'<input type="hidden" name="product_id" value="' + escHtml(productId) + '">' +
-						'<input type="hidden" name="event_id" value="' + escHtml(eventId) + '">' +
-						'<div class="po-eb__booking-fields">' +
-							'<div class="po-eb__booking-field">' +
-								'<label>Vorname</label>' +
-								'<input type="text" name="vorname" required autocomplete="given-name">' +
-							'</div>' +
-							'<div class="po-eb__booking-field">' +
-								'<label>Nachname</label>' +
-								'<input type="text" name="name" required autocomplete="family-name">' +
-							'</div>' +
-							'<div class="po-eb__booking-field">' +
-								'<label>Geburtsdatum</label>' +
-								'<input type="date" name="geburtsdatum" required>' +
-							'</div>' +
+				'<div class="po-eb__booking-header">' +
+					'<span class="po-eb__booking-title">Teilnehmer f\u00fcr ' + escHtml(dateText) + '</span>' +
+					'<button type="button" class="po-eb__booking-close" aria-label="Schlie\u00dfen">' +
+						'<svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
+					'</button>' +
+				'</div>' +
+				'<form class="po-eb__booking-form">' +
+					'<input type="hidden" name="product_id" value="' + escHtml(productId) + '">' +
+					'<input type="hidden" name="event_id" value="' + escHtml(eventId) + '">' +
+					'<div class="po-eb__booking-fields">' +
+						'<div class="po-eb__booking-field">' +
+							'<label>Vorname</label>' +
+							'<input type="text" name="vorname" required autocomplete="given-name">' +
 						'</div>' +
-						'<button type="submit" class="po-eb__booking-submit">Zum Warenkorb hinzuf\u00fcgen</button>' +
-					'</form>' +
-				'</div>';
+						'<div class="po-eb__booking-field">' +
+							'<label>Nachname</label>' +
+							'<input type="text" name="name" required autocomplete="family-name">' +
+						'</div>' +
+						'<div class="po-eb__booking-field">' +
+							'<label>Geburtsdatum</label>' +
+							'<input type="date" name="geburtsdatum" required>' +
+						'</div>' +
+					'</div>' +
+					'<button type="submit" class="po-eb__booking-submit">Zum Warenkorb hinzuf\u00fcgen</button>' +
+				'</form>';
 
 			// Nach dem Termin einfuegen
 			termin.after(formEl);

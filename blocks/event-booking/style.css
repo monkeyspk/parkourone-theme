@@ -373,12 +373,36 @@
 	flex-shrink: 0;
 }
 
+.po-eb .po-eb__termin--hidden {
+	display: none;
+}
+
+.po-eb .po-eb__termine-more {
+	display: block;
+	width: 100%;
+	padding: 12px 20px;
+	border: none;
+	background: none;
+	color: #007aff;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	text-align: center;
+	transition: background 0.15s ease;
+	font-family: inherit;
+}
+
+.po-eb .po-eb__termine-more:hover {
+	background: #f5f5f7;
+}
+
 /* ========================================
    Inline Booking Form
    ======================================== */
 
 .po-eb .po-eb__booking {
-	padding: 0 20px 20px;
+	padding: 14px 20px;
+	border-bottom: 1px solid #f5f5f7;
 	animation: po-eb-slideDown 0.25s ease;
 }
 
@@ -393,23 +417,17 @@
 	}
 }
 
-.po-eb .po-eb__booking-inner {
-	background: #f5f5f7;
-	border-radius: 12px;
-	padding: 20px;
-}
-
 .po-eb .po-eb__booking-header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	margin-bottom: 16px;
+	margin-bottom: 12px;
 }
 
 .po-eb .po-eb__booking-title {
-	font-size: 15px;
+	font-size: 13px;
 	font-weight: 600;
-	color: #1d1d1f;
+	color: #6e6e73;
 }
 
 .po-eb .po-eb__booking-close {
@@ -441,7 +459,7 @@
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
 	gap: 12px;
-	margin-bottom: 16px;
+	margin-bottom: 12px;
 }
 
 .po-eb .po-eb__booking-field label {
