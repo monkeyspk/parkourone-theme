@@ -192,6 +192,85 @@ require_once get_template_directory() . '/inc/woocommerce/init.php';
 require_once get_template_directory() . '/inc/health-data-consent.php';
 
 /**
+ * ============================================
+ * MU-PLUGINS AUTOMATISCH INSTALLIEREN
+ * Kopiert MU-Plugins vom Theme nach wp-content/mu-plugins/
+ * Prueft Version — aktualisiert bei Theme-Update.
+ * ============================================
+ */
+function parkourone_install_mu_plugins() {
+	$mu_plugins = [
+		'parkourone-consent-early.php',
+		'parkourone-performance.php',
+	];
+
+	$source_dir = get_template_directory() . '/mu-plugins/';
+	$dest_dir = defined('WPMU_PLUGIN_DIR') ? WPMU_PLUGIN_DIR : (WP_CONTENT_DIR . '/mu-plugins');
+
+	// mu-plugins Ordner erstellen falls nicht vorhanden
+	if (!is_dir($dest_dir)) {
+		if (!wp_mkdir_p($dest_dir)) {
+			return; // Keine Schreibrechte
+		}
+	}
+
+	if (!is_writable($dest_dir)) {
+		return;
+	}
+
+	foreach ($mu_plugins as $plugin_file) {
+		$source = $source_dir . $plugin_file;
+		$dest = $dest_dir . '/' . $plugin_file;
+
+		if (!file_exists($source)) {
+			continue;
+		}
+
+		// Installieren wenn nicht vorhanden oder veraltet
+		$needs_update = false;
+
+		if (!file_exists($dest)) {
+			$needs_update = true;
+		} else {
+			// Versions-Check: Theme-Version neuer als installierte?
+			$source_hash = md5_file($source);
+			$dest_hash = md5_file($dest);
+			if ($source_hash !== $dest_hash) {
+				$needs_update = true;
+			}
+		}
+
+		if ($needs_update) {
+			@copy($source, $dest);
+		}
+	}
+}
+add_action('after_setup_theme', 'parkourone_install_mu_plugins');
+
+/**
+ * ============================================
+ * RESOURCE HINTS: PRECONNECT / DNS-PREFETCH
+ * Fruehzeitig Verbindungen zu externen Domains aufbauen
+ * ============================================
+ */
+function parkourone_resource_hints($hints, $relation_type) {
+	if ($relation_type === 'preconnect') {
+		// Swiper CDN — CSS und JS werden von dort geladen
+		$hints[] = [
+			'href' => 'https://cdn.jsdelivr.net',
+			'crossorigin' => 'anonymous',
+		];
+	}
+
+	if ($relation_type === 'dns-prefetch') {
+		$hints[] = 'https://cdn.jsdelivr.net';
+	}
+
+	return $hints;
+}
+add_filter('wp_resource_hints', 'parkourone_resource_hints', 10, 2);
+
+/**
  * Menü-Positionen registrieren
  * Ermöglicht Drag & Drop Menü-Verwaltung im WordPress Admin
  */

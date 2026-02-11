@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DSGVO Check - Meeting mit Thomas Rosin</title>
+<title>Technische Dokumentation Datenschutz &amp; Barrierefreiheit - ParkourONE</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -24,19 +24,6 @@
   }
   header h1 { font-size: 1.6rem; margin-bottom: 0.3rem; }
   header p { opacity: 0.7; font-size: 0.9rem; }
-  .badge {
-    display: inline-block;
-    padding: 2px 10px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    margin-left: 6px;
-    vertical-align: middle;
-  }
-  .badge--green { background: #d4edda; color: #155724; }
-  .badge--yellow { background: #fff3cd; color: #856404; }
-  .badge--red { background: #f8d7da; color: #721c24; }
-  .badge--blue { background: #d1ecf1; color: #0c5460; }
 
   .section {
     background: white;
@@ -48,44 +35,27 @@
   .section h2 {
     font-size: 1.15rem;
     margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
   }
   .section h3 {
     font-size: 0.95rem;
-    margin: 1rem 0 0.5rem;
+    margin: 1.2rem 0 0.5rem;
     color: #333;
   }
   ul { padding-left: 1.3rem; }
   li { margin-bottom: 0.4rem; font-size: 0.92rem; }
   li strong { color: #1d1d1f; }
 
-  .check { color: #28a745; }
-  .warn { color: #e67e22; }
-  .cross { color: #dc3545; }
-  .info { color: #3498db; }
-
-  .tldr {
-    background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
-    border-left: 4px solid #28a745;
+  .intro {
+    background: linear-gradient(135deg, #eef2ff, #e8eaf6);
+    border-left: 4px solid #3f51b5;
     padding: 1.2rem 1.5rem;
     border-radius: 0 14px 14px 0;
     margin-bottom: 1rem;
     font-size: 0.95rem;
   }
-  .tldr h2 { color: #2e7d32; }
-
-  .ask-thomas {
-    background: linear-gradient(135deg, #fff8e1, #fff3e0);
-    border-left: 4px solid #ff9800;
-    padding: 1.2rem 1.5rem;
-    border-radius: 0 14px 14px 0;
-    margin-bottom: 1rem;
-  }
-  .ask-thomas h2 { color: #e65100; }
-  .ask-thomas ol { padding-left: 1.3rem; }
-  .ask-thomas li { margin-bottom: 0.6rem; }
+  .intro h2 { color: #283593; margin-bottom: 0.5rem; }
 
   .detail-toggle {
     cursor: pointer;
@@ -128,6 +98,26 @@
     color: #3730a3;
   }
 
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.8rem 0;
+    font-size: 0.88rem;
+  }
+  th, td {
+    text-align: left;
+    padding: 6px 10px;
+    border-bottom: 1px solid #eee;
+  }
+  th {
+    font-weight: 600;
+    color: #555;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  tr:last-child td { border-bottom: none; }
+
   footer {
     text-align: center;
     padding: 1.5rem;
@@ -139,6 +129,7 @@
     body { padding: 0.5rem; }
     header h1 { font-size: 1.3rem; }
     .section { padding: 1rem; }
+    table { font-size: 0.8rem; }
   }
 </style>
 </head>
@@ -146,136 +137,50 @@
 <div class="container">
 
 <header>
-  <h1>DSGVO-Check: ParkourONE Theme</h1>
-  <p>Vorbereitung Meeting mit Thomas Rosin &bull; Stand: Februar 2026</p>
+  <h1>ParkourONE Website: Technische Dokumentation</h1>
+  <p>Datenschutz, Barrierefreiheit &amp; Sicherheit &bull; Stand: 10. Februar 2026</p>
 </header>
 
-<!-- TL;DR -->
-<div class="tldr">
-  <h2>TL;DR - Kurzfassung</h2>
-  <p style="margin-top:0.5rem">
-    Unser Theme ist insgesamt <strong>ziemlich gut aufgestellt</strong>. Wir haben ein eigenes Cookie-Consent-System gebaut, eigene Analytics ohne Google, und respektieren DNT/GPC-Signale.
-    <strong>Zwei Sachen sollten wir mit Thomas besprechen:</strong> Wir laden 2 JS-Bibliotheken von externen CDNs (jsdelivr, Cloudflare) - die sollten wir evtl. selbst hosten. Und wir sollten checken ob die Datenschutzerklaerung auf der Seite zu dem passt was wir tatsaechlich tun.
+<div class="intro">
+  <h2>Ueber dieses Dokument</h2>
+  <p>
+    Dieses Dokument beschreibt den aktuellen technischen Stand der ParkourONE Website (WordPress-Theme) in Bezug auf Datenschutz, Cookie-Verwaltung, Barrierefreiheit und Sicherheit. Es ist als Arbeitsgrundlage fuer die datenschutzrechtliche Pruefung gedacht.
   </p>
 </div>
 
-<!-- FRAGEN FÜR THOMAS -->
-<div class="ask-thomas">
-  <h2>Fragen fuer Thomas</h2>
-  <ol>
-    <li><strong>CDN-Bibliotheken:</strong> Wir laden Swiper.js (von jsdelivr) und Cropper.js (von Cloudflare CDN). Reicht ein Hinweis in der Datenschutzerklaerung, oder muessen wir die selbst hosten?</li>
-    <li><strong>Analytics-Daten:</strong> Wir tracken Browser-Typ, OS, Bildschirmgroesse, Scroll-Tiefe etc. in unserer eigenen DB. Kein Google Analytics. Wir hashen die IP taeglich neu (SHA256 von IP+UserAgent+Datum). Reicht das als Anonymisierung?</li>
-    <li><strong>Cross-Domain Cookies:</strong> Wir teilen den Consent-Cookie ueber alle ParkourONE-Subdomains (berlin., schweiz., hannover. etc.). Muss das extra erwaehnt werden?</li>
-    <li><strong>Coach-Profil Uploads:</strong> Coaches koennen Profilbilder hochladen. Brauchen wir dafuer eine separate Einwilligung oder reicht der Arbeitsvertrag/die Vereinbarung?</li>
-    <li><strong>Kontaktformular Angebote:</strong> Wir haben ein AJAX-Kontaktformular fuer Angebote. Brauchen wir da einen Consent-Haken oder reicht der Hinweis auf die Datenschutzerklaerung?</li>
-    <li><strong>Session-Storage statt Cookies:</strong> Fuer Analytics nutzen wir sessionStorage statt Cookies. Zaehlt das trotzdem als "Cookie-aequivalente Technologie"?</li>
-  </ol>
-</div>
-
-<!-- WAS LÄUFT GUT -->
+<!-- =========================================
+     1. COOKIE-CONSENT-SYSTEM
+     ========================================= -->
 <div class="section">
-  <h2><span class="check">&#10003;</span> Was schon gut laeuft</h2>
+  <h2>1. Cookie-Consent-System</h2>
+  <p>Die Website verwendet ein eigenentwickeltes Cookie-Consent-System (kein Drittanbieter-Plugin). Es arbeitet nach dem Opt-In-Prinzip: Alle nicht-notwendigen Cookies und Scripts werden vor der Zustimmung blockiert.</p>
 
-  <h3><span class="check">&#10003;</span> Eigenes Cookie-Consent-System <span class="badge badge--green">Top</span></h3>
+  <h3>Banner-Darstellung</h3>
   <ul>
-    <li>Eigenes Consent-Banner mit <strong>4 Kategorien</strong>: Notwendig, Funktional, Analytics, Marketing</li>
-    <li>Cookie <code>po_consent</code> laeuft <strong>180 Tage</strong> (DSGVO-konform, max. empfohlen: 12 Monate)</li>
-    <li>Consent wird gespeichert mit Zeitstempel &amp; Version - also nachvollziehbar</li>
-    <li>User kann jederzeit seine Auswahl aendern</li>
+    <li>Nicht-blockierender Floating-Banner am unteren Bildschirmrand (Seite bleibt nutzbar)</li>
+    <li>Drei gleichwertige Aktionen: &laquo;Alle akzeptieren&raquo;, &laquo;Nur Notwendige&raquo;, &laquo;Einstellungen&raquo;</li>
+    <li>Detailansicht zeigt einzelne Dienste pro Kategorie mit Anbieter, Cookies, Speicherdauer und Rechtsgrundlage</li>
+    <li>Funktioniert auch ohne JavaScript (formularbasierter POST-Fallback mit serverseitiger Verarbeitung)</li>
   </ul>
 
-  <h3><span class="check">&#10003;</span> Eigene Analytics - kein Google! <span class="badge badge--green">Top</span></h3>
+  <h3>Consent-Kategorien</h3>
+  <table>
+    <tr><th>Kategorie</th><th>Deaktivierbar</th><th>Beispiele</th></tr>
+    <tr><td><strong>Notwendig</strong></td><td>Nein (immer aktiv)</td><td>WordPress-Session, Consent-Cookie</td></tr>
+    <tr><td><strong>Funktional</strong></td><td>Ja</td><td>YouTube, Vimeo, Google Maps, OpenStreetMap</td></tr>
+    <tr><td><strong>Statistik</strong></td><td>Ja</td><td>Google Analytics, Plausible, Matomo (vorkonfiguriert)</td></tr>
+    <tr><td><strong>Marketing</strong></td><td>Ja</td><td>Facebook Pixel, Google Ads, MailerLite (vorkonfiguriert)</td></tr>
+  </table>
+
+  <h3>Cookie-Speicherung</h3>
   <ul>
-    <li>Komplett <strong>selbst gehostete Analytics</strong> in unserer eigenen WordPress-Datenbank</li>
-    <li>Kein Google Analytics, kein Matomo SaaS, keine Daten gehen an Dritte</li>
-    <li>IP-Adressen werden <strong>nie gespeichert</strong> - nur ein taeglich wechselnder Hash (SHA256)</li>
-    <li>Nutzt <code>sessionStorage</code> statt Cookies fuer die Session-ID</li>
+    <li><strong>Cookie-Name:</strong> <code>po_consent</code></li>
+    <li><strong>Format:</strong> Base64-kodiertes JSON (ca. 80&ndash;100 Bytes) mit Version, Zeitstempel, Kategorie-Flags und Kurz-ID</li>
+    <li><strong>Laufzeit:</strong> 180 Tage</li>
+    <li><strong>Attribute:</strong> <code>Secure</code>, <code>SameSite=Lax</code>, <code>Path=/</code>, nicht HttpOnly (JavaScript-Lesezugriff noetig)</li>
+    <li><strong>Cross-Domain:</strong> Cookie-Domain ist <code>.parkourone.com</code>, wird also ueber alle Subdomains geteilt</li>
   </ul>
 
-  <h3><span class="check">&#10003;</span> Privacy-Signale werden respektiert <span class="badge badge--green">Top</span></h3>
-  <ul>
-    <li><strong>Do Not Track (DNT)</strong> wird erkannt und beachtet</li>
-    <li><strong>Global Privacy Control (GPC)</strong> wird erkannt und beachtet</li>
-    <li>Bei aktivem DNT/GPC: automatisch nur notwendige Cookies, Rest wird blockiert</li>
-  </ul>
-
-  <h3><span class="check">&#10003;</span> Security Headers <span class="badge badge--green">Gut</span></h3>
-  <ul>
-    <li><strong>Referrer-Policy:</strong> <code>strict-origin-when-cross-origin</code> - limitiert Daten die an externe Seiten gehen</li>
-    <li><strong>Permissions-Policy:</strong> Kamera, Mikrofon, Geolocation, Payment etc. sind standardmaessig blockiert</li>
-    <li><strong>PHPSESSID</strong> wird aktiv entfernt wenn kein funktionaler Consent vorliegt</li>
-  </ul>
-
-  <h3><span class="check">&#10003;</span> Google Consent Mode v2 <span class="badge badge--green">Gut</span></h3>
-  <ul>
-    <li>Falls Google-Dienste aktiviert werden, ist <strong>Consent Mode v2</strong> schon eingebaut</li>
-    <li><code>gtag('consent', 'update', ...)</code> wird dynamisch mit den User-Praeferenzen aufgerufen</li>
-    <li>Aktuell sind keine Google-Dienste aktiv - aber wir sind vorbereitet</li>
-  </ul>
-
-  <span class="detail-toggle" onclick="toggleDetail(this)">&#9660; Technische Details anzeigen</span>
-  <div class="detail-content">
-    <p><strong>Consent-Cookie Format:</strong> Base64-encoded JSON mit Version, Zeitstempel und Kategorie-Flags.</p>
-    <p><strong>MU-Plugin:</strong> <code>parkourone-consent-early.php</code> laeuft als Must-Use Plugin ganz frueh im WordPress-Boot - noch bevor andere Plugins Cookies setzen koennen.</p>
-    <p><strong>Analytics Hash:</strong> <code>SHA256(IP + UserAgent + Datum)</code> - wechselt taeglich, nicht zurueckrechenbar.</p>
-  </div>
-</div>
-
-<!-- WAS WIR BESPRECHEN SOLLTEN -->
-<div class="section">
-  <h2><span class="warn">&#9888;</span> Sollten wir mit Thomas besprechen</h2>
-
-  <h3><span class="warn">&#9888;</span> Externe CDN-Bibliotheken <span class="badge badge--yellow">Pruefen</span></h3>
-  <ul>
-    <li><strong>Swiper.js</strong> wird von <code>cdn.jsdelivr.net</code> geladen (fuer Slider/Karussells)</li>
-    <li><strong>Cropper.js</strong> wird von <code>cdnjs.cloudflare.com</code> geladen (fuer Coach-Profilbild-Zuschnitt)</li>
-    <li>Bei jedem Seitenaufruf geht eine Anfrage an diese Server &rarr; die sehen die <strong>IP-Adresse</strong> des Besuchers</li>
-    <li><strong>Loesung:</strong> Bibliotheken lokal im Theme hosten. Dann geht nix mehr nach aussen.</li>
-  </ul>
-
-  <h3><span class="warn">&#9888;</span> Analytics-Datenumfang <span class="badge badge--yellow">Pruefen</span></h3>
-  <p style="margin-bottom:0.5rem">Unsere eigenen Analytics sammeln folgende Daten:</p>
-  <ul>
-    <li>Seiten-URL, Seitentitel, Referrer</li>
-    <li>Browser-Typ (Chrome, Firefox etc.), Betriebssystem</li>
-    <li>Geraetetyp (Mobile/Tablet/Desktop), Bildschirmbreite</li>
-    <li>Sprache des Browsers</li>
-    <li>Scroll-Tiefe (wie weit gescrollt), Zeit auf der Seite</li>
-    <li>Ladezeit der Seite</li>
-    <li>UTM-Parameter (utm_source, utm_medium, utm_campaign)</li>
-    <li>Klick-Events (ausgehende Links, Downloads, CTAs)</li>
-    <li>Formular-Absendungen (welches Formular, nicht die Inhalte)</li>
-  </ul>
-  <p style="margin-top:0.5rem"><strong>Frage an Thomas:</strong> Ist dieser Umfang okay wenn alles in unserer eigenen DB bleibt und IPs nur gehasht werden?</p>
-
-  <h3><span class="warn">&#9888;</span> Datenschutzerklaerung abgleichen <span class="badge badge--yellow">Todo</span></h3>
-  <ul>
-    <li>Checken ob die aktuelle Datenschutzerklaerung <strong>alle aktiven Dienste korrekt beschreibt</strong></li>
-    <li>Besonders: Eigene Analytics erwaehnen (nicht nur Google Analytics als Platzhalter)</li>
-    <li>CDN-Anbieter erwaehnen (jsdelivr/Cloudflare) solange wir die noch nutzen</li>
-    <li>sessionStorage-Nutzung erwaehnen</li>
-  </ul>
-
-  <span class="detail-toggle" onclick="toggleDetail(this)">&#9660; Welche Drittanbieter-Dienste sind konfiguriert?</span>
-  <div class="detail-content">
-    <p>Im Code sind folgende Dienste <strong>vorbereitet aber optional</strong> (muessen einzeln aktiviert werden):</p>
-    <ul>
-      <li>Google Analytics, Google Fonts, Google Maps, Google Ads</li>
-      <li>Facebook Pixel</li>
-      <li>YouTube / Vimeo Video-Einbettungen</li>
-      <li>MailerLite (Newsletter)</li>
-      <li>Tidio / Crisp (Live-Chat)</li>
-      <li>Plausible / Matomo (alternative Analytics)</li>
-      <li>OpenStreetMap</li>
-    </ul>
-    <p>Alle diese Dienste werden <strong>nur geladen wenn der User per Consent zustimmt</strong>. Aktuell scheint keiner davon aktiv zu sein.</p>
-  </div>
-</div>
-
-<!-- CROSS-DOMAIN -->
-<div class="section">
-  <h2><span class="info">&#8505;</span> Cross-Domain Cookie-Sharing</h2>
-  <p>Der Consent-Cookie wird ueber alle ParkourONE-Subdomains geteilt, damit User nicht auf jeder Subdomain neu zustimmen muessen:</p>
   <div class="domains">
     <span>parkourone.com</span>
     <span>berlin.parkourone.com</span>
@@ -286,54 +191,317 @@
     <span>rheinruhr.parkourone.com</span>
     <span>augsburg.parkourone.com</span>
   </div>
-  <p style="margin-top:0.8rem"><strong>Frage an Thomas:</strong> Muss das in der Datenschutzerklaerung explizit erwaehnt werden, dass der Consent-Cookie subdomain-uebergreifend gilt?</p>
-</div>
 
-<!-- FORMULARE & DATENERFASSUNG -->
-<div class="section">
-  <h2><span class="info">&#8505;</span> Formulare &amp; Datenerfassung</h2>
-  <p>Diese Stellen im Theme erfassen User-Eingaben:</p>
+  <h3>Re-Consent-Mechanismus</h3>
   <ul>
-    <li><strong>Angebote-Kontaktformular:</strong> AJAX-basiert, sendet Anfrage zu einem Angebot</li>
-    <li><strong>Warenkorb / Buchung:</strong> Klassen und Angebote koennen in den Warenkorb gelegt werden (WooCommerce)</li>
-    <li><strong>Coach-Profil:</strong> Coaches koennen ihr Profil bearbeiten und Bilder hochladen (nur eingeloggte User)</li>
+    <li>Bei Aenderung der Rechtstext-Version (Konstante <code>LEGAL_TEXT_VERSION</code>, aktuell: <code>2024-01</code>) wird der Banner erneut angezeigt</li>
+    <li>Bisheriger Consent wird nicht automatisch uebernommen</li>
   </ul>
-  <p style="margin-top:0.5rem">Alle Formulare nutzen WordPress AJAX (<code>admin-ajax.php</code>) und bleiben auf unserem Server.</p>
-</div>
 
-<!-- REST API ENDPOINTS -->
-<div class="section">
-  <h2><span class="info">&#8505;</span> Oeffentliche API-Endpoints</h2>
-  <p>Folgende REST-API Endpoints sind oeffentlich erreichbar (liefern aber keine personenbezogenen Daten):</p>
+  <h3>Audit-Trail / Consent-Logging</h3>
+  <p>Jede Consent-Entscheidung wird in der Datenbank-Tabelle <code>wp_po_consent_log</code> protokolliert:</p>
+  <table>
+    <tr><th>Feld</th><th>Inhalt</th></tr>
+    <tr><td>consent_id</td><td>UUID</td></tr>
+    <tr><td>timestamp</td><td>Zeitpunkt der Entscheidung</td></tr>
+    <tr><td>ip_hash</td><td>SHA256 der anonymisierten IP (letztes Oktett entfernt)</td></tr>
+    <tr><td>user_id</td><td>WordPress User-ID (nur bei eingeloggten Nutzern, sonst NULL)</td></tr>
+    <tr><td>user_agent</td><td>Browser-Kennung (max. 500 Zeichen)</td></tr>
+    <tr><td>consent_data</td><td>JSON mit den gewaehlten Kategorien</td></tr>
+    <tr><td>consent_version / legal_version</td><td>Versionsnummern zum Zeitpunkt der Entscheidung</td></tr>
+    <tr><td>domain</td><td>Domain auf der zugestimmt wurde</td></tr>
+    <tr><td>dnt_enabled / gpc_enabled</td><td>Ob DNT/GPC-Signal aktiv war</td></tr>
+    <tr><td>previous_hash / integrity_hash</td><td>Verkettete Hashes zur Integritaetspruefung</td></tr>
+  </table>
+  <p style="margin-top:0.5rem">Die Log-Eintraege sind ueber kryptographische Hashes verkettet (aehnlich einer Blockchain-Struktur). Es existiert eine Funktion zur Pruefung der Integritaet der gesamten Kette.</p>
+
+  <h3>Script-Blocking</h3>
   <ul>
-    <li><code>/wp-json/parkourone/v1/event-filters</code> - Event-Filterkategorien</li>
-    <li><code>/wp-json/parkourone/v1/klassen</code> - Klassen-Uebersicht</li>
-    <li><code>/wp-json/parkourone/v1/angebote</code> - Angebote-Uebersicht</li>
-    <li><code>/wp-json/parkourone/v1/analytics/track</code> - Analytics-Events empfangen (POST)</li>
+    <li><strong>Serverseitig:</strong> Ein MU-Plugin (<code>parkourone-consent-early.php</code>) laeuft vor dem WordPress-Init und blockiert PHP-Sessions und Cookies ohne Consent</li>
+    <li><strong>Clientseitig:</strong> JavaScript ueberschreibt <code>appendChild</code> und <code>insertBefore</code>, um dynamisch geladene Scripts abzufangen und als <code>type="text/plain"</code> zu neutralisieren</li>
+    <li>Iframes (YouTube, Vimeo etc.) werden durch Platzhalter ersetzt, die den Nutzer zur Zustimmung auffordern</li>
+    <li>localStorage/sessionStorage-Zugriffe von bekannten Tracking-Bibliotheken werden blockiert</li>
   </ul>
-  <p style="margin-top:0.5rem">Endpoints die sensiblere Daten liefern (Theme-Images, FAQ-Kategorien) sind auf eingeloggte User mit <code>edit_posts</code>-Berechtigung beschraenkt.</p>
+
+  <h3>Google Consent Mode v2</h3>
+  <p>Falls Google-Dienste aktiviert werden, wird <code>gtag('consent', 'default/update', ...)</code> automatisch mit den Nutzer-Praeferenzen aufgerufen. Aktuell sind keine Google-Dienste aktiv.</p>
 </div>
 
-<!-- CHECKLISTE -->
+<!-- =========================================
+     2. ANALYTICS
+     ========================================= -->
 <div class="section">
-  <h2>&#9745; Checkliste fuer nach dem Meeting</h2>
-  <ul style="list-style: none; padding-left: 0;">
-    <li><label><input type="checkbox"> Swiper.js lokal hosten (jsdelivr CDN entfernen)</label></li>
-    <li><label><input type="checkbox"> Cropper.js lokal hosten (Cloudflare CDN entfernen)</label></li>
-    <li><label><input type="checkbox"> Datenschutzerklaerung aktualisieren (eigene Analytics beschreiben)</label></li>
-    <li><label><input type="checkbox"> Datenschutzerklaerung: CDN-Nutzung erwaehnen (solange noch aktiv)</label></li>
-    <li><label><input type="checkbox"> Datenschutzerklaerung: sessionStorage-Nutzung erwaehnen</label></li>
-    <li><label><input type="checkbox"> Datenschutzerklaerung: Cross-Domain Cookies erwaehnen</label></li>
-    <li><label><input type="checkbox"> Pruefen welche Drittanbieter-Dienste tatsaechlich aktiv sind</label></li>
-    <li><label><input type="checkbox"> MU-Plugin auf Produktiv-Server pruefen (ist es installiert?)</label></li>
-    <li><label><input type="checkbox"> Kontaktformular: Datenschutz-Hinweis/Checkbox hinzufuegen?</label></li>
-    <li><label><input type="checkbox"> AV-Vertrag mit Hosting-Anbieter pruefen</label></li>
-    <li><label><input type="checkbox"> Verzeichnis der Verarbeitungstaetigkeiten aktualisieren</label></li>
+  <h2>2. Analytics-System</h2>
+  <p>Die Website betreibt ein eigenentwickeltes, cookiefreies Analytics-System. Es werden keine Daten an Dritte uebermittelt. Kein Google Analytics, kein Matomo SaaS.</p>
+
+  <h3>Erhobene Daten</h3>
+  <table>
+    <tr><th>Datenpunkt</th><th>Beschreibung</th></tr>
+    <tr><td>visitor_hash</td><td>SHA256 aus anonymisierter IP + User-Agent + Tagesdatum (wechselt taeglich)</td></tr>
+    <tr><td>session_id</td><td>Per sessionStorage generiert (kein Cookie), nicht persistent</td></tr>
+    <tr><td>page_url / page_title</td><td>Aufgerufene Seite</td></tr>
+    <tr><td>referrer</td><td>Verweisende URL</td></tr>
+    <tr><td>browser / os / device_type</td><td>Aus User-Agent abgeleitet</td></tr>
+    <tr><td>screen_width / language</td><td>Bildschirmbreite, Browsersprache</td></tr>
+    <tr><td>scroll_depth / time_on_page</td><td>Scroll-Tiefe (0-100%), Verweildauer</td></tr>
+    <tr><td>load_time</td><td>Seitenladezeit in Millisekunden</td></tr>
+    <tr><td>utm_source / utm_medium / utm_campaign</td><td>Kampagnen-Parameter</td></tr>
+    <tr><td>event_type / event_label</td><td>Klick-Events (ausgehende Links, Downloads, CTAs)</td></tr>
+  </table>
+
+  <h3>IP-Verarbeitung</h3>
+  <ul>
+    <li>Die IP-Adresse wird <strong>vor dem Hashing anonymisiert</strong>: letztes Oktett wird auf 0 gesetzt (z.B. 192.168.1.234 &rarr; 192.168.1.0)</li>
+    <li>Der Hash wird mit dem aktuellen Tagesdatum kombiniert und wechselt taeglich</li>
+    <li>Die Original-IP wird zu keinem Zeitpunkt gespeichert</li>
   </ul>
+
+  <h3>Speicherung und Loeschung</h3>
+  <ul>
+    <li>Datenbank-Tabelle: <code>wp_po_analytics_events</code></li>
+    <li>Automatische Loeschung von Daten aelter als 365 Tage (per WordPress Cron-Job)</li>
+    <li>Eingeloggte Administratoren werden vom Tracking ausgenommen</li>
+  </ul>
+</div>
+
+<!-- =========================================
+     3. EXTERNE RESSOURCEN
+     ========================================= -->
+<div class="section">
+  <h2>3. Externe Ressourcen und Drittanbieter</h2>
+
+  <h3>CDN-gehostete Bibliotheken</h3>
+  <table>
+    <tr><th>Bibliothek</th><th>CDN</th><th>Zweck</th></tr>
+    <tr><td>Swiper.js v11</td><td>cdn.jsdelivr.net</td><td>Slider/Karussell-Funktionalitaet</td></tr>
+  </table>
+  <p style="margin-top:0.5rem">Bei jedem Seitenaufruf mit Slider-Elementen wird eine Anfrage an den CDN-Server gesendet. Der CDN-Betreiber sieht dabei die IP-Adresse des Besuchers.</p>
+
+  <h3>Vorkonfigurierte Drittanbieter-Dienste</h3>
+  <p>Folgende Dienste sind im Consent-System vorbereitet, werden aber nur geladen wenn der Nutzer aktiv zustimmt:</p>
+  <ul>
+    <li>Google Analytics, Google Fonts, Google Maps, Google Ads</li>
+    <li>Facebook Pixel</li>
+    <li>YouTube / Vimeo Video-Einbettungen</li>
+    <li>MailerLite (Newsletter)</li>
+    <li>Tidio / Crisp (Live-Chat)</li>
+    <li>Plausible / Matomo (alternative Analytics)</li>
+    <li>OpenStreetMap</li>
+  </ul>
+
+  <h3>Hosting</h3>
+  <p>Die Website wird auf Servern in der <strong>Schweiz</strong> gehostet. Im Cookie-Banner wird darauf hingewiesen (Angemessenheitsbeschluss der EU-Kommission gemaess Art. 45 DSGVO).</p>
+</div>
+
+<!-- =========================================
+     4. FORMULARE & DATENERFASSUNG
+     ========================================= -->
+<div class="section">
+  <h2>4. Formulare und Datenerfassung</h2>
+
+  <h3>WooCommerce Checkout</h3>
+  <ul>
+    <li>Erfasste Felder: Vorname, Nachname, E-Mail, Telefon, Strasse, PLZ, Ort</li>
+    <li>Zusaetzlich: Empfehlungsquelle (Dropdown: Instagram, Google, Freunde etc.), Bestellnotizen</li>
+    <li>Daten werden in der WordPress-Datenbank gespeichert (WooCommerce-Standard)</li>
+  </ul>
+
+  <h3>Gesundheitsdaten-Einwilligung (Art. 9 DSGVO)</h3>
+  <p>Fuer Vertraege mit Gesundheitsdaten (Vorerkrankungen, Allergien, Sportbescheinigungen) existiert ein separates Einwilligungsformular:</p>
+  <ul>
+    <li>Explizite, separate Checkbox mit ausfuehrlicher Aufklaerung</li>
+    <li>Zweck: Sicherheit im Training, Personalisierung, Notfallreaktion</li>
+    <li>Aufbewahrungsdauer: Vertragslaufzeit + 6 Monate</li>
+    <li>Widerruf jederzeit moeglich</li>
+    <li>Zeitstempel der Einwilligung wird erfasst (ISO-Format)</li>
+    <li>Nutzbar als Shortcode <code>[parkourone_health_consent]</code> oder als inline Checkbox in bestehenden Formularen</li>
+  </ul>
+
+  <h3>Weitere Formulare</h3>
+  <ul>
+    <li><strong>Angebote-Kontaktformular:</strong> AJAX-basiert, Daten bleiben auf dem eigenen Server</li>
+    <li><strong>Coach-Profil:</strong> Eingeloggte Coaches koennen Profilbilder hochladen und Texte bearbeiten</li>
+  </ul>
+
+  <h3>Formularsicherheit</h3>
+  <ul>
+    <li>Alle POST-Anfragen verwenden WordPress-Nonces (CSRF-Schutz)</li>
+    <li>Eingaben werden serverseitig mit <code>sanitize_text_field()</code> / <code>sanitize_email()</code> bereinigt</li>
+    <li>AJAX-Endpunkte pruefen Nonce-Validitaet</li>
+  </ul>
+</div>
+
+<!-- =========================================
+     5. PRIVACY-SIGNALE
+     ========================================= -->
+<div class="section">
+  <h2>5. Privacy-Signale (DNT / GPC)</h2>
+  <ul>
+    <li><strong>Do Not Track (DNT):</strong> Der HTTP-Header <code>DNT: 1</code> wird erkannt. Wenn gesetzt und kein expliziter Consent vorliegt, werden nur notwendige Cookies zugelassen.</li>
+    <li><strong>Global Privacy Control (GPC):</strong> Der HTTP-Header <code>Sec-GPC: 1</code> wird erkannt. Gleiche Behandlung wie DNT.</li>
+    <li>Im Cookie-Banner wird ein entsprechender Hinweis angezeigt wenn eines der Signale erkannt wird.</li>
+    <li>Im Audit-Log wird festgehalten ob DNT/GPC zum Zeitpunkt der Consent-Entscheidung aktiv war.</li>
+  </ul>
+</div>
+
+<!-- =========================================
+     6. BARRIEREFREIHEIT
+     ========================================= -->
+<div class="section">
+  <h2>6. Barrierefreiheit (WCAG 2.1 Level AA)</h2>
+  <p>Die Website implementiert folgende Barrierefreiheits-Massnahmen:</p>
+
+  <h3>Navigation und Struktur</h3>
+  <ul>
+    <li><strong>Skip-Link:</strong> Beim Fokussieren erscheint ein Link &laquo;Zum Inhalt springen&raquo; der zur Hauptinhaltsregion springt</li>
+    <li><strong>Semantisches HTML:</strong> Korrekte Heading-Hierarchie, <code>&lt;main&gt;</code>-Element mit ID-Anker</li>
+    <li><strong>ARIA-Attribute:</strong> <code>role="dialog"</code>, <code>aria-modal</code>, <code>aria-expanded</code>, <code>aria-label</code> auf interaktiven Elementen</li>
+  </ul>
+
+  <h3>Tastaturnavigation</h3>
+  <ul>
+    <li><strong>Focus-Traps:</strong> In Modalen und Overlays bleibt der Tab-Fokus innerhalb des geoeffneten Elements</li>
+    <li><strong>Escape-Taste:</strong> Schliesst Modale und Overlays</li>
+    <li><strong>Custom Dropdowns:</strong> Bedienbar mit Enter, Space, Pfeiltasten</li>
+    <li><strong>Focus-Outline:</strong> Sichtbare Fokusmarkierung auf allen interaktiven Elementen (3px Outline)</li>
+  </ul>
+
+  <h3>Screenreader-Unterstuetzung</h3>
+  <ul>
+    <li><strong>sr-only Klasse:</strong> Visuell versteckter Text fuer Screenreader</li>
+    <li><strong>aria-live Region:</strong> Dynamische Aenderungen (z.B. Warenkorb-Updates) werden per <code>aria-live="polite"</code> angekuendigt</li>
+    <li><strong>Alt-Texte:</strong> Alle inhaltlich relevanten Bilder haben beschreibende Alt-Texte. Dekorative Bilder sind mit <code>role="presentation"</code> markiert.</li>
+    <li><strong>Formulare:</strong> Alle Eingabefelder haben zugeordnete <code>&lt;label&gt;</code>-Elemente mit <code>for</code>/<code>id</code>-Verknuepfung</li>
+  </ul>
+
+  <h3>Visuelle Anpassungen</h3>
+  <ul>
+    <li><strong>Farbkontrast:</strong> Sekundaere Textfarbe ist <code>#6e6e73</code> auf weissem Hintergrund (Kontrastverhaeltnis 4.6:1, WCAG AA)</li>
+    <li><strong>Reduzierte Bewegung:</strong> <code>prefers-reduced-motion</code> Media Query deaktiviert Animationen und Transitionen</li>
+    <li><strong>Dunkelmodus:</strong> <code>prefers-color-scheme: dark</code> wird unterstuetzt (Consent-Banner)</li>
+    <li><strong>Hoher Kontrast:</strong> <code>prefers-contrast: high</code> wird unterstuetzt mit zusaetzlichen Rahmen</li>
+  </ul>
+</div>
+
+<!-- =========================================
+     7. SECURITY HEADERS
+     ========================================= -->
+<div class="section">
+  <h2>7. Sicherheits-Header</h2>
+  <p>Folgende HTTP-Header werden ueber das MU-Plugin gesetzt:</p>
+  <table>
+    <tr><th>Header</th><th>Wert</th></tr>
+    <tr><td>Referrer-Policy</td><td><code>strict-origin-when-cross-origin</code></td></tr>
+    <tr><td>Permissions-Policy</td><td><code>geolocation=(), microphone=(), camera=(), payment=(), usb=()</code></td></tr>
+  </table>
+
+  <h3>Clientseitiger Fingerprinting-Schutz</h3>
+  <ul>
+    <li>Canvas-Fingerprinting-Versuche werden erkannt und bei fehlendem Consent blockiert</li>
+    <li>WebGL-Fingerprinting (UNMASKED_VENDOR/RENDERER) wird bei fehlendem Consent blockiert</li>
+  </ul>
+
+  <h3>Cookie-Hygiene</h3>
+  <ul>
+    <li>PHPSESSID wird aktiv entfernt wenn kein funktionaler Consent vorliegt</li>
+    <li>Ueberdimensionierte Legacy-Cookies (ueber 500 Bytes) werden automatisch bereinigt</li>
+  </ul>
+</div>
+
+<!-- =========================================
+     8. REST API ENDPOINTS
+     ========================================= -->
+<div class="section">
+  <h2>8. Oeffentliche API-Endpunkte</h2>
+  <p>Folgende REST-API Endpunkte sind ohne Authentifizierung erreichbar:</p>
+  <table>
+    <tr><th>Endpunkt</th><th>Methode</th><th>Inhalt</th></tr>
+    <tr><td><code>/parkourone/v1/event-filters</code></td><td>GET</td><td>Event-Filterkategorien</td></tr>
+    <tr><td><code>/parkourone/v1/klassen</code></td><td>GET</td><td>Klassen-Uebersicht</td></tr>
+    <tr><td><code>/parkourone/v1/angebote</code></td><td>GET</td><td>Angebote-Uebersicht</td></tr>
+    <tr><td><code>/parkourone/v1/faq-categories</code></td><td>GET</td><td>FAQ-Kategorien</td></tr>
+    <tr><td><code>/parkourone/v1/analytics/track</code></td><td>POST</td><td>Analytics-Events empfangen</td></tr>
+  </table>
+  <p style="margin-top:0.5rem">Endpunkte mit sensibleren Daten (Theme-Images etc.) erfordern die Berechtigung <code>edit_posts</code>.</p>
+  <p>Der Consent-Speicher-Endpunkt (<code>admin-ajax.php?action=po_save_consent</code>) ist per Nonce geschuetzt.</p>
+</div>
+
+<!-- =========================================
+     9. DATENSPEICHERUNG ÜBERSICHT
+     ========================================= -->
+<div class="section">
+  <h2>9. Datenspeicherung - Uebersicht</h2>
+  <table>
+    <tr><th>Datentyp</th><th>Speicherort</th><th>Aufbewahrung</th></tr>
+    <tr><td>Consent-Entscheidungen</td><td>Datenbank (<code>wp_po_consent_log</code>)</td><td>Unbegrenzt (Audit-Pflicht)</td></tr>
+    <tr><td>Consent-Cookie</td><td>Browser</td><td>180 Tage</td></tr>
+    <tr><td>Analytics-Events</td><td>Datenbank (<code>wp_po_analytics_events</code>)</td><td>365 Tage (automatische Loeschung)</td></tr>
+    <tr><td>Bestelldaten</td><td>WordPress/WooCommerce DB</td><td>Gemaess WooCommerce-Einstellungen</td></tr>
+    <tr><td>Gesundheitsdaten-Einwilligung</td><td>Formularkontext (Vertrag)</td><td>Vertragslaufzeit + 6 Monate</td></tr>
+    <tr><td>Session-Daten</td><td>sessionStorage (Browser)</td><td>Bis Tab/Fenster geschlossen</td></tr>
+  </table>
+</div>
+
+<!-- =========================================
+     10. BETROFFENENRECHTE
+     ========================================= -->
+<div class="section">
+  <h2>10. Umsetzung Betroffenenrechte</h2>
+  <table>
+    <tr><th>Recht</th><th>Umsetzung</th></tr>
+    <tr><td>Art. 15 - Auskunft</td><td>Funktion <code>export_user_consent_data()</code> exportiert alle Consent-Daten eines Nutzers</td></tr>
+    <tr><td>Art. 17 - Loeschung</td><td>Funktion <code>delete_user_consent_data()</code> anonymisiert Eintraege (IP-Hash, User-Agent auf &laquo;DELETED&raquo;) statt Loeschung, um Audit-Trail-Integritaet zu wahren</td></tr>
+    <tr><td>Art. 7 Abs. 3 - Widerruf</td><td>Nutzer kann jederzeit ueber den Cookie-Banner seine Einstellungen aendern. Link im Footer oeffnet die Einstellungen.</td></tr>
+    <tr><td>Art. 20 - Datenportabilitaet</td><td>CSV-Export der Consent-Logs im WordPress-Admin verfuegbar</td></tr>
+  </table>
+</div>
+
+<!-- =========================================
+     11. OFFENE FRAGEN ZUR RECHTLICHEN BEWERTUNG
+     ========================================= -->
+<div class="section" style="border-left: 4px solid #ff9800;">
+  <h2>11. Offene Fragen zur rechtlichen Bewertung</h2>
+  <p>Folgende Punkte koennen wir technisch nicht abschliessend beurteilen und bitten um Einschaetzung:</p>
+
+  <h3>Cookie &amp; Tracking</h3>
+  <ol>
+    <li><strong>CDN-Bibliothek (Swiper.js von jsdelivr.net):</strong> Bei jedem Seitenaufruf mit Slider geht eine Anfrage an den CDN-Server, der die IP des Besuchers sieht. Reicht ein Hinweis in der Datenschutzerklaerung oder muss die Bibliothek selbst gehostet werden? (vgl. EuGH-Rechtsprechung zu Google Fonts / LG Muenchen)</li>
+    <li><strong>sessionStorage als Cookie-Aequivalent:</strong> Fuer die Analytics-Session-ID nutzen wir <code>sessionStorage</code> statt Cookies. Faellt das unter TTDSG &sect; 25 (&laquo;Zugriff auf Endeinrichtung&raquo;) und erfordert damit Einwilligung?</li>
+    <li><strong>Cross-Domain Consent-Cookie:</strong> Der Consent-Cookie gilt fuer <code>.parkourone.com</code> und damit fuer alle Subdomains (berlin., schweiz., hannover. etc.). Muss das in der Datenschutzerklaerung explizit erwaehnt werden?</li>
+  </ol>
+
+  <h3>Analytics</h3>
+  <ol start="4">
+    <li><strong>Rechtsgrundlage eigene Analytics:</strong> Wir erheben Seitenaufrufe, Scroll-Tiefe, Verweildauer, UTM-Parameter etc. in eigener Datenbank. IP wird anonymisiert und nur gehasht gespeichert. Laesst sich das auf &laquo;berechtigtes Interesse&raquo; (Art. 6 Abs. 1 lit. f DSGVO) stuetzen oder braucht es eine Einwilligung?</li>
+    <li><strong>Analytics Datenumfang:</strong> Ist der Umfang der erhobenen Daten (siehe Abschnitt 2) verhaeltnismaessig? Muessen einzelne Datenpunkte reduziert werden?</li>
+  </ol>
+
+  <h3>Personenbezogene Daten</h3>
+  <ol start="6">
+    <li><strong>Coach-Profilbilder:</strong> Coaches koennen Profilbilder und Texte hochladen, die oeffentlich sichtbar sind. Reicht der Arbeitsvertrag/die Vereinbarung als Rechtsgrundlage oder braucht es eine separate Einwilligung (KUG / DSGVO Art. 6)?</li>
+    <li><strong>Kontaktformulare:</strong> Brauchen die Formulare (Angebote-Anfrage, Checkout) eine separate Datenschutz-Checkbox, oder reicht der Verweis auf die Datenschutzerklaerung?</li>
+    <li><strong>Gesundheitsdaten-Einwilligung:</strong> Wir haben ein separates Art. 9-Formular fuer Gesundheitsdaten im Vertragskontext gebaut (siehe Abschnitt 4). Ist die Umsetzung (explizite Checkbox, Zeitstempel, Widerrufshinweis) ausreichend?</li>
+  </ol>
+
+  <h3>Aufbewahrung &amp; Vertraege</h3>
+  <ol start="9">
+    <li><strong>Consent-Log Aufbewahrungsfrist:</strong> Consent-Logs werden unbegrenzt gespeichert (Nachweispflicht). Gibt es eine maximale Aufbewahrungsfrist oder ist &laquo;unbegrenzt&raquo; zulaessig?</li>
+    <li><strong>AV-Vertrag Schweiz-Hosting:</strong> Die Website wird in der Schweiz gehostet (Angemessenheitsbeschluss). Ist trotzdem ein Auftragsverarbeitungsvertrag nach Art. 28 DSGVO noetig?</li>
+  </ol>
+
+  <h3>Sicherheit</h3>
+  <ol start="11">
+    <li><strong>Fehlende HTTP-Sicherheits-Header:</strong> Aktuell sind Content-Security-Policy (CSP), Strict-Transport-Security (HSTS), X-Frame-Options und X-Content-Type-Options nicht gesetzt. Ist das im Hinblick auf Art. 32 DSGVO (technische Massnahmen) relevant?</li>
+  </ol>
+
+  <h3>Datenschutzerklaerung</h3>
+  <ol start="12">
+    <li><strong>Aktualisierung noetig:</strong> Die Datenschutzerklaerung auf der Website muss geprueft werden, ob sie den aktuellen technischen Stand vollstaendig abbildet. Insbesondere: eigene Analytics, sessionStorage-Nutzung, CDN-Einbindung, Cross-Domain-Cookie, Schweiz-Hosting, Gesundheitsdaten.</li>
+  </ol>
 </div>
 
 <footer>
-  ParkourONE Theme DSGVO-Audit &bull; Generiert am 10. Februar 2026
+  ParkourONE Website &mdash; Technische Dokumentation &bull; Stand: 10. Februar 2026
 </footer>
 
 </div>
@@ -343,10 +511,10 @@ function toggleDetail(el) {
   var content = el.nextElementSibling;
   if (content.classList.contains('open')) {
     content.classList.remove('open');
-    el.innerHTML = '&#9660; ' + el.textContent.replace(/[▲▼]\s*/, '').replace('Verstecken', 'anzeigen');
+    el.innerHTML = '&#9660; ' + el.textContent.replace(/[\u25B2\u25BC]\s*/, '').replace('Verstecken', 'anzeigen');
   } else {
     content.classList.add('open');
-    el.innerHTML = '&#9650; ' + el.textContent.replace(/[▲▼]\s*/, '').replace('anzeigen', 'Verstecken');
+    el.innerHTML = '&#9650; ' + el.textContent.replace(/[\u25B2\u25BC]\s*/, '').replace('anzeigen', 'Verstecken');
   }
 }
 </script>
