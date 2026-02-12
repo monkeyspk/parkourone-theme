@@ -1,7 +1,7 @@
 <?php
 /**
- * Page Header Block - 3 Varianten
- * Centered | Split | Fullscreen
+ * Page Header Block - 4 Varianten
+ * Centered | Split | Fullscreen | Banner
  */
 
 $variant = $attributes['variant'] ?? 'centered';
@@ -135,6 +135,52 @@ $arrow_svg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke
 					loading="eager"
 				>
 			</div>
+		</div>
+	</div>
+</section>
+
+<?php elseif ($variant === 'banner'): ?>
+<!-- ========== VARIANTE D: BANNER ========== -->
+<section class="po-ph po-ph--banner alignfull" style="--accent-color: <?php echo esc_attr($accent_color); ?>; --overlay-opacity: <?php echo esc_attr($overlay_opacity / 100); ?>">
+	<div class="po-ph__banner-bg">
+		<img
+			src="<?php echo esc_url($image); ?>"
+			alt="<?php echo esc_attr($image_alt); ?>"
+			class="po-ph__banner-image"
+			loading="eager"
+		>
+		<div class="po-ph__banner-overlay"></div>
+	</div>
+
+	<div class="po-ph__container po-ph__container--banner">
+		<div class="po-ph__content po-ph__content--banner">
+			<h1 class="po-ph__title po-ph__title--banner">
+				<?php echo wp_kses_post($title); ?>
+				<?php if ($title_accent): ?>
+					<span class="po-ph__title-accent"><?php echo wp_kses_post($title_accent); ?></span>
+				<?php endif; ?>
+			</h1>
+
+			<?php if ($description): ?>
+				<p class="po-ph__description po-ph__description--banner"><?php echo wp_kses_post($description); ?></p>
+			<?php endif; ?>
+
+			<?php if ($cta_text || $cta_secondary_text): ?>
+			<div class="po-ph__actions po-ph__actions--banner">
+				<?php if ($cta_text && $cta_url): ?>
+					<a href="<?php echo esc_url($cta_url); ?>" class="po-ph__cta po-ph__cta--primary po-ph__cta--light po-ph__cta--small">
+						<?php echo esc_html($cta_text); ?>
+					</a>
+				<?php endif; ?>
+
+				<?php if ($cta_secondary_text && $cta_secondary_url): ?>
+					<a href="<?php echo esc_url($cta_secondary_url); ?>" class="po-ph__cta po-ph__cta--secondary po-ph__cta--light">
+						<?php echo esc_html($cta_secondary_text); ?>
+						<?php echo $arrow_svg; ?>
+					</a>
+				<?php endif; ?>
+			</div>
+			<?php endif; ?>
 		</div>
 	</div>
 </section>

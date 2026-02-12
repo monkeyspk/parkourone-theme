@@ -497,6 +497,101 @@
 }
 
 /* ==========================================================================
+   VARIANTE D: BANNER
+   Kompakter Header-Banner mit Querformat-Bild und Titel-Overlay
+   ========================================================================== */
+
+.po-ph--banner {
+	position: relative;
+	overflow: hidden;
+	display: flex;
+	align-items: flex-end;
+	min-height: clamp(220px, 30vw, 380px);
+}
+
+/* Background Image */
+.po-ph__banner-bg {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+}
+
+.po-ph__banner-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
+}
+
+.po-ph__banner-overlay {
+	position: absolute;
+	inset: 0;
+	background:
+		linear-gradient(
+			0deg,
+			rgba(0, 0, 0, calc(var(--overlay-opacity, 0.5) * 1.4)) 0%,
+			rgba(0, 0, 0, calc(var(--overlay-opacity, 0.5) * 0.6)) 40%,
+			rgba(0, 0, 0, calc(var(--overlay-opacity, 0.5) * 0.2)) 100%
+		);
+}
+
+/* Container */
+.po-ph__container--banner {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	max-width: 1400px;
+	margin: 0 auto;
+	padding: clamp(1.5rem, 4vw, 3rem) clamp(1.5rem, 5vw, 4rem);
+}
+
+.po-ph__content--banner {
+	max-width: 700px;
+}
+
+/* Title */
+.po-ph__title--banner {
+	font-size: clamp(1.75rem, 4vw, 3rem);
+	font-weight: 700;
+	line-height: 1.1;
+	letter-spacing: -0.03em;
+	color: #fff;
+	margin: 0;
+	text-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+}
+
+.po-ph__title--banner .po-ph__title-accent {
+	color: var(--accent-color);
+	-webkit-text-fill-color: var(--accent-color);
+	text-shadow: 0 0 30px var(--accent-glow);
+}
+
+/* Description */
+.po-ph__description--banner {
+	font-size: clamp(0.9375rem, 1.5vw, 1.125rem);
+	line-height: 1.5;
+	color: rgba(255, 255, 255, 0.85);
+	margin: 0.75rem 0 0;
+	max-width: 550px;
+	text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Actions */
+.po-ph__actions--banner {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	align-items: center;
+	margin-top: 1.25rem;
+}
+
+/* Small Button Modifier */
+.po-ph__cta--small {
+	padding: 0.75rem 1.5rem;
+	font-size: 0.9375rem;
+}
+
+/* ==========================================================================
    Animations
    ========================================================================== */
 
@@ -640,6 +735,30 @@
 	}
 
 	.po-ph__cta--light.po-ph__cta--primary {
+		width: 100%;
+		justify-content: center;
+	}
+}
+
+/* ==========================================================================
+   Responsive - Banner
+   ========================================================================== */
+
+@media (max-width: 768px) {
+	.po-ph--banner {
+		min-height: 200px;
+	}
+
+	.po-ph__container--banner {
+		padding: 1.25rem 1.25rem;
+	}
+
+	.po-ph__actions--banner {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.po-ph__cta--small {
 		width: 100%;
 		justify-content: center;
 	}
