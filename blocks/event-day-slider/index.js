@@ -38,53 +38,57 @@
 				),
 				wp.element.createElement('div', { className: 'po-event-day-slider-editor' },
 					wp.element.createElement('h3', null, attributes.headline || 'N\u00e4chste Probetrainings'),
-					// Mock Wochenansicht
+					// Mock Liste
 					wp.element.createElement('div', {
 						style: {
 							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-							gap: '12px',
-							marginBottom: '12px'
+							flexDirection: 'column',
+							gap: '6px',
+							maxWidth: '500px',
+							margin: '12px auto'
 						}
 					},
-						wp.element.createElement('span', {
-							style: { fontSize: '16px', color: '#86868b' }
-						}, '\u2190'),
-						wp.element.createElement('span', {
-							style: { fontSize: '13px', fontWeight: 600 }
-						}, 'Wochenkalender (Mo \u2013 So)'),
-						wp.element.createElement('span', {
-							style: { fontSize: '16px', color: '#86868b' }
-						}, '\u2192')
-					),
-					wp.element.createElement('div', {
-						style: {
-							display: 'grid',
-							gridTemplateColumns: 'repeat(7, 1fr)',
-							gap: '4px',
-							marginBottom: '12px'
-						}
-					},
-						['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map(function(d, i) {
+						[1, 2, 3].map(function(i) {
 							return wp.element.createElement('div', {
-								key: d,
+								key: i,
 								style: {
-									padding: '8px 4px',
+									display: 'flex',
+									alignItems: 'center',
+									gap: '12px',
+									padding: '12px 16px',
 									background: '#1d1d1f',
-									color: '#fff',
-									borderRadius: '8px',
-									fontSize: '11px',
-									fontWeight: 600,
-									textAlign: 'center'
+									borderRadius: '10px'
 								}
-							}, d);
+							},
+								wp.element.createElement('div', {
+									style: {
+										width: '36px',
+										height: '36px',
+										borderRadius: '50%',
+										background: 'rgba(255,255,255,0.1)',
+										flexShrink: 0
+									}
+								}),
+								wp.element.createElement('div', {
+									style: { flex: 1 }
+								},
+									wp.element.createElement('div', {
+										style: { fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginBottom: '2px' }
+									}, 'Mo. 10. Feb.'),
+									wp.element.createElement('div', {
+										style: { fontSize: '13px', color: '#34c759', fontWeight: 600 }
+									}, 'Training ' + i)
+								),
+								wp.element.createElement('span', {
+									style: { fontSize: '14px', color: 'rgba(255,255,255,0.3)' }
+								}, '\u203A')
+							);
 						})
 					),
 					loading
 						? wp.element.createElement(Spinner, null)
 						: wp.element.createElement('p', {
-							style: { color: '#86868b', fontSize: '13px' }
+							style: { color: '#86868b', fontSize: '13px', textAlign: 'center', marginTop: '12px' }
 						}, eventCount + ' Events verf\u00fcgbar. Vorschau nur im Frontend sichtbar.')
 				)
 			);

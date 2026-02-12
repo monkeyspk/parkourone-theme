@@ -50,7 +50,7 @@ if ($ortschaft_parent && !is_wp_error($ortschaft_parent)) {
 }
 
 // ========================================
-// Events laden und nach Datum gruppieren
+// Events laden und als flache Liste sammeln
 // ========================================
 
 $query = new WP_Query([
@@ -60,9 +60,13 @@ $query = new WP_Query([
 ]);
 
 $today = strtotime('today');
-$events_by_date = [];
-$rendered_modals = []; // Deduplizierung: nur 1 Modal pro Event-ID
-$event_data_for_modals = []; // Event-Daten fuer Modals sammeln
+$all_events = [];
+$rendered_modals = [];
+$event_data_for_modals = [];
+
+$month_names = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+$day_names   = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+$day_names_short = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
 
 if ($query->have_posts()) {
 	while ($query->have_posts()) {
@@ -134,7 +138,7 @@ if ($query->have_posts()) {
 
 			$stock = isset($date_entry['available_seats']) ? intval($date_entry['available_seats']) : -1;
 
-			$events_by_date[$date_key][] = [
+			$all_events[] = [
 				'event_id'        => $event_id,
 				'title'           => get_the_title(),
 				'start_time'      => $start_time,
@@ -147,97 +151,56 @@ if ($query->have_posts()) {
 				'color'           => $color,
 				'stock'           => $stock,
 				'filter_data'     => trim($age_slug . ' ' . $location_slug),
+				'date_key'        => $date_key,
+				'timestamp'       => $timestamp,
 			];
 		}
 	}
 	wp_reset_postdata();
 }
 
-// Events innerhalb jedes Tages nach Startzeit sortieren
-foreach ($events_by_date as $date_key => &$day_events) {
-	usort($day_events, function($a, $b) {
+// Nach Datum + Startzeit sortieren
+usort($all_events, function($a, $b) {
+	if ($a['date_key'] === $b['date_key']) {
 		return strcmp($a['start_time'], $b['start_time']);
-	});
+	}
+	return strcmp($a['date_key'], $b['date_key']);
+});
+
+// Initiale Anzeige: Events der naechsten 14 Tage die Events haben
+$initial_count = 0;
+$initial_limit = 14; // 14 Tage mit Events
+$seen_days = [];
+$initial_items = 0;
+
+foreach ($all_events as $idx => $ev) {
+	if (!isset($seen_days[$ev['date_key']])) {
+		$seen_days[$ev['date_key']] = true;
+		$initial_count++;
+	}
+	if ($initial_count > $initial_limit) break;
+	$initial_items = $idx + 1;
 }
-unset($day_events);
 
-// ========================================
-// Wochen generieren (8 Wochen ab aktueller Woche)
-// ========================================
+$total_events = count($all_events);
+$has_more = ($initial_items < $total_events);
+$has_any_events = !empty($all_events);
+$has_filters = !empty($alter_terms) || !empty($ortschaft_terms);
 
+// Datum-Labels generieren
 $today_key     = date('Y-m-d', $today);
 $tomorrow_key  = date('Y-m-d', strtotime('+1 day', $today));
 $day_after_key = date('Y-m-d', strtotime('+2 days', $today));
 
-$day_names   = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
-$month_names = ['Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sep.', 'Okt.', 'Nov.', 'Dez.'];
-
-// Montag dieser Woche berechnen
-$current_dow = date('w', $today); // 0=So, 1=Mo, ...
-$days_since_monday = ($current_dow === 0) ? 6 : ($current_dow - 1);
-$this_monday = strtotime("-{$days_since_monday} days", $today);
-
-$total_weeks = 8;
-$weeks = [];
-
-for ($w = 0; $w < $total_weeks; $w++) {
-	$week_monday = strtotime("+{$w} weeks", $this_monday);
-	$week_sunday = strtotime('+6 days', $week_monday);
-
-	// Wochen-Label: "10. – 16. Feb." oder "24. Feb. – 2. März"
-	$mon_month = date('n', $week_monday);
-	$sun_month = date('n', $week_sunday);
-	if ($mon_month === $sun_month) {
-		$week_label = date('j', $week_monday) . '. – ' . date('j', $week_sunday) . '. ' . $month_names[$mon_month - 1] . ' ' . date('Y', $week_monday);
-	} else {
-		$week_label = date('j', $week_monday) . '. ' . $month_names[$mon_month - 1] . ' – ' . date('j', $week_sunday) . '. ' . $month_names[$sun_month - 1] . ' ' . date('Y', $week_sunday);
+function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key, $day_names_short, $month_names) {
+	$ts = strtotime($date_key);
+	if ($date_key === $today_key) {
+		return 'Heute, ' . $day_names_short[date('w', $ts)] . '. ' . date('j', $ts) . '. ' . $month_names[date('n', $ts) - 1];
+	} elseif ($date_key === $tomorrow_key) {
+		return 'Morgen, ' . $day_names_short[date('w', $ts)] . '. ' . date('j', $ts) . '. ' . $month_names[date('n', $ts) - 1];
 	}
-
-	$days = [];
-	$week_has_events = false;
-
-	for ($d = 0; $d < 7; $d++) {
-		$day_ts = strtotime("+{$d} days", $week_monday);
-		$day_key = date('Y-m-d', $day_ts);
-		$is_past = ($day_ts < $today);
-		$is_today = ($day_key === $today_key);
-
-		// Label generieren
-		if ($day_key === $today_key) {
-			$day_label = 'Heute';
-		} elseif ($day_key === $tomorrow_key) {
-			$day_label = 'Morgen';
-		} elseif ($day_key === $day_after_key) {
-			$day_label = 'Übermorgen';
-		} else {
-			$day_label = $day_names[date('w', $day_ts)] . ', ' . date('j', $day_ts) . '. ' . $month_names[date('n', $day_ts) - 1];
-		}
-
-		$day_events = [];
-		if (!$is_past && !empty($events_by_date[$day_key])) {
-			$day_events = $events_by_date[$day_key];
-			$week_has_events = true;
-		}
-
-		$days[] = [
-			'date_key'  => $day_key,
-			'label'     => $day_label,
-			'is_past'   => $is_past,
-			'is_today'  => $is_today,
-			'events'    => $day_events,
-		];
-	}
-
-	$weeks[] = [
-		'index'      => $w,
-		'label'      => $week_label,
-		'days'       => $days,
-		'has_events' => $week_has_events,
-	];
+	return $day_names_short[date('w', $ts)] . '. ' . date('j', $ts) . '. ' . $month_names[date('n', $ts) - 1];
 }
-
-$has_any_events = !empty($events_by_date);
-$has_filters = !empty($alter_terms) || !empty($ortschaft_terms);
 ?>
 
 <section class="po-eds" id="<?php echo esc_attr($unique_id); ?>">
@@ -246,74 +209,70 @@ $has_filters = !empty($alter_terms) || !empty($ortschaft_terms);
 		<h2 class="po-eds__headline"><?php echo wp_kses_post($headline); ?></h2>
 	<?php endif; ?>
 
-	<?php // ======== Wochennavigation ======== ?>
-	<div class="po-eds__week-nav">
-		<button type="button" class="po-eds__week-prev" disabled aria-label="Vorherige Woche">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
-		</button>
-		<span class="po-eds__week-label"><?php echo esc_html($weeks[0]['label']); ?></span>
-		<button type="button" class="po-eds__week-next" aria-label="Nächste Woche">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
-		</button>
-	</div>
-
-	<?php // ======== Wochen-Grids ======== ?>
-	<?php foreach ($weeks as $week): ?>
-	<div class="po-eds__week-grid<?php echo $week['index'] === 0 ? ' is-active' : ''; ?>" data-week="<?php echo $week['index']; ?>" data-week-label="<?php echo esc_attr($week['label']); ?>">
-		<?php foreach ($week['days'] as $day): ?>
-		<div class="po-eds__day-col<?php echo $day['is_past'] ? ' is-past' : ''; ?><?php echo $day['is_today'] ? ' is-today' : ''; ?>" data-date="<?php echo esc_attr($day['date_key']); ?>">
-			<div class="po-eds__day-header">
-				<span class="po-eds__day-name"><?php echo esc_html($day['label']); ?></span>
-				<?php if (!$day['is_past'] && !empty($day['events'])): ?>
-				<span class="po-eds__day-count"><?php echo count($day['events']); ?></span>
-				<?php endif; ?>
-			</div>
-			<div class="po-eds__day-events">
-				<?php if ($day['is_past']): ?>
-					<span class="po-eds__day-past-text">Vergangen</span>
-				<?php elseif (empty($day['events'])): ?>
-					<span class="po-eds__day-empty-text">Keine Trainings</span>
-				<?php else: ?>
-					<?php foreach ($day['events'] as $ev):
-						$filter_data = trim($ev['age_slug'] . ' ' . $ev['location_slug']);
-						$time_text = $ev['start_time'];
-						if ($ev['end_time']) $time_text .= ' – ' . $ev['end_time'];
-						$modal_id = $unique_id . '-modal-' . $ev['event_id'];
-
-						$stock = $ev['stock'];
-						$is_soldout = ($stock === 0);
-						$stock_html = '';
-						if ($stock === 0) {
-							$stock_html = '<span class="po-eds__card-stock po-eds__card-stock--none">Ausgebucht</span>';
-						} elseif ($stock > 0 && $stock <= 3) {
-							$stock_html = '<span class="po-eds__card-stock po-eds__card-stock--low">' . $stock . ($stock === 1 ? ' Platz' : ' Plätze') . '</span>';
-						} elseif ($stock > 3) {
-							$stock_html = '<span class="po-eds__card-stock">' . $stock . ' Plätze</span>';
-						}
-					?>
-					<button type="button" class="po-eds__card-item<?php echo $is_soldout ? ' is-soldout' : ''; ?>" data-filters="<?php echo esc_attr($filter_data); ?>" data-modal-target="<?php echo esc_attr($modal_id); ?>">
-						<?php if (!empty($ev['headcoach_image'])): ?>
-							<img src="<?php echo esc_url($ev['headcoach_image']); ?>" alt="<?php echo esc_attr($ev['headcoach'] ?? ''); ?>" class="po-eds__card-img">
-						<?php endif; ?>
-						<div class="po-eds__card-content">
-							<span class="po-eds__card-time"><?php echo esc_html($time_text); ?></span>
-							<span class="po-eds__card-title" style="color: <?php echo esc_attr($ev['color']); ?>"><?php echo esc_html($ev['title']); ?></span>
-							<?php if ($ev['headcoach']): ?>
-							<span class="po-eds__card-coach"><?php echo esc_html($ev['headcoach']); ?></span>
-							<?php endif; ?>
-							<?php if ($ev['venue']): ?>
-							<span class="po-eds__card-venue"><?php echo esc_html($ev['venue']); ?></span>
-							<?php endif; ?>
-							<?php echo $stock_html; ?>
-						</div>
-					</button>
-					<?php endforeach; ?>
-				<?php endif; ?>
-			</div>
+	<?php if (!$has_any_events): ?>
+		<div class="po-eds__empty">
+			<p>Aktuell sind keine Trainings geplant.</p>
 		</div>
+	<?php else: ?>
+
+	<?php // ======== Flache Event-Liste ======== ?>
+	<div class="po-eds__list" data-initial="<?php echo esc_attr($initial_items); ?>" data-total="<?php echo esc_attr($total_events); ?>">
+		<?php foreach ($all_events as $idx => $ev):
+			$filter_data = trim($ev['age_slug'] . ' ' . $ev['location_slug']);
+			$time_text = $ev['start_time'];
+			if ($ev['end_time']) $time_text .= ' – ' . $ev['end_time'];
+			$modal_id = $unique_id . '-modal-' . $ev['event_id'];
+			$date_label = po_eds_format_date($ev['date_key'], $today_key, $tomorrow_key, $day_after_key, $day_names_short, $month_names);
+
+			$stock = $ev['stock'];
+			$is_soldout = ($stock === 0);
+			$stock_html = '';
+			if ($stock === 0) {
+				$stock_html = '<span class="po-eds__card-stock po-eds__card-stock--none">Ausgebucht</span>';
+			} elseif ($stock > 0 && $stock <= 3) {
+				$stock_html = '<span class="po-eds__card-stock po-eds__card-stock--low">' . $stock . ($stock === 1 ? ' Platz' : ' Plätze') . '</span>';
+			} elseif ($stock > 3) {
+				$stock_html = '<span class="po-eds__card-stock">' . $stock . ' Plätze</span>';
+			}
+
+			$is_hidden = ($idx >= $initial_items);
+		?>
+		<button type="button"
+			class="po-eds__card<?php echo $is_soldout ? ' is-soldout' : ''; ?><?php echo $is_hidden ? ' is-hidden' : ''; ?>"
+			data-filters="<?php echo esc_attr($filter_data); ?>"
+			data-modal-target="<?php echo esc_attr($modal_id); ?>"
+			data-index="<?php echo $idx; ?>">
+			<?php if (!empty($ev['headcoach_image'])): ?>
+				<img src="<?php echo esc_url($ev['headcoach_image']); ?>" alt="<?php echo esc_attr($ev['headcoach'] ?? ''); ?>" class="po-eds__card-img" loading="lazy">
+			<?php endif; ?>
+			<div class="po-eds__card-body">
+				<span class="po-eds__card-date"><?php echo esc_html($date_label); ?></span>
+				<span class="po-eds__card-time"><?php echo esc_html($time_text); ?> Uhr</span>
+				<span class="po-eds__card-title" style="color: <?php echo esc_attr($ev['color']); ?>"><?php echo esc_html($ev['title']); ?></span>
+				<div class="po-eds__card-meta">
+					<?php if ($ev['headcoach']): ?>
+					<span class="po-eds__card-coach"><?php echo esc_html($ev['headcoach']); ?></span>
+					<?php endif; ?>
+					<?php if ($ev['venue']): ?>
+					<span class="po-eds__card-venue"><?php echo esc_html($ev['venue']); ?></span>
+					<?php endif; ?>
+				</div>
+				<?php echo $stock_html; ?>
+			</div>
+			<svg class="po-eds__card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+				<path d="M9 18l6-6-6-6"/>
+			</svg>
+		</button>
 		<?php endforeach; ?>
 	</div>
-	<?php endforeach; ?>
+
+	<?php if ($has_more): ?>
+	<div class="po-eds__load-more-wrap">
+		<button type="button" class="po-eds__load-more">Weitere Termine laden</button>
+	</div>
+	<?php endif; ?>
+
+	<?php endif; ?>
 
 	<?php // ======== FAB Filter ======== ?>
 	<?php if ($has_filters): ?>

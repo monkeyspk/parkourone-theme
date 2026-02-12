@@ -5,52 +5,63 @@
 	if (!sections.length) return;
 
 	sections.forEach(function(section) {
-		initEventWeekCalendar(section);
+		initEventList(section);
 	});
 
-	function initEventWeekCalendar(section) {
-		var weekGrids = section.querySelectorAll('.po-eds__week-grid');
-		var prevBtn = section.querySelector('.po-eds__week-prev');
-		var nextBtn = section.querySelector('.po-eds__week-next');
-		var weekLabel = section.querySelector('.po-eds__week-label');
-		var currentWeek = 0;
-		var totalWeeks = weekGrids.length;
+	function initEventList(section) {
+		var list = section.querySelector('.po-eds__list');
+		if (!list) return;
+
+		var allCards = list.querySelectorAll('.po-eds__card');
+		var initialCount = parseInt(list.getAttribute('data-initial') || '0', 10);
+		var totalCount = parseInt(list.getAttribute('data-total') || '0', 10);
+		var loadMoreWrap = section.querySelector('.po-eds__load-more-wrap');
+		var loadMoreBtn = section.querySelector('.po-eds__load-more');
+		var loadBatch = 14; // Weitere 14 Tage mit Events pro Klick
 
 		// ========================================
-		// WOCHENNAVIGATION
+		// LOAD MORE
 		// ========================================
 
-		function showWeek(index) {
-			if (index < 0 || index >= totalWeeks) return;
+		var visibleUpTo = initialCount; // Index bis wohin sichtbar
 
-			weekGrids.forEach(function(grid) {
-				grid.classList.remove('is-active');
-			});
+		function showMoreItems() {
+			// Naechste Batch: 14 weitere Tage mit Events
+			var seenDays = {};
+			var dayCount = 0;
+			var newVisibleUpTo = visibleUpTo;
 
-			weekGrids[index].classList.add('is-active');
-			currentWeek = index;
+			for (var i = visibleUpTo; i < allCards.length; i++) {
+				var card = allCards[i];
+				// Datum aus der Card holen (data-index fuer Reihenfolge)
+				// Wir zaehlen "Tage" indem wir den Date-Text vergleichen
+				var dateEl = card.querySelector('.po-eds__card-date');
+				var dateText = dateEl ? dateEl.textContent.trim() : '';
 
-			// Label aktualisieren
-			weekLabel.textContent = weekGrids[index].getAttribute('data-week-label');
+				if (dateText && !seenDays[dateText]) {
+					seenDays[dateText] = true;
+					dayCount++;
+				}
 
-			// Button-States
-			prevBtn.disabled = (currentWeek === 0);
-			nextBtn.disabled = (currentWeek >= totalWeeks - 1);
+				if (dayCount > loadBatch) break;
 
-			// Filter nach Wochenwechsel erneut anwenden
+				card.classList.remove('is-hidden');
+				newVisibleUpTo = i + 1;
+			}
+
+			visibleUpTo = newVisibleUpTo;
+
+			// Hide button wenn alles sichtbar oder Filter aktiv
+			if (visibleUpTo >= totalCount && loadMoreWrap) {
+				loadMoreWrap.style.display = 'none';
+			}
+
+			// Filter erneut anwenden
 			applyFilter(activeFilter);
 		}
 
-		if (prevBtn) {
-			prevBtn.addEventListener('click', function() {
-				showWeek(currentWeek - 1);
-			});
-		}
-
-		if (nextBtn) {
-			nextBtn.addEventListener('click', function() {
-				showWeek(currentWeek + 1);
-			});
+		if (loadMoreBtn) {
+			loadMoreBtn.addEventListener('click', showMoreItems);
 		}
 
 		// ========================================
@@ -61,43 +72,45 @@
 
 		function applyFilter(filterValue) {
 			activeFilter = filterValue;
-			var activeGrid = section.querySelector('.po-eds__week-grid.is-active');
-			if (!activeGrid) return;
 
-			var events = activeGrid.querySelectorAll('[data-filters]');
-			var dayCols = activeGrid.querySelectorAll('.po-eds__day-col:not(.is-past)');
+			allCards.forEach(function(card, index) {
+				// Hidden Cards (load-more) nicht anfassen
+				if (index >= visibleUpTo) return;
 
-			events.forEach(function(event) {
-				var filters = event.getAttribute('data-filters') || '';
+				var filters = card.getAttribute('data-filters') || '';
 				var match = filterValue === 'all' || filters.indexOf(filterValue) !== -1;
-				event.style.display = match ? '' : 'none';
+				card.style.display = match ? '' : 'none';
 			});
 
-			// Day-Count aktualisieren
-			dayCols.forEach(function(col) {
-				var visibleItems = col.querySelectorAll('.po-eds__card-item:not([style*="display: none"])');
-				var countEl = col.querySelector('.po-eds__day-count');
-				var emptyText = col.querySelector('.po-eds__day-empty-text');
-
-				if (countEl) {
-					if (visibleItems.length > 0) {
-						countEl.textContent = visibleItems.length;
-						countEl.style.display = '';
-					} else {
-						countEl.style.display = 'none';
-					}
+			// Load-More Button anpassen:
+			// Bei aktivem Filter verstecken wir den Button und zeigen alle passenden
+			if (loadMoreWrap) {
+				if (filterValue !== 'all') {
+					// Bei Filter: alle Cards zeigen die passen
+					allCards.forEach(function(card) {
+						var filters = card.getAttribute('data-filters') || '';
+						var match = filters.indexOf(filterValue) !== -1;
+						if (match) {
+							card.classList.remove('is-hidden');
+							card.style.display = '';
+						} else {
+							card.style.display = 'none';
+						}
+					});
+					loadMoreWrap.style.display = 'none';
+				} else {
+					// Bei "Alle": hidden/visible State wiederherstellen
+					allCards.forEach(function(card, index) {
+						if (index >= visibleUpTo) {
+							card.classList.add('is-hidden');
+							card.style.display = '';
+						} else {
+							card.style.display = '';
+						}
+					});
+					loadMoreWrap.style.display = (visibleUpTo >= totalCount) ? 'none' : '';
 				}
-
-				// "Keine Trainings" Text zeigen wenn alle gefiltert
-				if (emptyText) {
-					var allItems = col.querySelectorAll('.po-eds__card-item');
-					if (allItems.length > 0 && visibleItems.length === 0) {
-						emptyText.style.display = '';
-					} else if (allItems.length > 0) {
-						emptyText.style.display = 'none';
-					}
-				}
-			});
+			}
 		}
 
 		// ========================================
