@@ -26,7 +26,7 @@ $class .= ' po-pricing--' . $style;
 		</div>
 		<?php endif; ?>
 
-		<div class="po-pricing__grid">
+		<div class="po-pricing__grid<?php echo count($categories) === 5 ? ' po-pricing__grid--five' : ''; ?>">
 			<?php foreach ($categories as $index => $cat):
 				$is_highlighted = !empty($cat['highlighted']);
 				$card_class = 'po-pricing__card';
@@ -40,7 +40,9 @@ $class .= ' po-pricing--' . $style;
 				<h3 class="po-pricing__card-title"><?php echo esc_html($cat['name'] ?? ''); ?></h3>
 
 				<div class="po-pricing__price-wrapper">
+					<?php if (count($cat['classes'] ?? []) > 1): ?>
 					<span class="po-pricing__price-label">ab</span>
+					<?php endif; ?>
 					<span class="po-pricing__price"><?php echo esc_html($cat['fromPrice'] ?? '0'); ?><?php echo esc_html($currency); ?></span>
 					<span class="po-pricing__period"><?php echo esc_html($period); ?></span>
 				</div>
