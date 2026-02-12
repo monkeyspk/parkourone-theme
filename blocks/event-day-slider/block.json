@@ -2,20 +2,19 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "parkourone/event-day-slider",
-    "version": "1.0.0",
-    "title": "Event-Tagesslider",
+    "version": "2.0.0",
+    "title": "Event-Wochenkalender",
     "category": "parkourone-blocks",
     "icon": "calendar",
-    "description": "Horizontaler Datums-Slider mit Event-Karten pro Tag und Inline-Buchung.",
-    "keywords": ["event", "tagesslider", "probetraining", "kalender", "buchung"],
+    "description": "Wochenkalender-Ansicht (Mo–So) mit klickbaren Event-Karten und Buchungs-Modal.",
+    "keywords": ["event", "kalender", "woche", "probetraining", "buchung"],
     "textdomain": "parkourone",
     "editorScript": "file:./index.js",
     "style": "file:./style.css",
     "render": "file:./render.php",
     "attributes": {
         "headline": { "type": "string", "default": "Nächste Probetrainings" },
-        "buttonText": { "type": "string", "default": "Jetzt buchen" },
-        "initialDays": { "type": "number", "default": 8 }
+        "buttonText": { "type": "string", "default": "Jetzt buchen" }
     },
     "supports": { "align": ["full", "wide"], "html": false }
 }

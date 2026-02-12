@@ -1,7 +1,7 @@
 (function(wp) {
 	const { registerBlockType } = wp.blocks;
 	const { useBlockProps, InspectorControls } = wp.blockEditor;
-	const { PanelBody, TextControl, RangeControl, Spinner } = wp.components;
+	const { PanelBody, TextControl, Spinner } = wp.components;
 	const { useState, useEffect } = wp.element;
 	const { __ } = wp.i18n;
 
@@ -33,40 +33,50 @@
 							label: __('Button-Text'),
 							value: attributes.buttonText,
 							onChange: function(val) { setAttributes({ buttonText: val }); }
-						}),
-						wp.element.createElement(RangeControl, {
-							label: __('Anfangstage'),
-							value: attributes.initialDays,
-							onChange: function(val) { setAttributes({ initialDays: val }); },
-							min: 3,
-							max: 30,
-							step: 1
 						})
 					)
 				),
 				wp.element.createElement('div', { className: 'po-event-day-slider-editor' },
 					wp.element.createElement('h3', null, attributes.headline || 'N\u00e4chste Probetrainings'),
-					// Mock Date Tabs
+					// Mock Wochenansicht
 					wp.element.createElement('div', {
 						style: {
 							display: 'flex',
-							gap: '6px',
-							marginBottom: '12px',
-							overflowX: 'auto'
+							alignItems: 'center',
+							justifyContent: 'center',
+							gap: '12px',
+							marginBottom: '12px'
 						}
 					},
-						['Heute', 'Morgen', '\u00dcbermorgen', 'Do, 15.', 'Fr, 16.', 'Sa, 17.', 'So, 18.', 'Mo, 19.'].slice(0, attributes.initialDays).map(function(d, i) {
-							return wp.element.createElement('span', {
+						wp.element.createElement('span', {
+							style: { fontSize: '16px', color: '#86868b' }
+						}, '\u2190'),
+						wp.element.createElement('span', {
+							style: { fontSize: '13px', fontWeight: 600 }
+						}, 'Wochenkalender (Mo \u2013 So)'),
+						wp.element.createElement('span', {
+							style: { fontSize: '16px', color: '#86868b' }
+						}, '\u2192')
+					),
+					wp.element.createElement('div', {
+						style: {
+							display: 'grid',
+							gridTemplateColumns: 'repeat(7, 1fr)',
+							gap: '4px',
+							marginBottom: '12px'
+						}
+					},
+						['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map(function(d, i) {
+							return wp.element.createElement('div', {
 								key: d,
 								style: {
-									padding: '6px 14px',
-									background: i === 0 ? '#1d1d1f' : '#e5e5ea',
-									color: i === 0 ? '#fff' : '#1d1d1f',
+									padding: '8px 4px',
+									background: '#1d1d1f',
+									color: '#fff',
 									borderRadius: '8px',
-									fontSize: '12px',
+									fontSize: '11px',
 									fontWeight: 600,
-									whiteSpace: 'nowrap',
-									flexShrink: 0
+									textAlign: 'center'
 								}
 							}, d);
 						})

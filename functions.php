@@ -1330,7 +1330,7 @@ function parkourone_enqueue_block_view_scripts() {
         $view_file = $blocks_dir . $folder . '/view.js';
         if (file_exists($view_file)) {
             $deps = [];
-            if ($folder === 'event-booking') {
+            if ($folder === 'event-booking' || $folder === 'event-day-slider') {
                 $deps = ['jquery', 'parkourone-booking'];
             }
             wp_enqueue_script(
