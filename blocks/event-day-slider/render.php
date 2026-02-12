@@ -147,49 +147,27 @@ foreach ($events_by_date as $date_key => &$day_events) {
 }
 unset($day_events);
 
-// Tage generieren (ab heute, initialDays Stueck)
-$day_labels = [];
-for ($i = 0; $i < $initialDays; $i++) {
-	$ts = strtotime("+$i days", $today);
-	$date_key = date('Y-m-d', $ts);
-	$day_of_week = date('w', $ts);
-	$day_names = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
-	$month_names = ['Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sep.', 'Okt.', 'Nov.', 'Dez.'];
+// Datums-Label generieren (mit Heute/Morgen/Uebermorgen)
+$today_key      = date('Y-m-d', $today);
+$tomorrow_key   = date('Y-m-d', strtotime('+1 day', $today));
+$day_after_key  = date('Y-m-d', strtotime('+2 days', $today));
+$day_names      = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+$month_names    = ['Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sep.', 'Okt.', 'Nov.', 'Dez.'];
 
-	if ($i === 0) {
-		$label = 'Heute';
-	} elseif ($i === 1) {
-		$label = 'Morgen';
-	} elseif ($i === 2) {
-		$label = 'Übermorgen';
-	} else {
-		$label = $day_names[$day_of_week] . ', ' . date('j', $ts) . '. ' . $month_names[date('n', $ts) - 1];
-	}
-
-	$day_labels[$date_key] = $label;
+function po_eds_date_label($date_key, $today_key, $tomorrow_key, $day_after_key, $day_names, $month_names) {
+	if ($date_key === $today_key) return 'Heute';
+	if ($date_key === $tomorrow_key) return 'Morgen';
+	if ($date_key === $day_after_key) return 'Übermorgen';
+	$ts = strtotime($date_key);
+	return $day_names[date('w', $ts)] . ', ' . date('j', $ts) . '. ' . $month_names[date('n', $ts) - 1];
 }
 
-// Auch zukuenftige Tage mit Events einbeziehen die ueber initialDays hinausgehen
-foreach ($events_by_date as $date_key => $evts) {
-	if (!isset($day_labels[$date_key])) {
-		$ts = strtotime($date_key);
-		if ($ts >= $today) {
-			$day_of_week = date('w', $ts);
-			$day_names = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
-			$month_names = ['Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sep.', 'Okt.', 'Nov.', 'Dez.'];
-			$day_labels[$date_key] = $day_names[$day_of_week] . ', ' . date('j', $ts) . '. ' . $month_names[date('n', $ts) - 1];
-		}
-	}
-}
-ksort($day_labels);
-
-// Nur Tage mit Events fuer die Day-Cards
+// Nur Tage mit Events fuer die Day-Cards, Labels dynamisch
 $days_with_events = [];
-foreach ($day_labels as $date_key => $label) {
-	if (!empty($events_by_date[$date_key])) {
-		$days_with_events[$date_key] = $label;
-	}
+foreach ($events_by_date as $date_key => $evts) {
+	$days_with_events[$date_key] = po_eds_date_label($date_key, $today_key, $tomorrow_key, $day_after_key, $day_names, $month_names);
 }
+ksort($days_with_events);
 
 $has_events = !empty($days_with_events);
 $has_filters = !empty($alter_terms) || !empty($ortschaft_terms);
