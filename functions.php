@@ -751,6 +751,7 @@ function parkourone_allowed_block_types($allowed_blocks, $editor_context) {
         'parkourone/stundenplan',
         'parkourone/stundenplan-detail',
         'parkourone/steps-carousel',
+        'parkourone/event-day-slider',
 
         // Grids & Slider
         'parkourone/zielgruppen-grid',
@@ -869,6 +870,7 @@ function parkourone_register_blocks() {
         'steps-carousel',
         'pricing-table',
         'event-booking',
+        'event-day-slider',
         // Ticket #2: Basis Building Blocks für Schulleiter
         'po-text',
         'po-image',
@@ -1321,13 +1323,14 @@ function parkourone_enqueue_block_view_scripts() {
     $view_script_blocks = [
         'faq',
         'event-booking',
+        'event-day-slider',
     ];
 
     foreach ($view_script_blocks as $folder) {
         $view_file = $blocks_dir . $folder . '/view.js';
         if (file_exists($view_file)) {
             $deps = [];
-            if ($folder === 'event-booking') {
+            if ($folder === 'event-booking' || $folder === 'event-day-slider') {
                 $deps = ['jquery', 'parkourone-booking'];
             }
             wp_enqueue_script(
