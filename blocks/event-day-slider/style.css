@@ -1,5 +1,7 @@
 /* ========================================
    Event Day Slider Block
+   Horizontaler Datums-Slider mit Event-Cards
+   Identisches Card-Design wie Stundenplan Mobile
    ======================================== */
 
 .po-eds {
@@ -17,237 +19,95 @@
 }
 
 /* ========================================
-   Filter Dropdowns
+   Horizontal Slider (Day-Cards)
    ======================================== */
 
-.po-eds__filters {
-	display: flex;
-	gap: 10px;
-	flex-wrap: wrap;
-	padding: 0 max(24px, calc((100vw - 1200px) / 2));
-	margin-bottom: 24px;
-}
-
-.po-eds__dropdown {
-	position: relative;
-}
-
-.po-eds__dropdown-trigger {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	padding: 10px 16px;
-	background: #1d1d1f;
-	color: #fff;
-	border: none;
-	border-radius: 10px;
-	font-size: 14px;
-	font-weight: 500;
-	cursor: pointer;
-	transition: background 0.2s ease;
-	white-space: nowrap;
-	font-family: inherit;
-}
-
-.po-eds__dropdown-trigger:hover {
-	background: #333;
-}
-
-.po-eds__dropdown-arrow {
-	width: 16px;
-	height: 16px;
-	flex-shrink: 0;
-	transition: transform 0.2s ease;
-}
-
-.po-eds__dropdown.is-open .po-eds__dropdown-arrow {
-	transform: rotate(180deg);
-}
-
-.po-eds__dropdown-panel {
-	position: absolute;
-	top: calc(100% + 6px);
-	left: 0;
-	min-width: 220px;
-	background: #fff;
-	border-radius: 12px;
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-	padding: 6px;
-	z-index: 100;
-	opacity: 0;
-	visibility: hidden;
-	transform: translateY(-4px);
-	transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
-}
-
-.po-eds__dropdown.is-open .po-eds__dropdown-panel {
-	opacity: 1;
-	visibility: visible;
-	transform: translateY(0);
-}
-
-.po-eds__dropdown-option {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	width: 100%;
-	padding: 10px 12px;
-	border: none;
-	background: none;
-	border-radius: 8px;
-	font-size: 14px;
-	color: #1d1d1f;
-	cursor: pointer;
-	text-align: left;
-	transition: background 0.15s ease;
-	font-family: inherit;
-}
-
-.po-eds__dropdown-option:hover {
-	background: #f5f5f7;
-}
-
-.po-eds__dropdown-option.is-selected {
-	background: #f0f0f5;
-	font-weight: 600;
-}
-
-.po-eds__dropdown-dot {
-	width: 10px;
-	height: 10px;
-	border-radius: 50%;
-	flex-shrink: 0;
-}
-
-/* ========================================
-   Date Tab Navigation
-   ======================================== */
-
-.po-eds__date-nav {
-	padding: 0 max(24px, calc((100vw - 1200px) / 2));
-	margin-bottom: 16px;
+.po-eds__slider {
+	padding: 0 max(20px, calc((100vw - 1200px) / 2));
 	overflow-x: auto;
 	-webkit-overflow-scrolling: touch;
 	scrollbar-width: none;
 	-ms-overflow-style: none;
 }
 
-.po-eds__date-nav::-webkit-scrollbar {
+.po-eds__slider::-webkit-scrollbar {
 	display: none;
-}
-
-.po-eds__date-track {
-	display: flex;
-	gap: 8px;
-	padding-bottom: 4px;
-}
-
-.po-eds__date-tab {
-	flex: 0 0 auto;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 4px;
-	padding: 10px 18px;
-	background: #1d1d1f;
-	color: #fff;
-	border: none;
-	border-radius: 12px;
-	cursor: pointer;
-	transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
-	white-space: nowrap;
-	font-family: inherit;
-}
-
-.po-eds__date-tab:hover {
-	background: #333;
-}
-
-.po-eds__date-tab:active {
-	transform: scale(0.97);
-}
-
-.po-eds__date-tab.is-selected {
-	background: #fff;
-	color: #1d1d1f;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.po-eds__date-tab.is-empty {
-	opacity: 0.45;
-}
-
-.po-eds__date-label {
-	font-size: 14px;
-	font-weight: 600;
-	line-height: 1.2;
-}
-
-.po-eds__date-count {
-	font-size: 11px;
-	font-weight: 500;
-	color: rgba(255, 255, 255, 0.6);
-	background: rgba(255, 255, 255, 0.15);
-	padding: 2px 8px;
-	border-radius: 10px;
-	line-height: 1.3;
-}
-
-.po-eds__date-tab.is-selected .po-eds__date-count {
-	color: #6e6e73;
-	background: #f5f5f7;
-}
-
-.po-eds__date-none {
-	font-size: 11px;
-	color: rgba(255, 255, 255, 0.3);
-	line-height: 1.3;
-}
-
-.po-eds__date-tab.is-selected .po-eds__date-none {
-	color: #c7c7cc;
-}
-
-.po-eds__date-more {
-	background: rgba(29, 29, 31, 0.5);
-	border: 1px dashed rgba(255, 255, 255, 0.2);
-}
-
-.po-eds__date-more:hover {
-	background: rgba(29, 29, 31, 0.7);
-}
-
-/* ========================================
-   Event Cards (vertical list)
-   ======================================== */
-
-.po-eds__slider {
-	padding: 0 max(24px, calc((100vw - 1200px) / 2));
 }
 
 .po-eds__slider-track {
 	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	max-width: 600px;
+	gap: 12px;
+	padding-bottom: 8px;
 }
 
-.po-eds__card {
+/* ========================================
+   Day Card (Spalte pro Tag)
+   ======================================== */
+
+.po-eds__day-card {
+	flex: 0 0 280px;
 	background: #1d1d1f;
-	border-radius: 14px;
+	border-radius: 16px;
 	overflow: hidden;
-	transition: transform 0.1s ease;
 }
 
-.po-eds__card.is-soldout {
-	opacity: 0.5;
+.po-eds__day-card-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 14px 16px;
+	background: rgba(255, 255, 255, 0.05);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.po-eds__card-header {
+.po-eds__day-card-name {
+	font-size: 15px;
+	font-weight: 600;
+	color: #fff;
+}
+
+.po-eds__day-card-count {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	background: rgba(255, 255, 255, 0.2);
+	color: #fff;
+	font-size: 12px;
+	font-weight: 600;
+	border-radius: 50%;
+}
+
+.po-eds__day-card-list {
+	padding: 8px;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+/* ========================================
+   Event Card Item (innerhalb Day-Card)
+   Identisch zu .po-sp__card-item
+   ======================================== */
+
+.po-eds__card-item {
 	display: flex;
 	align-items: flex-start;
-	gap: 12px;
-	padding: 14px 16px;
+	gap: 10px;
+	width: 100%;
+	padding: 12px;
+	background: rgba(255, 255, 255, 0.05);
+	border-radius: 10px;
+	transition: background 0.15s ease;
+}
+
+.po-eds__card-item:hover {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.po-eds__card-item.is-soldout {
+	opacity: 0.5;
 }
 
 .po-eds__card-img {
@@ -277,6 +137,7 @@
 	font-size: 15px;
 	font-weight: 600;
 	line-height: 1.3;
+	/* color set inline via PHP for age-group coding */
 }
 
 .po-eds__card-coach {
@@ -289,18 +150,11 @@
 	color: rgba(255, 255, 255, 0.5);
 }
 
-.po-eds__card-footer {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 0 16px 14px;
-	gap: 12px;
-}
-
 .po-eds__card-stock {
-	font-size: 12px;
-	color: #34c759;
+	font-size: 11px;
 	font-weight: 500;
+	color: #34c759;
+	margin-top: 4px;
 }
 
 .po-eds__card-stock--low {
@@ -311,240 +165,152 @@
 	color: #8e8e93;
 }
 
-.po-eds__card-soldout {
-	font-size: 13px;
-	font-weight: 600;
-	color: #8e8e93;
+/* ========================================
+   FAB Filter (Floating Action Button)
+   Identisch zu Stundenplan FAB
+   ======================================== */
+
+.po-eds__fab {
+	position: fixed;
+	bottom: 24px;
+	left: 50%;
+	transform: translateX(-50%) translateY(20px);
+	z-index: 100;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
 }
 
-.po-eds__card-btn {
-	padding: 8px 18px;
+.po-eds__fab.is-visible {
+	opacity: 1;
+	visibility: visible;
+	transform: translateX(-50%) translateY(0);
+}
+
+.po-eds__fab-trigger {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 12px 20px;
 	background: #fff;
-	color: #1d1d1f;
 	border: none;
-	border-radius: 8px;
-	font-size: 13px;
-	font-weight: 600;
+	border-radius: 50px;
 	cursor: pointer;
-	transition: background 0.15s ease, transform 0.1s ease;
-	white-space: nowrap;
-	flex-shrink: 0;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
 	font-family: inherit;
 }
 
-.po-eds__card-btn:hover {
-	background: #f5f5f7;
+.po-eds__fab-trigger:hover {
 	transform: scale(1.02);
+	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
 }
 
-.po-eds__card-btn:active {
-	transform: scale(0.98);
-}
-
-/* No events for this day */
-.po-eds__no-events {
-	padding: 40px 20px;
-	text-align: center;
-	color: #6e6e73;
-	font-size: 15px;
-}
-
-/* ========================================
-   Inline Booking Form
-   ======================================== */
-
-.po-eds__booking {
-	background: #fff;
-	border-radius: 14px;
-	padding: 16px;
-	animation: po-eds-slideDown 0.25s ease;
-}
-
-@keyframes po-eds-slideDown {
-	from {
-		opacity: 0;
-		transform: translateY(-8px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
-.po-eds__booking-header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	margin-bottom: 12px;
-}
-
-.po-eds__booking-title {
-	font-size: 13px;
-	font-weight: 600;
-	color: #6e6e73;
-}
-
-.po-eds__booking-close {
-	width: 28px;
-	height: 28px;
-	border: none;
-	background: #e5e5ea;
-	border-radius: 50%;
-	cursor: pointer;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	transition: background 0.15s ease;
-	padding: 0;
-	flex-shrink: 0;
-}
-
-.po-eds__booking-close:hover {
-	background: #d1d1d6;
-}
-
-.po-eds__booking-close svg {
-	width: 14px;
-	height: 14px;
-	color: #3a3a3c;
-}
-
-.po-eds__booking-fields {
-	display: grid;
-	grid-template-columns: 1fr 1fr 1fr;
-	gap: 12px;
-	margin-bottom: 12px;
-}
-
-.po-eds__booking-field label {
-	display: block;
-	font-size: 12px;
+.po-eds__fab-text {
+	font-size: 14px;
 	font-weight: 500;
-	color: #6e6e73;
-	margin-bottom: 6px;
+	color: #1d1d1f;
 }
 
-.po-eds__booking-field input {
+.po-eds__fab-icon {
+	width: 18px;
+	height: 18px;
+	color: #1d1d1f;
+	transition: transform 0.3s ease;
+}
+
+.po-eds__fab.is-open .po-eds__fab-icon {
+	transform: rotate(45deg);
+}
+
+.po-eds__fab-dropdown {
+	position: absolute;
+	bottom: calc(100% + 12px);
+	left: 50%;
+	transform: translateX(-50%) translateY(10px);
+	min-width: 220px;
+	max-height: 60vh;
+	overflow-y: auto;
+	background: #fff;
+	border-radius: 16px;
+	padding: 8px;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+	scrollbar-width: thin;
+	scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.po-eds__fab-dropdown::-webkit-scrollbar {
+	width: 6px;
+}
+
+.po-eds__fab-dropdown::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.po-eds__fab-dropdown::-webkit-scrollbar-thumb {
+	background: rgba(0, 0, 0, 0.2);
+	border-radius: 3px;
+}
+
+.po-eds__fab.is-open .po-eds__fab-dropdown {
+	opacity: 1;
+	visibility: visible;
+	transform: translateX(-50%) translateY(0);
+}
+
+.po-eds__fab-group {
+	padding: 8px 0;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.po-eds__fab-group:last-child {
+	border-bottom: none;
+}
+
+.po-eds__fab-group-label {
+	display: block;
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: rgba(0, 0, 0, 0.5);
+	padding: 4px 12px 8px;
+}
+
+.po-eds__fab-option {
+	display: flex;
+	align-items: center;
+	gap: 8px;
 	width: 100%;
 	padding: 10px 12px;
-	border: 1px solid #d1d1d6;
-	border-radius: 8px;
-	font-size: 15px;
-	color: #1d1d1f;
-	background: #fff;
-	transition: border-color 0.15s ease, box-shadow 0.15s ease;
-	font-family: inherit;
-	box-sizing: border-box;
-}
-
-.po-eds__booking-field input:focus {
-	outline: none;
-	border-color: #007aff;
-	box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.12);
-}
-
-.po-eds__booking-submit {
-	width: 100%;
-	padding: 12px;
-	background: #1d1d1f;
-	color: #fff;
+	background: none;
 	border: none;
-	border-radius: 10px;
-	font-size: 15px;
-	font-weight: 600;
+	border-radius: 8px;
 	cursor: pointer;
-	transition: background 0.15s ease, transform 0.1s ease;
+	font-size: 14px;
+	color: #1d1d1f;
+	text-align: left;
+	transition: background 0.15s ease;
 	font-family: inherit;
 }
 
-.po-eds__booking-submit:hover {
-	background: #333;
+.po-eds__fab-option:hover {
+	background: rgba(0, 0, 0, 0.05);
 }
 
-.po-eds__booking-submit:active {
-	transform: scale(0.99);
+.po-eds__fab-option.is-active {
+	background: rgba(0, 0, 0, 0.08);
+	font-weight: 500;
 }
 
-.po-eds__booking-submit:disabled {
-	background: #8e8e93;
-	cursor: default;
-	transform: none;
-}
-
-/* Booking Success */
-.po-eds__booking-success {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-	padding: 16px 0;
-	animation: po-eds-slideDown 0.25s ease;
-}
-
-.po-eds__booking-success-icon {
-	width: 36px;
-	height: 36px;
-	background: #34c759;
+.po-eds__fab-dot {
+	width: 8px;
+	height: 8px;
 	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
 	flex-shrink: 0;
-}
-
-.po-eds__booking-success-icon svg {
-	width: 20px;
-	height: 20px;
-	color: #fff;
-}
-
-.po-eds__booking-success-text {
-	font-size: 15px;
-	font-weight: 600;
-	color: #1d1d1f;
-}
-
-/* ========================================
-   Loading Skeleton
-   ======================================== */
-
-.po-eds__skeleton {
-	padding: 0 max(24px, calc((100vw - 1200px) / 2));
-}
-
-.po-eds__skeleton-tabs {
-	display: flex;
-	gap: 8px;
-	margin-bottom: 16px;
-}
-
-.po-eds__skeleton-tab {
-	width: 100px;
-	height: 52px;
-	background: linear-gradient(110deg, #e8e8e8 8%, #f5f5f5 18%, #e8e8e8 33%);
-	background-size: 200% 100%;
-	animation: po-eds-shimmer 1.5s linear infinite;
-	border-radius: 12px;
-}
-
-.po-eds__skeleton-cards {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	max-width: 600px;
-}
-
-.po-eds__skeleton-card {
-	height: 100px;
-	background: linear-gradient(110deg, #2a2a2a 8%, #333 18%, #2a2a2a 33%);
-	background-size: 200% 100%;
-	animation: po-eds-shimmer 1.5s linear infinite;
-	border-radius: 14px;
-}
-
-@keyframes po-eds-shimmer {
-	to {
-		background-position-x: -200%;
-	}
 }
 
 /* ========================================
@@ -571,36 +337,11 @@
 		margin-bottom: 20px;
 	}
 
-	.po-eds__filters {
-		padding: 0 20px;
-	}
-
-	.po-eds__date-nav {
-		padding: 0 20px;
-	}
-
 	.po-eds__slider {
 		padding: 0 20px;
 	}
 
-	.po-eds__skeleton {
-		padding: 0 20px;
-	}
-
-	.po-eds__slider-track {
-		max-width: 100%;
-	}
-
-	.po-eds__booking-fields {
-		grid-template-columns: 1fr;
-	}
-
-	.po-eds__card-footer {
-		flex-direction: column;
-		align-items: stretch;
-	}
-
-	.po-eds__card-btn {
-		text-align: center;
+	.po-eds__day-card {
+		flex: 0 0 260px;
 	}
 }
