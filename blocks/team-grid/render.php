@@ -55,9 +55,10 @@ foreach ($all_coaches as $coach) {
 	$philosophie_bild = get_post_meta($coach_id, '_coach_philosophie_bild', true);
 	$moment_bild = get_post_meta($coach_id, '_coach_moment_bild', true);
 	$api_image = get_post_meta($coach_id, '_coach_api_image', true);
+	$profile_image = get_post_meta($coach_id, '_coach_profile_image', true);
 
-	// Grid-Karte zeigt immer nur das API-Image
-	$card_image = $api_image;
+	// Fallback: Manuelles Profilbild > API-Image (AcademyBoard)
+	$card_image = !empty($profile_image) ? $profile_image : $api_image;
 	
 	$coach_key = strtolower(trim($coach->post_title));
 	$locations = $coach_locations[$coach_key] ?? [];

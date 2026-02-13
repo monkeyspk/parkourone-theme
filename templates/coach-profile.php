@@ -614,6 +614,8 @@ $coach = $token ? parkourone_verify_coach_token($token) : null;
 	<?php if ($coach): ?>
 		<?php
 		$api_image = get_post_meta($coach->ID, '_coach_api_image', true);
+		$profile_image = get_post_meta($coach->ID, '_coach_profile_image', true);
+		$avatar_image = !empty($profile_image) ? $profile_image : $api_image;
 		$rolle = get_post_meta($coach->ID, '_coach_rolle', true);
 		$standort = get_post_meta($coach->ID, '_coach_standort', true);
 		$parkour_seit = get_post_meta($coach->ID, '_coach_parkour_seit', true);
@@ -628,8 +630,8 @@ $coach = $token ? parkourone_verify_coach_token($token) : null;
 		?>
 		
 		<div class="coach-profile-intro">
-			<?php if ($api_image): ?>
-				<div class="coach-profile-avatar" style="background-image: url('<?php echo esc_url($api_image); ?>');"></div>
+			<?php if ($avatar_image): ?>
+				<div class="coach-profile-avatar" style="background-image: url('<?php echo esc_url($avatar_image); ?>');"></div>
 			<?php endif; ?>
 			<h1>Hallo <?php echo esc_html($coach_name); ?></h1>
 			<p>Mit diesem Formular kannst du dein Coach-Profil für die ParkourONE Webseite gestalten. Dein Profil hilft Interessierten zu sehen, mit wem sie trainieren werden – zeig ihnen, wer du bist!</p>

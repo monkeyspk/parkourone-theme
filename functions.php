@@ -1573,12 +1573,21 @@ add_action('add_meta_boxes', 'parkourone_coach_metaboxes');
 function parkourone_coach_source_metabox($post) {
 	$source = get_post_meta($post->ID, '_coach_source', true);
 	$api_image = get_post_meta($post->ID, '_coach_api_image', true);
-	
-	echo '<p><strong>Quelle:</strong> ' . ($source === 'manual' ? 'Manuell erstellt' : 'API (Academyboard)') . '</p>';
-	
+	$profile_image = get_post_meta($post->ID, '_coach_profile_image', true);
+
+	echo '<p><strong>Quelle:</strong> ' . ($source === 'manual' ? 'Manuell erstellt' : ($source === 'preset' ? 'Preset' : 'API (Academyboard)')) . '</p>';
+
 	if ($api_image) {
-		echo '<p><strong>API-Profilbild:</strong></p>';
-		echo '<img src="' . esc_url($api_image) . '" style="max-width:100%;height:auto;border-radius:8px;">';
+		echo '<p><strong>API-Bild:</strong></p>';
+		echo '<img src="' . esc_url($api_image) . '" style="max-width:100%;height:auto;border-radius:8px;margin-bottom:8px;">';
+	} else {
+		echo '<p style="color:#999;">Kein API-Bild vorhanden.</p>';
+	}
+
+	if ($profile_image) {
+		echo '<p><strong>Manuelles Profilbild:</strong> aktiv</p>';
+	} elseif (!$api_image) {
+		echo '<p style="color:#b32d2e;"><strong>Hinweis:</strong> Kein Bild vorhanden. Bitte unter "Profilbild (für Grid-Karte)" ein Bild hochladen.</p>';
 	}
 }
 
@@ -1586,6 +1595,7 @@ function parkourone_coach_profile_metabox($post) {
 	wp_nonce_field('parkourone_coach_save', 'parkourone_coach_nonce');
 	
 	$fields = [
+		'_coach_profile_image' => ['label' => 'Profilbild (für Grid-Karte)', 'type' => 'image'],
 		'_coach_email' => ['label' => 'E-Mail (für Profil-Link)', 'type' => 'email', 'placeholder' => 'coach@parkourone.ch'],
 		'_coach_rolle' => ['label' => 'Rolle', 'type' => 'text', 'placeholder' => 'z.B. Head Coach, Coach, Gründer'],
 		'_coach_standort' => ['label' => 'Standort', 'type' => 'text', 'placeholder' => 'z.B. Bern, Zürich'],
@@ -1680,6 +1690,7 @@ function parkourone_coach_save_meta($post_id) {
 	}
 	
 	$fields = [
+		'_coach_profile_image',
 		'_coach_email',
 		'_coach_rolle',
 		'_coach_standort',
@@ -2095,6 +2106,7 @@ function parkourone_get_coach_by_name($name) {
 		'id' => $coach_id,
 		'name' => $coach->post_title,
 		'api_image' => get_post_meta($coach_id, '_coach_api_image', true),
+		'profile_image' => get_post_meta($coach_id, '_coach_profile_image', true),
 		'source' => get_post_meta($coach_id, '_coach_source', true),
 		'rolle' => get_post_meta($coach_id, '_coach_rolle', true),
 		'standort' => get_post_meta($coach_id, '_coach_standort', true),
