@@ -823,6 +823,14 @@ p#referrer_field {
 
 /* ---------- Page layout ---------- */
 
+/* Hide empty WooCommerce store-notices block and stray site/post title on checkout */
+.woocommerce-checkout .woocommerce-store-notices,
+.woocommerce-checkout .wc-block-store-notices,
+.woocommerce-checkout .wp-block-post-title,
+.woocommerce-checkout .wp-block-site-title {
+	display: none !important;
+}
+
 /* Force WP content container to full width on checkout */
 .woocommerce-checkout .entry-content,
 .woocommerce-checkout .wp-block-post-content {
