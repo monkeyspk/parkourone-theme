@@ -382,7 +382,9 @@ function parkourone_menu_footer_page() {
 			'social_podcast' => esc_url_raw($_POST['footer_social_podcast'] ?? ''),
 			'newsletter_headline' => sanitize_text_field($_POST['footer_newsletter_headline'] ?? ''),
 			'newsletter_text' => sanitize_text_field($_POST['footer_newsletter_text'] ?? ''),
-			'newsletter_embed' => wp_kses_post($_POST['footer_newsletter_embed'] ?? ''),
+			'newsletter_embed' => current_user_can('unfiltered_html')
+				? $_POST['footer_newsletter_embed'] ?? ''
+				: wp_kses_post($_POST['footer_newsletter_embed'] ?? ''),
 			'mailerlite_api_key' => sanitize_text_field($_POST['footer_mailerlite_api_key'] ?? ''),
 			// Standorte + Copyright Jahr werden automatisch generiert
 		];
