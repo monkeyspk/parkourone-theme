@@ -341,9 +341,9 @@ function parkourone_get_checkout_summary_html() {
 }
 
 /**
- * Hook: Render checkout order summary before the default order review table
+ * Hook: Render checkout order summary inside #order_review, before the default order table
  */
-add_action('woocommerce_checkout_before_order_review', 'parkourone_render_checkout_order_summary', 5);
+add_action('woocommerce_checkout_order_review', 'parkourone_render_checkout_order_summary', 5);
 function parkourone_render_checkout_order_summary() {
 	echo parkourone_get_checkout_summary_html();
 }
