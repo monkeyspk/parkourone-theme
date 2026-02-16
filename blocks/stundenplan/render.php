@@ -40,6 +40,37 @@ if ($ortschaft_parent && !is_wp_error($ortschaft_parent)) {
 	]);
 }
 
+// Auto-detect: nur Ortschaften dieses Standorts anzeigen
+$site_location = function_exists('parkourone_get_site_location')
+	? parkourone_get_site_location()
+	: null;
+
+$local_ortschaft_slugs = [];
+if ($site_location && $site_location['detected'] && !empty($ortschaft_terms)) {
+	$site_slug = $site_location['slug'];
+
+	foreach ($ortschaft_terms as $term) {
+		if ($term->slug === $site_slug
+			|| strpos($term->slug, $site_slug . '-') === 0) {
+			$local_ortschaft_slugs[] = $term->slug;
+		}
+	}
+
+	// Fallback: Name-basiertes Matching (fuer Umlaute wie zürich/zurich)
+	if (empty($local_ortschaft_slugs)) {
+		$site_name_lower = mb_strtolower($site_location['name']);
+		foreach ($ortschaft_terms as $term) {
+			$term_name_lower = mb_strtolower($term->name);
+			if ($term_name_lower === $site_name_lower
+				|| strpos($term_name_lower, $site_name_lower) === 0) {
+				$local_ortschaft_slugs[] = $term->slug;
+			}
+		}
+	}
+}
+
+$auto_filter_active = !empty($local_ortschaft_slugs);
+
 $age_colors = [
 	'minis' => '#ff9500',
 	'kids' => '#34c759',
@@ -95,7 +126,13 @@ if ($query->have_posts()) {
 		if ($offer_term_slug === 'ferienkurs') {
 			continue;
 		}
-		
+
+		// Skip events not matching this location (auto-detected via subdomain)
+		if ($auto_filter_active && !empty($location_term_slug)
+			&& !in_array($location_term_slug, $local_ortschaft_slugs)) {
+			continue;
+		}
+
 		$headcoach_name = get_post_meta($event_id, '_event_headcoach', true);
 
 		$klasse = [
@@ -220,7 +257,7 @@ $used_age_slugs = array_unique(array_filter(array_column($klassen, 'age_slug')))
 		</div>
 		<?php endif; ?>
 
-		<?php if (!empty($ortschaft_terms)): ?>
+		<?php if (!empty($ortschaft_terms) && !$auto_filter_active): ?>
 		<div class="po-sp__custom-dropdown" data-filter-type="location">
 			<button type="button" class="po-sp__dropdown-trigger" aria-expanded="false">
 				<span class="po-sp__dropdown-value">Alle Standorte</span>
@@ -370,7 +407,7 @@ $used_age_slugs = array_unique(array_filter(array_column($klassen, 'age_slug')))
 				<?php endforeach; ?>
 			</div>
 			<?php endif; ?>
-			<?php if (!empty($ortschaft_terms)): ?>
+			<?php if (!empty($ortschaft_terms) && !$auto_filter_active): ?>
 			<div class="po-sp__filter-group">
 				<span class="po-sp__filter-group-label">Nach Standort</span>
 				<?php foreach ($ortschaft_terms as $term): ?>
