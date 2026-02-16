@@ -383,6 +383,7 @@ function parkourone_menu_footer_page() {
 			'newsletter_headline' => sanitize_text_field($_POST['footer_newsletter_headline'] ?? ''),
 			'newsletter_text' => sanitize_text_field($_POST['footer_newsletter_text'] ?? ''),
 			'newsletter_embed' => wp_kses_post($_POST['footer_newsletter_embed'] ?? ''),
+			'mailerlite_api_key' => sanitize_text_field($_POST['footer_mailerlite_api_key'] ?? ''),
 			// Standorte + Copyright Jahr werden automatisch generiert
 		];
 
@@ -417,6 +418,7 @@ function parkourone_menu_footer_page() {
 		'newsletter_headline' => '',
 		'newsletter_text' => '',
 		'newsletter_embed' => '',
+		'mailerlite_api_key' => '',
 		// Automatisch: Standorte, Zentrale, Copyright Jahr (siehe footer/render.php)
 	];
 	$options = wp_parse_args($options, $defaults);
@@ -593,6 +595,16 @@ function parkourone_menu_footer_page() {
 					<div class="po-form-row">
 						<label>Text</label>
 						<input type="text" name="footer_newsletter_text" value="<?php echo esc_attr($options['newsletter_text']); ?>" placeholder="Bleib auf dem Laufenden!">
+					</div>
+					<div class="po-form-row">
+						<label>MailerLite API Key</label>
+						<div>
+							<input type="password" name="footer_mailerlite_api_key" value="<?php echo esc_attr($options['mailerlite_api_key']); ?>" placeholder="eyJ..." style="width: 100%; max-width: 600px; font-family: monospace; font-size: 12px;">
+							<p class="description" style="margin-top: 8px;">
+								API Key aus MailerLite &rarr; Integrations &rarr; API.<br>
+								Wird für die Newsletter-Checkbox im Checkout verwendet. Ohne Key wird keine Checkbox angezeigt.
+							</p>
+						</div>
 					</div>
 					<div class="po-form-row">
 						<label>MailerLite Embed Code</label>

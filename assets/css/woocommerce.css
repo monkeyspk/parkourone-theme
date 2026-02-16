@@ -1582,6 +1582,29 @@ p#referrer_field {
 	text-underline-offset: 2px;
 }
 
+/* ---------- Newsletter opt-in checkbox ---------- */
+
+.po-newsletter-optin {
+	margin: 12px 0 4px;
+}
+
+.po-newsletter-optin label.checkbox {
+	font-size: 13px;
+	color: var(--wc-text-secondary);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-weight: normal;
+}
+
+.po-newsletter-optin input[type="checkbox"] {
+	width: 16px;
+	height: 16px;
+	accent-color: var(--wc-text);
+	flex-shrink: 0;
+}
+
 /* ---------- Generic WooCommerce buttons (cart, etc.) ---------- */
 
 .woocommerce button.button,

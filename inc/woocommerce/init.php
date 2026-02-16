@@ -169,6 +169,9 @@ add_action('woocommerce_checkout_update_order_meta', function($order_id) {
 	if (!empty($_POST['po_referral_source'])) {
 		update_post_meta($order_id, '_po_referral_source', sanitize_text_field($_POST['po_referral_source']));
 	}
+	if (!empty($_POST['po_newsletter_optin'])) {
+		update_post_meta($order_id, '_po_newsletter_optin', 'yes');
+	}
 });
 
 // Display in admin order detail
@@ -186,6 +189,66 @@ add_action('woocommerce_admin_order_data_after_billing_address', function($order
 		];
 		echo '<p><strong>Referral:</strong> ' . esc_html($labels[$source] ?? $source) . '</p>';
 	}
+	$newsletter = get_post_meta($order->get_id(), '_po_newsletter_optin', true);
+	if ($newsletter === 'yes') {
+		echo '<p><strong>Newsletter:</strong> Ja (Opt-in im Checkout)</p>';
+	}
+});
+
+// =====================================================
+// Newsletter Opt-in Checkbox (MailerLite)
+// =====================================================
+
+/**
+ * Get MailerLite API key from theme settings
+ */
+function parkourone_get_mailerlite_api_key() {
+	$footer = get_option('parkourone_footer', []);
+	return $footer['mailerlite_api_key'] ?? '';
+}
+
+/**
+ * Render newsletter opt-in checkbox before submit button
+ */
+add_action('woocommerce_review_order_before_submit', function() {
+	$api_key = parkourone_get_mailerlite_api_key();
+	if (empty($api_key)) return;
+
+	woocommerce_form_field('po_newsletter_optin', [
+		'type'  => 'checkbox',
+		'class' => ['po-newsletter-optin'],
+		'label' => 'Ja, ich möchte den Newsletter erhalten',
+	]);
+});
+
+/**
+ * Send subscriber to MailerLite on successful checkout
+ */
+add_action('woocommerce_checkout_order_processed', function($order_id) {
+	if (empty($_POST['po_newsletter_optin'])) return;
+
+	$api_key = parkourone_get_mailerlite_api_key();
+	if (empty($api_key)) return;
+
+	$order = wc_get_order($order_id);
+	if (!$order) return;
+
+	wp_remote_post('https://connect.mailerlite.com/api/subscribers', [
+		'headers' => [
+			'Authorization' => 'Bearer ' . $api_key,
+			'Content-Type'  => 'application/json',
+			'Accept'        => 'application/json',
+		],
+		'body' => wp_json_encode([
+			'email'  => $order->get_billing_email(),
+			'fields' => [
+				'name'      => $order->get_billing_first_name(),
+				'last_name' => $order->get_billing_last_name(),
+			],
+		]),
+		'timeout'  => 10,
+		'blocking' => false,
+	]);
 });
 
 // =====================================================
