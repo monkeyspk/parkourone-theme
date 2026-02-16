@@ -57,8 +57,8 @@
 					security: wc_checkout_params.apply_coupon_nonce
 				},
 				success: function (response) {
-					// Show WooCommerce notices
-					jQuery('.woocommerce-notices-wrapper').first().html(response);
+					// Show notice inside the coupon section
+					showCouponNotice(response);
 					jQuery(document.body).trigger('update_checkout', { update_shipping_method: false });
 					input.val('');
 				},
@@ -93,7 +93,7 @@
 					security: wc_checkout_params.remove_coupon_nonce
 				},
 				success: function (response) {
-					jQuery('.woocommerce-notices-wrapper').first().html(response);
+					showCouponNotice(response);
 					jQuery(document.body).trigger('update_checkout', { update_shipping_method: false });
 				},
 				complete: function () {
@@ -101,6 +101,30 @@
 				}
 			});
 		});
+	}
+
+	/**
+	 * Show coupon notice inside the order summary sidebar
+	 */
+	function showCouponNotice(html) {
+		// Remove any existing coupon notice
+		jQuery('.po-checkout-summary__notice').remove();
+
+		if (!html) return;
+
+		var notice = jQuery('<div class="po-checkout-summary__notice"></div>').html(html);
+		var couponSection = jQuery('.po-checkout-summary__coupon');
+
+		if (couponSection.length) {
+			couponSection.prepend(notice);
+
+			// Auto-remove after 6 seconds
+			setTimeout(function () {
+				notice.fadeOut(300, function () {
+					notice.remove();
+				});
+			}, 6000);
+		}
 	}
 
 	/**

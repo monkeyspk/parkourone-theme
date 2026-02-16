@@ -1196,6 +1196,34 @@ p#referrer_field {
 	color: var(--wc-danger);
 }
 
+/* Coupon notices in sidebar */
+.po-checkout-summary__notice {
+	margin-bottom: 12px;
+	font-size: 13px;
+	line-height: 1.4;
+}
+
+.po-checkout-summary__notice .woocommerce-message {
+	background: #f0fdf4;
+	border-left: 3px solid var(--wc-success);
+	color: #166534;
+	padding: 10px 14px;
+	border-radius: var(--wc-radius-sm);
+	margin: 0;
+	font-size: 13px;
+}
+
+.po-checkout-summary__notice .woocommerce-error {
+	background: #fef2f2;
+	border-left: 3px solid var(--wc-danger);
+	color: #991b1b;
+	padding: 10px 14px;
+	border-radius: var(--wc-radius-sm);
+	margin: 0;
+	font-size: 13px;
+	list-style: none;
+}
+
 /* Hide default order table product rows (we render rich items above) */
 .woocommerce-checkout .woocommerce-checkout-review-order-table tbody {
 	display: none !important;
@@ -1290,9 +1318,6 @@ p#referrer_field {
 	width: 100% !important;
 	min-width: 0 !important;
 	box-sizing: border-box !important;
-	max-height: calc(100vh - 48px);
-	overflow-y: auto;
-	overscroll-behavior: contain;
 }
 
 .woocommerce-checkout .woocommerce-checkout-review-order {
