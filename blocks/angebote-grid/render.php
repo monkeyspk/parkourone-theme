@@ -114,6 +114,6 @@ $kategorie_labels = [
 window.poAngebotBooking = window.poAngebotBooking || {
 	ajaxUrl: '<?php echo esc_url(admin_url('admin-ajax.php')); ?>',
 	nonce: '<?php echo wp_create_nonce('po_angebot_booking_nonce'); ?>',
-	cartUrl: '<?php echo class_exists('WooCommerce') ? esc_url(wc_get_cart_url()) : ''; ?>'
+	cartUrl: '<?php echo class_exists('WooCommerce') ? esc_url(wc_get_checkout_url()) : ''; ?>'
 };
 </script>

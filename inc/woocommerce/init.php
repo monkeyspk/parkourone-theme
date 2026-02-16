@@ -34,7 +34,23 @@ add_filter('woocommerce_order_button_text', function() {
 });
 
 // =====================================================
-// Checkout Field Groups (Accordion Sections)
+// Cart Page Redirect — only Side Cart Drawer remains
+// =====================================================
+
+add_action('template_redirect', function() {
+	if (is_cart()) {
+		wp_safe_redirect(wc_get_checkout_url());
+		exit;
+	}
+});
+
+// Remove default coupon banner on checkout (we render it in the order summary sidebar)
+add_action('woocommerce_before_checkout_form', function() {
+	remove_action('woocommerce_before_checkout_form', 'woocommerce_checkout_coupon_form', 10);
+}, 5);
+
+// =====================================================
+// Checkout Field Groups (Visible Sections)
 // =====================================================
 
 // Reorder billing fields and assign them to groups
@@ -75,7 +91,7 @@ add_filter('woocommerce_checkout_fields', function($fields) {
 	unset($fields['billing']['billing_country']);
 	unset($fields['billing']['billing_state']);
 
-	// Remove referrer field if added by a plugin (we handle it in Sonstiges accordion)
+	// Remove referrer field if added by a plugin (we handle it in Sonstiges section)
 	unset($fields['billing']['referrer']);
 	unset($fields['order']['referrer']);
 	if (isset($fields['account'])) {
@@ -85,55 +101,40 @@ add_filter('woocommerce_checkout_fields', function($fields) {
 	return $fields;
 });
 
-// Render accordion wrapper: open Kontaktdaten before billing form
+// Render checkout sections wrapper: open Kontaktdaten before billing form
 add_action('woocommerce_before_checkout_billing_form', function() {
-	echo '<div class="po-checkout-accordion">';
-	// Section 1: Kontaktdaten (open by default)
-	echo '<div class="po-accordion-section po-accordion-section--open" data-accordion-section>';
-	echo '<button type="button" class="po-accordion-header" data-accordion-toggle>';
-	echo '<span>Kontaktdaten</span>';
-	echo '<svg class="po-accordion-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>';
-	echo '</button>';
-	echo '<div class="po-accordion-body">';
+	echo '<div class="po-checkout-sections">';
+	echo '<div class="po-checkout-section">';
+	echo '<h3 class="po-checkout-section__title">Kontaktdaten</h3>';
 });
 
 // Note: woocommerce_after_checkout_billing_form is handled below
 // in the referral source section (closes Adresse, opens/closes Sonstiges, closes wrapper)
 
-// Insert section breaks between field groups using output buffer manipulation
+// Insert section breaks between field groups
 add_filter('woocommerce_form_field', function($field, $key, $args, $value) {
-	$chevron = '<svg class="po-accordion-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>';
-
 	// After phone (end of Kontaktdaten) → close section, open Adresse
 	if ($key === 'billing_phone') {
-		$field .= '</div></div>'; // close Kontaktdaten body + section
-		$field .= '<div class="po-accordion-section" data-accordion-section>';
-		$field .= '<button type="button" class="po-accordion-header" data-accordion-toggle>';
-		$field .= '<span>Adresse</span>' . $chevron;
-		$field .= '</button>';
-		$field .= '<div class="po-accordion-body">';
+		$field .= '</div>'; // close Kontaktdaten section
+		$field .= '<div class="po-checkout-section">';
+		$field .= '<h3 class="po-checkout-section__title">Adresse</h3>';
 	}
 
 	return $field;
 }, 10, 4);
 
 // =====================================================
-// Referral Source — own accordion section after Adresse
+// Referral Source — Sonstiges section after Adresse
 // =====================================================
 
-// Close Adresse section, open Sonstiges section, render referral fields, close Sonstiges
+// Close Adresse section, open Sonstiges section, render referral fields, close all
 add_action('woocommerce_after_checkout_billing_form', function($checkout) {
-	$chevron = '<svg class="po-accordion-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>';
-
-	// Close Adresse section body + section
-	echo '</div></div>';
+	// Close Adresse section
+	echo '</div>';
 
 	// Open Sonstiges section
-	echo '<div class="po-accordion-section" data-accordion-section>';
-	echo '<button type="button" class="po-accordion-header" data-accordion-toggle>';
-	echo '<span>Sonstiges</span>' . $chevron;
-	echo '</button>';
-	echo '<div class="po-accordion-body">';
+	echo '<div class="po-checkout-section">';
+	echo '<h3 class="po-checkout-section__title">Sonstiges</h3>';
 
 	// Referral source dropdown
 	woocommerce_form_field('po_referral_source', [
@@ -156,10 +157,10 @@ add_action('woocommerce_after_checkout_billing_form', function($checkout) {
 	// Placeholder for plugin-rendered referrer field (moved here via JS)
 	echo '<div id="po-referrer-placeholder"></div>';
 
-	// Close Sonstiges body + section
-	echo '</div></div>';
+	// Close Sonstiges section
+	echo '</div>';
 
-	// Close accordion wrapper
+	// Close sections wrapper
 	echo '</div>';
 }, 10);
 
@@ -185,6 +186,174 @@ add_action('woocommerce_admin_order_data_after_billing_address', function($order
 		];
 		echo '<p><strong>Referral:</strong> ' . esc_html($labels[$source] ?? $source) . '</p>';
 	}
+});
+
+// =====================================================
+// Checkout Order Summary Sidebar (right column)
+// =====================================================
+
+/**
+ * Extract cart item display data (shared between Side Cart and Checkout Summary)
+ */
+function parkourone_get_cart_item_data($cart_item_key, $cart_item) {
+	$product = $cart_item['data'];
+	$product_id = $cart_item['product_id'];
+	$quantity = $cart_item['quantity'];
+	$product_price = WC()->cart->get_product_subtotal($product, $quantity);
+	$product_permalink = $product->get_permalink();
+
+	// Source IDs
+	$angebot_id = isset($cart_item['angebot_id']) ? $cart_item['angebot_id'] : get_post_meta($product_id, '_angebot_id', true);
+	$event_id = isset($cart_item['event_id']) ? $cart_item['event_id'] : get_post_meta($product_id, '_event_id', true);
+
+	// Image: Event -> Angebot -> WC Product
+	$thumbnail = '';
+	if ($event_id && function_exists('parkourone_get_event_image')) {
+		$image_url = parkourone_get_event_image($event_id);
+		if ($image_url) {
+			$thumbnail = '<img src="' . esc_url($image_url) . '" alt="' . esc_attr($product->get_name()) . '">';
+		}
+	}
+	if (!$thumbnail && $angebot_id && function_exists('parkourone_get_angebot_image')) {
+		$image_url = parkourone_get_angebot_image($angebot_id, 'thumbnail');
+		if ($image_url) {
+			$thumbnail = '<img src="' . esc_url($image_url) . '" alt="' . esc_attr($product->get_name()) . '">';
+		}
+	}
+	if (!$thumbnail) {
+		$thumbnail = $product->get_image('thumbnail');
+	}
+
+	// Participants
+	$participants = [];
+	if (!empty($cart_item['event_participant_data'])) {
+		foreach ($cart_item['event_participant_data'] as $p) {
+			$participants[] = ['vorname' => $p['vorname'] ?? '', 'name' => $p['name'] ?? ''];
+		}
+	} elseif (!empty($cart_item['angebot_teilnehmer'])) {
+		$participants = $cart_item['angebot_teilnehmer'];
+	}
+
+	// Display name and details
+	if ($event_id) {
+		$display_name = get_the_title($event_id);
+		$details = isset($cart_item['minimal_event_details']) ? $cart_item['minimal_event_details'] : [];
+		$termin_datum = !empty($details['date']) ? $details['date'] : get_post_meta($product_id, '_event_date', true);
+		$termin_ort = !empty($details['venue']) ? $details['venue'] : '';
+	} else {
+		$angebot_title = $angebot_id ? get_the_title($angebot_id) : '';
+		$display_name = $angebot_title ?: $product->get_name();
+		$termin_ort = get_post_meta($product_id, '_angebot_termin_ort', true);
+		$termin_datum = get_post_meta($product_id, '_angebot_termin_datum', true);
+	}
+
+	return [
+		'product'           => $product,
+		'product_id'        => $product_id,
+		'quantity'          => $quantity,
+		'product_price'     => $product_price,
+		'product_permalink' => $product_permalink,
+		'thumbnail'         => $thumbnail,
+		'participants'      => $participants,
+		'display_name'      => $display_name,
+		'termin_datum'      => $termin_datum ?? '',
+		'termin_ort'        => $termin_ort ?? '',
+	];
+}
+
+/**
+ * Render checkout order summary HTML (for sidebar and fragments)
+ */
+function parkourone_get_checkout_summary_html() {
+	$cart_items = WC()->cart->get_cart();
+	if (empty($cart_items)) {
+		return '';
+	}
+
+	ob_start();
+	?>
+	<div class="po-checkout-summary" data-checkout-summary>
+		<h3 class="po-checkout-summary__title">Deine Bestellung</h3>
+		<div class="po-checkout-summary__items">
+			<?php foreach ($cart_items as $cart_item_key => $cart_item) :
+				$data = parkourone_get_cart_item_data($cart_item_key, $cart_item);
+			?>
+				<div class="po-checkout-summary__item">
+					<div class="po-checkout-summary__item-image">
+						<?php echo $data['thumbnail']; ?>
+						<?php if ($data['quantity'] > 1) : ?>
+							<span class="po-checkout-summary__item-quantity"><?php echo esc_html($data['quantity']); ?></span>
+						<?php endif; ?>
+					</div>
+					<div class="po-checkout-summary__item-details">
+						<div class="po-checkout-summary__item-name"><?php echo esc_html($data['display_name']); ?></div>
+						<?php if ($data['termin_datum'] || $data['termin_ort']) : ?>
+							<div class="po-checkout-summary__item-event">
+								<?php if ($data['termin_datum']) : ?>
+									<span><?php echo esc_html(date_i18n('d. M Y', strtotime($data['termin_datum']))); ?></span>
+								<?php endif; ?>
+								<?php if ($data['termin_ort']) : ?>
+									<span><?php echo esc_html($data['termin_ort']); ?></span>
+								<?php endif; ?>
+							</div>
+						<?php endif; ?>
+						<?php if (!empty($data['participants'])) : ?>
+							<div class="po-checkout-summary__item-participants">
+								<?php foreach ($data['participants'] as $p) : ?>
+									<span><?php echo esc_html($p['vorname'] . ' ' . $p['name']); ?></span>
+								<?php endforeach; ?>
+							</div>
+						<?php endif; ?>
+					</div>
+					<div class="po-checkout-summary__item-price"><?php echo $data['product_price']; ?></div>
+				</div>
+			<?php endforeach; ?>
+		</div>
+
+		<div class="po-checkout-summary__coupon">
+			<div class="po-checkout-summary__coupon-form">
+				<input type="text" name="po_coupon_code" class="po-checkout-summary__coupon-input" placeholder="Gutscheincode" autocomplete="off" />
+				<button type="button" class="po-checkout-summary__coupon-btn">Einl&ouml;sen</button>
+			</div>
+			<?php
+			// Show applied coupons
+			$applied_coupons = WC()->cart->get_applied_coupons();
+			if (!empty($applied_coupons)) :
+			?>
+				<div class="po-checkout-summary__applied-coupons">
+					<?php foreach ($applied_coupons as $coupon_code) : ?>
+						<div class="po-checkout-summary__applied-coupon">
+							<span><?php echo esc_html($coupon_code); ?></span>
+							<button type="button" class="po-checkout-summary__remove-coupon" data-coupon="<?php echo esc_attr($coupon_code); ?>" aria-label="Gutschein entfernen">
+								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<line x1="18" y1="6" x2="6" y2="18"></line>
+									<line x1="6" y1="6" x2="18" y2="18"></line>
+								</svg>
+							</button>
+						</div>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
+		</div>
+	</div>
+	<?php
+	return ob_get_clean();
+}
+
+/**
+ * Hook: Render checkout order summary before the default order review table
+ */
+add_action('woocommerce_checkout_before_order_review', 'parkourone_render_checkout_order_summary', 5);
+function parkourone_render_checkout_order_summary() {
+	echo parkourone_get_checkout_summary_html();
+}
+
+/**
+ * Register checkout summary as a fragment so it updates on checkout refresh
+ */
+add_filter('woocommerce_update_order_review_fragments', function($fragments) {
+	$fragments['[data-checkout-summary]'] = parkourone_get_checkout_summary_html();
+	return $fragments;
 });
 
 // =====================================================
@@ -271,13 +440,13 @@ function parkourone_wc_enqueue_assets() {
 		'checkoutUrl' => wc_get_checkout_url(),
 	]);
 
-	// Checkout accordion toggle
+	// Checkout scripts (referrer field, coupon, mobile summary)
 	if (is_checkout()) {
 		wp_enqueue_script(
-			'parkourone-checkout-accordion',
-			get_template_directory_uri() . '/assets/js/checkout-accordion.js',
-			[],
-			filemtime(get_template_directory() . '/assets/js/checkout-accordion.js'),
+			'parkourone-checkout',
+			get_template_directory_uri() . '/assets/js/checkout.js',
+			['jquery'],
+			filemtime(get_template_directory() . '/assets/js/checkout.js'),
 			true
 		);
 	}
@@ -347,9 +516,6 @@ function parkourone_render_side_cart() {
 						<polyline points="12 5 19 12 12 19"></polyline>
 					</svg>
 				</a>
-				<a href="<?php echo esc_url(wc_get_cart_url()); ?>" class="po-side-cart__view-cart">
-					Warenkorb anzeigen
-				</a>
 			</div>
 		</div>
 	</div>
@@ -387,83 +553,34 @@ function parkourone_get_side_cart_items_html() {
 	?>
 	<div class="po-side-cart__items">
 		<?php foreach ($cart_items as $cart_item_key => $cart_item) :
-			$product = $cart_item['data'];
-			$product_id = $cart_item['product_id'];
-			$quantity = $cart_item['quantity'];
-			$product_price = WC()->cart->get_product_subtotal($product, $quantity);
-			$product_permalink = $product->get_permalink();
-
-			// Quell-IDs ermitteln
-			$angebot_id = isset($cart_item['angebot_id']) ? $cart_item['angebot_id'] : get_post_meta($product_id, '_angebot_id', true);
-			$event_id = isset($cart_item['event_id']) ? $cart_item['event_id'] : get_post_meta($product_id, '_event_id', true);
-
-			// Bild: Event-Bild → Angebots-Bild → WC-Produkt-Bild
-			$thumbnail = '';
-			if ($event_id && function_exists('parkourone_get_event_image')) {
-				$image_url = parkourone_get_event_image($event_id);
-				if ($image_url) {
-					$thumbnail = '<img src="' . esc_url($image_url) . '" alt="' . esc_attr($product->get_name()) . '">';
-				}
-			}
-			if (!$thumbnail && $angebot_id && function_exists('parkourone_get_angebot_image')) {
-				$image_url = parkourone_get_angebot_image($angebot_id, 'thumbnail');
-				if ($image_url) {
-					$thumbnail = '<img src="' . esc_url($image_url) . '" alt="' . esc_attr($product->get_name()) . '">';
-				}
-			}
-			if (!$thumbnail) {
-				$thumbnail = $product->get_image('thumbnail');
-			}
-
-			// Teilnehmer-Daten (Events vs. Angebote)
-			$participants = [];
-			if (!empty($cart_item['event_participant_data'])) {
-				foreach ($cart_item['event_participant_data'] as $p) {
-					$participants[] = ['vorname' => $p['vorname'] ?? '', 'name' => $p['name'] ?? ''];
-				}
-			} elseif (!empty($cart_item['angebot_teilnehmer'])) {
-				$participants = $cart_item['angebot_teilnehmer'];
-			}
-
-			// Anzeigename und Details
-			if ($event_id) {
-				$display_name = get_the_title($event_id);
-				$details = isset($cart_item['minimal_event_details']) ? $cart_item['minimal_event_details'] : [];
-				$termin_datum = !empty($details['date']) ? $details['date'] : get_post_meta($product_id, '_event_date', true);
-				$termin_ort = !empty($details['venue']) ? $details['venue'] : '';
-			} else {
-				$angebot_title = $angebot_id ? get_the_title($angebot_id) : '';
-				$display_name = $angebot_title ?: $product->get_name();
-				$termin_ort = get_post_meta($product_id, '_angebot_termin_ort', true);
-				$termin_datum = get_post_meta($product_id, '_angebot_termin_datum', true);
-			}
+			$data = parkourone_get_cart_item_data($cart_item_key, $cart_item);
 		?>
 			<div class="po-side-cart__item" data-cart-item-key="<?php echo esc_attr($cart_item_key); ?>">
 				<div class="po-side-cart__item-image">
-					<?php echo $thumbnail; ?>
+					<?php echo $data['thumbnail']; ?>
 				</div>
 				<div class="po-side-cart__item-details">
-					<a href="<?php echo esc_url($product_permalink); ?>" class="po-side-cart__item-name">
-						<?php echo esc_html($display_name); ?>
+					<a href="<?php echo esc_url($data['product_permalink']); ?>" class="po-side-cart__item-name">
+						<?php echo esc_html($data['display_name']); ?>
 					</a>
-					<?php if ($termin_datum || $termin_ort) : ?>
+					<?php if ($data['termin_datum'] || $data['termin_ort']) : ?>
 						<div class="po-side-cart__item-event">
-							<?php if ($termin_datum) : ?>
-								<span class="po-side-cart__item-date"><?php echo esc_html(date_i18n('d. M Y', strtotime($termin_datum))); ?></span>
+							<?php if ($data['termin_datum']) : ?>
+								<span class="po-side-cart__item-date"><?php echo esc_html(date_i18n('d. M Y', strtotime($data['termin_datum']))); ?></span>
 							<?php endif; ?>
-							<?php if ($termin_ort) : ?>
-								<span class="po-side-cart__item-location"><?php echo esc_html($termin_ort); ?></span>
+							<?php if ($data['termin_ort']) : ?>
+								<span class="po-side-cart__item-location"><?php echo esc_html($data['termin_ort']); ?></span>
 							<?php endif; ?>
 						</div>
 					<?php endif; ?>
-					<?php if (!empty($participants)) : ?>
+					<?php if (!empty($data['participants'])) : ?>
 						<div class="po-side-cart__item-participants">
-							<?php foreach ($participants as $p) : ?>
+							<?php foreach ($data['participants'] as $p) : ?>
 								<span><?php echo esc_html($p['vorname'] . ' ' . $p['name']); ?></span>
 							<?php endforeach; ?>
 						</div>
 					<?php endif; ?>
-					<div class="po-side-cart__item-price"><?php echo $product_price; ?></div>
+					<div class="po-side-cart__item-price"><?php echo $data['product_price']; ?></div>
 				</div>
 				<button type="button" class="po-side-cart__item-remove" data-remove-item="<?php echo esc_attr($cart_item_key); ?>" aria-label="Entfernen">
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
