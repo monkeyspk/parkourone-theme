@@ -4,6 +4,7 @@
  * - Coupon form AJAX handler
  * - Remove coupon handler
  * - Mobile collapsible order summary
+ * - Validation error modal
  */
 (function () {
 	'use strict';
@@ -12,6 +13,7 @@
 		initReferrerField();
 		initCouponForm();
 		initMobileOrderSummary();
+		initErrorModal();
 	});
 
 	// Re-init mobile summary after WooCommerce updates checkout fragments
@@ -125,6 +127,70 @@
 				});
 			}, 6000);
 		}
+	}
+
+	/**
+	 * Validation error modal — intercepts WooCommerce checkout errors
+	 * and shows them in a centered modal instead of inline at the top of the form.
+	 */
+	function initErrorModal() {
+		// Create modal shell
+		var modal = document.createElement('div');
+		modal.className = 'po-error-modal';
+		modal.setAttribute('aria-hidden', 'true');
+		modal.innerHTML =
+			'<div class="po-error-modal__backdrop"></div>' +
+			'<div class="po-error-modal__dialog" role="alertdialog" aria-label="Fehler">' +
+				'<div class="po-error-modal__header">' +
+					'<svg class="po-error-modal__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+						'<circle cx="12" cy="12" r="10"></circle>' +
+						'<line x1="12" y1="8" x2="12" y2="12"></line>' +
+						'<line x1="12" y1="16" x2="12.01" y2="16"></line>' +
+					'</svg>' +
+					'<span class="po-error-modal__title">Bitte prüfe deine Eingaben</span>' +
+				'</div>' +
+				'<div class="po-error-modal__body"></div>' +
+				'<button type="button" class="po-error-modal__close">Verstanden</button>' +
+			'</div>';
+		document.body.appendChild(modal);
+
+		var backdrop = modal.querySelector('.po-error-modal__backdrop');
+		var closeBtn = modal.querySelector('.po-error-modal__close');
+		var body = modal.querySelector('.po-error-modal__body');
+
+		function closeModal() {
+			modal.setAttribute('aria-hidden', 'true');
+			document.body.style.overflow = '';
+		}
+
+		backdrop.addEventListener('click', closeModal);
+		closeBtn.addEventListener('click', closeModal);
+		document.addEventListener('keydown', function (e) {
+			if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') {
+				closeModal();
+			}
+		});
+
+		// Intercept WooCommerce checkout errors
+		jQuery(document.body).on('checkout_error', function () {
+			var noticeGroup = document.querySelector('.woocommerce-NoticeGroup-checkout');
+			if (!noticeGroup) return;
+
+			var errorList = noticeGroup.querySelector('.woocommerce-error');
+			if (!errorList) return;
+
+			// Clone the error list into our modal
+			body.innerHTML = '';
+			body.appendChild(errorList.cloneNode(true));
+
+			// Hide inline notices
+			noticeGroup.style.display = 'none';
+
+			// Show modal
+			modal.setAttribute('aria-hidden', 'false');
+			document.body.style.overflow = 'hidden';
+			closeBtn.focus();
+		});
 	}
 
 	/**

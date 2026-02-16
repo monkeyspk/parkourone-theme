@@ -1632,6 +1632,128 @@ p#referrer_field {
 	margin: 4px 0;
 }
 
+/* ---------- Validation error modal ---------- */
+
+.po-error-modal {
+	position: fixed;
+	inset: 0;
+	z-index: 100000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 24px;
+	transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.po-error-modal[aria-hidden="true"] {
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+}
+
+.po-error-modal[aria-hidden="false"] {
+	opacity: 1;
+	visibility: visible;
+}
+
+.po-error-modal__backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.4);
+	-webkit-backdrop-filter: blur(4px);
+	backdrop-filter: blur(4px);
+}
+
+.po-error-modal__dialog {
+	position: relative;
+	background: #fff;
+	border-radius: var(--wc-radius);
+	padding: 28px;
+	max-width: 440px;
+	width: 100%;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+	animation: po-error-modal-in 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+@keyframes po-error-modal-in {
+	from {
+		opacity: 0;
+		transform: scale(0.95) translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1) translateY(0);
+	}
+}
+
+.po-error-modal__header {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 16px;
+}
+
+.po-error-modal__icon {
+	color: var(--wc-danger);
+	flex-shrink: 0;
+}
+
+.po-error-modal__title {
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--wc-text);
+	font-family: var(--wc-font);
+}
+
+.po-error-modal__body .woocommerce-error {
+	background: #fef2f2;
+	border: 1px solid #fecaca;
+	border-radius: var(--wc-radius-sm);
+	padding: 14px 18px;
+	color: #991b1b;
+	font-size: 14px;
+	line-height: 1.6;
+	list-style: none;
+	margin: 0;
+}
+
+.po-error-modal__body .woocommerce-error li {
+	margin: 4px 0;
+	padding-left: 16px;
+	position: relative;
+}
+
+.po-error-modal__body .woocommerce-error li::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 10px;
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	background: #dc2626;
+}
+
+.po-error-modal__close {
+	display: block;
+	width: 100%;
+	margin-top: 20px;
+	padding: 12px 24px;
+	border: none;
+	border-radius: var(--wc-radius-sm);
+	background: var(--wc-text);
+	color: #fff;
+	font-size: 15px;
+	font-weight: 500;
+	font-family: var(--wc-font);
+	cursor: pointer;
+	transition: background 0.15s ease;
+}
+
+.po-error-modal__close:hover {
+	background: #333;
+}
+
 /* ==========================================================================
    Responsive — Block Cart & Checkout
    ========================================================================== */
