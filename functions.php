@@ -765,8 +765,9 @@ function parkourone_allowed_block_types($allowed_blocks, $editor_context) {
         'parkourone/feature-cards',
         'parkourone/stats-counter',
 
-        // FAQ & Footer
+        // FAQ, Gutschein & Footer
         'parkourone/faq',
+        'parkourone/gutschein',
         'parkourone/footer',
 
         // Basis Blöcke für Schulleiter (Ticket #2)
@@ -871,6 +872,7 @@ function parkourone_register_blocks() {
         'pricing-table',
         'event-booking',
         'event-day-slider',
+        'gutschein',
         // Ticket #2: Basis Building Blocks für Schulleiter
         'po-text',
         'po-image',
@@ -1283,6 +1285,7 @@ function parkourone_enqueue_block_assets() {
         'text-reveal',
         'steps-carousel',
         'event-booking',
+        'gutschein',
         // Ticket #2: Basis Building Blocks für Schulleiter
         'po-text',
         'po-image',
