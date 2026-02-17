@@ -265,11 +265,16 @@ function parkourone_get_cart_item_data($cart_item_key, $cart_item) {
 	$product_price = WC()->cart->get_product_subtotal($product, $quantity);
 	$product_permalink = $product->get_permalink();
 
+	// AB Gutschein: Dynamischer Betrag statt Produkt-Basispreis (0,00 EUR)
+	if (!empty($cart_item['ab_gutschein_amount'])) {
+		$product_price = wc_price($cart_item['ab_gutschein_amount'] * $quantity);
+	}
+
 	// Source IDs
 	$angebot_id = isset($cart_item['angebot_id']) ? $cart_item['angebot_id'] : get_post_meta($product_id, '_angebot_id', true);
 	$event_id = isset($cart_item['event_id']) ? $cart_item['event_id'] : get_post_meta($product_id, '_event_id', true);
 
-	// Image: Event -> Angebot -> WC Product
+	// Image: Event -> Angebot -> Gutschein-SVG -> WC Product (inkl. Platzhalter)
 	$thumbnail = '';
 	if ($event_id && function_exists('parkourone_get_event_image')) {
 		$image_url = parkourone_get_event_image($event_id);
@@ -282,6 +287,10 @@ function parkourone_get_cart_item_data($cart_item_key, $cart_item) {
 		if ($image_url) {
 			$thumbnail = '<img src="' . esc_url($image_url) . '" alt="' . esc_attr($product->get_name()) . '">';
 		}
+	}
+	if (!$thumbnail && !empty($cart_item['ab_gutschein_amount'])) {
+		// Gutschein: Geschenk-Icon statt WC-Platzhalter
+		$thumbnail = '<svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#6e6e73"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>';
 	}
 	if (!$thumbnail) {
 		$thumbnail = $product->get_image('thumbnail');
@@ -303,6 +312,13 @@ function parkourone_get_cart_item_data($cart_item_key, $cart_item) {
 		$details = isset($cart_item['minimal_event_details']) ? $cart_item['minimal_event_details'] : [];
 		$termin_datum = !empty($details['date']) ? $details['date'] : get_post_meta($product_id, '_event_date', true);
 		$termin_ort = !empty($details['venue']) ? $details['venue'] : '';
+	} elseif (!empty($cart_item['ab_gutschein_amount'])) {
+		$display_name = $product->get_name();
+		$termin_datum = '';
+		// Empfaenger-E-Mail als Detail anzeigen
+		$termin_ort = !empty($cart_item['ab_gutschein_recipient_email'])
+			? 'An: ' . $cart_item['ab_gutschein_recipient_email']
+			: '';
 	} else {
 		$angebot_title = $angebot_id ? get_the_title($angebot_id) : '';
 		$display_name = $angebot_title ?: $product->get_name();
