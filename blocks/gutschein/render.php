@@ -122,6 +122,7 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'po-gutschein']);
 
     <input type="hidden" class="po-gutschein__product-id" value="<?php echo esc_attr($product_id); ?>">
     <input type="hidden" class="po-gutschein__nonce" value="<?php echo esc_attr($nonce); ?>">
+    <input type="hidden" class="po-gutschein__ajax-url" value="<?php echo esc_url(admin_url('admin-ajax.php')); ?>">
 </section>
 
 <script>
@@ -135,6 +136,7 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'po-gutschein']);
     var feedback     = root.querySelector('.po-gutschein__feedback');
     var productId    = root.querySelector('.po-gutschein__product-id');
     var nonce        = root.querySelector('.po-gutschein__nonce');
+    var ajaxUrl      = root.querySelector('.po-gutschein__ajax-url');
     var toggle       = root.querySelector('.po-gutschein__recipient-toggle');
     var form         = root.querySelector('.po-gutschein__recipient-form');
     var emailInput   = root.querySelector('#po-gutschein-email');
@@ -143,14 +145,15 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'po-gutschein']);
     var chevron      = root.querySelector('.po-gutschein__recipient-chevron');
 
     var selectedAmount = 0;
+    var ctaLabel = cta.textContent.trim();
 
     function setAmount(val) {
         selectedAmount = parseFloat(val) || 0;
         cta.disabled = selectedAmount <= 0;
         if (selectedAmount > 0) {
-            cta.textContent = '<?php echo esc_js($cta_text); ?>' + ' – ' + selectedAmount.toLocaleString('de-DE') + ' \u20ac';
+            cta.textContent = ctaLabel + ' \u2013 ' + selectedAmount.toLocaleString('de-DE') + ' \u20ac';
         } else {
-            cta.textContent = '<?php echo esc_js($cta_text); ?>';
+            cta.textContent = ctaLabel;
         }
     }
 
@@ -206,7 +209,7 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'po-gutschein']);
             data.append('message', messageInput.value);
         }
 
-        fetch('<?php echo esc_url(admin_url('admin-ajax.php')); ?>', {
+        fetch(ajaxUrl.value, {
             method: 'POST',
             credentials: 'same-origin',
             body: data
