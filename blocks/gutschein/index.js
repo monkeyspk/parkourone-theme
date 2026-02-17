@@ -6,8 +6,11 @@
 	var PanelBody = wp.components.PanelBody;
 	var TextControl = wp.components.TextControl;
 	var TextareaControl = wp.components.TextareaControl;
+	var SelectControl = wp.components.SelectControl;
 	var Button = wp.components.Button;
 	var el = wp.element.createElement;
+	var useState = wp.element.useState;
+	var useEffect = wp.element.useEffect;
 
 	registerBlockType('parkourone/gutschein', {
 		edit: function(props) {
@@ -15,15 +18,63 @@
 			var setAttributes = props.setAttributes;
 			var blockProps = useBlockProps({ className: 'po-gutschein-editor' });
 
+			var productState = useState([]);
+			var products = productState[0];
+			var setProducts = productState[1];
+
+			var loadingState = useState(true);
+			var loading = loadingState[0];
+			var setLoading = loadingState[1];
+
+			// WooCommerce-Produkte laden
+			useEffect(function() {
+				wp.apiFetch({ path: '/wp/v2/product?per_page=100&status=publish' })
+					.then(function(items) {
+						var opts = items.map(function(item) {
+							return { label: item.title.rendered + ' (ID: ' + item.id + ')', value: item.id };
+						});
+						setProducts(opts);
+						setLoading(false);
+					})
+					.catch(function() {
+						setLoading(false);
+					});
+			}, []);
+
 			function updateInspiration(index, key, value) {
 				var updated = JSON.parse(JSON.stringify(attributes.inspirations));
 				updated[index][key] = value;
 				setAttributes({ inspirations: updated });
 			}
 
+			// Produkt-Dropdown Optionen
+			var productOptions = [{ label: loading ? 'Produkte werden geladen...' : '— Produkt waehlen —', value: 0 }];
+			productOptions = productOptions.concat(products);
+
 			return el('div', null, [
 				el(InspectorControls, { key: 'controls' }, [
-					el(PanelBody, { key: 'general', title: 'Allgemein', initialOpen: true }, [
+					el(PanelBody, { key: 'product', title: 'WooCommerce Produkt', initialOpen: true }, [
+						el(SelectControl, {
+							key: 'product-select',
+							label: 'Gutschein-Produkt',
+							help: attributes.productId ? 'Produkt-ID: ' + attributes.productId : 'Waehle das WooCommerce-Produkt fuer den Gutschein.',
+							value: attributes.productId || 0,
+							options: productOptions,
+							onChange: function(v) { setAttributes({ productId: parseInt(v, 10) }); }
+						}),
+						!attributes.productId && el('div', {
+							key: 'product-warning',
+							style: {
+								background: '#fcf0f1',
+								border: '1px solid #d63638',
+								borderRadius: '4px',
+								padding: '8px 12px',
+								fontSize: '12px',
+								color: '#d63638'
+							}
+						}, 'Ohne Produkt funktioniert der Warenkorb-Button nicht.')
+					]),
+					el(PanelBody, { key: 'general', title: 'Allgemein', initialOpen: false }, [
 						el(TextControl, {
 							key: 'headline',
 							label: 'Headline',
@@ -106,6 +157,18 @@
 							textAlign: 'center'
 						}
 					}, [
+						!attributes.productId && el('div', {
+							key: 'no-product',
+							style: {
+								background: 'rgba(214, 54, 56, 0.15)',
+								border: '1px solid rgba(214, 54, 56, 0.3)',
+								borderRadius: '8px',
+								padding: '10px 16px',
+								marginBottom: '20px',
+								fontSize: '13px',
+								color: '#ff8a8a'
+							}
+						}, 'Kein Produkt gewaehlt — bitte in den Block-Einstellungen ein WooCommerce-Produkt auswaehlen.'),
 						el('h2', {
 							key: 'headline',
 							style: { fontSize: '28px', fontWeight: '600', margin: '0 0 8px', color: '#fff' }

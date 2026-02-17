@@ -36,7 +36,8 @@
 				}
 			]
 		},
-		"ctaText": { "type": "string", "default": "In den Warenkorb" }
+		"ctaText": { "type": "string", "default": "In den Warenkorb" },
+		"productId": { "type": "number", "default": 0 }
 	},
 	"supports": { "align": ["full", "wide"], "html": false }
 }

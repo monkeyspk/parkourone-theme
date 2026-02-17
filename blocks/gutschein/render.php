@@ -5,14 +5,16 @@ $image        = $attributes['image'] ?? '';
 $inspirations = $attributes['inspirations'] ?? [];
 $cta_text     = $attributes['ctaText'] ?? 'In den Warenkorb';
 
-// Plugin-Daten laden
-$product_id     = '';
+// Produkt-ID: primaer aus Block-Attribut, Fallback auf Plugin-Settings
+$product_id     = !empty($attributes['productId']) ? intval($attributes['productId']) : '';
 $preset_amounts = [25, 50, 100];
 $min_amount     = 10;
 $max_amount     = 500;
 
 if (class_exists('AB_Gutschein_Settings')) {
-    $product_id     = AB_Gutschein_Settings::get_setting('product_id', '');
+    if (empty($product_id)) {
+        $product_id = AB_Gutschein_Settings::get_setting('product_id', '');
+    }
     $preset_amounts = AB_Gutschein_Settings::get_preset_amounts();
     $min_amount     = floatval(AB_Gutschein_Settings::get_setting('min_amount', 10));
     $max_amount     = floatval(AB_Gutschein_Settings::get_setting('max_amount', 500));
