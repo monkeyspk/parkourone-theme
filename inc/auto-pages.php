@@ -1230,6 +1230,14 @@ function parkourone_get_template_pages() {
 			'pattern_file' => 'page-checkout.php',
 			'page_slug' => 'kasse',
 		],
+		[
+			'slug' => 'gutschein',
+			'title' => 'Gutschein',
+			'description' => 'Gutschein-Kaufseite mit Betragswahl, Empfänger-Formular und Warenkorb-Integration',
+			'blocks' => 'Page-Header (Banner), Gutschein, FAQ',
+			'pattern_file' => 'page-gutschein.php',
+			'page_slug' => 'gutschein',
+		],
 	];
 
 	// Prüfen ob Seiten bereits existieren
