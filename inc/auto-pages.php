@@ -2186,6 +2186,11 @@ function parkourone_get_page_seo_meta($post_id) {
 				'title' => "Impressum | ParkourONE {$site_name}",
 				'description' => "Impressum und rechtliche Informationen von ParkourONE {$site_name}. Kontaktdaten, Verantwortliche und Haftungshinweise.",
 				'keywords' => "Impressum ParkourONE, Kontakt, Rechtliches"
+			],
+			'gutschein' => [
+				'title' => "Parkour Gutschein {$site_name} – Das perfekte Geschenk | ParkourONE",
+				'description' => "Parkour Gutschein verschenken: Unvergessliche Erlebnisse bei ParkourONE {$site_name}. Probelektion, Personal Coaching oder Workshop – Betrag frei wählbar. Sofort per E-Mail!",
+				'keywords' => "Parkour Gutschein {$site_name}, Parkour Geschenk, Parkour verschenken, ParkourONE Gutschein"
 			]
 		];
 
