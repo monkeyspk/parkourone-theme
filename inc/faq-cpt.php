@@ -67,6 +67,7 @@ function parkourone_get_all_faq_categories() {
 		'adults' => 'Adults',
 		'workshops' => 'Workshops & Kurse',
 		'standort' => 'Standort',
+		'gutschein' => 'Gutschein',
 	];
 
 	// Alle verwendeten Kategorien aus der DB lesen
@@ -227,6 +228,7 @@ function parkourone_get_category_pages_map() {
 		'workshops' => 'Kurse & Workshops',
 		'standort' => 'Standort-Seiten',
 		'startseite' => 'Startseite',
+		'gutschein' => 'Gutschein-Seite',
 	];
 }
 
@@ -280,6 +282,7 @@ function parkourone_faq_column_content($column, $post_id) {
 				'adults' => '#3498db',
 				'workshops' => '#e67e22',
 				'standort' => '#1abc9c',
+				'gutschein' => '#8e44ad',
 			];
 			$color = $colors[$cat] ?? '#666';
 
@@ -794,6 +797,46 @@ function parkourone_get_default_faqs() {
 			'category' => 'workshops',
 			'order' => 6
 		],
+
+		// =====================================================
+		// GUTSCHEIN - Für Gutschein-Seite
+		// =====================================================
+		[
+			'question' => 'Wie löse ich einen Gutschein ein?',
+			'answer' => '<p>Im Checkout (Kasse) gibt es ein Gutschein-Feld. Gib dort deinen Gutschein-Code ein und der Betrag wird automatisch von deiner Bestellung abgezogen. Du kannst den Gutschein für alle Angebote einsetzen – egal ob Probetraining, Mitgliedschaft, Workshop oder Ferienkurs.</p>',
+			'category' => 'gutschein',
+			'order' => 1
+		],
+		[
+			'question' => 'Wie lange ist der Gutschein gültig?',
+			'answer' => '<p>Gutscheine sind ab Kaufdatum ein Jahr lang gültig. Das genaue Ablaufdatum steht in der Gutschein-E-Mail, die du beim Kauf erhältst.</p>',
+			'category' => 'gutschein',
+			'order' => 2
+		],
+		[
+			'question' => 'Kann ich den Gutschein-Betrag aufteilen?',
+			'answer' => '<p>Ja. Wenn deine Bestellung weniger kostet als der Gutschein-Wert, bleibt der Restbetrag auf dem Gutschein erhalten. Du kannst ihn bei einer späteren Bestellung einsetzen.</p>',
+			'category' => 'gutschein',
+			'order' => 3
+		],
+		[
+			'question' => 'Bekommt der Beschenkte eine E-Mail?',
+			'answer' => '<p>Ja. Wenn du beim Kauf eine Empfänger-E-Mail angibst, erhält der Beschenkte den Gutschein-Code zusammen mit deiner persönlichen Nachricht per E-Mail. Ohne Empfänger-E-Mail bekommst du den Code selbst und kannst ihn persönlich weitergeben.</p>',
+			'category' => 'gutschein',
+			'order' => 4
+		],
+		[
+			'question' => 'Kann ich den Gutschein zurückgeben?',
+			'answer' => '<p>Nicht eingelöste Gutscheine können erstattet werden. Kontaktiere uns dafür einfach per E-Mail oder über das Kontaktformular.</p>',
+			'category' => 'gutschein',
+			'order' => 5
+		],
+		[
+			'question' => 'Für welchen Standort gilt der Gutschein?',
+			'answer' => '<p>Der Gutschein gilt für den Standort, an dem er gekauft wurde. Wenn du den Gutschein auf berlin.parkourone.com kaufst, kann er auch nur in Berlin eingelöst werden.</p>',
+			'category' => 'gutschein',
+			'order' => 6
+		],
 	];
 }
 
@@ -918,6 +961,7 @@ add_action('admin_notices', 'parkourone_faq_auto_import_notice');
 
 /**
  * Manueller Import-Button falls FAQs gelöscht wurden
+ * + Hinweis auf fehlende Kategorien mit Einzelimport
  */
 function parkourone_faq_import_admin_notice() {
 	$screen = get_current_screen();
@@ -937,28 +981,114 @@ function parkourone_faq_import_admin_notice() {
 			</p>
 		</div>
 		<?php
+		return;
+	}
+
+	// Fehlende Kategorien prüfen: Welche Standard-Kategorien haben keine FAQs?
+	$default_faqs = parkourone_get_default_faqs();
+	$categories_with_defaults = [];
+	foreach ($default_faqs as $faq) {
+		$categories_with_defaults[$faq['category']] = true;
+	}
+
+	// Vorhandene Kategorien aus der DB
+	global $wpdb;
+	$existing_categories = $wpdb->get_col(
+		"SELECT DISTINCT pm.meta_value FROM {$wpdb->postmeta} pm
+		 INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+		 WHERE pm.meta_key = '_faq_category' AND pm.meta_value != ''
+		 AND p.post_status = 'publish' AND p.post_type = 'faq'"
+	);
+
+	$missing_categories = array_diff(array_keys($categories_with_defaults), $existing_categories);
+
+	if (!empty($missing_categories)) {
+		$all_categories = parkourone_get_all_faq_categories();
+		?>
+		<div class="notice notice-warning" style="padding-bottom: 12px;">
+			<p><strong>Fehlende FAQ-Kategorien:</strong> Für folgende Kategorien sind Standard-FAQs verfügbar, aber noch nicht importiert:</p>
+			<div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+				<?php foreach ($missing_categories as $cat_slug):
+					$label = $all_categories[$cat_slug] ?? ucfirst($cat_slug);
+					$count = 0;
+					foreach ($default_faqs as $faq) {
+						if ($faq['category'] === $cat_slug) $count++;
+					}
+				?>
+					<a href="<?php echo wp_nonce_url(admin_url('edit.php?post_type=faq&action=import_category_faqs&category=' . urlencode($cat_slug)), 'import_category_faqs'); ?>"
+					   class="button" style="display: inline-flex; align-items: center; gap: 6px;">
+						<span><?php echo esc_html($label); ?></span>
+						<span style="background: #2271b1; color: #fff; font-size: 11px; padding: 1px 6px; border-radius: 10px;"><?php echo $count; ?></span>
+					</a>
+				<?php endforeach; ?>
+			</div>
+			<p style="margin-top: 10px;">
+				<a href="<?php echo wp_nonce_url(admin_url('edit.php?post_type=faq&action=import_default_faqs'), 'import_faqs'); ?>" class="button button-link" style="text-decoration: none;">
+					Alle fehlenden importieren →
+				</a>
+			</p>
+		</div>
+		<?php
 	}
 }
 add_action('admin_notices', 'parkourone_faq_import_admin_notice');
 
 /**
- * Handler für FAQ Import
+ * Handler für FAQ Import (alle oder einzelne Kategorie)
  */
 function parkourone_handle_faq_import() {
-	if (!isset($_GET['action']) || $_GET['action'] !== 'import_default_faqs') return;
-	if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'import_faqs')) return;
+	if (!isset($_GET['action'])) return;
 	if (!current_user_can('manage_options')) return;
 
-	$result = parkourone_import_default_faqs(false);
+	// Alle Standard-FAQs importieren
+	if ($_GET['action'] === 'import_default_faqs') {
+		if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'import_faqs')) return;
 
-	$message = sprintf(
-		'%d FAQs importiert, %d übersprungen (bereits vorhanden).',
-		$result['imported'],
-		$result['skipped']
-	);
+		$result = parkourone_import_default_faqs(false);
+		wp_redirect(admin_url('edit.php?post_type=faq&imported=' . $result['imported']));
+		exit;
+	}
 
-	wp_redirect(admin_url('edit.php?post_type=faq&imported=' . $result['imported']));
-	exit;
+	// Einzelne Kategorie importieren
+	if ($_GET['action'] === 'import_category_faqs') {
+		if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'import_category_faqs')) return;
+
+		$category = sanitize_text_field($_GET['category'] ?? '');
+		if (empty($category)) return;
+
+		$all_faqs = parkourone_get_default_faqs();
+		$imported = 0;
+
+		foreach ($all_faqs as $faq) {
+			if ($faq['category'] !== $category) continue;
+
+			// Prüfen ob FAQ bereits existiert
+			$existing = get_posts([
+				'post_type' => 'faq',
+				'post_status' => 'any',
+				'title' => $faq['question'],
+				'posts_per_page' => 1
+			]);
+
+			if (!empty($existing)) continue;
+
+			$post_id = wp_insert_post([
+				'post_type' => 'faq',
+				'post_title' => $faq['question'],
+				'post_status' => 'publish',
+			]);
+
+			if ($post_id && !is_wp_error($post_id)) {
+				update_post_meta($post_id, '_faq_answer', $faq['answer']);
+				update_post_meta($post_id, '_faq_category', $faq['category']);
+				update_post_meta($post_id, '_faq_order', $faq['order']);
+				$imported++;
+			}
+		}
+
+		wp_redirect(admin_url('edit.php?post_type=faq&imported=' . $imported));
+		exit;
+	}
 }
 add_action('admin_init', 'parkourone_handle_faq_import');
 
