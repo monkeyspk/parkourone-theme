@@ -1,0 +1,42 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/gutschein",
+	"version": "1.0.0",
+	"title": "Gutschein",
+	"category": "parkourone-blocks",
+	"icon": "tickets-alt",
+	"description": "Gutschein-Kaufbereich mit Betragswahl, Empfaenger-Formular und Warenkorb-Integration.",
+	"keywords": ["gutschein", "gift", "geschenk", "voucher", "coupon"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"headline": { "type": "string", "default": "Parkour verschenken" },
+		"subtext": { "type": "string", "default": "Verschenke unvergessliche Parkour-Erlebnisse. W\u00e4hle einen Betrag und wir k\u00fcmmern uns um den Rest." },
+		"image": { "type": "string", "default": "" },
+		"inspirations": {
+			"type": "array",
+			"default": [
+				{
+					"title": "Probelektion",
+					"description": "Verschenke eine Probelektion in einer unserer regul\u00e4ren Klassen um erste Parkourluft zu schnuppern. Die Stadt w\u00e4hlt der Beschenkte selbst aus.",
+					"icon": "ticket"
+				},
+				{
+					"title": "Personal Coaching",
+					"description": "Im Personal Coaching arbeiten wir an individuellen Zielen. Es bringt physisch weiter, fordert mental und bewegt emotional.",
+					"icon": "user"
+				},
+				{
+					"title": "Workshops & Kurse",
+					"description": "Ein Gutschein f\u00fcr einen der vielen Workshops die im Jahr stattfinden. Von Basic & Deep Dive Workshops bis hin zum Familienworkshop.",
+					"icon": "calendar"
+				}
+			]
+		},
+		"ctaText": { "type": "string", "default": "In den Warenkorb" }
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}
