@@ -1,0 +1,25 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/produkt-showcase",
+	"version": "1.0.0",
+	"title": "Produkt Showcase",
+	"category": "parkourone-blocks",
+	"icon": "cart",
+	"description": "Zeigt ein beliebiges WooCommerce-Produkt mit Bild, Titel, Beschreibung, Preis und Warenkorb-Button.",
+	"keywords": ["produkt", "product", "shop", "warenkorb", "showcase"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"productId": { "type": "number", "default": 0 },
+		"headline": { "type": "string", "default": "" },
+		"description": { "type": "string", "default": "" },
+		"imageUrl": { "type": "string", "default": "" },
+		"ctaText": { "type": "string", "default": "In den Warenkorb" },
+		"themeVariant": { "type": "string", "default": "light" },
+		"layout": { "type": "string", "default": "horizontal" }
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}

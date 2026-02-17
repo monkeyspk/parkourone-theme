@@ -768,6 +768,7 @@ function parkourone_allowed_block_types($allowed_blocks, $editor_context) {
         // FAQ, Gutschein & Footer
         'parkourone/faq',
         'parkourone/gutschein',
+        'parkourone/produkt-showcase',
         'parkourone/footer',
 
         // Basis Blöcke für Schulleiter (Ticket #2)
@@ -873,6 +874,7 @@ function parkourone_register_blocks() {
         'event-booking',
         'event-day-slider',
         'gutschein',
+        'produkt-showcase',
         // Ticket #2: Basis Building Blocks für Schulleiter
         'po-text',
         'po-image',
@@ -1044,6 +1046,35 @@ function parkourone_register_api_endpoints() {
     ]);
 }
 add_action('rest_api_init', 'parkourone_register_api_endpoints');
+
+/**
+ * REST-Felder fuer WC-Produkte: price_html und featured_media_src_url.
+ * Wird vom Produkt-Showcase-Block im Editor fuer die Live-Vorschau benoetigt.
+ */
+function parkourone_register_product_rest_fields() {
+	if (!function_exists('wc_get_product')) {
+		return;
+	}
+
+	register_rest_field('product', 'price_html', [
+		'get_callback' => function ($product_data) {
+			$product = wc_get_product($product_data['id']);
+			return $product ? $product->get_price_html() : '';
+		},
+		'schema' => ['type' => 'string', 'context' => ['view', 'edit']],
+	]);
+
+	register_rest_field('product', 'featured_media_src_url', [
+		'get_callback' => function ($product_data) {
+			$product = wc_get_product($product_data['id']);
+			if (!$product) return '';
+			$image_id = $product->get_image_id();
+			return $image_id ? wp_get_attachment_url($image_id) : '';
+		},
+		'schema' => ['type' => 'string', 'context' => ['view', 'edit']],
+	]);
+}
+add_action('rest_api_init', 'parkourone_register_product_rest_fields');
 
 /**
  * Exclude events without any event_category from all front-end queries.
@@ -1286,6 +1317,7 @@ function parkourone_enqueue_block_assets() {
         'steps-carousel',
         'event-booking',
         'gutschein',
+        'produkt-showcase',
         // Ticket #2: Basis Building Blocks für Schulleiter
         'po-text',
         'po-image',
@@ -1478,6 +1510,41 @@ function parkourone_ajax_add_to_cart() {
 }
 add_action('wp_ajax_po_add_to_cart', 'parkourone_ajax_add_to_cart');
 add_action('wp_ajax_nopriv_po_add_to_cart', 'parkourone_ajax_add_to_cart');
+
+/**
+ * AJAX: Produkt-Showcase — einfaches Add-to-Cart fuer beliebige Simple-Produkte.
+ */
+function parkourone_produkt_showcase_add_to_cart() {
+	check_ajax_referer('po_produkt_showcase_nonce', 'nonce');
+
+	if (!function_exists('WC') || !WC()->cart) {
+		wp_send_json_error(['message' => 'WooCommerce nicht aktiv']);
+	}
+
+	$product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
+
+	if (!$product_id) {
+		wp_send_json_error(['message' => 'Kein Produkt angegeben']);
+	}
+
+	$product = wc_get_product($product_id);
+	if (!$product || !$product->is_purchasable() || !$product->is_in_stock()) {
+		wp_send_json_error(['message' => 'Produkt ist nicht verfuegbar']);
+	}
+
+	$added = WC()->cart->add_to_cart($product_id, 1);
+
+	if ($added) {
+		wp_send_json_success([
+			'message'    => 'Erfolgreich zum Warenkorb hinzugefuegt',
+			'cart_count' => WC()->cart->get_cart_contents_count(),
+		]);
+	} else {
+		wp_send_json_error(['message' => 'Fehler beim Hinzufuegen zum Warenkorb']);
+	}
+}
+add_action('wp_ajax_po_produkt_showcase_add_to_cart', 'parkourone_produkt_showcase_add_to_cart');
+add_action('wp_ajax_nopriv_po_produkt_showcase_add_to_cart', 'parkourone_produkt_showcase_add_to_cart');
 
 function parkourone_register_coach_cpt() {
 	// Schul-Taxonomie für Coaches
