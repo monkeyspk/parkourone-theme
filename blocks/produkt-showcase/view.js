@@ -42,7 +42,7 @@
 
                     // Side-Cart oeffnen
                     setTimeout(function() {
-                        var cartToggle = document.querySelector('.po-side-cart-toggle, .cart-toggle, [data-cart-toggle]');
+                        var cartToggle = document.querySelector('[data-open-side-cart]');
                         if (cartToggle) cartToggle.click();
                     }, 400);
 

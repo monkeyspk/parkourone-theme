@@ -97,9 +97,9 @@
                     jQuery(document.body).trigger('wc_fragment_refresh');
                 }
 
-                // Side-Cart oeffnen (falls vorhanden)
+                // Side-Cart oeffnen
                 setTimeout(function() {
-                    var cartToggle = document.querySelector('.po-side-cart-toggle, .cart-toggle, [data-cart-toggle]');
+                    var cartToggle = document.querySelector('[data-open-side-cart]');
                     if (cartToggle) cartToggle.click();
                 }, 400);
 
