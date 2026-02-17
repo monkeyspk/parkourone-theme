@@ -92,16 +92,12 @@
                 feedback.textContent = res.data.message || 'Gutschein hinzugefuegt!';
                 feedback.classList.add('is-success');
 
-                // WooCommerce Fragments aktualisieren
+                // WooCommerce Fragments aktualisieren + Side-Cart oeffnen
+                // Der Side-Cart hoert auf 'added_to_cart' und oeffnet sich automatisch
                 if (typeof jQuery !== 'undefined') {
                     jQuery(document.body).trigger('wc_fragment_refresh');
+                    jQuery(document.body).trigger('added_to_cart');
                 }
-
-                // Side-Cart oeffnen
-                setTimeout(function() {
-                    var cartToggle = document.querySelector('[data-open-side-cart]');
-                    if (cartToggle) cartToggle.click();
-                }, 400);
 
                 // Formular zuruecksetzen
                 amounts.forEach(function(b) { b.classList.remove('is-active'); });
