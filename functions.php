@@ -1788,6 +1788,24 @@ function parkourone_coach_save_meta($post_id) {
 }
 add_action('save_post_coach', 'parkourone_coach_save_meta');
 
+/**
+ * Coaches immer auf "publish" erzwingen — keine Entwürfe erlaubt
+ */
+function parkourone_force_coach_publish($data, $postarr) {
+	if ($data['post_type'] !== 'coach') {
+		return $data;
+	}
+
+	// Auto-Drafts und Papierkorb nicht anfassen
+	if (in_array($data['post_status'], ['auto-draft', 'trash'], true)) {
+		return $data;
+	}
+
+	$data['post_status'] = 'publish';
+	return $data;
+}
+add_filter('wp_insert_post_data', 'parkourone_force_coach_publish', 10, 2);
+
 function parkourone_coach_admin_scripts($hook) {
 	global $post_type;
 	
@@ -1881,25 +1899,6 @@ function parkourone_sync_coaches_from_events() {
 		}
 	}
 
-	// Nur API-Coaches auf Draft setzen wenn sie nicht mehr in der API sind
-	// Manual und Preset Coaches bleiben unberührt
-	$all_coaches = get_posts([
-		'post_type' => 'coach',
-		'posts_per_page' => -1,
-		'post_status' => 'publish'
-	]);
-
-	foreach ($all_coaches as $coach) {
-		$source = get_post_meta($coach->ID, '_coach_source', true);
-
-		// Nur 'api' Coaches deaktivieren, nicht 'manual' oder 'preset'
-		if ($source === 'api' && !isset($api_coaches[$coach->post_title])) {
-			wp_update_post([
-				'ID' => $coach->ID,
-				'post_status' => 'draft'
-			]);
-		}
-	}
 }
 
 function parkourone_sync_coaches_on_admin_load($screen) {
