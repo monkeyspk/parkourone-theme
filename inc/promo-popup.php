@@ -230,21 +230,33 @@ function parkourone_promo_popup_page() {
 function parkourone_render_promo_popup() {
 	$options = get_option('parkourone_promo_popup', []);
 
+	// DEBUG: temporär — im HTML-Quelltext sichtbar
+	echo '<!-- PROMO DEBUG: enabled=' . (!empty($options['enabled']) ? 'true' : 'false')
+		. ' | title=' . (!empty($options['title']) ? 'set' : 'EMPTY')
+		. ' | button_text=' . (!empty($options['button_text']) ? 'set' : 'EMPTY')
+		. ' | button_url=' . (!empty($options['button_url']) ? 'set' : 'EMPTY')
+		. ' | is_admin=' . (current_user_can('manage_options') ? 'true' : 'false')
+		. ' | preview_promo=' . (isset($_GET['preview_promo']) ? 'true' : 'false')
+		. ' -->';
+
 	// Nicht anzeigen wenn deaktiviert
 	if (empty($options['enabled'])) {
 		// Ausnahme: Preview-Modus für Admins
 		if (!isset($_GET['preview_promo']) || !current_user_can('manage_options')) {
+			echo '<!-- PROMO: blocked by enabled check -->';
 			return;
 		}
 	}
 
 	// Pflichtfelder prüfen
 	if (empty($options['title']) || empty($options['button_text']) || empty($options['button_url'])) {
+		echo '<!-- PROMO: blocked by required fields -->';
 		return;
 	}
 
 	// Für Admins im normalen Modus nicht anzeigen (ausser Preview)
 	if (current_user_can('manage_options') && !isset($_GET['preview_promo'])) {
+		echo '<!-- PROMO: blocked by admin check -->';
 		return;
 	}
 
