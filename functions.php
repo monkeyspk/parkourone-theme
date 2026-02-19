@@ -1513,7 +1513,7 @@ add_action('wp_ajax_po_add_to_cart', 'parkourone_ajax_add_to_cart');
 add_action('wp_ajax_nopriv_po_add_to_cart', 'parkourone_ajax_add_to_cart');
 
 /**
- * AJAX: Produkt-Showcase — einfaches Add-to-Cart fuer beliebige Simple-Produkte.
+ * AJAX: Produkt-Showcase — Add-to-Cart fuer Simple + Variable Products.
  */
 function parkourone_produkt_showcase_add_to_cart() {
 	check_ajax_referer('po_produkt_showcase_nonce', 'nonce');
@@ -1532,18 +1532,47 @@ function parkourone_produkt_showcase_add_to_cart() {
 		WC()->initialize_cart();
 	}
 
-	$product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
+	$product_id   = isset($_POST['product_id'])   ? absint($_POST['product_id'])   : 0;
+	$variation_id = isset($_POST['variation_id'])  ? absint($_POST['variation_id']) : 0;
 
 	if (!$product_id) {
 		wp_send_json_error(['message' => 'Kein Produkt angegeben']);
 	}
 
 	$product = wc_get_product($product_id);
-	if (!$product || !$product->is_purchasable() || !$product->is_in_stock()) {
+	if (!$product || !$product->is_purchasable()) {
 		wp_send_json_error(['message' => 'Produkt ist nicht verfuegbar']);
 	}
 
-	$added = WC()->cart->add_to_cart($product_id, 1);
+	// Variable Products: Variation validieren und Attribute sammeln
+	if ($product->is_type('variable')) {
+		if (!$variation_id) {
+			wp_send_json_error(['message' => 'Bitte waehle eine Variante']);
+		}
+
+		$variation = wc_get_product($variation_id);
+		if (!$variation || !$variation->is_in_stock()) {
+			wp_send_json_error(['message' => 'Variante nicht verfuegbar']);
+		}
+
+		// Variation-Attribute aus POST sammeln
+		$variation_attributes = [];
+		$parent_attributes = $product->get_variation_attributes();
+		foreach ($parent_attributes as $attr_name => $options) {
+			$key = 'attribute_' . sanitize_title($attr_name);
+			if (isset($_POST[$key])) {
+				$variation_attributes[$key] = sanitize_text_field($_POST[$key]);
+			}
+		}
+
+		$added = WC()->cart->add_to_cart($product_id, 1, $variation_id, $variation_attributes);
+	} else {
+		// Simple Product
+		if (!$product->is_in_stock()) {
+			wp_send_json_error(['message' => 'Produkt ist nicht verfuegbar']);
+		}
+		$added = WC()->cart->add_to_cart($product_id, 1);
+	}
 
 	if ($added) {
 		wp_send_json_success([
