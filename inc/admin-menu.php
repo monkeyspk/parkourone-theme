@@ -83,6 +83,16 @@ function parkourone_register_admin_menu() {
 		'parkourone_probetraining_steps_page'
 	);
 
+	// Promo Popup
+	add_submenu_page(
+		'parkourone',
+		'Promo Popup',
+		'Promo Popup',
+		'manage_options',
+		'parkourone-promo-popup',
+		'parkourone_promo_popup_page'
+	);
+
 	// Maintenance Mode
 	add_submenu_page(
 		'parkourone',
