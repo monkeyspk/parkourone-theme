@@ -262,6 +262,104 @@
     }
 }
 
+/* ── Card Layout ── */
+
+.po-produkt-showcase--card {
+    background: transparent;
+    padding: 0;
+    overflow: visible;
+}
+
+.po-produkt-showcase--card .po-produkt-showcase__inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--ps-surface);
+    border-radius: var(--ps-radius);
+    box-shadow: var(--ps-shadow);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.po-produkt-showcase--card .po-produkt-showcase__inner:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.po-produkt-showcase--card.po-produkt-showcase--dark .po-produkt-showcase__inner:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.po-produkt-showcase--card .po-produkt-showcase__media {
+    margin-bottom: 0;
+}
+
+.po-produkt-showcase--card .po-produkt-showcase__image {
+    border-radius: 0;
+    box-shadow: none;
+    max-height: 180px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.po-produkt-showcase--card .po-produkt-showcase__image:hover {
+    transform: none;
+}
+
+.po-produkt-showcase--card .po-produkt-showcase__content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 24px;
+}
+
+.po-produkt-showcase--card .po-produkt-showcase__headline {
+    font-size: clamp(20px, 3vw, 24px);
+    margin-bottom: 8px;
+}
+
+.po-produkt-showcase--card .po-produkt-showcase__description {
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.po-produkt-showcase--card .po-produkt-showcase__price {
+    font-size: clamp(24px, 3vw, 32px);
+    margin-bottom: 20px;
+}
+
+.po-produkt-showcase--card .po-produkt-showcase__actions {
+    margin-top: auto;
+}
+
+.po-produkt-showcase--card .po-produkt-showcase__cta {
+    width: 100%;
+    padding: 14px 24px;
+    border-radius: 980px;
+    min-width: 0;
+}
+
+/* ── Badge ── */
+
+.po-produkt-showcase__badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--ps-accent);
+    color: var(--ps-accent-text);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 980px;
+    z-index: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.po-produkt-showcase--card .po-produkt-showcase__media {
+    position: relative;
+}
+
 /* ── Alignment (Full / Wide) ── */
 
 .po-produkt-showcase.alignfull {

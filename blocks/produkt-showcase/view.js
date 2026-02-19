@@ -5,8 +5,8 @@
     roots.forEach(function(root) {
         var cta      = root.querySelector('.po-produkt-showcase__cta');
         var feedback = root.querySelector('.po-produkt-showcase__feedback');
-        var nonce    = root.querySelector('.po-produkt-showcase__nonce');
-        var ajaxUrl  = root.querySelector('.po-produkt-showcase__ajax-url');
+        var nonce    = root.dataset.nonce;
+        var ajaxUrl  = root.dataset.ajaxUrl;
 
         if (!cta || cta.disabled) return;
 
@@ -20,10 +20,10 @@
 
             var data = new FormData();
             data.append('action', 'po_produkt_showcase_add_to_cart');
-            data.append('nonce', nonce.value);
+            data.append('nonce', nonce);
             data.append('product_id', cta.dataset.productId);
 
-            fetch(ajaxUrl.value, {
+            fetch(ajaxUrl, {
                 method: 'POST',
                 credentials: 'same-origin',
                 body: data
@@ -35,7 +35,6 @@
                     feedback.classList.add('is-success');
 
                     // WooCommerce Fragments aktualisieren + Side-Cart oeffnen
-                    // Der Side-Cart hoert auf 'added_to_cart' und oeffnet sich automatisch
                     if (typeof jQuery !== 'undefined') {
                         jQuery(document.body).trigger('wc_fragment_refresh');
                         jQuery(document.body).trigger('added_to_cart');

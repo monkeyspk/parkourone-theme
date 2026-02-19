@@ -3,6 +3,7 @@ $product_id    = !empty($attributes['productId']) ? intval($attributes['productI
 $cta_text      = $attributes['ctaText'] ?? 'In den Warenkorb';
 $theme_variant = $attributes['themeVariant'] ?? 'light';
 $layout        = $attributes['layout'] ?? 'horizontal';
+$badge_text    = $attributes['badgeText'] ?? '';
 
 // WooCommerce-Produkt laden
 $product = $product_id && function_exists('wc_get_product') ? wc_get_product($product_id) : null;
@@ -35,7 +36,11 @@ $block_class = 'po-produkt-showcase'
 $wrapper_attributes = get_block_wrapper_attributes(['class' => $block_class]);
 ?>
 
-<section <?php echo $wrapper_attributes; ?> id="<?php echo esc_attr($uid); ?>">
+<section <?php echo $wrapper_attributes; ?>
+    id="<?php echo esc_attr($uid); ?>"
+    data-nonce="<?php echo esc_attr($nonce); ?>"
+    data-ajax-url="<?php echo esc_url(admin_url('admin-ajax.php')); ?>"
+>
 
     <?php if (!$product && current_user_can('manage_options')): ?>
         <div class="po-produkt-showcase__notice">
@@ -48,6 +53,9 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => $block_class]);
 
         <?php if ($image_url): ?>
         <div class="po-produkt-showcase__media">
+            <?php if ($badge_text): ?>
+            <span class="po-produkt-showcase__badge"><?php echo esc_html($badge_text); ?></span>
+            <?php endif; ?>
             <img
                 src="<?php echo esc_url($image_url); ?>"
                 alt="<?php echo esc_attr($headline); ?>"
@@ -88,6 +96,4 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => $block_class]);
     </div>
     <?php endif; ?>
 
-    <input type="hidden" class="po-produkt-showcase__nonce" value="<?php echo esc_attr($nonce); ?>">
-    <input type="hidden" class="po-produkt-showcase__ajax-url" value="<?php echo esc_url(admin_url('admin-ajax.php')); ?>">
 </section>

@@ -20,7 +20,8 @@
 		"imageUrl": { "type": "string", "default": "" },
 		"ctaText": { "type": "string", "default": "In den Warenkorb" },
 		"themeVariant": { "type": "string", "default": "light" },
-		"layout": { "type": "string", "default": "horizontal" }
+		"layout": { "type": "string", "default": "horizontal" },
+		"badgeText": { "type": "string", "default": "" }
 	},
 	"supports": { "align": ["full", "wide"], "html": false }
 }

@@ -77,6 +77,7 @@
 
 			var isDark = attributes.themeVariant === 'dark';
 			var isHorizontal = attributes.layout === 'horizontal';
+			var isCard = attributes.layout === 'card';
 
 			return el('div', null, [
 				// ── Inspector Controls ──
@@ -123,7 +124,8 @@
 							value: attributes.layout,
 							options: [
 								{ label: 'Horizontal (Bild links)', value: 'horizontal' },
-								{ label: 'Zentriert (gestapelt)', value: 'centered' }
+								{ label: 'Zentriert (gestapelt)', value: 'centered' },
+								{ label: 'Card (fuer Grids)', value: 'card' }
 							],
 							onChange: function(v) { setAttributes({ layout: v }); }
 						})
@@ -148,6 +150,13 @@
 							label: 'Button Text',
 							value: attributes.ctaText || '',
 							onChange: function(v) { setAttributes({ ctaText: v }); }
+						}),
+						el(TextControl, {
+							key: 'badge',
+							label: 'Badge Text (z.B. "Beliebt")',
+							help: 'Optional. Wird als Badge auf dem Bild angezeigt.',
+							value: attributes.badgeText || '',
+							onChange: function(v) { setAttributes({ badgeText: v }); }
 						}),
 						el('div', { key: 'image-upload', style: { marginBottom: '16px' } }, [
 							el('label', { key: 'label', style: { display: 'block', marginBottom: '8px', fontWeight: '500' } }, 'Bild (leer = Produktbild)'),
@@ -186,17 +195,39 @@
 					el('div', {
 						key: 'preview',
 						style: {
-							background: isDark ? '#1d1d1f' : '#f5f5f7',
+							background: isCard ? (isDark ? '#2d2d2f' : '#ffffff') : (isDark ? '#1d1d1f' : '#f5f5f7'),
 							color: isDark ? '#fff' : '#1d1d1f',
-							borderRadius: '16px',
-							padding: '40px 32px',
-							display: isHorizontal ? 'grid' : 'block',
-							gridTemplateColumns: isHorizontal ? '1fr 1fr' : undefined,
-							gap: '32px',
-							alignItems: 'center',
-							textAlign: !isHorizontal ? 'center' : 'left'
+							borderRadius: isCard ? '20px' : '16px',
+							padding: isCard ? '0' : '40px 32px',
+							display: isCard ? 'flex' : (isHorizontal ? 'grid' : 'block'),
+							flexDirection: isCard ? 'column' : undefined,
+							gridTemplateColumns: isHorizontal && !isCard ? '1fr 1fr' : undefined,
+							gap: isCard ? '0' : '32px',
+							alignItems: isHorizontal && !isCard ? 'center' : undefined,
+							textAlign: !isHorizontal && !isCard ? 'center' : 'left',
+							boxShadow: isCard ? '0 4px 24px rgba(0,0,0,0.08)' : undefined,
+							overflow: isCard ? 'hidden' : undefined
 						}
 					}, [
+						// Badge
+						isCard && attributes.badgeText && el('div', {
+							key: 'badge',
+							style: {
+								position: 'absolute',
+								top: '12px',
+								right: '12px',
+								background: isDark ? '#fff' : '#1d1d1f',
+								color: isDark ? '#1d1d1f' : '#fff',
+								fontSize: '12px',
+								fontWeight: '600',
+								padding: '4px 12px',
+								borderRadius: '980px',
+								zIndex: 1,
+								letterSpacing: '0.02em',
+								textTransform: 'uppercase'
+							}
+						}, attributes.badgeText),
+
 						// Warnung: kein Produkt
 						!attributes.productId && el('div', {
 							key: 'no-product',
@@ -206,57 +237,67 @@
 								border: '1px solid rgba(214, 54, 56, 0.3)',
 								borderRadius: '8px',
 								padding: '10px 16px',
-								marginBottom: '20px',
+								margin: isCard ? '16px' : '0 0 20px',
 								fontSize: '13px',
 								color: isDark ? '#ff8a8a' : '#d63638'
 							}
 						}, 'Kein Produkt gewaehlt — bitte in den Block-Einstellungen ein WooCommerce-Produkt auswaehlen.'),
 
 						// Bild
-						previewImage ? el('div', { key: 'media' }, [
+						previewImage ? el('div', { key: 'media', style: { position: 'relative' } }, [
 							el('img', {
 								key: 'img',
 								src: previewImage,
 								style: {
 									width: '100%',
-									maxWidth: !isHorizontal ? '300px' : '100%',
-									margin: !isHorizontal ? '0 auto 24px' : undefined,
-									borderRadius: '16px',
+									maxWidth: !isHorizontal && !isCard ? '300px' : '100%',
+									maxHeight: isCard ? '180px' : undefined,
+									objectFit: isCard ? 'cover' : undefined,
+									margin: !isHorizontal && !isCard ? '0 auto 24px' : undefined,
+									borderRadius: isCard ? '0' : '16px',
 									display: 'block',
-									boxShadow: '0 4px 24px rgba(0,0,0,0.1)'
+									boxShadow: isCard ? 'none' : '0 4px 24px rgba(0,0,0,0.1)'
 								}
 							})
 						]) : null,
 
 						// Inhalt
-						el('div', { key: 'content' }, [
+						el('div', { key: 'content', style: isCard ? { padding: '24px', display: 'flex', flexDirection: 'column', flex: '1' } : undefined }, [
 							el('h2', {
 								key: 'headline',
-								style: { fontSize: '28px', fontWeight: '700', margin: '0 0 12px', color: isDark ? '#fff' : '#1d1d1f', letterSpacing: '-0.02em' }
+								style: {
+									fontSize: isCard ? '20px' : '28px',
+									fontWeight: '700',
+									margin: '0 0 ' + (isCard ? '8px' : '12px'),
+									color: isDark ? '#fff' : '#1d1d1f',
+									letterSpacing: '-0.02em'
+								}
 							}, previewTitle),
 							previewDesc ? el('div', {
 								key: 'desc',
-								style: { fontSize: '14px', color: isDark ? 'rgba(255,255,255,0.55)' : '#6e6e73', marginBottom: '16px', lineHeight: '1.6' },
+								style: { fontSize: isCard ? '13px' : '14px', color: isDark ? 'rgba(255,255,255,0.55)' : '#6e6e73', marginBottom: isCard ? '12px' : '16px', lineHeight: '1.6' },
 								dangerouslySetInnerHTML: { __html: previewDesc }
 							}) : null,
 							previewPrice ? el('div', {
 								key: 'price',
-								style: { fontSize: '32px', fontWeight: '700', marginBottom: '20px', color: isDark ? '#fff' : '#1d1d1f' },
+								style: { fontSize: isCard ? '26px' : '32px', fontWeight: '700', marginBottom: isCard ? '16px' : '20px', color: isDark ? '#fff' : '#1d1d1f' },
 								dangerouslySetInnerHTML: { __html: previewPrice }
 							}) : el('div', {
 								key: 'price-placeholder',
-								style: { fontSize: '32px', fontWeight: '700', marginBottom: '20px', color: isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.2)' }
+								style: { fontSize: isCard ? '26px' : '32px', fontWeight: '700', marginBottom: isCard ? '16px' : '20px', color: isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.2)' }
 							}, '--,-- \u20ac'),
 							el('div', {
 								key: 'cta',
 								style: {
 									background: isDark ? '#fff' : '#1d1d1f',
 									color: isDark ? '#1d1d1f' : '#fff',
-									padding: '14px 36px',
-									borderRadius: '12px',
-									display: 'inline-block',
+									padding: isCard ? '12px 24px' : '14px 36px',
+									borderRadius: isCard ? '980px' : '12px',
+									display: isCard ? 'block' : 'inline-block',
 									fontWeight: '600',
-									fontSize: '15px'
+									fontSize: isCard ? '14px' : '15px',
+									textAlign: 'center',
+									marginTop: isCard ? 'auto' : undefined
 								}
 							}, attributes.ctaText || 'In den Warenkorb')
 						])
