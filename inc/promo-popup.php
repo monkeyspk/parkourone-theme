@@ -273,7 +273,7 @@ function parkourone_render_promo_popup() {
 	</div>
 	<?php
 }
-add_action('wp_footer', 'parkourone_render_promo_popup', 50);
+add_action('wp_footer', 'parkourone_render_promo_popup', 5);
 
 /**
  * Frontend: CSS & JS einbinden
