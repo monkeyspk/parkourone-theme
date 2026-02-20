@@ -115,6 +115,7 @@ if ($query->have_posts()) {
 				'venue'           => $venue,
 				'age_slug'        => $age_slug,
 				'color'           => $color,
+			'dropdown_info'   => get_post_meta($event_id, '_event_dropdown_info', true),
 			];
 		}
 
@@ -356,6 +357,12 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 
 						<?php if ($category && isset($mood_texts[$category])): ?>
 						<p class="po-steps__description"><?php echo esc_html($mood_texts[$category]); ?></p>
+						<?php endif; ?>
+
+						<?php if (!empty($ev['dropdown_info'])): ?>
+						<div class="po-steps__info-notice">
+							<?php echo wp_kses_post($ev['dropdown_info']); ?>
+						</div>
 						<?php endif; ?>
 
 						<?php if (!empty($available_dates) && !empty($available_dates[0]['price'])): ?>

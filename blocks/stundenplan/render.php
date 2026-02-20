@@ -148,6 +148,7 @@ if ($query->have_posts()) {
 			'age_name' => $age_term_name,
 			'location_slug' => $location_term_slug,
 			'color' => $age_colors[$age_term_slug] ?? '#0066cc',
+			'dropdown_info' => get_post_meta($event_id, '_event_dropdown_info', true),
 			'coach_id' => null,
 			'coach_has_profile' => false
 		];
@@ -486,6 +487,12 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 					<p class="po-steps__description">
 						Dieses Training wird<?php echo $coach_text; ?> findet wöchentlich <?php echo esc_html($klasse['weekday']); ?> von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($klasse['venue'])): ?> Treffpunkt ist <?php echo esc_html($klasse['venue']); ?>.<?php endif; ?> <?php echo esc_html($mood_texts[$category]); ?>
 					</p>
+					<?php endif; ?>
+
+					<?php if (!empty($klasse['dropdown_info'])): ?>
+					<div class="po-steps__info-notice">
+						<?php echo wp_kses_post($klasse['dropdown_info']); ?>
+					</div>
 					<?php endif; ?>
 
 					<?php if (!empty($available_dates) && !empty($available_dates[0]['price'])): ?>

@@ -129,6 +129,7 @@ if ($query->have_posts()) {
 			'category' => $age_term,
 			'location' => $location_term,
 			'offer' => $offer_term,
+			'dropdown_info' => get_post_meta($event_id, '_event_dropdown_info', true),
 			'coach_id' => null,
 			'coach_has_profile' => false
 		];
@@ -431,6 +432,12 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 					<?php if (!empty($klasse['description'])): ?>
 					<div class="po-steps__content">
 						<?php echo wp_kses_post($klasse['description']); ?>
+					</div>
+					<?php endif; ?>
+
+					<?php if (!empty($klasse['dropdown_info'])): ?>
+					<div class="po-steps__info-notice">
+						<?php echo wp_kses_post($klasse['dropdown_info']); ?>
 					</div>
 					<?php endif; ?>
 
