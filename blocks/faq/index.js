@@ -1,13 +1,13 @@
 (function(wp) {
 	const { registerBlockType } = wp.blocks;
 	const { useBlockProps, InspectorControls } = wp.blockEditor;
-	const { PanelBody, TextControl, SelectControl, RangeControl, ToggleControl } = wp.components;
+	const { PanelBody, TextControl, SelectControl, RangeControl, ToggleControl, Spinner } = wp.components;
 	const { createElement: el, useState, useEffect } = wp.element;
 
 	registerBlockType('parkourone/faq', {
 		edit: function(props) {
 			const { attributes, setAttributes } = props;
-			const blockProps = useBlockProps({ className: 'po-faq-editor' });
+			const blockProps = useBlockProps({ className: 'po-faqone-editor' });
 
 			// Kategorien dynamisch aus REST API laden
 			const [categoryOptions, setCategoryOptions] = useState([
@@ -24,11 +24,63 @@
 				});
 			}, []);
 
+			// FAQs live laden
+			const [faqs, setFaqs] = useState([]);
+			const [loading, setLoading] = useState(false);
+
+			useEffect(function() {
+				setLoading(true);
+				var params = '?category=' + encodeURIComponent(attributes.category || '');
+				params += '&limit=' + (attributes.limit || 0);
+				if (attributes.category) {
+					params += '&include_general=' + (attributes.includeGeneral ? 'true' : 'false');
+				}
+
+				wp.apiFetch({ path: '/parkourone/v1/faqs' + params }).then(function(data) {
+					setFaqs(data || []);
+					setLoading(false);
+				}).catch(function() {
+					setFaqs([]);
+					setLoading(false);
+				});
+			}, [attributes.category, attributes.limit, attributes.includeGeneral]);
+
+			// Kategorie-Label finden
+			var categoryLabel = 'Alle Kategorien';
+			categoryOptions.forEach(function(opt) {
+				if (opt.value === attributes.category) {
+					categoryLabel = opt.label;
+				}
+			});
+
 			const bgOptions = [
 				{ value: 'white', label: 'Weiss' },
 				{ value: 'light', label: 'Hellgrau' },
 				{ value: 'dark', label: 'Dunkel' }
 			];
+
+			// Preview-Content zusammenbauen
+			var previewContent;
+
+			if (loading) {
+				previewContent = el('div', { className: 'po-faqone-editor__loading' },
+					el(Spinner),
+					'FAQs werden geladen\u2026'
+				);
+			} else if (faqs.length === 0) {
+				previewContent = el('div', { className: 'po-faqone-editor__empty' },
+					'Keine FAQs gefunden.'
+				);
+			} else {
+				previewContent = el('div', { className: 'po-faqone-editor__list' },
+					faqs.map(function(faq, i) {
+						return el('div', { key: i, className: 'po-faqone-editor__item' },
+							el('span', { className: 'po-faqone-editor__question' }, faq.question),
+							faq.is_general ? el('span', { className: 'po-faqone-editor__badge' }, 'Allgemein') : null
+						);
+					})
+				);
+			}
 
 			return el('div', null, [
 				el(InspectorControls, { key: 'controls' }, [
@@ -74,14 +126,12 @@
 					])
 				]),
 				el('div', blockProps, [
-					el('div', { key: 'icon', className: 'po-faq-editor__icon' }, '?'),
-					el('h3', { key: 'title', className: 'po-faq-editor__title' }, attributes.headline || 'FAQ Accordion'),
-					el('p', { key: 'desc', className: 'po-faq-editor__desc' },
-						attributes.category
-							? 'Zeigt FAQs der Kategorie: ' + attributes.category
-							: 'Zeigt alle FAQs als Accordion'
+					el('h3', { key: 'title', className: 'po-faqone-editor__title' }, attributes.headline || 'FAQ Accordion'),
+					el('p', { key: 'info', className: 'po-faqone-editor__info' },
+						categoryLabel + (faqs.length > 0 ? ' \u00B7 ' + faqs.length + ' FAQ' + (faqs.length !== 1 ? 's' : '') : '')
 					),
-					el('p', { key: 'hint', style: { fontSize: '0.75rem', color: '#999', marginTop: '0.5rem' } }, 'Verwalten unter: FAQs im Admin-Menü')
+					previewContent,
+					el('p', { key: 'hint', className: 'po-faqone-editor__hint' }, 'Verwalten unter: FAQs im Admin-Men\u00FC')
 				])
 			]);
 		},

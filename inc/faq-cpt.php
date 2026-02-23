@@ -1131,3 +1131,45 @@ function parkourone_register_faq_categories_endpoint() {
 	]);
 }
 add_action('rest_api_init', 'parkourone_register_faq_categories_endpoint');
+
+// =====================================================
+// REST API: FAQs für Editor-Live-Preview liefern
+// =====================================================
+
+function parkourone_register_faqs_endpoint() {
+	register_rest_route('parkourone/v1', '/faqs', [
+		'methods' => 'GET',
+		'callback' => function($request) {
+			$category = sanitize_text_field($request->get_param('category') ?? '');
+			$limit = intval($request->get_param('limit') ?? 6);
+			$include_general = $request->get_param('include_general') !== 'false';
+
+			if (!empty($category)) {
+				$faqs = parkourone_get_faqs($category, 0);
+
+				if ($include_general && $category !== 'allgemein') {
+					$general_faqs = parkourone_get_faqs('allgemein', 0);
+					$seen = array_map(function($f) { return $f['question']; }, $faqs);
+					foreach ($general_faqs as $gf) {
+						if (!in_array($gf['question'], $seen)) {
+							$gf['is_general'] = true;
+							$faqs[] = $gf;
+						}
+					}
+				}
+
+				if ($limit > 0 && count($faqs) > $limit) {
+					$faqs = array_slice($faqs, 0, $limit);
+				}
+			} else {
+				$faqs = parkourone_get_faqs('', $limit);
+			}
+
+			return rest_ensure_response($faqs);
+		},
+		'permission_callback' => function() {
+			return current_user_can('edit_posts');
+		}
+	]);
+}
+add_action('rest_api_init', 'parkourone_register_faqs_endpoint');

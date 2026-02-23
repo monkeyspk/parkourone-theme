@@ -175,8 +175,25 @@
 }
 
 /* ========================================
+   Newsletter Card - Helle Karte im dunklen Footer
+   ======================================== */
+
+.po-footer__col--newsletter {
+	background: #f5f5f7;
+	border-radius: 16px;
+	padding: 1.75rem 1.5rem !important;
+}
+
+.po-footer__col--newsletter strong {
+	color: #1d1d1f !important;
+}
+
+.po-footer__col--newsletter p {
+	color: #6e6e73 !important;
+}
+
+/* ========================================
    MailerLite / Newsletter Embed Overrides
-   Passt das Formular an den dunklen Footer an
    ======================================== */
 
 .po-footer__newsletter-embed {
@@ -210,17 +227,23 @@
 .po-footer__newsletter-embed .ml-form-fieldRow input {
 	width: 100% !important;
 	padding: 0.75rem 1rem !important;
-	border: 1px solid #333 !important;
-	background: transparent !important;
-	color: #fff !important;
+	border: 1px solid #d2d2d7 !important;
+	background: #fff !important;
+	color: #1d1d1f !important;
 	font-size: 0.875rem !important;
-	border-radius: 0 !important;
+	border-radius: 8px !important;
 	margin-bottom: 0.5rem !important;
 	box-sizing: border-box !important;
 }
 
 .po-footer__newsletter-embed input::placeholder {
-	color: #666 !important;
+	color: #86868b !important;
+}
+
+.po-footer__newsletter-embed input:focus {
+	outline: none !important;
+	border-color: #0071e3 !important;
+	box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15) !important;
 }
 
 /* Submit Button */
@@ -229,62 +252,61 @@
 .po-footer__newsletter-embed .ml-form-embedSubmit input[type="submit"] {
 	width: 100% !important;
 	padding: 0.75rem 1.25rem !important;
-	background: transparent !important;
-	border: 1px solid #fff !important;
+	background: #1d1d1f !important;
+	border: none !important;
 	color: #fff !important;
 	font-size: 0.875rem !important;
+	font-weight: 500 !important;
 	cursor: pointer !important;
 	transition: all 0.2s !important;
-	border-radius: 0 !important;
+	border-radius: 8px !important;
 	text-transform: none !important;
-	font-weight: normal !important;
 }
 
 .po-footer__newsletter-embed button[type="submit"]:hover,
 .po-footer__newsletter-embed .ml-form-embedSubmit button:hover,
 .po-footer__newsletter-embed .ml-form-embedSubmit input[type="submit"]:hover {
-	background: #fff !important;
-	color: #000 !important;
+	background: #333 !important;
 }
 
 /* Erfolgsmeldung */
 .po-footer__newsletter-embed .ml-form-successBody,
 .po-footer__newsletter-embed .ml-form-successContent {
 	background: transparent !important;
-	color: #fff !important;
+	color: #1d1d1f !important;
 	padding: 1rem 0 !important;
 }
 
 .po-footer__newsletter-embed .ml-form-successBody h4 {
 	display: block !important;
-	color: #fff !important;
+	color: #1d1d1f !important;
 	font-size: 1rem !important;
 	margin: 0 !important;
 }
 
 .po-footer__newsletter-embed .ml-form-successBody p {
-	color: #ccc !important;
+	color: #6e6e73 !important;
 	font-size: 0.875rem !important;
 }
 
 /* Checkbox/GDPR */
 .po-footer__newsletter-embed .ml-form-checkboxRow {
-	color: #ccc !important;
+	color: #6e6e73 !important;
 	font-size: 0.75rem !important;
 	margin-top: 0.5rem !important;
 }
 
 .po-footer__newsletter-embed .ml-form-checkboxRow label {
-	color: #ccc !important;
+	color: #6e6e73 !important;
 }
 
 .po-footer__newsletter-embed .ml-form-checkboxRow a {
-	color: #fff !important;
+	color: #0071e3 !important;
 }
 
 /* Fehler */
 .po-footer__newsletter-embed .ml-form-formContent .ml-error {
-	color: #ff6b6b !important;
+	color: #ff3b30 !important;
 	font-size: 0.75rem !important;
 	margin-top: 0.25rem !important;
 }
