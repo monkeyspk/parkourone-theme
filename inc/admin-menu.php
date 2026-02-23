@@ -609,25 +609,25 @@ function parkourone_menu_footer_page() {
 						<input type="text" name="footer_newsletter_text" value="<?php echo esc_attr($options['newsletter_text']); ?>" placeholder="Bleib auf dem Laufenden!">
 					</div>
 					<div class="po-form-row">
-						<label>MailerLite API Key</label>
-						<div>
-							<input type="password" name="footer_mailerlite_api_key" value="<?php echo esc_attr($options['mailerlite_api_key']); ?>" placeholder="eyJ..." style="width: 100%; max-width: 600px; font-family: monospace; font-size: 12px;">
-							<p class="description" style="margin-top: 8px;">
-								API Key aus MailerLite &rarr; Integrations &rarr; API.<br>
-								Wird für die Newsletter-Checkbox im Checkout verwendet. Ohne Key wird keine Checkbox angezeigt.
-							</p>
-						</div>
-					</div>
-					<div class="po-form-row">
 						<label>MailerLite Embed Code</label>
 						<div>
-							<textarea name="footer_newsletter_embed" rows="6" style="width: 100%; max-width: 600px; font-family: monospace; font-size: 12px;" placeholder="<!-- MailerLite Embed Code hier einfügen -->"><?php echo esc_textarea($options['newsletter_embed']); ?></textarea>
-							<p class="description" style="margin-top: 8px;">
-								<strong>So geht's:</strong><br>
-								1. In MailerLite → Sites → Signup Forms → Embedded forms<br>
-								2. Formular erstellen und "HTML code" kopieren<br>
-								3. Hier einfügen - das Design wird automatisch angepasst
-							</p>
+							<textarea name="footer_newsletter_embed" rows="8" style="width: 100%; max-width: 600px; font-family: monospace; font-size: 12px;" placeholder="<!-- MailerLite Embed Code hier einfügen -->"><?php echo esc_textarea($options['newsletter_embed']); ?></textarea>
+							<div style="background: #f0f6fc; padding: 15px; border-radius: 4px; border-left: 4px solid #2271b1; margin-top: 12px;">
+								<strong>Anleitung: MailerLite Formular einbinden</strong>
+								<ol style="margin: 10px 0 0; padding-left: 20px; font-size: 13px; line-height: 1.8;">
+									<li>Öffne <a href="https://dashboard.mailerlite.com/forms/embedded" target="_blank">MailerLite</a> und gehe zu <strong>Forms &rarr; Embedded forms</strong></li>
+									<li>Klicke auf <strong>&quot;Create embedded form&quot;</strong></li>
+									<li>Wähle einen Namen (z.B. &quot;Footer Newsletter&quot;) und eine Subscriber-Gruppe</li>
+									<li>Aktiviere unter <strong>Settings</strong> die <strong>&quot;Confirmation checkbox&quot;</strong> (DSGVO-Pflicht)</li>
+									<li>Passe den Checkbox-Text an, z.B.: <em>&quot;Ich möchte den ParkourONE Newsletter erhalten.&quot;</em></li>
+									<li>Klicke auf <strong>&quot;Save &amp; publish&quot;</strong></li>
+									<li>Wähle den Tab <strong>&quot;HTML code&quot;</strong></li>
+									<li>Kopiere <strong>beide Code-Blöcke</strong> (JavaScript Snippet + das div darunter) und füge alles hier ein</li>
+								</ol>
+								<p style="margin: 10px 0 0; font-size: 12px; color: #646970;">
+									Das Design wird automatisch an den Footer angepasst &ndash; in MailerLite muss nichts gestyled werden.
+								</p>
+							</div>
 						</div>
 					</div>
 				</div>
