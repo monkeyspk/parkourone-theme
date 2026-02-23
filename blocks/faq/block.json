@@ -27,7 +27,7 @@
 		},
 		"includeGeneral": {
 			"type": "boolean",
-			"default": true
+			"default": false
 		},
 		"backgroundColor": {
 			"type": "string",

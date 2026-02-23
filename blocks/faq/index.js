@@ -1,7 +1,7 @@
 (function(wp) {
 	const { registerBlockType } = wp.blocks;
 	const { useBlockProps, InspectorControls } = wp.blockEditor;
-	const { PanelBody, TextControl, SelectControl, RangeControl } = wp.components;
+	const { PanelBody, TextControl, SelectControl, RangeControl, ToggleControl } = wp.components;
 	const { createElement: el, useState, useEffect } = wp.element;
 
 	registerBlockType('parkourone/faq', {
@@ -54,7 +54,14 @@
 							max: 20,
 							help: '0 = alle anzeigen',
 							onChange: function(v) { setAttributes({ limit: v }); }
-						})
+						}),
+						attributes.category ? el(ToggleControl, {
+							key: 'includeGeneral',
+							label: 'Allgemeine FAQs einblenden',
+							help: 'Zeigt zusätzlich allgemeine FAQs nach den Kategorie-FAQs an.',
+							checked: attributes.includeGeneral,
+							onChange: function(v) { setAttributes({ includeGeneral: v }); }
+						}) : null
 					]),
 					el(PanelBody, { key: 'design', title: 'Design', initialOpen: false }, [
 						el(SelectControl, {
