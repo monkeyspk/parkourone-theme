@@ -13,6 +13,16 @@
 }
 
 /* ==========================================================================
+   WordPress Editor Mark Override
+   Gutenberg uses <mark> for inline highlights — override browser default yellow
+   ========================================================================== */
+
+mark {
+	background-color: transparent;
+	color: inherit;
+}
+
+/* ==========================================================================
    Accessibility Utilities (WCAG 2.1)
    ========================================================================== */
 

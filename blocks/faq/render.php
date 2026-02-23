@@ -6,12 +6,28 @@ $bg_color = $attributes['backgroundColor'] ?? 'white';
 $include_general = $attributes['includeGeneral'] ?? true;
 
 // FAQs laden - mit oder ohne allgemeine FAQs
-if ($include_general && !empty($category) && function_exists('parkourone_get_page_faqs')) {
-	// Kombiniert spezifische Kategorie + allgemein + probetraining
-	$faqs = parkourone_get_page_faqs($category, $limit);
+if (!empty($category) && function_exists('parkourone_get_faqs')) {
+	// Spezifische Kategorie laden
+	$faqs = parkourone_get_faqs($category, 0);
+
+	// Allgemeine FAQs dazu mischen wenn gewuenscht
+	if ($include_general && $category !== 'allgemein') {
+		$general_faqs = parkourone_get_faqs('allgemein', 0);
+		$seen = array_map(function($f) { return $f['question']; }, $faqs);
+		foreach ($general_faqs as $gf) {
+			if (!in_array($gf['question'], $seen)) {
+				$faqs[] = $gf;
+			}
+		}
+	}
+
+	// Limit anwenden
+	if ($limit > 0 && count($faqs) > $limit) {
+		$faqs = array_slice($faqs, 0, $limit);
+	}
 } else {
-	// Nur spezifische Kategorie (oder alle wenn leer)
-	$faqs = function_exists('parkourone_get_faqs') ? parkourone_get_faqs($category, $limit) : [];
+	// Keine Kategorie: alle FAQs laden
+	$faqs = function_exists('parkourone_get_faqs') ? parkourone_get_faqs('', $limit) : [];
 }
 
 // Keine FAQs vorhanden
