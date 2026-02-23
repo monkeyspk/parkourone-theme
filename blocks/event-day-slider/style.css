@@ -385,3 +385,24 @@
 		display: none;
 	}
 }
+
+/* Modal: Beschreibung & Info-Notice */
+.po-steps__description {
+	font-size: 15px;
+	line-height: 1.6;
+	color: var(--po-color-text-secondary);
+	text-align: center;
+	margin: 0 0 24px;
+}
+
+.po-steps__info-notice {
+	background: rgba(0, 115, 170, 0.08);
+	border-left: 3px solid #0073aa;
+	padding: 12px 16px;
+	margin: 0 0 24px;
+	font-size: 14px;
+	line-height: 1.6;
+	color: var(--po-color-text);
+	border-radius: 0 8px 8px 0;
+	text-align: left;
+}
