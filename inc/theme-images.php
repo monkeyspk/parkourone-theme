@@ -36,7 +36,19 @@ function parkourone_get_age_folder_map() {
  */
 function parkourone_get_fallback_image($age_category = 'adults', $orientation = 'landscape') {
 	$folder_map = parkourone_get_age_folder_map();
-	$folder = $folder_map[strtolower($age_category)] ?? 'adults';
+	$age_key = strtolower($age_category);
+
+	// Slug-Normalisierung: minis_5-8 → minis, kids_9-12 → kids, etc.
+	if (!isset($folder_map[$age_key])) {
+		foreach (array_keys($folder_map) as $known) {
+			if (strpos($age_key, $known) === 0) {
+				$age_key = $known;
+				break;
+			}
+		}
+	}
+
+	$folder = $folder_map[$age_key] ?? 'adults';
 
 	// Fallback-Kette: Kategorie → verwandte Kategorie → adults
 	$related_map = [

@@ -1894,8 +1894,14 @@ function parkourone_generate_category_page_content($cat_slug, $seo, $header_vari
 		$seo['intro_text']
 	);
 
-	// Age category für Fallback-Bilder
-	$age_category_attr = in_array($cat_slug, ['kids', 'minis']) ? 'kids' : 'adults';
+	// Base age category aus Slug extrahieren (minis_5-8 → minis, kids_9-12 → kids, etc.)
+	$age_category_attr = 'adults';
+	foreach (['minis', 'kids', 'juniors', 'adults', 'seniors', 'masters', 'women'] as $_age) {
+		if (strpos($cat_slug, $_age) === 0) {
+			$age_category_attr = $_age;
+			break;
+		}
+	}
 
 	// Stats für den Page Header
 	$location_count = count($locations);
@@ -1909,7 +1915,7 @@ function parkourone_generate_category_page_content($cat_slug, $seo, $header_vari
 	$text_reveal_text = "Parkour {$display_name} in {$site_name} bedeutet mehr als nur Sport. Es ist eine Reise zu dir selbst. Bei ParkourONE trainierst du in einer motivierenden Umgebung mit erfahrenen Coaches. Kleine Gruppen, individuelle Betreuung und eine starke Community warten auf dich.";
 
 	$content = <<<BLOCKS
-<!-- wp:parkourone/page-header {"variant":"{$header_variant}","title":"Parkour {$display_name}","titleAccent":"{$site_name}","description":"{$hero_subtext}","ctaText":"Probetraining buchen","ctaUrl":"/probetraining-buchen/","stats":{$category_stats},"ageCategory":"{$cat_slug}","align":"full"} /-->
+<!-- wp:parkourone/page-header {"variant":"{$header_variant}","title":"Parkour {$display_name}","titleAccent":"{$site_name}","description":"{$hero_subtext}","ctaText":"Probetraining buchen","ctaUrl":"/probetraining-buchen/","stats":{$category_stats},"ageCategory":"{$age_category_attr}","align":"full"} /-->
 
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
