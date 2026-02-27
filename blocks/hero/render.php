@@ -38,23 +38,28 @@ $videoBackgroundUrl = $attributes['videoBackgroundUrl'] ?? '';
 $overlayOpacity = $attributes['overlayOpacity'] ?? 50;
 $stats = $attributes['stats'] ?? [];
 $ageCategory = $attributes['ageCategory'] ?? '';
-$useRandomFallback = $attributes['useRandomFallback'] ?? false;
 
-// Theme-Fallback-Bilder
-$desktopFallback = get_template_directory_uri() . '/assets/images/hero/startseite-desltop.jpg';
-$mobileFallback = get_template_directory_uri() . '/assets/images/hero/mobile-startbild.jpg';
-
-// Zufälliges Fallback-Bild aus Altersgruppen-Ordner (Landscape für Hero)
-if ($useRandomFallback && empty($imageUrl)) {
-	$category = !empty($ageCategory) ? $ageCategory : 'adults';
-	$fallback = parkourone_get_fallback_image($category, 'landscape');
-	if ($fallback) {
-		$desktopFallback = $fallback;
+// Bild-Logik: Gewähltes Bild → zufälliges Fallback → statisches Fallback
+if (!empty($imageUrl)) {
+	// Gewähltes Bild: auf Desktop UND Mobile verwenden
+	$desktopImage = $imageUrl;
+	$mobileImage = $imageUrl;
+} else {
+	// Kein Bild gewählt → zufälliges Fallback aus verschiedenen Kategorien
+	$fallback_categories = ['adults', 'kids', 'juniors'];
+	if (!empty($ageCategory)) {
+		// Gewählte Kategorie bevorzugen
+		array_unshift($fallback_categories, $ageCategory);
+		$fallback_categories = array_unique($fallback_categories);
 	}
-}
+	$random_category = $fallback_categories[array_rand($fallback_categories)];
 
-$desktopImage = !empty($imageUrl) ? $imageUrl : $desktopFallback;
-$mobileImage = $mobileFallback;
+	$landscape_fallback = parkourone_get_fallback_image($random_category, 'landscape');
+	$portrait_fallback = parkourone_get_fallback_image($random_category, 'portrait');
+
+	$desktopImage = $landscape_fallback ?: (get_template_directory_uri() . '/assets/images/hero/startseite-desltop.jpg');
+	$mobileImage = $portrait_fallback ?: (get_template_directory_uri() . '/assets/images/hero/mobile-startbild.jpg');
+}
 $unique_id = 'hero-' . uniqid();
 
 // YouTube Video ID extrahieren
