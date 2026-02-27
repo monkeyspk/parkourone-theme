@@ -58,15 +58,21 @@ function parkourone_get_fallback_image($age_category = 'adults', $orientation = 
 	$template_dir = get_template_directory();
 	$template_uri = get_template_directory_uri();
 
+	// Orientierungen: zuerst gewünschte, dann die andere als Fallback
+	$other_orientation = ($orientation === 'landscape') ? 'portrait' : 'landscape';
+
 	foreach ($folders_to_try as $try_folder) {
-		$base_dir = $template_dir . '/assets/images/fallback/' . $orientation . '/' . $try_folder;
+		// Zuerst gewünschte Orientierung, dann andere Orientierung derselben Kategorie
+		foreach ([$orientation, $other_orientation] as $try_orientation) {
+			$base_dir = $template_dir . '/assets/images/fallback/' . $try_orientation . '/' . $try_folder;
 
-		if (!is_dir($base_dir)) continue;
+			if (!is_dir($base_dir)) continue;
 
-		$images = glob($base_dir . '/*.{jpg,jpeg,png,webp}', GLOB_BRACE);
-		if (!empty($images)) {
-			$random_image = $images[array_rand($images)];
-			return $template_uri . '/assets/images/fallback/' . $orientation . '/' . $try_folder . '/' . basename($random_image);
+			$images = glob($base_dir . '/*.{jpg,jpeg,png,webp}', GLOB_BRACE);
+			if (!empty($images)) {
+				$random_image = $images[array_rand($images)];
+				return $template_uri . '/assets/images/fallback/' . $try_orientation . '/' . $try_folder . '/' . basename($random_image);
+			}
 		}
 	}
 
