@@ -191,6 +191,7 @@ require_once get_template_directory() . '/inc/analytics/init.php';
 require_once get_template_directory() . '/inc/woocommerce/init.php';
 require_once get_template_directory() . '/inc/health-data-consent.php';
 require_once get_template_directory() . '/inc/promo-popup.php';
+require_once get_template_directory() . '/inc/redirects.php';
 
 /**
  * ============================================
@@ -880,7 +881,9 @@ function parkourone_register_blocks() {
         'po-text',
         'po-image',
         'po-icon',
-        'po-columns'
+        'po-columns',
+        'video',
+        'personal-training'
     ];
 
     foreach ($blocks as $block) {
@@ -1323,7 +1326,9 @@ function parkourone_enqueue_block_assets() {
         'po-text',
         'po-image',
         'po-icon',
-        'po-columns'
+        'po-columns',
+        'video',
+        'personal-training'
     ];
 
     foreach ($blocks as $block) {
@@ -1595,6 +1600,71 @@ function parkourone_produkt_showcase_add_to_cart() {
 }
 add_action('wp_ajax_po_produkt_showcase_add_to_cart', 'parkourone_produkt_showcase_add_to_cart');
 add_action('wp_ajax_nopriv_po_produkt_showcase_add_to_cart', 'parkourone_produkt_showcase_add_to_cart');
+
+/**
+ * AJAX: Personal Training — Add-to-Cart mit Paket-Info
+ */
+function parkourone_pt_add_to_cart() {
+	check_ajax_referer('po_pt_nonce', 'nonce');
+
+	if (!function_exists('WC')) {
+		wp_send_json_error(['message' => 'WooCommerce nicht aktiv']);
+	}
+
+	if (is_null(WC()->session)) {
+		WC()->session = new \WC_Session_Handler();
+		WC()->session->init();
+	}
+	if (is_null(WC()->cart)) {
+		WC()->initialize_cart();
+	}
+
+	$product_id    = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
+	$package_title = isset($_POST['package_title']) ? sanitize_text_field($_POST['package_title']) : '';
+	$package_price = isset($_POST['package_price']) ? sanitize_text_field($_POST['package_price']) : '';
+	$work_on       = isset($_POST['work_on']) ? array_map('sanitize_text_field', (array) $_POST['work_on']) : [];
+	$work_on_other = isset($_POST['work_on_other']) ? sanitize_textarea_field($_POST['work_on_other']) : '';
+
+	if (!$product_id) {
+		wp_send_json_error(['message' => 'Kein Produkt angegeben']);
+	}
+
+	$product = wc_get_product($product_id);
+	if (!$product || !$product->is_purchasable() || !$product->is_in_stock()) {
+		wp_send_json_error(['message' => 'Produkt ist nicht verfuegbar']);
+	}
+
+	$cart_item_data = [
+		'po_pt_package' => $package_title,
+		'po_pt_price'   => $package_price,
+		'po_pt_work_on' => $work_on,
+	];
+	if ($work_on_other) {
+		$cart_item_data['po_pt_work_on_other'] = $work_on_other;
+	}
+
+	$added = WC()->cart->add_to_cart($product_id, 1, 0, [], $cart_item_data);
+
+	if ($added) {
+		wp_send_json_success([
+			'message'    => 'Erfolgreich zum Warenkorb hinzugefuegt',
+			'cart_count' => WC()->cart->get_cart_contents_count(),
+		]);
+	} else {
+		$errors = wc_get_notices('error');
+		wc_clear_notices();
+		$error_msg = 'Fehler beim Hinzufuegen zum Warenkorb';
+		if (!empty($errors)) {
+			$messages = array_map(function($e) {
+				return is_array($e) ? wp_strip_all_tags($e['notice']) : wp_strip_all_tags($e);
+			}, $errors);
+			$error_msg = implode(' ', $messages);
+		}
+		wp_send_json_error(['message' => $error_msg]);
+	}
+}
+add_action('wp_ajax_po_pt_add_to_cart', 'parkourone_pt_add_to_cart');
+add_action('wp_ajax_nopriv_po_pt_add_to_cart', 'parkourone_pt_add_to_cart');
 
 function parkourone_register_coach_cpt() {
 	// Schul-Taxonomie für Coaches

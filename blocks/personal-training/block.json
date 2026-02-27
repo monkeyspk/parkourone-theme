@@ -1,0 +1,43 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/personal-training",
+	"version": "1.0.0",
+	"title": "Personal Training",
+	"category": "parkourone-blocks",
+	"icon": "universal-access-alt",
+	"description": "Personal Training Buchung mit Paket-Auswahl und Warenkorb-Integration.",
+	"keywords": ["personal", "training", "coaching", "buchen", "pakete"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"headline": { "type": "string", "default": "Personal Training" },
+		"subtext": { "type": "string", "default": "Individuelles Coaching fuer deine persoenlichen Ziele. Waehle dein Paket und starte durch." },
+		"packages": {
+			"type": "array",
+			"default": [
+				{ "title": "Einzel-Session", "hours": "1", "price": "120", "description": "Eine intensive Stunde fuer schnelle Fortschritte.", "highlighted": false },
+				{ "title": "3er-Paket", "hours": "3", "price": "330", "description": "Drei Sessions fuer nachhaltiges Training.", "highlighted": true },
+				{ "title": "5er-Paket", "hours": "5", "price": "500", "description": "Fuenf Sessions fuer maximale Entwicklung.", "highlighted": false }
+			]
+		},
+		"workOnOptions": {
+			"type": "array",
+			"default": [
+				"Grundtechniken (Rollen, Springen, Landen)",
+				"Kraft & Conditioning",
+				"Bewegungsfluss & Kreativitaet",
+				"Ueberwindung von Angst & mentale Staerke",
+				"Spezifische Moves (Flips, Vaults, etc.)",
+				"Sonstiges"
+			]
+		},
+		"workOnLabel": { "type": "string", "default": "Woran moechtest du arbeiten?" },
+		"productId": { "type": "number", "default": 0 },
+		"ctaText": { "type": "string", "default": "Jetzt buchen" }
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}

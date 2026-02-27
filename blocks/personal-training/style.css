@@ -1,0 +1,474 @@
+/* ========================================
+   Personal Training Block – Dark Theme
+   ======================================== */
+
+.po-pt {
+    --pt-bg: #1d1d1f;
+    --pt-surface: rgba(255, 255, 255, 0.06);
+    --pt-surface-hover: rgba(255, 255, 255, 0.1);
+    --pt-border: rgba(255, 255, 255, 0.1);
+    --pt-text: #fff;
+    --pt-text-muted: rgba(255, 255, 255, 0.55);
+    --pt-accent: #fff;
+    --pt-accent-text: #1d1d1f;
+    --pt-radius: 14px;
+    --pt-radius-sm: 10px;
+    --pt-transition: 0.2s ease;
+
+    background: var(--pt-bg);
+    color: var(--pt-text);
+    padding: 64px 24px;
+    overflow: hidden;
+}
+
+.po-pt *,
+.po-pt *::before,
+.po-pt *::after {
+    box-sizing: border-box;
+}
+
+/* ── Admin Notice ── */
+
+.po-pt__notice {
+    background: rgba(255, 200, 50, 0.15);
+    border: 1px solid rgba(255, 200, 50, 0.3);
+    color: #ffd866;
+    padding: 12px 20px;
+    border-radius: var(--pt-radius-sm);
+    margin-bottom: 32px;
+    font-size: 14px;
+    text-align: center;
+    max-width: 600px;
+    margin-inline: auto;
+}
+
+/* ── Header ── */
+
+.po-pt__header {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 48px;
+}
+
+.po-pt__headline {
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 0 0 12px;
+    color: var(--pt-text);
+    letter-spacing: -0.02em;
+}
+
+.po-pt__subtext {
+    font-size: clamp(15px, 2vw, 17px);
+    color: var(--pt-text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ── Package Cards ── */
+
+.po-pt__packages {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    max-width: 860px;
+    margin: 0 auto 48px;
+}
+
+.po-pt__card {
+    position: relative;
+    background: var(--pt-surface);
+    border: 1.5px solid var(--pt-border);
+    border-radius: var(--pt-radius);
+    padding: 32px 22px 28px;
+    text-align: center;
+    cursor: pointer;
+    transition: background var(--pt-transition), border-color var(--pt-transition), box-shadow var(--pt-transition);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-family: inherit;
+    color: var(--pt-text);
+    -webkit-appearance: none;
+    appearance: none;
+    outline: none;
+}
+
+.po-pt__card:hover {
+    background: var(--pt-surface-hover);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.po-pt__card:focus-visible {
+    outline: 2px solid var(--pt-accent);
+    outline-offset: 2px;
+}
+
+/* Highlighted card */
+.po-pt__card--highlighted {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.po-pt__card--highlighted:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* Selected card */
+.po-pt__card.is-selected {
+    border-color: var(--pt-accent);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Badge */
+.po-pt__card-badge {
+    position: absolute;
+    top: -11px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--pt-accent);
+    color: var(--pt-accent-text);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 14px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+/* Card content */
+.po-pt__card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--pt-text);
+    margin-bottom: 4px;
+    display: block;
+}
+
+.po-pt__card-price {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--pt-text);
+    line-height: 1.2;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.po-pt__card-hours {
+    font-size: 14px;
+    color: var(--pt-text-muted);
+    display: block;
+    margin-bottom: 12px;
+}
+
+.po-pt__card-desc {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--pt-text-muted);
+    display: block;
+}
+
+/* Radio indicator */
+.po-pt__card-radio {
+    display: block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    margin-top: 16px;
+    transition: all var(--pt-transition);
+    position: relative;
+    flex-shrink: 0;
+}
+
+.po-pt__card-radio::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    background: var(--pt-accent);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform var(--pt-transition);
+}
+
+.po-pt__card.is-selected .po-pt__card-radio {
+    border-color: var(--pt-accent);
+}
+
+.po-pt__card.is-selected .po-pt__card-radio::after {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* ── Work-On Section ── */
+
+.po-pt__work-on {
+    max-width: 600px;
+    margin: 0 auto 40px;
+}
+
+.po-pt__work-on-label {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 20px;
+    color: var(--pt-text);
+    text-align: center;
+}
+
+.po-pt__work-on-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+/* Custom checkbox styling */
+.po-pt__work-on-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--pt-surface);
+    border: 1.5px solid var(--pt-border);
+    border-radius: var(--pt-radius-sm);
+    padding: 12px 18px;
+    cursor: pointer;
+    transition: all var(--pt-transition);
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.po-pt__work-on-option:hover {
+    background: var(--pt-surface-hover);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.po-pt__work-on-option.is-checked {
+    border-color: var(--pt-accent);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.po-pt__work-on-checkbox {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.po-pt__work-on-check {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    flex-shrink: 0;
+    transition: all var(--pt-transition);
+}
+
+.po-pt__work-on-check::after {
+    content: '';
+    display: block;
+    width: 10px;
+    height: 10px;
+    background: var(--pt-accent);
+    border-radius: 2px;
+    transform: scale(0);
+    transition: transform var(--pt-transition);
+}
+
+.po-pt__work-on-option.is-checked .po-pt__work-on-check {
+    border-color: var(--pt-accent);
+}
+
+.po-pt__work-on-option.is-checked .po-pt__work-on-check::after {
+    transform: scale(1);
+}
+
+.po-pt__work-on-text {
+    font-size: 14px;
+    color: var(--pt-text);
+    line-height: 1.3;
+}
+
+/* Other textarea */
+.po-pt__work-on-other {
+    margin-top: 16px;
+}
+
+.po-pt__work-on-other-label {
+    display: block;
+    font-size: 13px;
+    color: var(--pt-text-muted);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.po-pt__textarea {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1.5px solid var(--pt-border);
+    border-radius: 8px;
+    color: var(--pt-text);
+    font-size: 15px;
+    padding: 12px 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color var(--pt-transition);
+    resize: vertical;
+    min-height: 80px;
+}
+
+.po-pt__textarea:focus {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.po-pt__textarea::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* ── CTA ── */
+
+.po-pt__actions {
+    text-align: center;
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+.po-pt__cta {
+    display: inline-block;
+    background: var(--pt-accent);
+    color: var(--pt-accent-text);
+    border: none;
+    padding: 16px 48px;
+    border-radius: var(--pt-radius-sm);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--pt-transition);
+    font-family: inherit;
+    min-width: 240px;
+    position: relative;
+}
+
+.po-pt__cta:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.po-pt__cta:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.po-pt__cta.is-loading {
+    color: transparent;
+    pointer-events: none;
+}
+
+.po-pt__cta.is-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--pt-accent-text);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: po-pt-spin 0.6s linear infinite;
+}
+
+@keyframes po-pt-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Feedback ── */
+
+.po-pt__feedback {
+    margin-top: 16px;
+    font-size: 14px;
+    min-height: 20px;
+}
+
+.po-pt__feedback.is-success {
+    color: #4ade80;
+}
+
+.po-pt__feedback.is-error {
+    color: #f87171;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 768px) {
+    .po-pt {
+        padding: 48px 20px;
+    }
+
+    .po-pt__header {
+        margin-bottom: 36px;
+    }
+
+    .po-pt__packages {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        margin-bottom: 36px;
+    }
+
+    .po-pt__card {
+        padding: 28px 20px 24px;
+    }
+
+    .po-pt__card-price {
+        font-size: 28px;
+    }
+
+    .po-pt__work-on-options {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .po-pt__work-on-option {
+        justify-content: flex-start;
+    }
+
+    .po-pt__cta {
+        width: 100%;
+        padding: 16px 24px;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .po-pt__packages {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+
+    .po-pt__card {
+        padding: 28px 16px 24px;
+    }
+}
+
+/* ── Alignment (Full / Wide) ── */
+
+.po-pt.alignfull {
+    padding-inline: max(24px, calc((100% - 1200px) / 2));
+}
+
+.po-pt.alignwide {
+    padding-inline: max(24px, calc((100% - 960px) / 2));
+}

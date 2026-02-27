@@ -1,0 +1,27 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/video",
+	"version": "1.0.0",
+	"title": "Video",
+	"category": "parkourone-blocks",
+	"icon": "video-alt3",
+	"description": "Video-Block fuer YouTube/Vimeo-Embeds und selbst-gehostete MP4s.",
+	"keywords": ["video", "youtube", "vimeo", "mp4", "film"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"videoUrl": { "type": "string", "default": "" },
+		"videoType": { "type": "string", "default": "embed", "enum": ["embed", "file"] },
+		"posterImage": { "type": "string", "default": "" },
+		"autoplay": { "type": "boolean", "default": false },
+		"loop": { "type": "boolean", "default": false },
+		"muted": { "type": "boolean", "default": false },
+		"caption": { "type": "string", "default": "" },
+		"aspectRatio": { "type": "string", "default": "16:9", "enum": ["16:9", "4:3", "1:1", "9:16"] }
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}

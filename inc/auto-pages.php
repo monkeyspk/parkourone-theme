@@ -318,6 +318,11 @@ function parkourone_get_seo_content($type, $term_slug = '', $city = '') {
 		$content[$type]['meta_description'] = str_replace('Probetraining', "Probetraining in {$city_name}", $content[$type]['meta_description']);
 	}
 
+	// Slug-Normalisierung: minis_5-8 / minis-5-8 → minis
+	if (!isset($content[$type]) && strpos($type, 'minis') === 0) {
+		$type = 'minis';
+	}
+
 	return $content[$type] ?? null;
 }
 

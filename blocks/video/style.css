@@ -1,0 +1,255 @@
+/* ========================================
+   Video Block
+   ======================================== */
+
+.po-video {
+	--vid-radius: 12px;
+	--vid-play-size: 72px;
+	--vid-caption-color: #86868b;
+
+	max-width: 100%;
+	margin: 0 auto;
+}
+
+.po-video *,
+.po-video *::before,
+.po-video *::after {
+	box-sizing: border-box;
+}
+
+/* ── Wrapper (Aspect Ratio Container) ── */
+
+.po-video__wrapper {
+	position: relative;
+	overflow: hidden;
+	border-radius: var(--vid-radius);
+	background: #000;
+	width: 100%;
+}
+
+/* Aspect ratios – padding-bottom fallback + modern aspect-ratio */
+.po-video--16x9 .po-video__wrapper {
+	aspect-ratio: 16 / 9;
+}
+
+.po-video--4x3 .po-video__wrapper {
+	aspect-ratio: 4 / 3;
+}
+
+.po-video--1x1 .po-video__wrapper {
+	aspect-ratio: 1 / 1;
+}
+
+.po-video--9x16 .po-video__wrapper {
+	aspect-ratio: 9 / 16;
+	max-width: 400px;
+	margin-inline: auto;
+}
+
+/* Padding-bottom fallback for browsers without aspect-ratio support */
+@supports not (aspect-ratio: 16 / 9) {
+	.po-video--16x9 .po-video__wrapper {
+		padding-bottom: 56.25%;
+	}
+
+	.po-video--4x3 .po-video__wrapper {
+		padding-bottom: 75%;
+	}
+
+	.po-video--1x1 .po-video__wrapper {
+		padding-bottom: 100%;
+	}
+
+	.po-video--9x16 .po-video__wrapper {
+		padding-bottom: 177.78%;
+		max-width: 400px;
+		margin-inline: auto;
+	}
+
+	.po-video--16x9 .po-video__wrapper > *,
+	.po-video--4x3 .po-video__wrapper > *,
+	.po-video--1x1 .po-video__wrapper > *,
+	.po-video--9x16 .po-video__wrapper > * {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+	}
+}
+
+/* ── Placeholder (Click-to-Play) ── */
+
+.po-video__placeholder {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	border: none;
+	padding: 0;
+	margin: 0;
+	cursor: pointer;
+	background-color: #1d1d1f;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 2;
+	font-family: inherit;
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+.po-video__placeholder::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.3);
+	transition: background 0.3s ease;
+}
+
+.po-video__placeholder:hover::before {
+	background: rgba(0, 0, 0, 0.15);
+}
+
+/* ── Play Button ── */
+
+.po-video__play {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--vid-play-size);
+	height: var(--vid-play-size);
+	transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.po-video__play svg {
+	width: var(--vid-play-size);
+	height: var(--vid-play-size);
+	filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+}
+
+.po-video__play svg circle {
+	transition: fill 0.25s ease;
+}
+
+.po-video__placeholder:hover .po-video__play {
+	transform: scale(1.08);
+}
+
+.po-video__placeholder:hover .po-video__play svg circle {
+	fill: rgba(0, 0, 0, 0.65);
+}
+
+.po-video__placeholder:active .po-video__play {
+	transform: scale(0.96);
+}
+
+/* ── Media (iframe / video) ── */
+
+.po-video__media {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	border: none;
+	display: block;
+}
+
+video.po-video__media {
+	object-fit: cover;
+}
+
+iframe.po-video__media {
+	z-index: 3;
+}
+
+/* ── Caption ── */
+
+.po-video__caption {
+	text-align: center;
+	font-size: 14px;
+	line-height: 1.5;
+	color: var(--vid-caption-color);
+	margin: 12px 0 0;
+	padding: 0;
+}
+
+/* ── Alignment (Full / Wide) ── */
+
+.po-video.alignfull {
+	border-radius: 0;
+}
+
+.po-video.alignfull .po-video__wrapper {
+	border-radius: 0;
+}
+
+.po-video.alignfull .po-video__caption {
+	padding-inline: 24px;
+}
+
+.po-video.alignwide {
+	max-width: 1200px;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 768px) {
+	.po-video {
+		--vid-radius: 8px;
+		--vid-play-size: 56px;
+	}
+
+	.po-video__caption {
+		font-size: 13px;
+		margin-top: 8px;
+	}
+
+	.po-video--9x16 .po-video__wrapper {
+		max-width: 320px;
+	}
+}
+
+@media (max-width: 480px) {
+	.po-video {
+		--vid-radius: 6px;
+		--vid-play-size: 48px;
+	}
+}
+
+/* ── Editor Styles ── */
+
+.po-video-editor__preview {
+	position: relative;
+	overflow: hidden;
+	border-radius: 12px;
+	background: #000;
+}
+
+.po-video-editor__preview--16x9 {
+	aspect-ratio: 16 / 9;
+}
+
+.po-video-editor__preview--4x3 {
+	aspect-ratio: 4 / 3;
+}
+
+.po-video-editor__preview--1x1 {
+	aspect-ratio: 1 / 1;
+}
+
+.po-video-editor__preview--9x16 {
+	aspect-ratio: 9 / 16;
+	max-width: 400px;
+	margin-inline: auto;
+}

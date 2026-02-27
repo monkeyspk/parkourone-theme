@@ -60,7 +60,7 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'po-gutschein']);
                         <div class="po-gutschein__card-icon"><?php echo $icons[$icon_key]; ?></div>
                     <?php endif; ?>
                     <h3 class="po-gutschein__card-title"><?php echo esc_html($item['title'] ?? ''); ?></h3>
-                    <p class="po-gutschein__card-desc"><?php echo esc_html($item['description'] ?? ''); ?></p>
+                    <div class="po-gutschein__card-desc"><?php echo wp_kses_post($item['description'] ?? ''); ?></div>
                 </div>
             <?php endforeach; ?>
         </div>

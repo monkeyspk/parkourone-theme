@@ -93,6 +93,16 @@ function parkourone_register_admin_menu() {
 		'parkourone_promo_popup_page'
 	);
 
+	// Redirects
+	add_submenu_page(
+		'parkourone',
+		'Redirects',
+		'Redirects',
+		'manage_options',
+		'parkourone-redirects',
+		'parkourone_redirects_page'
+	);
+
 	// Maintenance Mode
 	add_submenu_page(
 		'parkourone',

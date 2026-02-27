@@ -2,6 +2,7 @@
 	var registerBlockType = wp.blocks.registerBlockType;
 	var useBlockProps = wp.blockEditor.useBlockProps;
 	var InspectorControls = wp.blockEditor.InspectorControls;
+	var RichText = wp.blockEditor.RichText;
 	var MediaUpload = wp.blockEditor.MediaUpload;
 	var PanelBody = wp.components.PanelBody;
 	var TextControl = wp.components.TextControl;
@@ -135,12 +136,17 @@
 									value: item.title || '',
 									onChange: function(v) { updateInspiration(i, 'title', v); }
 								}),
-								el(TextareaControl, {
-									key: 'desc-' + i,
-									label: 'Beschreibung',
-									value: item.description || '',
-									onChange: function(v) { updateInspiration(i, 'description', v); }
-								})
+								el('div', { key: 'desc-' + i, style: { marginBottom: '8px' } }, [
+									el('label', { key: 'label', style: { display: 'block', marginBottom: '4px', fontSize: '11px', fontWeight: '500', textTransform: 'uppercase' } }, 'Beschreibung'),
+									el(RichText, {
+										key: 'richtext',
+										tagName: 'div',
+										value: item.description || '',
+										onChange: function(v) { updateInspiration(i, 'description', v); },
+										allowedFormats: ['core/bold', 'core/italic', 'core/link'],
+										placeholder: 'Beschreibung eingeben...'
+									})
+								])
 							]);
 						})
 					)
@@ -191,7 +197,7 @@
 								}, [
 									el('strong', { key: 't', style: { display: 'block', fontSize: '14px', marginBottom: '4px' } }, item.title),
 									el('span', { key: 'd', style: { fontSize: '11px', color: 'rgba(255,255,255,0.5)' } },
-										(item.description || '').substring(0, 60) + '...'
+										(item.description || '').replace(/<[^>]+>/g, '').substring(0, 60) + '...'
 									)
 								]);
 							})
