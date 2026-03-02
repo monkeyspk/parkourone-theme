@@ -153,6 +153,13 @@ unset($slide);
 		closeBtn.addEventListener('click', closeModal);
 		backdrop.addEventListener('click', closeModal);
 
+		// Close modal when clicking anchor links (e.g. #anfrage)
+		modal.querySelectorAll('a[href^="#"]').forEach(function(link) {
+			link.addEventListener('click', function() {
+				closeModal();
+			});
+		});
+
 		document.addEventListener('keydown', function(e) {
 			if (e.key === 'Escape' && modal.classList.contains('is-active')) {
 				closeModal();
