@@ -9,7 +9,15 @@ $showDates       = $attributes['showDates'] ?? true;
 $showProjectLength = $attributes['showProjectLength'] ?? false;
 $showClassCount  = $attributes['showClassCount'] ?? false;
 $submitText      = $attributes['submitText'] ?? 'Anfrage senden';
-$bgClass         = ($attributes['backgroundColor'] ?? 'dark') === 'dark' ? 'po-inquiry--dark' : 'po-inquiry--light';
+$bgVariant = $attributes['backgroundColor'] ?? 'dark';
+$bgClasses = ['dark' => 'po-inquiry--dark', 'light' => 'po-inquiry--light', 'white' => 'po-inquiry--white'];
+$bgClass   = $bgClasses[$bgVariant] ?? 'po-inquiry--dark';
+
+// Math captcha
+$captcha_a = wp_rand(1, 15);
+$captcha_b = wp_rand(1, 15);
+$captcha_answer = $captcha_a + $captcha_b;
+$captcha_hash = wp_hash($captcha_answer . 'po_captcha_salt');
 
 $nonce = wp_create_nonce('po_inquiry_nonce');
 ?>
@@ -27,6 +35,7 @@ $nonce = wp_create_nonce('po_inquiry_nonce');
 			<input type="hidden" name="_nonce" value="<?php echo esc_attr($nonce); ?>">
 			<input type="hidden" name="form_type" value="<?php echo esc_attr($formType); ?>">
 			<input type="hidden" name="recipient_email" value="<?php echo esc_attr($recipientEmail); ?>">
+			<input type="hidden" name="captcha_hash" value="<?php echo esc_attr($captcha_hash); ?>">
 
 			<!-- Honeypot -->
 			<div class="po-inquiry__hp" aria-hidden="true" tabindex="-1">
@@ -108,6 +117,12 @@ $nonce = wp_create_nonce('po_inquiry_nonce');
 				<div class="po-inquiry__field po-inquiry__field--full">
 					<label for="po_nachricht">Weitere Infos</label>
 					<textarea name="nachricht" id="po_nachricht" rows="4"></textarea>
+				</div>
+
+				<!-- Math Captcha -->
+				<div class="po-inquiry__field po-inquiry__field--captcha">
+					<label for="po_captcha"><?php echo esc_html($captcha_a . ' + ' . $captcha_b); ?> = <span class="required">*</span></label>
+					<input type="number" name="captcha" id="po_captcha" required autocomplete="off">
 				</div>
 
 				<!-- AGB Checkbox -->

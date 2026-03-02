@@ -42,6 +42,13 @@
 			emailInput.closest('.po-inquiry__field').classList.add('po-inquiry__field--invalid');
 		}
 
+		// Captcha validation
+		var captchaInput = form.querySelector('[name="captcha"]');
+		if (captchaInput && !captchaInput.value.trim()) {
+			valid = false;
+			captchaInput.closest('.po-inquiry__field').classList.add('po-inquiry__field--invalid');
+		}
+
 		if (!valid) {
 			showMessage(msg, 'error', 'Bitte fülle alle Pflichtfelder korrekt aus.');
 			var firstInvalid = form.querySelector('.po-inquiry__field--invalid input, .po-inquiry__field--invalid select, .po-inquiry__field--invalid textarea');

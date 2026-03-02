@@ -61,7 +61,8 @@
 							value: attributes.backgroundColor,
 							options: [
 								{ label: 'Dunkel', value: 'dark' },
-								{ label: 'Hell', value: 'light' }
+								{ label: 'Hell', value: 'light' },
+								{ label: 'Weiss', value: 'white' }
 							],
 							onChange: function(v) { setAttributes({ backgroundColor: v }); }
 						})

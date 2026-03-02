@@ -2648,6 +2648,13 @@ function parkourone_inquiry_submit() {
 		wp_send_json_error(['message' => 'Bitte die Datenschutzerklärung und AGB akzeptieren.']);
 	}
 
+	// Captcha validation
+	$captcha_answer = absint($_POST['captcha'] ?? 0);
+	$captcha_hash   = sanitize_text_field($_POST['captcha_hash'] ?? '');
+	if (!$captcha_answer || wp_hash($captcha_answer . 'po_captcha_salt') !== $captcha_hash) {
+		wp_send_json_error(['message' => 'Die Rechenaufgabe wurde falsch gelöst. Bitte versuche es erneut.']);
+	}
+
 	// Form type labels
 	$type_labels = [
 		'workshop'  => 'Impulsworkshop',
