@@ -69,6 +69,7 @@ function parkourone_get_all_faq_categories() {
 		'standort' => 'Standort',
 		'gutschein' => 'Gutschein',
 		'klassenwechsel' => 'Klassenwechsel',
+		'infos' => 'Infos für Mitglieder',
 	];
 
 	// Alle verwendeten Kategorien aus der DB lesen
@@ -866,6 +867,46 @@ function parkourone_get_default_faqs() {
 			'question' => 'Für welchen Standort gilt der Gutschein?',
 			'answer' => '<p>Der Gutschein gilt für den Standort, an dem er gekauft wurde. Wenn du den Gutschein auf berlin.parkourone.com kaufst, kann er auch nur in Berlin eingelöst werden.</p>',
 			'category' => 'gutschein',
+			'order' => 6
+		],
+
+		// =====================================================
+		// INFOS – Für Mitglieder-Infos-Seite
+		// =====================================================
+		[
+			'question' => 'Kann ich mein Training pausieren?',
+			'answer' => '<p>Ja, du kannst dein Training pausieren. Dabei wird dein Platz in der Klasse für dich reserviert. Die Mitgliedschaft läuft während der Pause weiter. Wenn du länger pausieren möchtest, empfehlen wir dir eine ordentliche Kündigung – du kannst dich jederzeit wieder anmelden, sobald ein Platz frei ist.</p>',
+			'category' => 'infos',
+			'order' => 1
+		],
+		[
+			'question' => 'Wie melde ich mich für eine Lektion ab?',
+			'answer' => '<p>Abmeldungen erfolgen über das Academy Board. Dort kannst du dich rechtzeitig von einer Lektion abmelden. Bitte melde dich ab, wenn du nicht kommen kannst – so können andere Schüler:innen nachrücken.</p>',
+			'category' => 'infos',
+			'order' => 2
+		],
+		[
+			'question' => 'Habe ich Anspruch auf Rückerstattung bei Verletzung?',
+			'answer' => '<p>Ja, wenn du aufgrund einer Verletzung mindestens 30 Tage nicht trainieren kannst und eine ärztliche Sportdispens vorweisen kannst, hast du Anspruch auf eine anteilige Rückerstattung. Reiche deinen Antrag über das Formular auf dieser Seite ein. Voraussetzung: Deine Versicherung leistet keine Rückerstattung.</p>',
+			'category' => 'infos',
+			'order' => 3
+		],
+		[
+			'question' => 'Was ist das J+S Programm?',
+			'answer' => '<p>J+S (Jugend+Sport) ist das grösste Sportförderungsprogramm des Bundes. ParkourONE ist ein anerkannter J+S-Verein. Damit wir die Fördergelder beantragen können, benötigen wir die AHV-Nummer aller teilnehmenden Kinder und Jugendlichen. Du kannst deine AHV-Nummer sicher über das Formular auf dieser Seite melden.</p>',
+			'category' => 'infos',
+			'order' => 4
+		],
+		[
+			'question' => 'Wie erreiche ich das Büro?',
+			'answer' => '<p>Unser Büro ist zu den angegebenen Bürozeiten telefonisch und per E-Mail erreichbar. Die genauen Zeiten findest du oben auf dieser Seite. Ausserhalb der Bürozeiten erreichst du uns am besten per E-Mail – wir antworten so schnell wie möglich.</p>',
+			'category' => 'infos',
+			'order' => 5
+		],
+		[
+			'question' => 'Wie funktioniert die Kündigung?',
+			'answer' => '<p>Die Kündigungsfristen hängen von deiner Klasse ab: Bei Kids-Klassen gilt eine Kündigungsfrist per Ende Quartal, bei allen anderen Klassen (Juniors, Adults, Seniors, Masters) gilt eine Kündigungsfrist per Ende Monat. Kündigungen müssen schriftlich (per E-Mail) erfolgen.</p>',
+			'category' => 'infos',
 			'order' => 6
 		],
 	];

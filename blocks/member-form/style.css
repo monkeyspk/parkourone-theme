@@ -1,0 +1,507 @@
+/* Member Form Block – Karte + Modal */
+
+/* ===== Section ===== */
+.po-memberform {
+	padding: 4rem 1.5rem;
+	display: flex;
+	justify-content: center;
+}
+
+.po-memberform--bg-white {
+	background: #fff;
+}
+
+.po-memberform--bg-light {
+	background: #f5f5f7;
+}
+
+.po-memberform--bg-dark {
+	background: #1d1d1f;
+}
+
+/* ===== Karte ===== */
+.po-memberform__card {
+	background: #fff;
+	border-radius: 16px;
+	padding: 3rem 2.5rem;
+	max-width: 600px;
+	width: 100%;
+	text-align: center;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+	transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.po-memberform__card:hover {
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+	transform: translateY(-2px);
+}
+
+.po-memberform--bg-dark .po-memberform__card {
+	background: #2c2c2e;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+
+.po-memberform__card-icon {
+	margin-bottom: 1.25rem;
+	color: #1d1d1f;
+}
+
+.po-memberform--bg-dark .po-memberform__card-icon {
+	color: #fff;
+}
+
+.po-memberform__card-icon svg {
+	width: 48px;
+	height: 48px;
+}
+
+.po-memberform__card-title {
+	font-size: clamp(1.25rem, 3vw, 1.75rem);
+	font-weight: 600;
+	color: #1d1d1f;
+	margin: 0 0 0.75rem;
+}
+
+.po-memberform--bg-dark .po-memberform__card-title {
+	color: #fff;
+}
+
+.po-memberform__card-desc {
+	font-size: 1rem;
+	line-height: 1.6;
+	color: #6e6e73;
+	margin: 0 0 2rem;
+	max-width: 460px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.po-memberform--bg-dark .po-memberform__card-desc {
+	color: rgba(255, 255, 255, 0.6);
+}
+
+.po-memberform__card-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.875rem 2rem;
+	background: #1d1d1f;
+	color: #fff;
+	border: none;
+	border-radius: 980px;
+	font-size: 1rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.po-memberform__card-btn:hover {
+	background: #424245;
+	transform: scale(1.02);
+}
+
+.po-memberform__card-btn:focus-visible {
+	outline: 2px solid #0071e3;
+	outline-offset: 4px;
+}
+
+.po-memberform--bg-dark .po-memberform__card-btn {
+	background: #fff;
+	color: #1d1d1f;
+}
+
+.po-memberform--bg-dark .po-memberform__card-btn:hover {
+	background: #e8e8ed;
+}
+
+/* ===== Modal ===== */
+.po-memberform__modal {
+	position: fixed;
+	inset: 0;
+	z-index: 10000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.po-memberform__modal[hidden] {
+	display: none;
+}
+
+.po-memberform__modal.is-open {
+	opacity: 1;
+	visibility: visible;
+}
+
+.po-memberform__modal-backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.5);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+}
+
+.po-memberform__modal-container {
+	position: relative;
+	background: #fff;
+	border-radius: 20px;
+	max-width: 640px;
+	width: calc(100% - 2rem);
+	max-height: calc(100vh - 4rem);
+	overflow-y: auto;
+	box-shadow: 0 24px 80px rgba(0, 0, 0, 0.2);
+	transform: translateY(20px) scale(0.97);
+	transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.po-memberform__modal.is-open .po-memberform__modal-container {
+	transform: translateY(0) scale(1);
+}
+
+.po-memberform__modal-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 1.5rem 2rem;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+	position: sticky;
+	top: 0;
+	background: #fff;
+	border-radius: 20px 20px 0 0;
+	z-index: 1;
+}
+
+.po-memberform__modal-title {
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: #1d1d1f;
+	margin: 0;
+}
+
+.po-memberform__modal-close {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	border: none;
+	background: #f5f5f7;
+	border-radius: 50%;
+	cursor: pointer;
+	color: #1d1d1f;
+	transition: background 0.2s ease;
+	flex-shrink: 0;
+}
+
+.po-memberform__modal-close:hover {
+	background: #e8e8ed;
+}
+
+.po-memberform__modal-close:focus-visible {
+	outline: 2px solid #0071e3;
+	outline-offset: 2px;
+}
+
+.po-memberform__modal-body {
+	padding: 2rem;
+}
+
+/* ===== Formular ===== */
+.po-memberform__hp {
+	position: absolute;
+	left: -9999px;
+	opacity: 0;
+	height: 0;
+	overflow: hidden;
+}
+
+.po-memberform__grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1.25rem;
+}
+
+.po-memberform__field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.375rem;
+}
+
+.po-memberform__field--full {
+	grid-column: 1 / -1;
+}
+
+.po-memberform__field--captcha {
+	grid-column: 1 / -1;
+	max-width: 200px;
+}
+
+.po-memberform__field label {
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: #1d1d1f;
+}
+
+.po-memberform__field .required {
+	color: #ff3b30;
+}
+
+.po-memberform__field .optional {
+	font-weight: 400;
+	color: #6e6e73;
+	font-size: 0.8rem;
+}
+
+.po-memberform__field input[type="text"],
+.po-memberform__field input[type="email"],
+.po-memberform__field input[type="tel"],
+.po-memberform__field input[type="number"],
+.po-memberform__field input[type="date"],
+.po-memberform__field select,
+.po-memberform__field textarea {
+	padding: 0.75rem 1rem;
+	border: 1px solid #d2d2d7;
+	border-radius: 12px;
+	font-size: 1rem;
+	color: #1d1d1f;
+	background: #fff;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.po-memberform__field input:focus,
+.po-memberform__field select:focus,
+.po-memberform__field textarea:focus {
+	outline: none;
+	border-color: #0071e3;
+	box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+}
+
+.po-memberform__field input[type="file"] {
+	padding: 0.625rem 1rem;
+	border: 1px dashed #d2d2d7;
+	border-radius: 12px;
+	font-size: 0.9rem;
+	color: #6e6e73;
+	background: #fafafa;
+	cursor: pointer;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.po-memberform__field input[type="file"]:hover {
+	border-color: #0071e3;
+	background: #f0f5ff;
+}
+
+.po-memberform__field-hint {
+	font-size: 0.8rem;
+	color: #6e6e73;
+}
+
+/* Checkbox */
+.po-memberform__field--checkbox label {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.625rem;
+	cursor: pointer;
+	font-weight: 400;
+}
+
+.po-memberform__field--checkbox input[type="checkbox"] {
+	margin-top: 0.125rem;
+	flex-shrink: 0;
+	width: 18px;
+	height: 18px;
+	accent-color: #0071e3;
+}
+
+.po-memberform__field--checkbox a {
+	color: #0071e3;
+	text-decoration: none;
+}
+
+.po-memberform__field--checkbox a:hover {
+	text-decoration: underline;
+}
+
+/* Validation */
+.po-memberform__field--invalid input,
+.po-memberform__field--invalid select,
+.po-memberform__field--invalid textarea {
+	border-color: #ff3b30;
+	box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.1);
+}
+
+.po-memberform__field--invalid label {
+	color: #ff3b30;
+}
+
+/* Submit */
+.po-memberform__submit {
+	margin-top: 1.75rem;
+	text-align: center;
+}
+
+.po-memberform__button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	padding: 0.875rem 2.5rem;
+	background: #1d1d1f;
+	color: #fff;
+	border: none;
+	border-radius: 980px;
+	font-size: 1rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background 0.2s ease, transform 0.1s ease;
+	min-width: 200px;
+}
+
+.po-memberform__button:hover {
+	background: #424245;
+}
+
+.po-memberform__button:active {
+	transform: scale(0.98);
+}
+
+.po-memberform__button:focus-visible {
+	outline: 2px solid #0071e3;
+	outline-offset: 4px;
+}
+
+.po-memberform__button-loading {
+	display: none;
+	animation: po-memberform-spin 1s linear infinite;
+}
+
+.po-memberform__button--loading .po-memberform__button-text {
+	opacity: 0.6;
+}
+
+.po-memberform__button--loading .po-memberform__button-loading {
+	display: inline-flex;
+}
+
+.po-memberform__button--loading {
+	pointer-events: none;
+	opacity: 0.8;
+}
+
+@keyframes po-memberform-spin {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}
+
+/* Message */
+.po-memberform__message {
+	margin-top: 1.25rem;
+	padding: 1rem 1.25rem;
+	border-radius: 12px;
+	font-size: 0.9375rem;
+	line-height: 1.5;
+	text-align: center;
+}
+
+.po-memberform__message--success {
+	background: #d1f2e0;
+	color: #1b7340;
+}
+
+.po-memberform__message--error {
+	background: #ffe5e5;
+	color: #c0392b;
+}
+
+/* ===== Editor Preview ===== */
+.po-memberform-editor {
+	padding: 1.5rem 2rem;
+	display: flex;
+	justify-content: center;
+}
+
+.po-memberform-editor__card {
+	background: #fff;
+	border-radius: 16px;
+	padding: 2rem;
+	max-width: 500px;
+	width: 100%;
+	text-align: center;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.po-memberform-editor__icon {
+	font-size: 2.5rem;
+	margin-bottom: 0.5rem;
+}
+
+.po-memberform-editor__title {
+	font-size: 1.125rem;
+	font-weight: 600;
+	margin: 0 0 0.5rem;
+	color: #1d1d1f;
+}
+
+.po-memberform-editor__desc {
+	font-size: 0.875rem;
+	color: #6e6e73;
+	margin: 0 0 1rem;
+	line-height: 1.5;
+}
+
+.po-memberform-editor__btn {
+	display: inline-block;
+	padding: 0.5rem 1.5rem;
+	background: #1d1d1f;
+	color: #fff;
+	border-radius: 980px;
+	font-size: 0.875rem;
+	font-weight: 500;
+	margin-bottom: 1rem;
+}
+
+.po-memberform-editor__fields {
+	font-size: 0.75rem;
+	color: #999;
+	margin: 0;
+	line-height: 1.4;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+	.po-memberform {
+		padding: 3rem 1rem;
+	}
+
+	.po-memberform__card {
+		padding: 2rem 1.5rem;
+	}
+
+	.po-memberform__grid {
+		grid-template-columns: 1fr;
+	}
+
+	/* Modal fullscreen auf Mobile */
+	.po-memberform__modal-container {
+		max-width: 100%;
+		width: 100%;
+		max-height: 100vh;
+		height: 100%;
+		border-radius: 0;
+	}
+
+	.po-memberform__modal-header {
+		border-radius: 0;
+	}
+
+	.po-memberform__modal-body {
+		padding: 1.5rem 1rem;
+	}
+}

@@ -1,0 +1,25 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/member-form",
+	"version": "1.0.0",
+	"title": "Member Form",
+	"category": "parkourone-blocks",
+	"icon": "id-alt",
+	"description": "Mitglieder-Formular als Karte mit Modal-Popup (Verletzungs-Rückerstattung oder AHV-Nummer).",
+	"keywords": ["formular", "mitglieder", "verletzung", "ahv", "rückerstattung", "member"],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"viewScript": "file:./view.js",
+	"render": "file:./render.php",
+	"attributes": {
+		"formType": { "type": "string", "default": "verletzungen" },
+		"headline": { "type": "string", "default": "" },
+		"description": { "type": "string", "default": "" },
+		"buttonText": { "type": "string", "default": "" },
+		"recipientEmail": { "type": "string", "default": "" },
+		"backgroundColor": { "type": "string", "default": "white" }
+	},
+	"supports": { "align": ["full", "wide"], "html": false }
+}

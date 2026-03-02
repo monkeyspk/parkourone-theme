@@ -884,7 +884,8 @@ function parkourone_register_blocks() {
         'po-columns',
         'video',
         'personal-training',
-        'inquiry-form'
+        'inquiry-form',
+        'member-form'
     ];
 
     foreach ($blocks as $block) {
@@ -1330,7 +1331,8 @@ function parkourone_enqueue_block_assets() {
         'po-columns',
         'video',
         'personal-training',
-        'inquiry-form'
+        'inquiry-form',
+        'member-form'
     ];
 
     foreach ($blocks as $block) {
@@ -2719,6 +2721,227 @@ function parkourone_inquiry_submit() {
 }
 add_action('wp_ajax_po_inquiry_submit', 'parkourone_inquiry_submit');
 add_action('wp_ajax_nopriv_po_inquiry_submit', 'parkourone_inquiry_submit');
+
+/**
+ * ============================================
+ * MEMBER FORM AJAX HANDLER
+ * Verletzungs-Rückerstattung + AHV-Nummer
+ * ============================================
+ */
+function parkourone_member_form_submit() {
+	// Nonce check
+	if (!wp_verify_nonce($_POST['_nonce'] ?? '', 'po_member_form_nonce')) {
+		wp_send_json_error(['message' => 'Sicherheitsüberprüfung fehlgeschlagen. Bitte Seite neu laden.']);
+	}
+
+	// Honeypot
+	if (!empty($_POST['po_website'])) {
+		wp_send_json_success(['message' => 'Vielen Dank! Dein Formular wurde gesendet.']);
+	}
+
+	// Rate Limiting (60s per IP)
+	$ip = $_SERVER['REMOTE_ADDR'];
+	$transient_key = 'po_member_' . md5($ip);
+	if (get_transient($transient_key)) {
+		wp_send_json_error(['message' => 'Bitte warte einen Moment bevor du ein weiteres Formular sendest.']);
+	}
+	set_transient($transient_key, 1, 60);
+
+	// Captcha validation
+	$captcha_answer = absint($_POST['captcha'] ?? 0);
+	$captcha_hash   = sanitize_text_field($_POST['captcha_hash'] ?? '');
+	if (!$captcha_answer || wp_hash($captcha_answer . 'po_member_captcha_salt') !== $captcha_hash) {
+		wp_send_json_error(['message' => 'Die Rechenaufgabe wurde falsch gelöst. Bitte versuche es erneut.']);
+	}
+
+	$form_type = sanitize_text_field($_POST['form_type'] ?? '');
+
+	if ($form_type === 'verletzungen') {
+		parkourone_handle_verletzungen_form();
+	} elseif ($form_type === 'ahv') {
+		parkourone_handle_ahv_form();
+	} else {
+		wp_send_json_error(['message' => 'Ungültiger Formular-Typ.']);
+	}
+}
+
+function parkourone_handle_verletzungen_form() {
+	// Sanitize
+	$name          = sanitize_text_field($_POST['name'] ?? '');
+	$vorname       = sanitize_text_field($_POST['vorname'] ?? '');
+	$plz           = sanitize_text_field($_POST['plz'] ?? '');
+	$ort           = sanitize_text_field($_POST['ort'] ?? '');
+	$email         = sanitize_email($_POST['email'] ?? '');
+	$klasse        = sanitize_text_field($_POST['klasse'] ?? '');
+	$beginn        = sanitize_text_field($_POST['beginn'] ?? '');
+	$ende          = sanitize_text_field($_POST['ende'] ?? '');
+	$iban          = sanitize_text_field($_POST['iban'] ?? '');
+	$kontoinhaber  = sanitize_text_field($_POST['kontoinhaber'] ?? '');
+	$agb           = isset($_POST['agb']) && $_POST['agb'] === '1';
+	$versicherung  = isset($_POST['versicherung']) && $_POST['versicherung'] === '1';
+
+	// Validation
+	if (empty($name) || empty($vorname) || empty($plz) || empty($ort) || empty($email) || empty($klasse) || empty($beginn) || empty($ende) || empty($iban) || empty($kontoinhaber)) {
+		wp_send_json_error(['message' => 'Bitte alle Pflichtfelder ausfüllen.']);
+	}
+
+	if (!is_email($email)) {
+		wp_send_json_error(['message' => 'Bitte eine gültige E-Mail-Adresse eingeben.']);
+	}
+
+	if (!$agb) {
+		wp_send_json_error(['message' => 'Bitte die Datenschutzerklärung und AGB akzeptieren.']);
+	}
+
+	if (!$versicherung) {
+		wp_send_json_error(['message' => 'Bitte bestätige, dass deine Versicherung keine Rückerstattung leistet.']);
+	}
+
+	// Date validation
+	$beginn_ts = strtotime($beginn);
+	$ende_ts   = strtotime($ende);
+	if (!$beginn_ts || !$ende_ts) {
+		wp_send_json_error(['message' => 'Bitte gültige Daten eingeben.']);
+	}
+
+	if ($ende_ts <= $beginn_ts) {
+		wp_send_json_error(['message' => 'Das Ende des Trainingsausfalls muss nach dem Beginn liegen.']);
+	}
+
+	$diff_days = ($ende_ts - $beginn_ts) / (60 * 60 * 24);
+	if ($diff_days < 30) {
+		wp_send_json_error(['message' => 'Der Trainingsausfall muss mindestens 30 Tage betragen.']);
+	}
+
+	// File upload
+	$attachment_path = '';
+	if (!empty($_FILES['sportdispens']) && $_FILES['sportdispens']['error'] === UPLOAD_ERR_OK) {
+		$file = $_FILES['sportdispens'];
+
+		// MIME check with finfo
+		$finfo = finfo_open(FILEINFO_MIME_TYPE);
+		$mime = finfo_file($finfo, $file['tmp_name']);
+		finfo_close($finfo);
+
+		$allowed_mimes = ['image/jpeg', 'image/png', 'image/gif'];
+		if (!in_array($mime, $allowed_mimes, true)) {
+			wp_send_json_error(['message' => 'Nur JPG, PNG oder GIF Dateien sind erlaubt.']);
+		}
+
+		// Size check (64MB)
+		if ($file['size'] > 64 * 1024 * 1024) {
+			wp_send_json_error(['message' => 'Die Datei ist zu gross (max. 64 MB).']);
+		}
+
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		$upload = wp_handle_upload($file, ['test_form' => false]);
+
+		if (isset($upload['error'])) {
+			wp_send_json_error(['message' => 'Fehler beim Hochladen: ' . $upload['error']]);
+		}
+
+		$attachment_path = $upload['file'];
+	}
+
+	// Recipient
+	$recipient_email = sanitize_email($_POST['recipient_email'] ?? '');
+	$to_email = $recipient_email ?: get_option('admin_email');
+	$site_name = get_bloginfo('name');
+
+	// Admin email
+	$subject = 'Rückerstattung Verletzung: ' . $vorname . ' ' . $name . ' – ' . $site_name;
+
+	$message = "Neuer Antrag auf Rückerstattung bei Verletzung\n\n";
+	$message .= "Name: " . $name . "\n";
+	$message .= "Vorname: " . $vorname . "\n";
+	$message .= "PLZ: " . $plz . "\n";
+	$message .= "Ort: " . $ort . "\n";
+	$message .= "E-Mail: " . $email . "\n";
+	$message .= "Klasse: " . $klasse . "\n";
+	$message .= "Beginn Trainingsausfall: " . $beginn . "\n";
+	$message .= "Ende Trainingsausfall: " . $ende . "\n";
+	$message .= "Dauer: " . round($diff_days) . " Tage\n";
+	$message .= "IBAN: " . $iban . "\n";
+	$message .= "Kontoinhaber: " . $kontoinhaber . "\n";
+	$message .= "AGB akzeptiert: Ja\n";
+	$message .= "Versicherung leistet keine Rückerstattung: Ja\n";
+	if ($attachment_path) {
+		$message .= "Sportdispens: Im Anhang\n";
+	}
+	$message .= "\n---\nGesendet von: " . home_url();
+
+	$headers = [
+		'Content-Type: text/plain; charset=UTF-8',
+		'Reply-To: ' . $vorname . ' ' . $name . ' <' . $email . '>'
+	];
+
+	$attachments = $attachment_path ? [$attachment_path] : [];
+	$sent_admin = wp_mail($to_email, $subject, $message, $headers, $attachments);
+
+	// Confirmation email to sender
+	$confirm_subject = 'Dein Rückerstattungs-Antrag bei ' . $site_name;
+	$confirm_message = "Hallo " . $vorname . ",\n\n";
+	$confirm_message .= "vielen Dank für deinen Antrag auf Rückerstattung bei Verletzung.\n\n";
+	$confirm_message .= "Wir haben deine Angaben erhalten und prüfen deinen Antrag.\n";
+	$confirm_message .= "Du wirst von uns hören, sobald wir deinen Antrag bearbeitet haben.\n\n";
+	$confirm_message .= "Deine Angaben:\n";
+	$confirm_message .= "Klasse: " . $klasse . "\n";
+	$confirm_message .= "Trainingsausfall: " . $beginn . " bis " . $ende . "\n";
+	$confirm_message .= "IBAN: " . $iban . "\n";
+	$confirm_message .= "\nLiebe Grüsse\nDein " . $site_name . " Team";
+
+	$confirm_headers = ['Content-Type: text/plain; charset=UTF-8'];
+	wp_mail($email, $confirm_subject, $confirm_message, $confirm_headers);
+
+	if ($sent_admin) {
+		wp_send_json_success(['message' => 'Vielen Dank! Dein Antrag wurde gesendet. Du erhältst eine Bestätigung per E-Mail.']);
+	} else {
+		wp_send_json_error(['message' => 'Es gab ein Problem beim Senden. Bitte versuche es später erneut.']);
+	}
+}
+
+function parkourone_handle_ahv_form() {
+	$name      = sanitize_text_field($_POST['name'] ?? '');
+	$vorname   = sanitize_text_field($_POST['vorname'] ?? '');
+	$ahv_raw   = sanitize_text_field($_POST['ahv_nummer'] ?? '');
+
+	// Validation
+	if (empty($name) || empty($vorname) || empty($ahv_raw)) {
+		wp_send_json_error(['message' => 'Bitte alle Pflichtfelder ausfüllen.']);
+	}
+
+	// AHV format: 13 digits starting with 756
+	$ahv_clean = preg_replace('/[\.\s\-]/', '', $ahv_raw);
+	if (!preg_match('/^756\d{10}$/', $ahv_clean)) {
+		wp_send_json_error(['message' => 'Bitte eine gültige AHV-Nummer eingeben (13 Ziffern, beginnt mit 756).']);
+	}
+
+	// Recipient
+	$recipient_email = sanitize_email($_POST['recipient_email'] ?? '');
+	$to_email = $recipient_email ?: get_option('admin_email');
+	$site_name = get_bloginfo('name');
+
+	// Admin email
+	$subject = 'AHV-Nummer: ' . $vorname . ' ' . $name . ' – ' . $site_name;
+
+	$message = "Neue AHV-Nummer Meldung (J+S Programm)\n\n";
+	$message .= "Name: " . $name . "\n";
+	$message .= "Vorname: " . $vorname . "\n";
+	$message .= "AHV-Nummer: " . $ahv_raw . "\n";
+	$message .= "\n---\nGesendet von: " . home_url();
+
+	$headers = ['Content-Type: text/plain; charset=UTF-8'];
+	$sent = wp_mail($to_email, $subject, $message, $headers);
+
+	if ($sent) {
+		wp_send_json_success(['message' => 'Vielen Dank! Deine AHV-Nummer wurde übermittelt.']);
+	} else {
+		wp_send_json_error(['message' => 'Es gab ein Problem beim Senden. Bitte versuche es später erneut.']);
+	}
+}
+
+add_action('wp_ajax_po_member_form_submit', 'parkourone_member_form_submit');
+add_action('wp_ajax_nopriv_po_member_form_submit', 'parkourone_member_form_submit');
 
 /**
  * Automatisch "Startseite" als Homepage setzen

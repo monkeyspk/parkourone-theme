@@ -171,7 +171,21 @@
 			}
 		});
 
-		// Intercept WooCommerce checkout errors
+		// Intercept WooCommerce checkout errors.
+		// WooCommerce calls scrollToNotices() BEFORE firing checkout_error,
+		// which scrolls to the inline notice hidden behind the sticky sidebar.
+		// We save the scroll position, show errors in a modal instead,
+		// and restore the scroll position to undo the unwanted jump.
+		var scrollPosBeforeError = 0;
+
+		// Capture scroll position just before WooCommerce processes the error.
+		// The 'checkout_error' event fires after WooCommerce has already scrolled.
+		jQuery(document).ajaxComplete(function (event, xhr, settings) {
+			if (settings && settings.url && settings.url.indexOf('wc-ajax=checkout') !== -1) {
+				scrollPosBeforeError = window.scrollY || window.pageYOffset;
+			}
+		});
+
 		jQuery(document.body).on('checkout_error', function () {
 			var noticeGroup = document.querySelector('.woocommerce-NoticeGroup-checkout');
 			if (!noticeGroup) return;
@@ -183,8 +197,11 @@
 			body.innerHTML = '';
 			body.appendChild(errorList.cloneNode(true));
 
-			// Hide inline notices
-			noticeGroup.style.display = 'none';
+			// Remove inline notices entirely (CSS also hides them, but be safe)
+			noticeGroup.remove();
+
+			// Restore scroll position that WooCommerce's scrollToNotices() hijacked
+			window.scrollTo(0, scrollPosBeforeError);
 
 			// Show modal
 			modal.setAttribute('aria-hidden', 'false');

@@ -70,6 +70,7 @@ add_filter('woocommerce_checkout_fields', function($fields) {
 	if (isset($fields['billing']['billing_phone'])) {
 		$fields['billing']['billing_phone']['priority'] = 40;
 		$fields['billing']['billing_phone']['class'] = ['form-row-wide'];
+		$fields['billing']['billing_phone']['required'] = true;
 	}
 
 	// Group 2: Adresse (no country/state — only Germany)

@@ -1663,6 +1663,14 @@ p#referrer_field {
 	margin: 4px 0;
 }
 
+/*
+ * Hide inline checkout error notices — the error modal displays them instead.
+ * Without this, notices render behind the sticky order_review sidebar.
+ */
+.woocommerce-checkout .woocommerce-NoticeGroup-checkout {
+	display: none !important;
+}
+
 /* ---------- Validation error modal ---------- */
 
 .po-error-modal {

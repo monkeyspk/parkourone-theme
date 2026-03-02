@@ -1291,6 +1291,14 @@ function parkourone_get_template_pages() {
 			'pattern_file' => 'page-der-grosse-sprung.php',
 			'page_slug' => 'dergrossesprung',
 		],
+		[
+			'slug' => 'infos',
+			'title' => 'Infos für Mitglieder',
+			'description' => 'Mitglieder-Infos mit Bürozeiten, Kosten, Kündigung, Verletzungs-Rückerstattung, AHV-Nummer und FAQ',
+			'blocks' => 'Page-Header, Feature-Cards, Member-Form (Verletzungen), Member-Form (AHV), Intro-Section, FAQ',
+			'pattern_file' => 'page-infos.php',
+			'page_slug' => 'infos',
+		],
 	];
 
 	// Prüfen ob Seiten bereits existieren
