@@ -119,6 +119,27 @@ if ($query->have_posts()) {
 			];
 		}
 
+		// Live WooCommerce-Produktbestand pro Datum laden (statt veralteter Import-Daten)
+		$event_products = get_posts([
+			'post_type' => 'product',
+			'posts_per_page' => -1,
+			'post_status' => 'publish',
+			'meta_query' => [
+				['key' => '_event_id', 'value' => $event_id]
+			],
+			'fields' => 'ids',
+		]);
+		$product_stock_by_date = [];
+		foreach ($event_products as $pid) {
+			$pdate = get_post_meta($pid, '_event_date', true);
+			if ($pdate) {
+				$wc_product = wc_get_product($pid);
+				if ($wc_product) {
+					$product_stock_by_date[$pdate] = $wc_product->is_in_stock() ? max(0, (int) $wc_product->get_stock_quantity()) : 0;
+				}
+			}
+		}
+
 		// Alle Datumseintraege durchgehen
 		foreach ($event_dates as $date_entry) {
 			if (empty($date_entry['date'])) continue;
@@ -137,7 +158,8 @@ if ($query->have_posts()) {
 
 			$date_key = "$year-$month-$day";
 
-			$stock = isset($date_entry['available_seats']) ? intval($date_entry['available_seats']) : -1;
+			// Live-Bestand aus WooCommerce-Produkt verwenden
+			$stock = isset($product_stock_by_date[$date_entry['date']]) ? $product_stock_by_date[$date_entry['date']] : -1;
 
 			$all_events[] = [
 				'event_id'        => $event_id,
