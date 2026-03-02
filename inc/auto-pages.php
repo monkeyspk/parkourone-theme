@@ -1275,6 +1275,14 @@ function parkourone_get_template_pages() {
 			'pattern_file' => 'page-jobs.php',
 			'page_slug' => 'jobs',
 		],
+		[
+			'slug' => 'bring-your-buddy',
+			'title' => 'Bring your Buddy',
+			'description' => 'Referral-Landingpage – Freunde einladen zum kostenlosen Schnuppertraining mit Gutscheincode',
+			'blocks' => 'Page-Header, Intro-Section, Steps-Carousel, Stundenplan, FAQ, Testimonial',
+			'pattern_file' => 'page-bring-your-buddy.php',
+			'page_slug' => 'bring-your-buddy',
+		],
 	];
 
 	// Prüfen ob Seiten bereits existieren
