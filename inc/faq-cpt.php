@@ -68,6 +68,7 @@ function parkourone_get_all_faq_categories() {
 		'workshops' => 'Workshops & Kurse',
 		'standort' => 'Standort',
 		'gutschein' => 'Gutschein',
+		'klassenwechsel' => 'Klassenwechsel',
 	];
 
 	// Alle verwendeten Kategorien aus der DB lesen
@@ -229,6 +230,7 @@ function parkourone_get_category_pages_map() {
 		'standort' => 'Standort-Seiten',
 		'startseite' => 'Startseite',
 		'gutschein' => 'Gutschein-Seite',
+		'klassenwechsel' => 'Der grosse Sprung',
 	];
 }
 
@@ -283,6 +285,7 @@ function parkourone_faq_column_content($column, $post_id) {
 				'workshops' => '#e67e22',
 				'standort' => '#1abc9c',
 				'gutschein' => '#8e44ad',
+				'klassenwechsel' => '#e74c3c',
 			];
 			$color = $colors[$cat] ?? '#666';
 
@@ -726,6 +729,34 @@ function parkourone_get_default_faqs() {
 			'answer' => '<p>Ja, Gutscheine kannst du in unserem Shop kaufen.</p>',
 			'category' => 'allgemein',
 			'order' => 14
+		],
+
+		// =====================================================
+		// KLASSENWECHSEL - Für "Der grosse Sprung" Seite
+		// =====================================================
+		[
+			'question' => 'Warum sollte ich wechseln?',
+			'answer' => '<p>Ein Wechsel in die nächsthöhere Altersgruppe bietet dir die Möglichkeit, dich in einem neuen Umfeld weiterzuentwickeln und von altersgerechten Herausforderungen zu profitieren. Unsere Klassen sind speziell auf die verschiedenen Lebensphasen und Fähigkeiten abgestimmt, damit du gezielt Fortschritte machen kannst.</p><p>Durch den Wechsel lernst du neue Techniken, stärkst dein Selbstvertrauen und trainierst gemeinsam mit Teilnehmern auf deinem Level. Wir empfehlen den Wechsel, sobald du das entsprechende Alter erreicht hast, um sicherzustellen, dass du optimal gefördert wirst.</p>',
+			'category' => 'klassenwechsel',
+			'order' => 1
+		],
+		[
+			'question' => 'Wie unterscheiden sich die Klassen?',
+			'answer' => '<p><strong>Minis (4–8 J)</strong> – 1x 45 Min pro Woche. Angebote für Minis haben zum Ziel, mittels Spiel, Freude, tollen Erlebnissen und viel Magie die Selbstwirksamkeit zu stärken und die gelebten Werte von ParkourONE kennenzulernen.</p><p><strong>Kids (8–12 J)</strong> – 1x 1.5h pro Woche. Spielerisches Erlernen der Bewegungsgrundlagen steht hier im Vordergrund. Wir fördern das Selbstbewusstsein der Kinder, während sie erste Strukturen und Regeln kennenlernen.</p><p><strong>Juniors (12–18 J)</strong> – 1x 2h pro Woche. In dieser Altersgruppe werden die technischen Fähigkeiten vertieft. Die Juniors lernen, Herausforderungen selbstständig zu meistern, Verantwortung zu übernehmen und als Team zusammenzuarbeiten.</p><p><strong>Adults (ab 18 J)</strong> – 1x 2h pro Woche. Unsere Adults-Kurse bieten eine kreative Auszeit vom Ausbildungs- oder Arbeitsalltag. Neben der körperlichen Fitness steht auch die Arbeit an persönlichen Stärken, Schwächen und Glaubenssätzen im Mittelpunkt.</p><p><strong>Seniors (ab 30 J)</strong> – 1x 2h pro Woche. Für Menschen ab 30 bieten wir ein abwechslungsreiches Training, das als Ausgleich zum Berufs- und Familienleben dient. Im Fokus stehen die Stärkung der Selbstwirksamkeit, Stressprävention und der Erhalt der Gesundheit.</p><p><strong>Women (ab 12 J)</strong> – 1x 2h pro Woche, nur Frauen. In einem unterstützenden Umfeld können Frauen gemeinsam neue Bewegungen erlernen und ihre Parkour-Fähigkeiten ausbauen.</p><p><strong>Originals (ab 12 J)</strong> – 1x oder 2x 2h pro Woche. Diese fortgeschrittene Klasse richtet sich an erfahrene Traceure, die sich intensiv weiterentwickeln möchten.</p>',
+			'category' => 'klassenwechsel',
+			'order' => 2
+		],
+		[
+			'question' => 'Was passiert nach dem Probetraining in der neuen Klasse?',
+			'answer' => '<p><strong>Freier Platz verfügbar?</strong> Falls ein Platz in der gewünschten Klasse frei ist, erhältst du am nächsten Tag eine E-Mail mit deinem neuen Vertrag und allen weiteren Infos zum Einstieg. Falls du unsicher bist, frage gerne direkt bei der Klassenleitung nach, ob noch Plätze verfügbar sind.</p><p><strong>Kein Platz frei?</strong> Kein Problem! Wir setzen dich auf die Warteliste und informieren dich, sobald ein Platz frei wird.</p><p><strong>Vertrag abschliessen:</strong> Nachdem du den neuen Vertrag ausgefüllt hast, erhältst du deine neuen Login-Daten zum Academy Board.</p><p><strong>Wechsel bestätigen:</strong> Bitte informiere uns zusätzlich per E-Mail, damit wir deinen alten Trainingsvertrag kündigen können.</p>',
+			'category' => 'klassenwechsel',
+			'order' => 3
+		],
+		[
+			'question' => 'Findet das Training in den Ferien statt?',
+			'answer' => '<p>In den Schulferien und an Feiertagen finden die Kids-, Minis- und Juniors-Klassen nicht statt.</p><p>Alle anderen Klassen (Adults, Seniors, Originals, Women) laufen entweder regulär weiter oder es werden alternative Trainingsangebote angeboten.</p>',
+			'category' => 'klassenwechsel',
+			'order' => 4
 		],
 
 		// =====================================================

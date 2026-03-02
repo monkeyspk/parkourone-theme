@@ -1283,6 +1283,14 @@ function parkourone_get_template_pages() {
 			'pattern_file' => 'page-bring-your-buddy.php',
 			'page_slug' => 'bring-your-buddy',
 		],
+		[
+			'slug' => 'der-grosse-sprung',
+			'title' => 'Der grosse Sprung',
+			'description' => 'Klassenwechsel-Landingpage – bestehende Schüler:innen wechseln in die nächste Altersgruppe',
+			'blocks' => 'Page-Header, Intro-Section, Steps-Carousel, Stundenplan, FAQ',
+			'pattern_file' => 'page-der-grosse-sprung.php',
+			'page_slug' => 'dergrossesprung',
+		],
 	];
 
 	// Prüfen ob Seiten bereits existieren
