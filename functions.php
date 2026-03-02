@@ -883,7 +883,8 @@ function parkourone_register_blocks() {
         'po-icon',
         'po-columns',
         'video',
-        'personal-training'
+        'personal-training',
+        'inquiry-form'
     ];
 
     foreach ($blocks as $block) {
@@ -1328,7 +1329,8 @@ function parkourone_enqueue_block_assets() {
         'po-icon',
         'po-columns',
         'video',
-        'personal-training'
+        'personal-training',
+        'inquiry-form'
     ];
 
     foreach ($blocks as $block) {
@@ -2592,6 +2594,124 @@ function parkourone_coach_image_delete_ajax() {
 }
 add_action('wp_ajax_nopriv_coach_image_delete', 'parkourone_coach_image_delete_ajax');
 add_action('wp_ajax_coach_image_delete', 'parkourone_coach_image_delete_ajax');
+
+// =====================================================
+// Inquiry Form AJAX Handler
+// =====================================================
+
+function parkourone_inquiry_submit() {
+	// Nonce check
+	if (!wp_verify_nonce($_POST['_nonce'] ?? '', 'po_inquiry_nonce')) {
+		wp_send_json_error(['message' => 'Sicherheitsüberprüfung fehlgeschlagen. Bitte Seite neu laden.']);
+	}
+
+	// Honeypot
+	if (!empty($_POST['po_website'])) {
+		// Pretend success for bots
+		wp_send_json_success(['message' => 'Vielen Dank! Deine Anfrage wurde gesendet.']);
+	}
+
+	// Rate Limiting (60s per IP)
+	$ip = $_SERVER['REMOTE_ADDR'];
+	$transient_key = 'po_inquiry_' . md5($ip);
+	if (get_transient($transient_key)) {
+		wp_send_json_error(['message' => 'Bitte warte einen Moment bevor du eine weitere Anfrage sendest.']);
+	}
+	set_transient($transient_key, 1, 60);
+
+	// Sanitize fields
+	$form_type   = sanitize_text_field($_POST['form_type'] ?? 'workshop');
+	$nachname    = sanitize_text_field($_POST['nachname'] ?? '');
+	$vorname     = sanitize_text_field($_POST['vorname'] ?? '');
+	$adresse     = sanitize_text_field($_POST['adresse'] ?? '');
+	$plz_ort     = sanitize_text_field($_POST['plz_ort'] ?? '');
+	$telefon     = sanitize_text_field($_POST['telefon'] ?? '');
+	$email       = sanitize_email($_POST['email'] ?? '');
+	$ort         = sanitize_text_field($_POST['ort'] ?? '');
+	$teilnehmer  = sanitize_text_field($_POST['teilnehmer'] ?? '');
+	$datum       = sanitize_text_field($_POST['datum'] ?? '');
+	$projektlaenge = sanitize_text_field($_POST['projektlaenge'] ?? '');
+	$klassen     = sanitize_text_field($_POST['klassen'] ?? '');
+	$nachricht   = sanitize_textarea_field($_POST['nachricht'] ?? '');
+	$agb         = isset($_POST['agb']) && $_POST['agb'] === '1';
+
+	// Validation
+	if (empty($nachname) || empty($vorname) || empty($adresse) || empty($plz_ort) || empty($telefon) || empty($email)) {
+		wp_send_json_error(['message' => 'Bitte alle Pflichtfelder ausfüllen.']);
+	}
+
+	if (!is_email($email)) {
+		wp_send_json_error(['message' => 'Bitte eine gültige E-Mail-Adresse eingeben.']);
+	}
+
+	if (!$agb) {
+		wp_send_json_error(['message' => 'Bitte die Datenschutzerklärung und AGB akzeptieren.']);
+	}
+
+	// Form type labels
+	$type_labels = [
+		'workshop'  => 'Impulsworkshop',
+		'schulen'   => 'Parkour für Schulen',
+		'teamevent' => 'Teamevent',
+	];
+	$type_label = $type_labels[$form_type] ?? $form_type;
+
+	// Recipient
+	$recipient_email = sanitize_email($_POST['recipient_email'] ?? '');
+	$to_email = $recipient_email ?: get_option('admin_email');
+
+	// Build admin email
+	$site_name = get_bloginfo('name');
+	$subject = 'Neue Anfrage: ' . $type_label . ' – ' . $site_name;
+
+	$message = "Neue Anfrage über das Kontaktformular\n\n";
+	$message .= "Typ: " . $type_label . "\n";
+	$message .= "Name: " . $nachname . " " . $vorname . "\n";
+	$message .= "Adresse: " . $adresse . "\n";
+	$message .= "PLZ/Ort: " . $plz_ort . "\n";
+	$message .= "Telefon: " . $telefon . "\n";
+	$message .= "E-Mail: " . $email . "\n";
+	if ($ort) $message .= "Gewünschter Ort: " . $ort . "\n";
+	if ($teilnehmer) $message .= "Anzahl Personen: " . $teilnehmer . "\n";
+	if ($datum) $message .= "Gewünschte Daten: " . $datum . "\n";
+	if ($projektlaenge) $message .= "Projektlänge: " . $projektlaenge . "\n";
+	if ($klassen) $message .= "Anzahl Klassen: " . $klassen . "\n";
+	$message .= "\nNachricht:\n" . $nachricht . "\n";
+	$message .= "\n---\nGesendet von: " . home_url();
+
+	$headers = [
+		'Content-Type: text/plain; charset=UTF-8',
+		'Reply-To: ' . $vorname . ' ' . $nachname . ' <' . $email . '>'
+	];
+
+	$sent_admin = wp_mail($to_email, $subject, $message, $headers);
+
+	// Confirmation email to sender
+	$confirm_subject = 'Deine Anfrage bei ' . $site_name;
+	$confirm_message = "Hallo " . $vorname . ",\n\n";
+	$confirm_message .= "vielen Dank für deine Anfrage zu \"" . $type_label . "\".\n\n";
+	$confirm_message .= "Wir haben deine Nachricht erhalten und werden uns schnellstmöglich bei dir melden.\n\n";
+	$confirm_message .= "Deine Angaben:\n";
+	$confirm_message .= "Name: " . $nachname . " " . $vorname . "\n";
+	if ($ort) $confirm_message .= "Gewünschter Ort: " . $ort . "\n";
+	if ($teilnehmer) $confirm_message .= "Anzahl Personen: " . $teilnehmer . "\n";
+	if ($datum) $confirm_message .= "Gewünschte Daten: " . $datum . "\n";
+	if ($projektlaenge) $confirm_message .= "Projektlänge: " . $projektlaenge . "\n";
+	if ($klassen) $confirm_message .= "Anzahl Klassen: " . $klassen . "\n";
+	if ($nachricht) $confirm_message .= "Nachricht: " . $nachricht . "\n";
+	$confirm_message .= "\nLiebe Grüsse\nDein " . $site_name . " Team";
+
+	$confirm_headers = ['Content-Type: text/plain; charset=UTF-8'];
+	wp_mail($email, $confirm_subject, $confirm_message, $confirm_headers);
+
+	if ($sent_admin) {
+		wp_send_json_success(['message' => 'Vielen Dank! Deine Anfrage wurde gesendet. Du erhältst eine Bestätigung per E-Mail.']);
+	} else {
+		wp_send_json_error(['message' => 'Es gab ein Problem beim Senden. Bitte versuche es später erneut.']);
+	}
+}
+add_action('wp_ajax_po_inquiry_submit', 'parkourone_inquiry_submit');
+add_action('wp_ajax_nopriv_po_inquiry_submit', 'parkourone_inquiry_submit');
 
 /**
  * Automatisch "Startseite" als Homepage setzen

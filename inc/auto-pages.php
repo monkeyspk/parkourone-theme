@@ -1243,6 +1243,38 @@ function parkourone_get_template_pages() {
 			'pattern_file' => 'page-gutschein.php',
 			'page_slug' => 'gutschein',
 		],
+		[
+			'slug' => 'impulsworkshop',
+			'title' => 'Impulsworkshop',
+			'description' => 'RubikONE Impulsworkshop für Gemeinden und Städte mit Anfrage-Formular',
+			'blocks' => 'Page-Header, Intro-Section, Feature-Cards, Split-Content, Testimonial, Inquiry-Form, About, FAQ',
+			'pattern_file' => 'page-impulsworkshop.php',
+			'page_slug' => 'impulsworkshop',
+		],
+		[
+			'slug' => 'schulen',
+			'title' => 'Parkour für Schulen',
+			'description' => 'Schulprojekte und Kooperationen mit Anfrage-Formular',
+			'blocks' => 'Page-Header, Intro-Section, Split-Content, Feature-Cards, Text-Reveal, Inquiry-Form, TRUST, Testimonial, About, FAQ',
+			'pattern_file' => 'page-schulen.php',
+			'page_slug' => 'schulen',
+		],
+		[
+			'slug' => 'teamevent',
+			'title' => 'Teamevent',
+			'description' => 'Parkour als Teamevent für Firmen und Gruppen mit Anfrage-Formular',
+			'blocks' => 'Page-Header, Intro-Section, Feature-Cards, Stats-Counter, Inquiry-Form, Testimonial, About, FAQ',
+			'pattern_file' => 'page-teamevent.php',
+			'page_slug' => 'teamevent',
+		],
+		[
+			'slug' => 'jobs',
+			'title' => 'Jobs & Ausbildung',
+			'description' => 'TRUST Coachausbildung und offene Stellen bei ParkourONE',
+			'blocks' => 'Page-Header, Job-Cards, Intro-Section, Steps-Carousel, Split-Content, Testimonial, TRUST, About, FAQ',
+			'pattern_file' => 'page-jobs.php',
+			'page_slug' => 'jobs',
+		],
 	];
 
 	// Prüfen ob Seiten bereits existieren
