@@ -182,6 +182,14 @@ if ($query->have_posts()) {
 	wp_reset_postdata();
 }
 
+// Pro Event-ID pruefen ob IRGENDEIN zukuenftiges Datum noch Plaetze hat
+$event_has_availability = [];
+foreach ($all_events as $ev) {
+	if ($ev['stock'] > 0) {
+		$event_has_availability[$ev['event_id']] = true;
+	}
+}
+
 // Nach Datum + Startzeit sortieren
 usort($all_events, function($a, $b) {
 	if ($a['date_key'] === $b['date_key']) {
@@ -248,9 +256,13 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 			$date_label = po_eds_format_date($ev['date_key'], $today_key, $tomorrow_key, $day_after_key, $day_names_short, $month_names);
 
 			$stock = $ev['stock'];
-			$is_soldout = ($stock === 0);
+			$has_other_dates = !empty($event_has_availability[$ev['event_id']]);
+			// Nur komplett ausgrauen wenn ALLE Termine des Events ausgebucht sind
+			$is_soldout = ($stock === 0) && !$has_other_dates;
 			$stock_html = '';
-			if ($stock === 0) {
+			if ($stock === 0 && $has_other_dates) {
+				$stock_html = '<span class="po-eds__card-stock po-eds__card-stock--alt">Weitere Termine verfügbar</span>';
+			} elseif ($stock === 0) {
 				$stock_html = '<span class="po-eds__card-stock po-eds__card-stock--none">Ausgebucht</span>';
 			} elseif ($stock > 0 && $stock <= 3) {
 				$stock_html = '<span class="po-eds__card-stock po-eds__card-stock--low">' . $stock . ($stock === 1 ? ' Platz' : ' Plätze') . '</span>';

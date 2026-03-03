@@ -152,6 +152,10 @@
 	color: #8e8e93;
 }
 
+.po-eds__card-stock--alt {
+	color: #0066cc;
+}
+
 /* Arrow Icon */
 .po-eds__card-arrow {
 	width: 20px;
