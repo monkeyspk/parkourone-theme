@@ -151,6 +151,11 @@ class PO_Analytics {
 			return;
 		}
 
+		// Consent-Check: Analytics nur laden wenn Consent erteilt
+		if (function_exists('po_has_consent') && !po_has_consent('analytics')) {
+			return;
+		}
+
 		wp_enqueue_script(
 			'po-analytics-tracker',
 			get_template_directory_uri() . '/assets/js/analytics-tracker.js',

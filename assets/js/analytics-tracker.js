@@ -7,6 +7,9 @@
 
 	if (!window.poAnalytics || !window.poAnalytics.endpoint) return;
 
+	// ── Consent Check: Nicht tracken ohne Analytics-Consent ──
+	if (!window.poConsent || !window.poConsent.categories || !window.poConsent.categories.analytics) return;
+
 	// ── Session ID (sessionStorage, kein Cookie) ──
 	var SESSION_KEY = 'po_analytics_sid';
 	var sessionId = sessionStorage.getItem(SESSION_KEY);

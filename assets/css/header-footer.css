@@ -419,9 +419,12 @@ body:not(.wp-admin) .wp-site-blocks > .po-ph:first-child {
 }
 
 /* Hero Block auf Startseite - negatives Margin um body padding auszugleichen */
+/* Hero kann :first-child sein, oder nach einem <style>-Block stehen (render.php gibt inline-Style aus) */
 body:not(.wp-admin) .po-hero:first-child,
 body:not(.wp-admin) main > .po-hero:first-child,
-body:not(.wp-admin) .wp-site-blocks > .po-hero:first-child {
+body:not(.wp-admin) .wp-site-blocks > .po-hero:first-child,
+body:not(.wp-admin) .wp-block-post-content > .po-hero:first-child,
+body:not(.wp-admin) .wp-block-post-content > style:first-child + .po-hero {
     margin-top: -80px;
 }
 

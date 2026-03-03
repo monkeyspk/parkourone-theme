@@ -256,18 +256,6 @@ add_action('after_setup_theme', 'parkourone_install_mu_plugins');
  * ============================================
  */
 function parkourone_resource_hints($hints, $relation_type) {
-	if ($relation_type === 'preconnect') {
-		// Swiper CDN — CSS und JS werden von dort geladen
-		$hints[] = [
-			'href' => 'https://cdn.jsdelivr.net',
-			'crossorigin' => 'anonymous',
-		];
-	}
-
-	if ($relation_type === 'dns-prefetch') {
-		$hints[] = 'https://cdn.jsdelivr.net';
-	}
-
 	return $hints;
 }
 add_filter('wp_resource_hints', 'parkourone_resource_hints', 10, 2);
@@ -899,8 +887,8 @@ function parkourone_register_blocks() {
 add_action('init', 'parkourone_register_blocks');
 
 function parkourone_enqueue_swiper() {
-    wp_enqueue_style('swiper', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css', [], '11.0.0');
-    wp_enqueue_script('swiper', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js', [], '11.0.0', true);
+    wp_enqueue_style('swiper', get_template_directory_uri() . '/assets/vendor/swiper/swiper-bundle.min.css', [], '11.0.0');
+    wp_enqueue_script('swiper', get_template_directory_uri() . '/assets/vendor/swiper/swiper-bundle.min.js', [], '11.0.0', true);
 }
 add_action('wp_enqueue_scripts', 'parkourone_enqueue_swiper');
 

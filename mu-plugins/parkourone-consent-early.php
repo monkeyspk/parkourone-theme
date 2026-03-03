@@ -80,7 +80,26 @@ class PO_Consent_Early {
 	private function load_consent() {
 		if (isset($_COOKIE[self::CONSENT_COOKIE])) {
 			$decoded = json_decode(base64_decode($_COOKIE[self::CONSENT_COOKIE]), true);
-			if ($decoded && isset($decoded['version']) && $decoded['version'] === self::CONSENT_VERSION) {
+			if (!$decoded) {
+				return;
+			}
+
+			// Neues kompaktes Format (v, c)
+			if (isset($decoded['v']) && $decoded['v'] === self::CONSENT_VERSION) {
+				$this->consent = [
+					'version' => $decoded['v'],
+					'categories' => [
+						'necessary' => true,
+						'functional' => !empty($decoded['c']['f']),
+						'analytics' => !empty($decoded['c']['a']),
+						'marketing' => !empty($decoded['c']['m']),
+					],
+				];
+				return;
+			}
+
+			// Legacy-Format (version, categories)
+			if (isset($decoded['version']) && $decoded['version'] === self::CONSENT_VERSION) {
 				$this->consent = $decoded;
 			}
 		}
@@ -142,20 +161,12 @@ class PO_Consent_Early {
 	 * Response Headers filtern
 	 */
 	public function filter_response_headers() {
-		// Set-Cookie Headers entfernen für nicht-notwendige Cookies
-		if (!$this->has_consent('analytics') || !$this->has_consent('marketing')) {
-			// PHP kann gesendete Header nicht gut filtern
-			// Aber wir können verhindern dass neue gesetzt werden
-			header_remove('Set-Cookie');
-		}
-
 		// Security Headers hinzufügen
 		if (!headers_sent()) {
-			// Referrer Policy - weniger Daten an Dritte
 			header('Referrer-Policy: strict-origin-when-cross-origin');
-
-			// Permissions Policy - Fingerprinting einschränken
 			header('Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=()');
+			header('X-Content-Type-Options: nosniff');
+			header('X-Frame-Options: SAMEORIGIN');
 		}
 	}
 

@@ -105,14 +105,19 @@ class PO_Consent_Manager {
 
 		// Script-Filter für Blocking
 		add_filter('script_loader_tag', [$this, 'filter_script_tag'], 10, 3);
+
+		// Style-Filter für Blocking (z.B. Adobe Fonts/typekit CSS)
+		add_filter('style_loader_tag', [$this, 'filter_style_tag'], 10, 4);
 	}
 
 	/**
 	 * Init
 	 */
 	public function init() {
-		// Google Consent Mode initialisieren (muss vor allen anderen Scripts)
-		if ($this->is_google_consent_mode_enabled()) {
+		// Google Consent Mode v2 – Basic Mode
+		// Kein Code an Google OHNE Einwilligung (DSGVO-konform)
+		// Nur initialisieren wenn User bereits Consent erteilt hat
+		if ($this->is_google_consent_mode_enabled() && $this->current_consent !== null) {
 			add_action('wp_head', [$this, 'output_google_consent_mode'], 0);
 		}
 	}
@@ -235,22 +240,22 @@ class PO_Consent_Manager {
 		$categories = [
 			self::CATEGORY_NECESSARY => [
 				'name' => 'Notwendig',
-				'description' => 'Diese Cookies sind für die Grundfunktionen der Website erforderlich und können nicht deaktiviert werden.',
+				'description' => 'Für den Betrieb der Website unverzichtbar: Warenkorb, Login, Ihre Cookie-Einstellungen. Ohne diese Cookies funktioniert die Seite nicht. Es werden keine Daten an Dritte übertragen.',
 				'required' => true,
 			],
 			self::CATEGORY_FUNCTIONAL => [
 				'name' => 'Funktional',
-				'description' => 'Diese Cookies ermöglichen erweiterte Funktionen wie Videos, Karten und Chat-Widgets.',
+				'description' => 'Ermöglichen eingebettete Inhalte wie Karten, Videos und externe Schriftarten (Adobe Fonts). Bei Aktivierung werden Daten an die jeweiligen Anbieter übertragen.',
 				'required' => false,
 			],
 			self::CATEGORY_ANALYTICS => [
 				'name' => 'Statistik',
-				'description' => 'Diese Cookies helfen uns zu verstehen, wie Besucher mit der Website interagieren.',
+				'description' => 'Helfen uns zu verstehen, welche Seiten besucht werden und wo wir uns verbessern können. Wir nutzen Google Analytics und ein eigenes, datenschutzfreundliches Tool. Daten werden anonymisiert erhoben.',
 				'required' => false,
 			],
 			self::CATEGORY_MARKETING => [
 				'name' => 'Marketing',
-				'description' => 'Diese Cookies werden verwendet, um Werbung relevanter für Sie zu gestalten.',
+				'description' => 'Ermöglichen die Messung unserer Werbeanzeigen auf Google und Meta (Facebook/Instagram). Bei Aktivierung können diese Anbieter Ihr Nutzungsverhalten seitenübergreifend auswerten.',
 				'required' => false,
 			],
 		];
@@ -352,13 +357,13 @@ class PO_Consent_Manager {
 			'categories' => $this->get_category_info(),
 			'services' => $this->get_services_by_category(),
 			'i18n' => [
-				'bannerTitle' => __('Wir respektieren Ihre Privatsphäre', 'parkourone'),
-				'bannerText' => __('Wir verwenden Cookies, um Ihre Erfahrung zu verbessern. Einige sind notwendig, andere helfen uns die Website zu optimieren.', 'parkourone'),
+				'bannerTitle' => __('Deine Privatsphäre, deine Wahl', 'parkourone'),
+				'bannerText' => __('Wir nutzen Cookies und ähnliche Technologien. Notwendige Cookies sind immer aktiv. Statistik- und Marketing-Cookies setzen wir nur mit deiner Zustimmung ein.', 'parkourone'),
 				'acceptAll' => __('Alle akzeptieren', 'parkourone'),
 				'rejectAll' => __('Nur Notwendige', 'parkourone'),
-				'settings' => __('Einstellungen', 'parkourone'),
+				'settings' => __('Anpassen', 'parkourone'),
 				'save' => __('Auswahl speichern', 'parkourone'),
-				'close' => __('Schließen', 'parkourone'),
+				'close' => __('Schliessen', 'parkourone'),
 				'moreInfo' => __('Mehr erfahren', 'parkourone'),
 				'privacyPolicy' => __('Datenschutzerklärung', 'parkourone'),
 				'imprint' => __('Impressum', 'parkourone'),
@@ -400,20 +405,21 @@ class PO_Consent_Manager {
 			'analytics_storage': '<?php echo esc_js($analytics); ?>',
 			'functionality_storage': 'granted',
 			'personalization_storage': '<?php echo esc_js($marketing); ?>',
-			'security_storage': 'granted',
-			'wait_for_update': 500
+			'security_storage': 'granted'
 		});
-		gtag('set', 'ads_data_redaction', <?php echo $marketing === 'denied' ? 'true' : 'false'; ?>);
-		gtag('set', 'url_passthrough', true);
 		</script>
 		<?php
 	}
 
 	/**
 	 * Script Tags filtern für Consent-Blocking
+	 *
+	 * Zwei Blocking-Mechanismen:
+	 * 1. Handle-basiert: Blockt nach WordPress-Script-Handle
+	 * 2. URL-basiert: Blockt nach Script-URL-Pattern (fängt auch Plugin-Scripts ab)
 	 */
 	public function filter_script_tag($tag, $handle, $src) {
-		// Scripts die blockiert werden sollen
+		// 1. Handle-basiertes Blocking
 		$blocked_scripts = apply_filters('po_consent_blocked_scripts', [
 			// Analytics
 			'google-analytics' => self::CATEGORY_ANALYTICS,
@@ -431,11 +437,79 @@ class PO_Consent_Manager {
 		foreach ($blocked_scripts as $script_handle => $category) {
 			if ($handle === $script_handle || strpos($handle, $script_handle) !== false) {
 				if (!$this->has_consent($category)) {
-					// Script deaktivieren und als data-src speichern
-					$tag = str_replace(' src=', ' data-consent-category="' . esc_attr($category) . '" data-consent-src=', $tag);
-					$tag = str_replace("type='text/javascript'", "type='text/plain'", $tag);
-					$tag = str_replace('type="text/javascript"', 'type="text/plain"', $tag);
+					return $this->block_script_tag($tag, $category);
 				}
+			}
+		}
+
+		// 2. URL-basiertes Blocking (fängt Plugin-Scripts mit unbekannten Handles ab)
+		if ($src) {
+			$blocked_url_patterns = apply_filters('po_consent_blocked_url_patterns', [
+				// Analytics
+				'google-analytics\.com'      => self::CATEGORY_ANALYTICS,
+				'googletagmanager\.com'       => self::CATEGORY_ANALYTICS,
+				'sourcebuster'               => self::CATEGORY_ANALYTICS,
+				'sbjs'                       => self::CATEGORY_ANALYTICS,
+				'plausible\.io'              => self::CATEGORY_ANALYTICS,
+				'matomo'                     => self::CATEGORY_ANALYTICS,
+				// Marketing
+				'facebook\.net'              => self::CATEGORY_MARKETING,
+				'fbevents\.js'               => self::CATEGORY_MARKETING,
+				'doubleclick\.net'           => self::CATEGORY_MARKETING,
+				'googlesyndication'          => self::CATEGORY_MARKETING,
+				'googleads'                  => self::CATEGORY_MARKETING,
+				'connect\.facebook'          => self::CATEGORY_MARKETING,
+				'mailerlite'                 => self::CATEGORY_MARKETING,
+				'mlcdn'                      => self::CATEGORY_MARKETING,
+				// Functional
+				'typekit\.net'               => self::CATEGORY_FUNCTIONAL,
+				'use\.typekit'               => self::CATEGORY_FUNCTIONAL,
+				'fonts\.adobe\.com'          => self::CATEGORY_FUNCTIONAL,
+				'maps\.googleapis\.com'      => self::CATEGORY_FUNCTIONAL,
+				'maps\.google\.com'          => self::CATEGORY_FUNCTIONAL,
+			]);
+
+			foreach ($blocked_url_patterns as $pattern => $category) {
+				if (preg_match('/' . $pattern . '/i', $src) && !$this->has_consent($category)) {
+					return $this->block_script_tag($tag, $category);
+				}
+			}
+		}
+
+		return $tag;
+	}
+
+	/**
+	 * Script-Tag blockieren: type auf text/plain setzen, src durch data-consent-src ersetzen
+	 */
+	private function block_script_tag($tag, $category) {
+		$tag = str_replace(' src=', ' data-consent-category="' . esc_attr($category) . '" data-consent-src=', $tag);
+		$tag = str_replace("type='text/javascript'", "type='text/plain'", $tag);
+		$tag = str_replace('type="text/javascript"', 'type="text/plain"', $tag);
+		return $tag;
+	}
+
+	/**
+	 * Style Tags filtern für Consent-Blocking (z.B. Adobe Fonts CSS)
+	 */
+	public function filter_style_tag($tag, $handle, $href, $media) {
+		if (!$href) {
+			return $tag;
+		}
+
+		$blocked_style_patterns = apply_filters('po_consent_blocked_style_patterns', [
+			'typekit\.net'          => self::CATEGORY_FUNCTIONAL,
+			'use\.typekit'          => self::CATEGORY_FUNCTIONAL,
+			'fonts\.adobe\.com'     => self::CATEGORY_FUNCTIONAL,
+		]);
+
+		foreach ($blocked_style_patterns as $pattern => $category) {
+			if (preg_match('/' . $pattern . '/i', $href) && !$this->has_consent($category)) {
+				// CSS deaktivieren: rel ändern, href in data-Attribut speichern
+				$tag = str_replace("rel='stylesheet'", "rel='consent-pending'", $tag);
+				$tag = str_replace('rel="stylesheet"', 'rel="consent-pending"', $tag);
+				$tag = str_replace(' href=', ' data-consent-category="' . esc_attr($category) . '" data-consent-href=', $tag);
+				return $tag;
 			}
 		}
 

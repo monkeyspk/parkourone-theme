@@ -124,6 +124,9 @@
 				{ pattern: /youtube\.com\/embed|youtube-nocookie\.com/, category: 'functional' },
 				{ pattern: /maps\.googleapis\.com|maps\.google\.com/, category: 'functional' },
 				{ pattern: /mailerlite|mlcdn/, category: 'marketing' },
+				{ pattern: /sourcebuster|sbjs/, category: 'analytics' },
+				{ pattern: /typekit\.net|use\.typekit/, category: 'functional' },
+				{ pattern: /fonts\.adobe\.com/, category: 'functional' },
 			];
 
 			// Check if script should be blocked
@@ -564,6 +567,17 @@
 					});
 
 					script.parentNode.replaceChild(newScript, script);
+				}
+			});
+
+			// Find blocked stylesheets (z.B. Adobe Fonts CSS)
+			document.querySelectorAll('link[data-consent-href]').forEach(link => {
+				const category = link.dataset.consentCategory;
+				if (this.hasConsent(category)) {
+					link.rel = 'stylesheet';
+					link.href = link.dataset.consentHref;
+					link.removeAttribute('data-consent-href');
+					link.removeAttribute('data-consent-category');
 				}
 			});
 

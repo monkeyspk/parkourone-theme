@@ -227,23 +227,28 @@
 <!-- /wp:heading -->
 
 <!-- wp:heading {"level":3,"anchor":"cookies"} -->
-<h3 class="wp-block-heading" id="cookies">Cookies</h3>
+<h3 class="wp-block-heading" id="cookies">Cookies und Consent Management</h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>Die Internetseiten verwenden teilweise so genannte Cookies. Cookies richten auf Ihrem Rechner keinen Schaden an und enthalten keine Viren. Cookies dienen dazu, unser Angebot nutzerfreundlicher, effektiver und sicherer zu machen. Cookies sind kleine Textdateien, die auf Ihrem Rechner abgelegt werden und die Ihr Browser speichert.</p>
+<p>Unsere Website verwendet Cookies — kleine Textdateien, die Ihr Browser speichert. Wir unterscheiden dabei strikt zwischen:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list">
+<li><strong>Notwendige Cookies</strong> (immer aktiv): Für Grundfunktionen wie Warenkorb, Login und die Speicherung Ihrer Cookie-Einstellungen. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse).</li>
+<li><strong>Statistik-Cookies</strong> (nur mit Einwilligung): Helfen uns zu verstehen, wie unsere Website genutzt wird. Werden erst nach Ihrer Zustimmung gesetzt.</li>
+<li><strong>Marketing-Cookies</strong> (nur mit Einwilligung): Ermöglichen die Messung unserer Werbeanzeigen. Werden erst nach Ihrer Zustimmung gesetzt.</li>
+<li><strong>Funktionale Cookies</strong> (nur mit Einwilligung): Ermöglichen erweiterte Funktionen wie externe Schriftarten und eingebettete Inhalte.</li>
+</ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p><strong>Consent Management:</strong> Beim ersten Besuch unserer Website wird Ihnen ein Cookie-Banner angezeigt, über das Sie Ihre Einstellungen wählen können. Statistik-, Marketing- und funktionale Cookies werden ausschließlich nach Ihrer ausdrücklichen Einwilligung gesetzt (Opt-In gemäß Art. 6 Abs. 1 lit. a DSGVO). Ohne Ihre Zustimmung werden keine Daten an Drittanbieter übertragen und keine entsprechenden Cookies gesetzt. Sie können Ihre Einwilligung jederzeit über den Link "Cookie-Einstellungen" im Footer unserer Website widerrufen.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>Die meisten der von uns verwendeten Cookies sind so genannte "Session-Cookies". Sie werden nach Ende Ihres Besuchs automatisch gelöscht. Andere Cookies bleiben auf Ihrem Endgerät gespeichert bis Sie diese löschen. Diese Cookies ermöglichen es uns, Ihren Browser beim nächsten Besuch wiederzuerkennen.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p>Sie können Ihren Browser so einstellen, dass Sie über das Setzen von Cookies informiert werden und Cookies nur im Einzelfall erlauben, die Annahme von Cookies für bestimmte Fälle oder generell ausschließen sowie das automatische Löschen der Cookies beim Schließen des Browser aktivieren. Bei der Deaktivierung von Cookies kann die Funktionalität dieser Website eingeschränkt sein.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p>Cookies, die zur Durchführung des elektronischen Kommunikationsvorgangs oder zur Bereitstellung bestimmter, von Ihnen erwünschter Funktionen (z.B. Warenkorbfunktion) erforderlich sind, werden auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO gespeichert. Der Websitebetreiber hat ein berechtigtes Interesse an der Speicherung von Cookies zur technisch fehlerfreien und optimierten Bereitstellung seiner Dienste. Soweit andere Cookies (z.B. Cookies zur Analyse Ihres Surfverhaltens) gespeichert werden, werden diese in dieser Datenschutzerklärung gesondert behandelt.</p>
+<p>Ihre Cookie-Präferenzen werden in einem Cookie namens "po_consent" für 180 Tage gespeichert. Dieses Cookie enthält ausschließlich Ihre Einstellungen und keine personenbezogenen Daten.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":3} -->
@@ -326,7 +331,7 @@
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>Diese Website nutzt Funktionen des Webanalysedienstes Google Analytics. Anbieter ist die Google Inc., 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA.</p>
+<p>Diese Website nutzt Funktionen des Webanalysedienstes Google Analytics. Anbieter ist die Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
@@ -334,7 +339,7 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>Die Speicherung von Google-Analytics-Cookies und die Nutzung dieses Analyse-Tools erfolgen auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO. Der Websitebetreiber hat ein berechtigtes Interesse an der Analyse des Nutzerverhaltens, um sowohl sein Webangebot als auch seine Werbung zu optimieren.</p>
+<p>Google Analytics wird auf dieser Website ausschließlich mit Ihrer Einwilligung geladen (Google Consent Mode v2, Basic Mode). Ohne Ihre ausdrückliche Zustimmung werden keine Daten an Google übertragen und keine Cookies gesetzt. Die Nutzung von Google Analytics erfolgt auf Grundlage Ihrer Einwilligung gemäß Art. 6 Abs. 1 lit. a DSGVO. Sie können Ihre Einwilligung jederzeit über unser Cookie-Banner widerrufen.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
@@ -342,15 +347,7 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>Wir haben auf dieser Website die Funktion IP-Anonymisierung aktiviert. Dadurch wird Ihre IP-Adresse von Google innerhalb von Mitgliedstaaten der Europäischen Union oder in anderen Vertragsstaaten des Abkommens über den Europäischen Wirtschaftsraum vor der Übermittlung in die USA gekürzt. Nur in Ausnahmefällen wird die volle IP-Adresse an einen Server von Google in den USA übertragen und dort gekürzt. Im Auftrag des Betreibers dieser Website wird Google diese Informationen benutzen, um Ihre Nutzung der Website auszuwerten, um Reports über die Websiteaktivitäten zusammenzustellen und um weitere mit der Websitenutzung und der Internetnutzung verbundene Dienstleistungen gegenüber dem Websitebetreiber zu erbringen. Die im Rahmen von Google Analytics von Ihrem Browser übermittelte IP-Adresse wird nicht mit anderen Daten von Google zusammengeführt.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p><strong>Browser Plugin</strong></p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p>Sie können die Speicherung der Cookies durch eine entsprechende Einstellung Ihrer Browser-Software verhindern; wir weisen Sie jedoch darauf hin, dass Sie in diesem Fall gegebenenfalls nicht sämtliche Funktionen dieser Website vollumfänglich werden nutzen können. Sie können darüber hinaus die Erfassung der durch den Cookie erzeugten und auf Ihre Nutzung der Website bezogenen Daten (inkl. Ihrer IP-Adresse) an Google sowie die Verarbeitung dieser Daten durch Google verhindern, indem Sie das unter dem folgenden Link verfügbare Browser-Plugin herunterladen und installieren: https://tools.google.com/dlpage/gaoptout?hl=de.</p>
+<p>Wir haben auf dieser Website die Funktion IP-Anonymisierung aktiviert. Dadurch wird Ihre IP-Adresse von Google innerhalb von Mitgliedstaaten der Europäischen Union oder in anderen Vertragsstaaten des Abkommens über den Europäischen Wirtschaftsraum vor der Übermittlung in die USA gekürzt.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
@@ -358,7 +355,7 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>Mehr Informationen zum Umgang mit Nutzerdaten bei Google Analytics finden Sie in der Datenschutzerklärung von Google: https://support.google.com/analytics/answer/6004245?hl=de.</p>
+<p>Sie können Ihre Einwilligung jederzeit über das Cookie-Banner widerrufen. Alternativ können Sie die Erfassung durch Google Analytics verhindern, indem Sie das unter dem folgenden Link verfügbare Browser-Plugin herunterladen und installieren: https://tools.google.com/dlpage/gaoptout?hl=de. Mehr Informationen zum Umgang mit Nutzerdaten bei Google Analytics finden Sie in der Datenschutzerklärung von Google: https://support.google.com/analytics/answer/6004245?hl=de.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
@@ -366,7 +363,7 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>Wir haben mit Google einen Vertrag zur Auftragsverarbeitung abgeschlossen und setzen die strengen Vorgaben der deutschen Datenschutzbehörden bei der Nutzung von Google Analytics vollständig um.</p>
+<p>Wir haben mit Google einen Vertrag zur Auftragsverarbeitung abgeschlossen und setzen die Vorgaben der Datenschutzbehörden bei der Nutzung von Google Analytics vollständig um.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":3} -->
@@ -374,7 +371,7 @@
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>Wir nutzen "Google reCAPTCHA" (im Folgenden "reCAPTCHA") auf unseren Websites. Anbieter ist die Google Inc., 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA ("Google").</p>
+<p>Wir nutzen "Google reCAPTCHA" (im Folgenden "reCAPTCHA") auf unseren Websites. Anbieter ist die Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
@@ -391,6 +388,70 @@
 
 <!-- wp:paragraph -->
 <p>Weitere Informationen zu Google reCAPTCHA sowie die Datenschutzerklärung von Google entnehmen Sie folgenden Links: https://www.google.com/intl/de/policies/privacy/ und https://www.google.com/recaptcha/intro/android.html.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Google Tag Manager</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Diese Website nutzt den Google Tag Manager. Anbieter ist die Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Der Google Tag Manager ist ein Tool, mit dem wir Tracking- und Statistik-Tools sowie andere Technologien auf unserer Website einbinden können. Der Google Tag Manager selbst erstellt keine Nutzerprofile, speichert keine Cookies und nimmt keine eigenständigen Analysen vor. Er dient lediglich der Verwaltung und Ausspielung der über ihn eingebundenen Tools.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Der Google Tag Manager wird auf dieser Website erst nach Ihrer Einwilligung geladen. Die Nutzung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. a DSGVO. Weitere Informationen finden Sie in der Datenschutzerklärung von Google: https://policies.google.com/privacy.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Google Ads Conversion Tracking</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Diese Website nutzt Google Ads Conversion Tracking. Anbieter ist die Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mit Hilfe von Google Ads Conversion Tracking können wir erkennen, ob der Nutzer bestimmte Aktionen durchgeführt hat (z.B. ein Formular ausgefüllt oder eine Buchung getätigt). Google Ads setzt hierzu Cookies auf Ihrem Computer, sofern Sie über eine Google-Anzeige auf unsere Website gelangt sind. Diese Cookies verlieren nach 30 Tagen ihre Gültigkeit und dienen nicht der persönlichen Identifizierung.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Google Ads Conversion Tracking wird erst nach Ihrer Einwilligung geladen. Die Nutzung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. a DSGVO. Sie können Ihre Einwilligung jederzeit über unser Cookie-Banner widerrufen. Weitere Informationen: https://policies.google.com/privacy.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Meta Pixel (Facebook)</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Diese Website nutzt das Meta Pixel (ehemals Facebook Pixel). Anbieter ist die Meta Platforms Ireland Limited, Merrion Road, Dublin 4, D04 X2K5, Irland.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Das Meta Pixel ermöglicht es uns, die Wirksamkeit unserer Facebook-Werbeanzeigen zu messen und die Ausspielung von Anzeigen zu optimieren. Hierzu wird beim Besuch unserer Website eine Verbindung zu den Servern von Meta hergestellt und ein Cookie gesetzt. Die so erhobenen Daten sind für uns anonym; sie geben uns keinen Rückschluss auf die Identität der Nutzer. Die Daten werden jedoch von Meta gespeichert und verarbeitet und können mit Ihrem Facebook-Profil verknüpft werden.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Das Meta Pixel wird erst nach Ihrer Einwilligung geladen. Die Nutzung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. a DSGVO. Sie können Ihre Einwilligung jederzeit über unser Cookie-Banner widerrufen. Weitere Informationen: https://www.facebook.com/privacy/policy/.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">ParkourONE Analytics</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Wir setzen ein eigenes, datenschutzfreundliches Analyse-Tool ein, um anonymisierte Nutzungsstatistiken zu erheben. Dieses Tool wird auf unserem eigenen Server betrieben – es werden keine Daten an Dritte übertragen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>ParkourONE Analytics verwendet keine Cookies. Zur Wiedererkennung innerhalb einer Sitzung wird ein zufälliger Sitzungsbezeichner im Session Storage Ihres Browsers gespeichert, der beim Schliessen des Browsers automatisch gelöscht wird. IP-Adressen werden nur in anonymisierter, gehashter Form verarbeitet und können nicht zu Ihnen zurückverfolgt werden. Gespeicherte Daten werden nach 365 Tagen automatisch gelöscht.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>ParkourONE Analytics wird erst nach Ihrer Einwilligung in die Kategorie "Statistik" geladen. Die Nutzung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. a DSGVO.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":2} -->
@@ -414,35 +475,31 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">MailChimp</h3>
+<h3 class="wp-block-heading">MailerLite</h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>Diese Website nutzt die Dienste von MailChimp für den Versand von Newslettern. Anbieter ist die Rocket Science Group LLC, 675 Ponce De Leon Ave NE, Suite 5000, Atlanta, GA 30308, USA.</p>
+<p>Diese Website nutzt die Dienste von MailerLite für den Versand von Newslettern und die Darstellung von Anmeldeformularen. Anbieter ist die MailerLite Limited, Ground Floor, 71 Lower Baggot Street, Dublin 2, D02 P593, Irland.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>MailChimp ist ein Dienst, mit dem u.a. der Versand von Newslettern organisiert und analysiert werden kann. Wenn Sie Daten zum Zwecke des Newsletterbezugs eingeben (z.B. E-Mail-Adresse), werden diese auf den Servern von MailChimp in den USA gespeichert.</p>
+<p>MailerLite ist ein Dienst, mit dem u.a. der Versand von Newslettern organisiert und analysiert werden kann. Wenn Sie Daten zum Zwecke des Newsletterbezugs eingeben (z.B. E-Mail-Adresse), werden diese auf den Servern von MailerLite gespeichert.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>Mit Hilfe von MailChimp können wir unsere Newsletterkampagnen analysieren. Wenn Sie eine mit MailChimp versandte E-Mail öffnen, verbindet sich eine in der E-Mail enthaltene Datei (sog. web-beacon) mit den Servern von MailChimp in den USA. So kann festgestellt werden, ob eine Newsletter-Nachricht geöffnet und welche Links ggf. angeklickt wurden. Außerdem werden technische Informationen erfasst (z.B. Zeitpunkt des Abrufs, IP-Adresse, Browsertyp und Betriebssystem). Diese Informationen können nicht dem jeweiligen Newsletter-Empfänger zugeordnet werden. Sie dienen ausschließlich der statistischen Analyse von Newsletterkampagnen. Die Ergebnisse dieser Analysen können genutzt werden, um künftige Newsletter besser an die Interessen der Empfänger anzupassen.</p>
+<p>Mit Hilfe von MailerLite können wir unsere Newsletterkampagnen analysieren. Wenn Sie eine mit MailerLite versandte E-Mail öffnen, verbindet sich eine in der E-Mail enthaltene Datei (sog. web-beacon) mit den Servern von MailerLite. So kann festgestellt werden, ob eine Newsletter-Nachricht geöffnet und welche Links ggf. angeklickt wurden. Außerdem werden technische Informationen erfasst (z.B. Zeitpunkt des Abrufs, IP-Adresse, Browsertyp und Betriebssystem). Diese Informationen dienen ausschließlich der statistischen Analyse von Newsletterkampagnen.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>Wenn Sie keine Analyse durch MailChimp wollen, müssen Sie den Newsletter abbestellen. Hierfür stellen wir in jeder Newsletternachricht einen entsprechenden Link zur Verfügung. Des Weiteren können Sie den Newsletter auch direkt auf der Website abbestellen.</p>
+<p>MailerLite-Anmeldeformulare und -Skripte werden auf unserer Website erst nach Ihrer Einwilligung geladen. Die Datenverarbeitung erfolgt auf Grundlage Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Sie können diese Einwilligung jederzeit widerrufen, indem Sie den Newsletter abbestellen. Hierfür stellen wir in jeder Newsletternachricht einen entsprechenden Link zur Verfügung. Die Rechtmäßigkeit der bereits erfolgten Datenverarbeitungsvorgänge bleibt vom Widerruf unberührt.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>Die Datenverarbeitung erfolgt auf Grundlage Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Sie können diese Einwilligung jederzeit widerrufen, indem Sie den Newsletter abbestellen. Die Rechtmäßigkeit der bereits erfolgten Datenverarbeitungsvorgänge bleibt vom Widerruf unberührt.</p>
+<p>Die von Ihnen zum Zwecke des Newsletter-Bezugs bei uns hinterlegten Daten werden von uns bis zu Ihrer Austragung aus dem Newsletter gespeichert und nach der Abbestellung des Newsletters gelöscht. Daten, die zu anderen Zwecken bei uns gespeichert wurden bleiben hiervon unberührt.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>Die von Ihnen zum Zwecke des Newsletter-Bezugs bei uns hinterlegten Daten werden von uns bis zu Ihrer Austragung aus dem Newsletter gespeichert und nach der Abbestellung des Newsletters sowohl von unseren Servern als auch von den Servern von MailChimp gelöscht. Daten, die zu anderen Zwecken bei uns gespeichert wurden bleiben hiervon unberührt.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p>Näheres entnehmen Sie den Datenschutzbestimmungen von MailChimp unter: https://mailchimp.com/legal/terms/.</p>
+<p>Näheres entnehmen Sie den Datenschutzbestimmungen von MailerLite unter: https://www.mailerlite.com/legal/privacy-policy.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":2} -->
@@ -470,11 +527,27 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Adobe Fonts (Typekit)</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Diese Website nutzt Adobe Fonts (ehemals Typekit) zur einheitlichen Darstellung von Schriftarten. Anbieter ist die Adobe Inc., 345 Park Avenue, San Jose, CA 95110-2704, USA (europäischer Vertreter: Adobe Systems Software Ireland Limited, 4-6 Riverwalk, Citywest Business Campus, Dublin 24, Irland).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Beim Aufruf einer Seite lädt Ihr Browser die benötigten Schriftarten von Adobe-Servern, um Texte korrekt darzustellen. Dabei wird eine Verbindung zu den Servern von Adobe hergestellt. Hierdurch erlangt Adobe Kenntnis darüber, dass über Ihre IP-Adresse unsere Website aufgerufen wurde.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Adobe Fonts wird auf dieser Website erst nach Ihrer Einwilligung in die Kategorie "Funktional" geladen. Die Nutzung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. a DSGVO. Weitere Informationen finden Sie unter: https://www.adobe.com/de/privacy/policies/adobe-fonts.html.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
 <h3 class="wp-block-heading">Google Maps</h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>Diese Seite nutzt über eine API den Kartendienst Google Maps. Anbieter ist die Google Inc., 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA.</p>
+<p>Diese Seite nutzt über eine API den Kartendienst Google Maps. Anbieter ist die Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
@@ -487,6 +560,46 @@
 
 <!-- wp:paragraph -->
 <p>Mehr Informationen zum Umgang mit Nutzerdaten finden Sie in der Datenschutzerklärung von Google: https://www.google.de/intl/de/policies/privacy/.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">WooCommerce</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Wir nutzen WooCommerce für unseren Online-Shop. Anbieter ist die Automattic Inc., 60 29th Street #343, San Francisco, CA 94110, USA.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>WooCommerce setzt technisch notwendige Cookies, um die Warenkorbfunktion und den Bestellprozess zu ermöglichen. Diese Cookies sind für den Betrieb des Shops erforderlich und werden auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung) bzw. Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einem funktionsfähigen Online-Shop) gespeichert. Alle Bestelldaten werden ausschliesslich auf unserem eigenen Server verarbeitet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} -->
+<h2 class="wp-block-heading">8. Hosting</h2>
+<!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Externes Hosting</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Diese Website wird bei einem externen Dienstleister gehostet (Hoster). Die personenbezogenen Daten, die auf dieser Website erfasst werden, werden auf den Servern des Hosters gespeichert. Hierbei kann es sich v.a. um IP-Adressen, Kontaktanfragen, Meta- und Kommunikationsdaten, Vertragsdaten, Kontaktdaten, Namen, Webseitenzugriffe und sonstige Daten, die über eine Website generiert werden, handeln.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Unser Hoster ist:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Hostpoint AG</strong><br>Neue Jonastrasse 60<br>8640 Rapperswil-Jona<br>Schweiz</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Der Serverstandort befindet sich in der Schweiz. Die Schweiz verfügt über einen Angemessenheitsbeschluss der EU-Kommission, sodass die Datenverarbeitung datenschutzrechtlich zulässig ist.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Der Einsatz des Hosters erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO. Wir haben ein berechtigtes Interesse an einer möglichst zuverlässigen Darstellung unserer Website. Wir haben einen Vertrag über Auftragsverarbeitung (AVV) mit unserem Hoster geschlossen.</p>
 <!-- /wp:paragraph -->
 
 </div>

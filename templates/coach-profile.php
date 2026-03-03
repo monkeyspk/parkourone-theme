@@ -9,7 +9,7 @@ $coach = $token ? parkourone_verify_coach_token($token) : null;
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="robots" content="noindex, nofollow">
 	<title>Coach-Profil bearbeiten – ParkourONE</title>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+	<link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/assets/vendor/cropperjs/cropper.min.css">
 	<style>
 		* { box-sizing: border-box; margin: 0; padding: 0; }
 		
@@ -790,7 +790,7 @@ $coach = $token ? parkourone_verify_coach_token($token) : null;
 			</div>
 		</div>
 		
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+		<script src="<?php echo get_template_directory_uri(); ?>/assets/vendor/cropperjs/cropper.min.js"></script>
 		<script>
 		(function() {
 			var token = '<?php echo esc_js($token); ?>';

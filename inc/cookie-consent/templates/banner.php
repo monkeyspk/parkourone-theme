@@ -31,24 +31,24 @@ $has_privacy_signal = $has_dnt || $has_gpc;
 		<!-- Hauptansicht -->
 		<div class="po-consent-banner__main" id="po-consent-main">
 			<div class="po-consent-banner__content">
-				<h2 id="po-consent-title" class="po-consent-banner__title">Wir respektieren Ihre Privatsphäre</h2>
+				<h2 id="po-consent-title" class="po-consent-banner__title">Deine Privatsphäre, deine Wahl</h2>
 				<?php if ($has_privacy_signal): ?>
 					<p class="po-consent-banner__privacy-signal">
 						<strong>
 							<?php if ($has_gpc): ?>
-								Wir haben Ihr Global Privacy Control (GPC) Signal erkannt.
+								Dein Browser hat ein Global Privacy Control (GPC) Signal gesendet.
 							<?php else: ?>
-								Wir haben Ihr Do Not Track (DNT) Signal erkannt.
+								Dein Browser hat ein Do Not Track (DNT) Signal gesendet.
 							<?php endif; ?>
 						</strong>
-						Tracking ist standardmäßig deaktiviert. Sie können dies unten anpassen.
+						Wir respektieren das — Statistik und Marketing sind daher deaktiviert. Du kannst das unten jederzeit ändern.
 					</p>
 				<?php endif; ?>
 				<p class="po-consent-banner__text">
-					Wir verwenden Cookies und ähnliche Technologien, um Ihre Erfahrung zu verbessern.
-					Einige sind technisch notwendig, andere helfen uns die Website zu optimieren und Ihnen
-					personalisierte Inhalte anzubieten.
-					Ihre Daten werden auf Servern in der <strong>Schweiz</strong> verarbeitet (Angemessenheitsbeschluss der EU-Kommission).
+					Wir nutzen Cookies und ähnliche Technologien. Notwendige Cookies sind immer aktiv —
+					ohne sie funktioniert z.B. der Warenkorb nicht. Statistik- und Marketing-Cookies setzen wir
+					<strong>nur mit deiner ausdrücklichen Zustimmung</strong> ein. Deine Daten werden auf
+					Servern in der <strong>Schweiz</strong> verarbeitet.
 				</p>
 				<p class="po-consent-banner__links">
 					<a href="<?php echo esc_url($privacy_url); ?>" target="_blank" rel="noopener">Datenschutzerklärung</a>
@@ -69,7 +69,7 @@ $has_privacy_signal = $has_dnt || $has_gpc;
 					Nur Notwendige
 				</button>
 				<button type="button" class="po-consent-btn po-consent-btn--secondary po-consent-btn--js-only" data-consent-action="show-settings">
-					Einstellungen
+					Anpassen
 				</button>
 			</form>
 		</div>
@@ -77,7 +77,7 @@ $has_privacy_signal = $has_dnt || $has_gpc;
 		<!-- Detailansicht -->
 		<div class="po-consent-banner__settings" id="po-consent-settings" style="display:none;">
 			<div class="po-consent-banner__header">
-				<h2 class="po-consent-banner__title">Cookie-Einstellungen</h2>
+				<h2 class="po-consent-banner__title">Cookies anpassen</h2>
 				<button type="button" class="po-consent-banner__close" data-consent-action="hide-settings" aria-label="Schließen">
 					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 						<line x1="18" y1="6" x2="6" y2="18"></line>
