@@ -56,6 +56,13 @@ class PO_Analytics {
 		add_action('po_analytics_weekly_report', [$this, 'send_weekly_report']);
 		add_action('po_analytics_daily_insights', [$this, 'cleanup_old_data']);
 
+		// WooCommerce Conversion Tracking
+		add_action('woocommerce_before_checkout_form', [$this, 'track_checkout_started']);
+		add_action('woocommerce_checkout_order_processed', [$this, 'track_purchase']);
+
+		// Session-ID Bridge: JS → PHP auf Checkout-Seite
+		add_action('woocommerce_before_checkout_form', [$this, 'output_session_bridge']);
+
 		// Cron Schedule registrieren
 		add_action('init', [$this, 'schedule_crons']);
 
@@ -222,6 +229,86 @@ class PO_Analytics {
 	}
 
 	/**
+	 * Session-ID Bridge: Schreibt die JS Session-ID in ein hidden Field
+	 */
+	public function output_session_bridge() {
+		?>
+		<input type="hidden" name="po_analytics_session_id" id="po-analytics-sid" value="">
+		<script>
+		(function(){
+			var sid = sessionStorage.getItem('po_analytics_sid');
+			if (sid) {
+				var el = document.getElementById('po-analytics-sid');
+				if (el) el.value = sid;
+			}
+		})();
+		</script>
+		<?php
+	}
+
+	/**
+	 * Checkout-Start tracken (Server-seitig)
+	 */
+	public function track_checkout_started() {
+		if (!WC()->cart) return;
+
+		$this->insert_server_event('checkout_started', '/checkout/', [
+			'event_label' => WC()->cart->get_cart_contents_count() . ' Artikel',
+			'event_value' => number_format(WC()->cart->get_total('edit'), 2, '.', ''),
+		]);
+	}
+
+	/**
+	 * Kauf tracken (Server-seitig)
+	 */
+	public function track_purchase($order_id) {
+		$order = wc_get_order($order_id);
+		if (!$order) return;
+
+		// Session-ID aus POST (Bridge)
+		$session_id = sanitize_text_field($_POST['po_analytics_session_id'] ?? '');
+
+		$this->insert_server_event('purchase', '/checkout/order-received/', [
+			'event_label' => 'Order #' . $order_id,
+			'event_value' => number_format($order->get_total(), 2, '.', ''),
+		], $session_id);
+	}
+
+	/**
+	 * Server-seitiges Event einfügen (DSGVO-konform)
+	 */
+	private function insert_server_event($event_type, $page_url, $extra = [], $session_id = '') {
+		// DSGVO: Consent prüfen
+		if (function_exists('po_has_consent') && !po_has_consent('analytics')) {
+			return;
+		}
+
+		// Admins nicht tracken
+		if (is_user_logged_in() && current_user_can('manage_options')) {
+			return;
+		}
+
+		global $wpdb;
+
+		// Visitor-Hash identisch wie Frontend (IP + UA + Datum)
+		$raw = ($_SERVER['REMOTE_ADDR'] ?? '') . ($_SERVER['HTTP_USER_AGENT'] ?? '') . date('Y-m-d');
+		$visitor_hash = hash('sha256', $raw);
+
+		$data = array_merge([
+			'session_id'   => $session_id,
+			'visitor_hash' => $visitor_hash,
+			'event_type'   => $event_type,
+			'page_url'     => $page_url,
+			'page_title'   => '',
+			'referrer'     => wp_get_referer() ?: '',
+			'event_label'  => '',
+			'event_value'  => '',
+		], $extra);
+
+		$wpdb->insert("{$wpdb->prefix}po_analytics_events", $data);
+	}
+
+	/**
 	 * Admin Menu hinzufügen
 	 */
 	public function add_admin_menu() {
@@ -319,16 +406,64 @@ class PO_Analytics {
 	}
 
 	/**
-	 * Dashboard rendern
+	 * Dashboard rendern (Tab-System)
 	 */
 	public function render_dashboard() {
-		global $wpdb;
-
 		// Manueller Insight-Trigger
 		if (isset($_GET['run_insights']) && wp_verify_nonce($_GET['_wpnonce'] ?? '', 'po_run_insights')) {
 			$this->generate_insights();
 			echo '<div class="notice notice-success"><p>Insights wurden neu berechnet!</p></div>';
 		}
+
+		$current_tab = sanitize_text_field($_GET['tab'] ?? 'uebersicht');
+		$tabs = [
+			'uebersicht' => 'Übersicht',
+			'seiten'     => 'Alle Seiten',
+			'kampagnen'  => 'Kampagnen',
+			'conversions' => 'Conversions',
+		];
+		?>
+		<div class="wrap" style="max-width: 1000px;">
+			<h1 style="margin-bottom: 5px;">Analytics</h1>
+
+			<!-- Tab Navigation -->
+			<nav style="display: flex; gap: 0; margin: 16px 0 24px; border-bottom: 2px solid #e5e7eb;">
+				<?php foreach ($tabs as $slug => $label):
+					$is_active = ($slug === $current_tab);
+					$url = admin_url('admin.php?page=parkourone-analytics&tab=' . $slug);
+				?>
+				<a href="<?php echo esc_url($url); ?>"
+				   style="padding: 10px 20px; text-decoration: none; font-size: 14px; font-weight: <?php echo $is_active ? '600' : '400'; ?>; color: <?php echo $is_active ? '#2563eb' : '#666'; ?>; border-bottom: 2px solid <?php echo $is_active ? '#2563eb' : 'transparent'; ?>; margin-bottom: -2px;">
+					<?php echo esc_html($label); ?>
+				</a>
+				<?php endforeach; ?>
+			</nav>
+
+			<?php
+			switch ($current_tab) {
+				case 'seiten':
+					$this->render_tab_seiten();
+					break;
+				case 'kampagnen':
+					$this->render_tab_kampagnen();
+					break;
+				case 'conversions':
+					$this->render_tab_conversions();
+					break;
+				default:
+					$this->render_tab_uebersicht();
+					break;
+			}
+			?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Tab: Übersicht (bestehender Dashboard-Content)
+	 */
+	private function render_tab_uebersicht() {
+		global $wpdb;
 
 		// Stats diese Woche vs. letzte Woche
 		$this_week = $this->get_stats(7);
@@ -376,125 +511,507 @@ class PO_Analytics {
 			'probetraining' => $calc_trend($probetraining_this, $probetraining_last),
 		];
 		?>
-		<div class="wrap" style="max-width: 1000px;">
-			<h1 style="margin-bottom: 5px;">Analytics</h1>
-			<p style="color: #666; margin-top: 0;">Website-Statistiken der letzten 7 Tage</p>
+		<p style="color: #666; margin-top: 0;">Website-Statistiken der letzten 7 Tage</p>
 
-			<!-- Schnellzahlen mit Vergleich -->
-			<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 24px 0;">
+		<!-- Schnellzahlen mit Vergleich -->
+		<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 24px 0;">
+			<?php
+			$cards = [
+				['icon' => '', 'label' => 'Besucher', 'value' => $this_week['visitors'], 'trend' => $trends['visitors'], 'prev' => $last_week['visitors']],
+				['icon' => '', 'label' => 'Seitenaufrufe', 'value' => $this_week['pageviews'], 'trend' => $trends['pageviews'], 'prev' => $last_week['pageviews']],
+				['icon' => '', 'label' => 'Besuche', 'value' => $this_week['sessions'], 'trend' => $trends['sessions'], 'prev' => $last_week['sessions']],
+				['icon' => '', 'label' => 'Probetraining', 'value' => $probetraining_this, 'trend' => $trends['probetraining'], 'prev' => $probetraining_last, 'highlight' => true],
+			];
+			foreach ($cards as $card):
+				$trend_color = $card['trend'] > 0 ? '#22c55e' : ($card['trend'] < 0 ? '#ef4444' : '#888');
+				$trend_icon = $card['trend'] > 0 ? '↑' : ($card['trend'] < 0 ? '↓' : '→');
+				$bg = !empty($card['highlight']) ? 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)' : '#fff';
+				$text_color = !empty($card['highlight']) ? '#fff' : '#1e3a5f';
+				$sub_color = !empty($card['highlight']) ? 'rgba(255,255,255,0.7)' : '#888';
+			?>
+			<div style="background: <?php echo $bg; ?>; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.1); text-align: center;">
+				<div style="font-size: 32px; font-weight: 700; color: <?php echo $text_color; ?>;"><?php echo number_format($card['value']); ?></div>
+				<div style="color: <?php echo $sub_color; ?>; font-size: 13px; margin-top: 4px;"><?php echo $card['label']; ?></div>
+				<div style="font-size: 12px; margin-top: 8px; color: <?php echo !empty($card['highlight']) ? 'rgba(255,255,255,0.9)' : $trend_color; ?>;">
+					<?php echo $trend_icon; ?> <?php echo abs($card['trend']); ?>% vs. Vorwoche
+					<span style="color: <?php echo $sub_color; ?>;">(<?php echo $card['prev']; ?>)</span>
+				</div>
+			</div>
+			<?php endforeach; ?>
+		</div>
+
+		<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
+			<!-- Top Seiten -->
+			<div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.1);">
+				<h2 style="font-size: 16px; margin: 0 0 16px;">Top 5 Seiten</h2>
+				<?php if (empty($top_pages)): ?>
+					<p style="color: #888;">Noch keine Daten vorhanden.</p>
+				<?php else: ?>
+					<table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+						<?php foreach ($top_pages as $idx => $page): ?>
+						<tr style="border-bottom: 1px solid #eee;">
+							<td style="padding: 8px 0; color: #888; width: 24px;"><?php echo $idx + 1; ?>.</td>
+							<td style="padding: 8px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<?php echo esc_attr($page->page_url); ?>">
+								<?php echo esc_html($page->page_title ?: $page->page_url); ?>
+							</td>
+							<td style="padding: 8px 0; text-align: right; font-weight: 600;"><?php echo $page->views; ?></td>
+						</tr>
+						<?php endforeach; ?>
+					</table>
+				<?php endif; ?>
+			</div>
+
+			<!-- Traffic-Quellen -->
+			<div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.1);">
+				<h2 style="font-size: 16px; margin: 0 0 16px;">Traffic-Quellen</h2>
 				<?php
-				$cards = [
-					['icon' => '', 'label' => 'Besucher', 'value' => $this_week['visitors'], 'trend' => $trends['visitors'], 'prev' => $last_week['visitors']],
-					['icon' => '', 'label' => 'Seitenaufrufe', 'value' => $this_week['pageviews'], 'trend' => $trends['pageviews'], 'prev' => $last_week['pageviews']],
-					['icon' => '', 'label' => 'Besuche', 'value' => $this_week['sessions'], 'trend' => $trends['sessions'], 'prev' => $last_week['sessions']],
-					['icon' => '', 'label' => 'Probetraining', 'value' => $probetraining_this, 'trend' => $trends['probetraining'], 'prev' => $probetraining_last, 'highlight' => true],
-				];
-				foreach ($cards as $card):
-					$trend_color = $card['trend'] > 0 ? '#22c55e' : ($card['trend'] < 0 ? '#ef4444' : '#888');
-					$trend_icon = $card['trend'] > 0 ? '↑' : ($card['trend'] < 0 ? '↓' : '→');
-					$bg = !empty($card['highlight']) ? 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)' : '#fff';
-					$text_color = !empty($card['highlight']) ? '#fff' : '#1e3a5f';
-					$sub_color = !empty($card['highlight']) ? 'rgba(255,255,255,0.7)' : '#888';
-				?>
-				<div style="background: <?php echo $bg; ?>; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.1); text-align: center;">
-					<div style="font-size: 32px; font-weight: 700; color: <?php echo $text_color; ?>;"><?php echo number_format($card['value']); ?></div>
-					<div style="color: <?php echo $sub_color; ?>; font-size: 13px; margin-top: 4px;"><?php echo $card['label']; ?></div>
-					<div style="font-size: 12px; margin-top: 8px; color: <?php echo !empty($card['highlight']) ? 'rgba(255,255,255,0.9)' : $trend_color; ?>;">
-						<?php echo $trend_icon; ?> <?php echo abs($card['trend']); ?>% vs. Vorwoche
-						<span style="color: <?php echo $sub_color; ?>;">(<?php echo $card['prev']; ?>)</span>
+				$sources = $wpdb->get_results($wpdb->prepare(
+					"SELECT
+						CASE
+							WHEN referrer LIKE '%%google%%' THEN 'Google'
+							WHEN referrer LIKE '%%instagram%%' OR referrer LIKE '%%l.instagram%%' THEN 'Instagram'
+							WHEN referrer LIKE '%%facebook%%' OR referrer LIKE '%%l.facebook%%' THEN 'Facebook'
+							WHEN referrer LIKE '%%tiktok%%' THEN 'TikTok'
+							WHEN referrer = '' THEN 'Direkt'
+							ELSE 'Andere'
+						END as source,
+						COUNT(*) as cnt
+					FROM {$wpdb->prefix}po_analytics_events
+					WHERE created_at >= %s
+					GROUP BY source
+					ORDER BY cnt DESC",
+					date('Y-m-d H:i:s', strtotime('-7 days'))
+				));
+				if (empty($sources)): ?>
+					<p style="color: #888;">Noch keine Daten vorhanden.</p>
+				<?php else: ?>
+					<table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+						<?php foreach ($sources as $source): ?>
+						<tr style="border-bottom: 1px solid #eee;">
+							<td style="padding: 8px 0;"><?php echo esc_html($source->source); ?></td>
+							<td style="padding: 8px 0; text-align: right; font-weight: 600;"><?php echo $source->cnt; ?></td>
+						</tr>
+						<?php endforeach; ?>
+					</table>
+				<?php endif; ?>
+			</div>
+		</div>
+
+		<!-- Insights / Ampel -->
+		<h2 style="margin-top: 32px; font-size: 18px;">Was läuft – und was nicht</h2>
+		<?php if (empty($insights)): ?>
+			<div style="background: #f0f6ff; padding: 20px; border-radius: 12px; margin: 16px 0;">
+				<p style="margin: 0;">Noch keine Insights vorhanden. Die erste Auswertung erfolgt automatisch morgen früh.</p>
+				<p style="margin: 10px 0 0;">
+					<a href="<?php echo wp_nonce_url(admin_url('admin.php?page=parkourone-analytics&run_insights=1'), 'po_run_insights'); ?>" class="button">
+						Jetzt auswerten
+					</a>
+				</p>
+			</div>
+		<?php else: ?>
+			<?php
+			$colors = [
+				'green' => ['bg' => '#f0fdf4', 'border' => '#22c55e', 'icon' => ''],
+				'yellow' => ['bg' => '#fefce8', 'border' => '#eab308', 'icon' => ''],
+				'red' => ['bg' => '#fef2f2', 'border' => '#ef4444', 'icon' => ''],
+				'info' => ['bg' => '#f0f6ff', 'border' => '#3b82f6', 'icon' => ''],
+			];
+			foreach ($insights as $i):
+				$c = $colors[$i->status] ?? $colors['info'];
+			?>
+			<div style="background: <?php echo $c['bg']; ?>; border-left: 4px solid <?php echo $c['border']; ?>; padding: 16px 20px; border-radius: 0 12px 12px 0; margin: 12px 0;">
+				<div style="font-weight: 600; font-size: 15px; margin-bottom: 6px;"><?php echo $c['icon']; ?> <?php echo esc_html($i->title); ?></div>
+				<div style="color: #444; font-size: 14px; line-height: 1.6;"><?php echo esc_html($i->message); ?></div>
+				<?php if ($i->detail): ?>
+					<div style="color: #666; font-size: 13px; margin-top: 8px; font-style: italic;"><?php echo esc_html($i->detail); ?></div>
+				<?php endif; ?>
+				<div style="color: #aaa; font-size: 11px; margin-top: 8px;"><?php echo date('d.m.Y H:i', strtotime($i->created_at)); ?></div>
+			</div>
+			<?php endforeach; ?>
+		<?php endif; ?>
+		<?php
+	}
+
+	/**
+	 * Tab: Alle Seiten (paginiert, mit Zeitraum-Wähler)
+	 */
+	private function render_tab_seiten() {
+		global $wpdb;
+		$table = "{$wpdb->prefix}po_analytics_events";
+
+		$days = absint($_GET['days'] ?? 7);
+		if (!in_array($days, [7, 14, 30, 90])) $days = 7;
+		$since = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+
+		$paged = max(1, absint($_GET['paged'] ?? 1));
+		$per_page = 30;
+		$offset = ($paged - 1) * $per_page;
+
+		$total = (int) $wpdb->get_var($wpdb->prepare(
+			"SELECT COUNT(DISTINCT page_url) FROM $table WHERE event_type = 'pageview' AND created_at >= %s", $since
+		));
+
+		$pages = $wpdb->get_results($wpdb->prepare(
+			"SELECT
+				page_url,
+				MAX(page_title) as page_title,
+				COUNT(*) as views,
+				COUNT(DISTINCT visitor_hash) as visitors,
+				ROUND(AVG(CASE WHEN scroll_depth > 0 THEN scroll_depth ELSE NULL END)) as avg_scroll,
+				ROUND(AVG(CASE WHEN time_on_page > 0 THEN time_on_page ELSE NULL END)) as avg_time
+			FROM $table
+			WHERE event_type IN ('pageview', 'page_leave') AND created_at >= %s
+			GROUP BY page_url
+			ORDER BY views DESC
+			LIMIT %d OFFSET %d",
+			$since, $per_page, $offset
+		));
+
+		$total_pages = ceil($total / $per_page);
+		$base_url = admin_url('admin.php?page=parkourone-analytics&tab=seiten');
+		?>
+		<!-- Zeitraum-Wähler -->
+		<div style="display: flex; gap: 8px; margin-bottom: 20px;">
+			<?php foreach ([7, 14, 30, 90] as $d):
+				$active = ($d === $days);
+			?>
+			<a href="<?php echo esc_url($base_url . '&days=' . $d); ?>"
+			   style="padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 13px; <?php echo $active ? 'background: #2563eb; color: #fff;' : 'background: #f0f0f0; color: #444;'; ?>">
+				<?php echo $d; ?> Tage
+			</a>
+			<?php endforeach; ?>
+		</div>
+
+		<div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.1);">
+			<p style="color: #888; font-size: 13px; margin: 0 0 16px;"><?php echo number_format($total); ?> Seiten gefunden</p>
+			<?php if (empty($pages)): ?>
+				<p style="color: #888;">Noch keine Daten vorhanden.</p>
+			<?php else: ?>
+				<table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+					<thead>
+						<tr style="border-bottom: 2px solid #e5e7eb; text-align: left;">
+							<th style="padding: 8px 8px 8px 0; font-weight: 600;">Seite</th>
+							<th style="padding: 8px; text-align: right; font-weight: 600;">Views</th>
+							<th style="padding: 8px; text-align: right; font-weight: 600;">Besucher</th>
+							<th style="padding: 8px; text-align: right; font-weight: 600;">Scroll</th>
+							<th style="padding: 8px 0 8px 8px; text-align: right; font-weight: 600;">Verweildauer</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach ($pages as $p): ?>
+						<tr style="border-bottom: 1px solid #eee;">
+							<td style="padding: 8px 8px 8px 0; max-width: 350px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<?php echo esc_attr($p->page_url); ?>">
+								<?php echo esc_html($p->page_title ?: $p->page_url); ?>
+							</td>
+							<td style="padding: 8px; text-align: right; font-weight: 600;"><?php echo number_format($p->views); ?></td>
+							<td style="padding: 8px; text-align: right;"><?php echo number_format($p->visitors); ?></td>
+							<td style="padding: 8px; text-align: right;"><?php echo $p->avg_scroll ? $p->avg_scroll . '%' : '-'; ?></td>
+							<td style="padding: 8px 0 8px 8px; text-align: right;">
+								<?php
+								if ($p->avg_time) {
+									$m = floor($p->avg_time / 60);
+									$s = $p->avg_time % 60;
+									echo $m > 0 ? "{$m}m {$s}s" : "{$s}s";
+								} else {
+									echo '-';
+								}
+								?>
+							</td>
+						</tr>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
+
+				<?php if ($total_pages > 1): ?>
+				<div style="margin-top: 16px; display: flex; gap: 8px;">
+					<?php for ($i = max(1, $paged - 3); $i <= min($total_pages, $paged + 3); $i++): ?>
+						<a href="<?php echo esc_url($base_url . '&days=' . $days . '&paged=' . $i); ?>"
+						   style="padding: 6px 12px; border-radius: 6px; text-decoration: none; <?php echo $i === $paged ? 'background: #2271b1; color: #fff;' : 'background: #f0f0f0;'; ?>">
+							<?php echo $i; ?>
+						</a>
+					<?php endfor; ?>
+				</div>
+				<?php endif; ?>
+			<?php endif; ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Tab: Kampagnen (UTM + Referrer Breakdown)
+	 */
+	private function render_tab_kampagnen() {
+		global $wpdb;
+		$table = "{$wpdb->prefix}po_analytics_events";
+
+		$days = absint($_GET['days'] ?? 30);
+		if (!in_array($days, [7, 14, 30, 90])) $days = 30;
+		$since = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+		$base_url = admin_url('admin.php?page=parkourone-analytics&tab=kampagnen');
+		?>
+		<!-- Zeitraum-Wähler -->
+		<div style="display: flex; gap: 8px; margin-bottom: 20px;">
+			<?php foreach ([7, 14, 30, 90] as $d):
+				$active = ($d === $days);
+			?>
+			<a href="<?php echo esc_url($base_url . '&days=' . $d); ?>"
+			   style="padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 13px; <?php echo $active ? 'background: #2563eb; color: #fff;' : 'background: #f0f0f0; color: #444;'; ?>">
+				<?php echo $d; ?> Tage
+			</a>
+			<?php endforeach; ?>
+		</div>
+
+		<!-- UTM-Kampagnen -->
+		<div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.1); margin-bottom: 24px;">
+			<h2 style="font-size: 16px; margin: 0 0 16px;">UTM-Kampagnen</h2>
+			<?php
+			$campaigns = $wpdb->get_results($wpdb->prepare(
+				"SELECT
+					utm_source, utm_medium, utm_campaign,
+					COUNT(DISTINCT visitor_hash) as visitors,
+					COUNT(DISTINCT session_id) as sessions
+				FROM $table
+				WHERE utm_source != '' AND created_at >= %s
+				GROUP BY utm_source, utm_medium, utm_campaign
+				ORDER BY visitors DESC
+				LIMIT 50",
+				$since
+			));
+			if (empty($campaigns)): ?>
+				<p style="color: #888;">Noch keine UTM-Kampagnen erfasst. Verwende Links mit ?utm_source=...&utm_medium=...&utm_campaign=... um Kampagnen zu tracken.</p>
+			<?php else: ?>
+				<table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+					<thead>
+						<tr style="border-bottom: 2px solid #e5e7eb; text-align: left;">
+							<th style="padding: 8px 8px 8px 0; font-weight: 600;">Quelle</th>
+							<th style="padding: 8px; font-weight: 600;">Medium</th>
+							<th style="padding: 8px; font-weight: 600;">Kampagne</th>
+							<th style="padding: 8px; text-align: right; font-weight: 600;">Besucher</th>
+							<th style="padding: 8px 0 8px 8px; text-align: right; font-weight: 600;">Sessions</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach ($campaigns as $c): ?>
+						<tr style="border-bottom: 1px solid #eee;">
+							<td style="padding: 8px 8px 8px 0;"><?php echo esc_html($c->utm_source); ?></td>
+							<td style="padding: 8px;"><?php echo esc_html($c->utm_medium ?: '-'); ?></td>
+							<td style="padding: 8px;"><?php echo esc_html($c->utm_campaign ?: '-'); ?></td>
+							<td style="padding: 8px; text-align: right; font-weight: 600;"><?php echo number_format($c->visitors); ?></td>
+							<td style="padding: 8px 0 8px 8px; text-align: right;"><?php echo number_format($c->sessions); ?></td>
+						</tr>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
+			<?php endif; ?>
+		</div>
+
+		<!-- Referrer Breakdown -->
+		<div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.1);">
+			<h2 style="font-size: 16px; margin: 0 0 16px;">Traffic-Quellen Breakdown</h2>
+			<?php
+			$sources = $wpdb->get_results($wpdb->prepare(
+				"SELECT
+					CASE
+						WHEN utm_source != '' THEN CONCAT('Kampagne: ', utm_source)
+						WHEN referrer LIKE '%%google%%' THEN 'Google'
+						WHEN referrer LIKE '%%instagram%%' OR referrer LIKE '%%l.instagram%%' THEN 'Instagram'
+						WHEN referrer LIKE '%%facebook%%' OR referrer LIKE '%%l.facebook%%' THEN 'Facebook'
+						WHEN referrer LIKE '%%tiktok%%' THEN 'TikTok'
+						WHEN referrer = '' THEN 'Direkt'
+						ELSE 'Andere'
+					END as source,
+					COUNT(*) as cnt,
+					COUNT(DISTINCT visitor_hash) as visitors,
+					COUNT(DISTINCT session_id) as sessions
+				FROM $table
+				WHERE created_at >= %s
+				GROUP BY source
+				ORDER BY cnt DESC",
+				$since
+			));
+			if (empty($sources)): ?>
+				<p style="color: #888;">Noch keine Daten vorhanden.</p>
+			<?php else: ?>
+				<table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+					<thead>
+						<tr style="border-bottom: 2px solid #e5e7eb; text-align: left;">
+							<th style="padding: 8px 8px 8px 0; font-weight: 600;">Quelle</th>
+							<th style="padding: 8px; text-align: right; font-weight: 600;">Events</th>
+							<th style="padding: 8px; text-align: right; font-weight: 600;">Besucher</th>
+							<th style="padding: 8px 0 8px 8px; text-align: right; font-weight: 600;">Sessions</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php
+						$total_events = array_sum(array_column($sources, 'cnt'));
+						foreach ($sources as $s):
+							$pct = $total_events > 0 ? round(($s->cnt / $total_events) * 100) : 0;
+						?>
+						<tr style="border-bottom: 1px solid #eee;">
+							<td style="padding: 8px 8px 8px 0;">
+								<?php echo esc_html($s->source); ?>
+								<span style="color: #aaa; font-size: 11px; margin-left: 4px;"><?php echo $pct; ?>%</span>
+							</td>
+							<td style="padding: 8px; text-align: right;"><?php echo number_format($s->cnt); ?></td>
+							<td style="padding: 8px; text-align: right; font-weight: 600;"><?php echo number_format($s->visitors); ?></td>
+							<td style="padding: 8px 0 8px 8px; text-align: right;"><?php echo number_format($s->sessions); ?></td>
+						</tr>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
+			<?php endif; ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Tab: Conversions (Funnel + Abbruchrate + Umsatz nach Quelle)
+	 */
+	private function render_tab_conversions() {
+		global $wpdb;
+		$table = "{$wpdb->prefix}po_analytics_events";
+
+		$days = absint($_GET['days'] ?? 30);
+		if (!in_array($days, [7, 14, 30, 90])) $days = 30;
+		$since = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+		$base_url = admin_url('admin.php?page=parkourone-analytics&tab=conversions');
+
+		// Funnel-Daten
+		$add_to_cart = (int) $wpdb->get_var($wpdb->prepare(
+			"SELECT COUNT(DISTINCT session_id) FROM $table WHERE event_type = 'add_to_cart' AND created_at >= %s", $since
+		));
+		$checkout = (int) $wpdb->get_var($wpdb->prepare(
+			"SELECT COUNT(DISTINCT session_id) FROM $table WHERE event_type = 'checkout_started' AND created_at >= %s", $since
+		));
+		$purchases = (int) $wpdb->get_var($wpdb->prepare(
+			"SELECT COUNT(*) FROM $table WHERE event_type = 'purchase' AND created_at >= %s", $since
+		));
+		$revenue = (float) $wpdb->get_var($wpdb->prepare(
+			"SELECT COALESCE(SUM(CAST(event_value AS DECIMAL(10,2))), 0) FROM $table WHERE event_type = 'purchase' AND created_at >= %s", $since
+		));
+
+		// Abbruchrate
+		$abandoned = (int) $wpdb->get_var($wpdb->prepare(
+			"SELECT COUNT(DISTINCT s.session_id)
+			FROM (SELECT DISTINCT session_id FROM $table WHERE event_type = 'add_to_cart' AND created_at >= %s) s
+			LEFT JOIN (SELECT DISTINCT session_id FROM $table WHERE event_type = 'purchase' AND created_at >= %s) p ON s.session_id = p.session_id
+			WHERE p.session_id IS NULL",
+			$since, $since
+		));
+
+		$cart_to_checkout = $add_to_cart > 0 ? round(($checkout / $add_to_cart) * 100) : 0;
+		$checkout_to_purchase = $checkout > 0 ? round(($purchases / $checkout) * 100) : 0;
+		$overall_conversion = $add_to_cart > 0 ? round(($purchases / $add_to_cart) * 100) : 0;
+		$abandon_rate = $add_to_cart > 0 ? round(($abandoned / $add_to_cart) * 100) : 0;
+		?>
+		<!-- Zeitraum-Wähler -->
+		<div style="display: flex; gap: 8px; margin-bottom: 20px;">
+			<?php foreach ([7, 14, 30, 90] as $d):
+				$active = ($d === $days);
+			?>
+			<a href="<?php echo esc_url($base_url . '&days=' . $d); ?>"
+			   style="padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 13px; <?php echo $active ? 'background: #2563eb; color: #fff;' : 'background: #f0f0f0; color: #444;'; ?>">
+				<?php echo $d; ?> Tage
+			</a>
+			<?php endforeach; ?>
+		</div>
+
+		<!-- Funnel-Karten -->
+		<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+			<?php
+			$funnel = [
+				['label' => 'Warenkorb', 'value' => $add_to_cart, 'sub' => 'Sessions mit add_to_cart'],
+				['label' => 'Checkout', 'value' => $checkout, 'sub' => $cart_to_checkout . '% vom Warenkorb'],
+				['label' => 'Käufe', 'value' => $purchases, 'sub' => $checkout_to_purchase . '% vom Checkout'],
+				['label' => 'Umsatz', 'value' => 'CHF ' . number_format($revenue, 0, '.', "'"), 'sub' => $overall_conversion . '% Gesamt-Conversion', 'highlight' => true],
+			];
+			foreach ($funnel as $f):
+				$bg = !empty($f['highlight']) ? 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)' : '#fff';
+				$text_color = !empty($f['highlight']) ? '#fff' : '#1e3a5f';
+				$sub_color = !empty($f['highlight']) ? 'rgba(255,255,255,0.7)' : '#888';
+			?>
+			<div style="background: <?php echo $bg; ?>; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.1); text-align: center;">
+				<div style="font-size: 28px; font-weight: 700; color: <?php echo $text_color; ?>;">
+					<?php echo is_numeric($f['value']) ? number_format($f['value']) : $f['value']; ?>
+				</div>
+				<div style="color: <?php echo $sub_color; ?>; font-size: 13px; margin-top: 4px;"><?php echo esc_html($f['label']); ?></div>
+				<div style="color: <?php echo $sub_color; ?>; font-size: 11px; margin-top: 6px;"><?php echo esc_html($f['sub']); ?></div>
+			</div>
+			<?php endforeach; ?>
+		</div>
+
+		<!-- Abbruchrate -->
+		<div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.1); margin-bottom: 24px;">
+			<h2 style="font-size: 16px; margin: 0 0 12px;">Warenkorbabbrecher</h2>
+			<?php if ($add_to_cart === 0): ?>
+				<p style="color: #888;">Noch keine Warenkorb-Daten vorhanden.</p>
+			<?php else: ?>
+				<div style="display: flex; align-items: center; gap: 16px;">
+					<div style="font-size: 36px; font-weight: 700; color: <?php echo $abandon_rate > 70 ? '#ef4444' : ($abandon_rate > 50 ? '#eab308' : '#22c55e'); ?>;">
+						<?php echo $abandon_rate; ?>%
+					</div>
+					<div>
+						<div style="font-size: 14px; color: #444;"><?php echo number_format($abandoned); ?> von <?php echo number_format($add_to_cart); ?> Sessions mit Warenkorb haben nicht gekauft</div>
+						<div style="font-size: 12px; color: #888; margin-top: 4px;">Basierend auf Session-ID-Zuordnung (same-session Attribution)</div>
 					</div>
 				</div>
-				<?php endforeach; ?>
-			</div>
+			<?php endif; ?>
+		</div>
 
-			<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
-				<!-- Top Seiten -->
-				<div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.1);">
-					<h2 style="font-size: 16px; margin: 0 0 16px;">Top 5 Seiten</h2>
-					<?php if (empty($top_pages)): ?>
-						<p style="color: #888;">Noch keine Daten vorhanden.</p>
-					<?php else: ?>
-						<table style="width: 100%; font-size: 13px; border-collapse: collapse;">
-							<?php foreach ($top_pages as $idx => $page): ?>
-							<tr style="border-bottom: 1px solid #eee;">
-								<td style="padding: 8px 0; color: #888; width: 24px;"><?php echo $idx + 1; ?>.</td>
-								<td style="padding: 8px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<?php echo esc_attr($page->page_url); ?>">
-									<?php echo esc_html($page->page_title ?: $page->page_url); ?>
-								</td>
-								<td style="padding: 8px 0; text-align: right; font-weight: 600;"><?php echo $page->views; ?></td>
-							</tr>
-							<?php endforeach; ?>
-						</table>
-					<?php endif; ?>
-				</div>
-
-				<!-- Traffic-Quellen -->
-				<div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.1);">
-					<h2 style="font-size: 16px; margin: 0 0 16px;">Traffic-Quellen</h2>
-					<?php
-					$sources = $wpdb->get_results($wpdb->prepare(
-						"SELECT
-							CASE
-								WHEN referrer LIKE '%%google%%' THEN 'Google'
-								WHEN referrer LIKE '%%instagram%%' OR referrer LIKE '%%l.instagram%%' THEN 'Instagram'
-								WHEN referrer LIKE '%%facebook%%' OR referrer LIKE '%%l.facebook%%' THEN 'Facebook'
-								WHEN referrer LIKE '%%tiktok%%' THEN 'TikTok'
-								WHEN referrer = '' THEN 'Direkt'
-								ELSE 'Andere'
-							END as source,
-							COUNT(*) as cnt
-						FROM {$wpdb->prefix}po_analytics_events
-						WHERE created_at >= %s
-						GROUP BY source
-						ORDER BY cnt DESC",
-						date('Y-m-d H:i:s', strtotime('-7 days'))
-					));
-					if (empty($sources)): ?>
-						<p style="color: #888;">Noch keine Daten vorhanden.</p>
-					<?php else: ?>
-						<table style="width: 100%; font-size: 13px; border-collapse: collapse;">
-							<?php foreach ($sources as $source): ?>
-							<tr style="border-bottom: 1px solid #eee;">
-								<td style="padding: 8px 0;"><?php echo esc_html($source->source); ?></td>
-								<td style="padding: 8px 0; text-align: right; font-weight: 600;"><?php echo $source->cnt; ?></td>
-							</tr>
-							<?php endforeach; ?>
-						</table>
-					<?php endif; ?>
-				</div>
-			</div>
-
-			<!-- Insights / Ampel -->
-			<h2 style="margin-top: 32px; font-size: 18px;">Was läuft – und was nicht</h2>
-			<?php if (empty($insights)): ?>
-				<div style="background: #f0f6ff; padding: 20px; border-radius: 12px; margin: 16px 0;">
-					<p style="margin: 0;">Noch keine Insights vorhanden. Die erste Auswertung erfolgt automatisch morgen früh.</p>
-					<p style="margin: 10px 0 0;">
-						<a href="<?php echo wp_nonce_url(admin_url('admin.php?page=parkourone-analytics&run_insights=1'), 'po_run_insights'); ?>" class="button">
-							Jetzt auswerten
-						</a>
-					</p>
-				</div>
+		<!-- Umsatz nach Quelle -->
+		<div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.1);">
+			<h2 style="font-size: 16px; margin: 0 0 16px;">Umsatz nach Quelle (First-Touch, gleicher Tag)</h2>
+			<?php
+			// First-Touch Attribution: Erste Quelle des Visitors am selben Tag
+			$revenue_by_source = $wpdb->get_results($wpdb->prepare(
+				"SELECT
+					CASE
+						WHEN first_touch.utm_source != '' THEN CONCAT('Kampagne: ', first_touch.utm_source)
+						WHEN first_touch.referrer LIKE '%%google%%' THEN 'Google'
+						WHEN first_touch.referrer LIKE '%%instagram%%' THEN 'Instagram'
+						WHEN first_touch.referrer LIKE '%%facebook%%' THEN 'Facebook'
+						WHEN first_touch.referrer LIKE '%%tiktok%%' THEN 'TikTok'
+						WHEN first_touch.referrer = '' THEN 'Direkt'
+						ELSE 'Andere'
+					END as source,
+					COUNT(*) as purchases,
+					SUM(CAST(p.event_value AS DECIMAL(10,2))) as revenue
+				FROM $table p
+				INNER JOIN (
+					SELECT visitor_hash, DATE(created_at) as visit_date,
+						MIN(created_at) as first_visit,
+						SUBSTRING_INDEX(GROUP_CONCAT(referrer ORDER BY created_at ASC), ',', 1) as referrer,
+						SUBSTRING_INDEX(GROUP_CONCAT(CASE WHEN utm_source != '' THEN utm_source ELSE NULL END ORDER BY created_at ASC), ',', 1) as utm_source
+					FROM $table
+					WHERE created_at >= %s
+					GROUP BY visitor_hash, DATE(created_at)
+				) first_touch ON p.visitor_hash = first_touch.visitor_hash AND DATE(p.created_at) = first_touch.visit_date
+				WHERE p.event_type = 'purchase' AND p.created_at >= %s
+				GROUP BY source
+				ORDER BY revenue DESC",
+				$since, $since
+			));
+			if (empty($revenue_by_source)): ?>
+				<p style="color: #888;">Noch keine Kauf-Daten vorhanden.</p>
 			<?php else: ?>
-				<?php
-				$colors = [
-					'green' => ['bg' => '#f0fdf4', 'border' => '#22c55e', 'icon' => ''],
-					'yellow' => ['bg' => '#fefce8', 'border' => '#eab308', 'icon' => ''],
-					'red' => ['bg' => '#fef2f2', 'border' => '#ef4444', 'icon' => ''],
-					'info' => ['bg' => '#f0f6ff', 'border' => '#3b82f6', 'icon' => ''],
-				];
-				foreach ($insights as $i):
-					$c = $colors[$i->status] ?? $colors['info'];
-				?>
-				<div style="background: <?php echo $c['bg']; ?>; border-left: 4px solid <?php echo $c['border']; ?>; padding: 16px 20px; border-radius: 0 12px 12px 0; margin: 12px 0;">
-					<div style="font-weight: 600; font-size: 15px; margin-bottom: 6px;"><?php echo $c['icon']; ?> <?php echo esc_html($i->title); ?></div>
-					<div style="color: #444; font-size: 14px; line-height: 1.6;"><?php echo esc_html($i->message); ?></div>
-					<?php if ($i->detail): ?>
-						<div style="color: #666; font-size: 13px; margin-top: 8px; font-style: italic;"><?php echo esc_html($i->detail); ?></div>
-					<?php endif; ?>
-					<div style="color: #aaa; font-size: 11px; margin-top: 8px;"><?php echo date('d.m.Y H:i', strtotime($i->created_at)); ?></div>
-				</div>
-				<?php endforeach; ?>
+				<table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+					<thead>
+						<tr style="border-bottom: 2px solid #e5e7eb; text-align: left;">
+							<th style="padding: 8px 8px 8px 0; font-weight: 600;">Quelle</th>
+							<th style="padding: 8px; text-align: right; font-weight: 600;">Käufe</th>
+							<th style="padding: 8px 0 8px 8px; text-align: right; font-weight: 600;">Umsatz</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach ($revenue_by_source as $r): ?>
+						<tr style="border-bottom: 1px solid #eee;">
+							<td style="padding: 8px 8px 8px 0;"><?php echo esc_html($r->source); ?></td>
+							<td style="padding: 8px; text-align: right;"><?php echo number_format($r->purchases); ?></td>
+							<td style="padding: 8px 0 8px 8px; text-align: right; font-weight: 600;">CHF <?php echo number_format($r->revenue, 2, '.', "'"); ?></td>
+						</tr>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
 			<?php endif; ?>
 		</div>
 		<?php
@@ -769,6 +1286,47 @@ class PO_Analytics {
 				"{$top_source->cnt} Besuche diese Woche über {$top_source->source}. {$msg}",
 				'', $top_source->cnt);
 		}
+
+		// --- Checkout-Conversion ---
+		$cart_sessions = (int) $wpdb->get_var($wpdb->prepare(
+			"SELECT COUNT(DISTINCT session_id) FROM $table WHERE event_type = 'add_to_cart' AND created_at >= %s", $week
+		));
+		$purchase_count = (int) $wpdb->get_var($wpdb->prepare(
+			"SELECT COUNT(*) FROM $table WHERE event_type = 'purchase' AND created_at >= %s", $week
+		));
+
+		if ($cart_sessions > 3) {
+			$conv_rate = round(($purchase_count / $cart_sessions) * 100);
+			if ($conv_rate < 30) {
+				$this->save_insight('checkout_conversion', 'yellow', 'Checkout-Conversion ist niedrig',
+					"Nur {$conv_rate}% der Warenkörbe führen zum Kauf ({$purchase_count} von {$cart_sessions}).",
+					'Tipp: Prüfe ob der Checkout-Prozess einfach genug ist und keine Hürden enthält.', $conv_rate);
+			} elseif ($conv_rate > 70) {
+				$this->save_insight('checkout_conversion', 'green', 'Gute Checkout-Conversion!',
+					"{$conv_rate}% der Warenkörbe werden zu Käufen ({$purchase_count} von {$cart_sessions}). Top!",
+					'', $conv_rate);
+			} else {
+				$this->save_insight('checkout_conversion', 'info', 'Checkout-Conversion',
+					"{$conv_rate}% der Warenkörbe werden zu Käufen ({$purchase_count} von {$cart_sessions}).",
+					'', $conv_rate);
+			}
+		}
+
+		// --- Top-Kampagne der Woche ---
+		$top_campaign = $wpdb->get_row($wpdb->prepare(
+			"SELECT utm_campaign, utm_source, COUNT(DISTINCT visitor_hash) as visitors
+			FROM $table
+			WHERE utm_campaign != '' AND created_at >= %s
+			GROUP BY utm_campaign, utm_source
+			ORDER BY visitors DESC
+			LIMIT 1", $week
+		));
+
+		if ($top_campaign && $top_campaign->visitors > 2) {
+			$this->save_insight('top_campaign', 'info', "Top-Kampagne: {$top_campaign->utm_campaign}",
+				"Die Kampagne \"{$top_campaign->utm_campaign}\" (via {$top_campaign->utm_source}) hat diese Woche {$top_campaign->visitors} Besucher gebracht.",
+				'', $top_campaign->visitors);
+		}
 	}
 
 	/**
@@ -798,9 +1356,23 @@ class PO_Analytics {
 		$recipient = get_option('po_analytics_email_recipient', get_option('admin_email'));
 		$site_name = get_bloginfo('name');
 
+		$table = "{$wpdb->prefix}po_analytics_events";
+		$week_ago = date('Y-m-d H:i:s', strtotime('-7 days'));
+
 		$stats = $this->get_stats(7);
 		$top_pages = $this->get_top_pages(7, 5);
 		$probetraining = $this->get_probetraining_count(7);
+
+		// Conversion-Daten
+		$cart_sessions = (int) $wpdb->get_var($wpdb->prepare(
+			"SELECT COUNT(DISTINCT session_id) FROM $table WHERE event_type = 'add_to_cart' AND created_at >= %s", $week_ago
+		));
+		$purchase_count = (int) $wpdb->get_var($wpdb->prepare(
+			"SELECT COUNT(*) FROM $table WHERE event_type = 'purchase' AND created_at >= %s", $week_ago
+		));
+		$revenue = (float) $wpdb->get_var($wpdb->prepare(
+			"SELECT COALESCE(SUM(CAST(event_value AS DECIMAL(10,2))), 0) FROM $table WHERE event_type = 'purchase' AND created_at >= %s", $week_ago
+		));
 
 		$insights = $wpdb->get_results(
 			"SELECT * FROM {$wpdb->prefix}po_analytics_insights
@@ -844,6 +1416,27 @@ class PO_Analytics {
 						</td>
 					</tr>
 				</table>
+
+				<?php if ($cart_sessions > 0 || $purchase_count > 0 || $revenue > 0): ?>
+				<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+					<tr>
+						<td style="text-align: center; padding: 16px; background: #f8fafc; border-radius: 12px;">
+							<div style="font-size: 28px; font-weight: 700; color: #1e3a5f;"><?php echo number_format($cart_sessions); ?></div>
+							<div style="font-size: 12px; color: #888; margin-top: 4px;">Warenkörbe</div>
+						</td>
+						<td width="12"></td>
+						<td style="text-align: center; padding: 16px; background: #f8fafc; border-radius: 12px;">
+							<div style="font-size: 28px; font-weight: 700; color: #1e3a5f;"><?php echo number_format($purchase_count); ?></div>
+							<div style="font-size: 12px; color: #888; margin-top: 4px;">Käufe</div>
+						</td>
+						<td width="12"></td>
+						<td style="text-align: center; padding: 16px; background: linear-gradient(135deg, #059669 0%, #10b981 100%); border-radius: 12px;">
+							<div style="font-size: 28px; font-weight: 700; color: #fff;">CHF <?php echo number_format($revenue, 0, '.', "'"); ?></div>
+							<div style="font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 4px;">Umsatz</div>
+						</td>
+					</tr>
+				</table>
+				<?php endif; ?>
 
 				<?php if (!empty($insights)): ?>
 				<h2 style="font-size: 16px; margin: 24px 0 12px;">Was diese Woche wichtig war</h2>

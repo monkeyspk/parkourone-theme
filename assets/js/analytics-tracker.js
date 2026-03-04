@@ -225,6 +225,22 @@
 		true
 	);
 
+	// ── Add to Cart Tracking (WooCommerce) ──
+	if (typeof jQuery !== 'undefined') {
+		jQuery(document.body).on('added_to_cart', function () {
+			var productName = '';
+			var nameEl = document.querySelector('.po-side-cart__item-name');
+			if (nameEl) {
+				productName = nameEl.textContent.trim().substr(0, 255);
+			}
+			send({
+				event_type: 'add_to_cart',
+				event_label: productName,
+				event_value: '',
+			});
+		});
+	}
+
 	// ── Public API ──
 	window.poTrack = function (eventType, label, value) {
 		send({
