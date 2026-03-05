@@ -186,6 +186,14 @@ class PO_Analytics {
 			'callback' => [$this, 'handle_track'],
 			'permission_callback' => '__return_true',
 		]);
+
+		register_rest_route('parkourone/v1', '/analytics/page-detail', [
+			'methods' => 'GET',
+			'callback' => [$this, 'handle_page_detail'],
+			'permission_callback' => function () {
+				return current_user_can('manage_options');
+			},
+		]);
 	}
 
 	/**
@@ -226,6 +234,87 @@ class PO_Analytics {
 		]);
 
 		return new WP_REST_Response(['ok' => true], 200);
+	}
+
+	/**
+	 * Seiten-Detail-Daten (AJAX für Dashboard)
+	 */
+	public function handle_page_detail(WP_REST_Request $request) {
+		global $wpdb;
+		$table = "{$wpdb->prefix}po_analytics_events";
+
+		$page_url = sanitize_text_field($request->get_param('page_url') ?? '');
+		$days = absint($request->get_param('days') ?? 7);
+		if (!$page_url) return new WP_REST_Response(['error' => 'missing page_url'], 400);
+
+		$since = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+
+		// Nächste Seiten: Wohin sind Besucher weitergegangen?
+		$next_pages = $wpdb->get_results($wpdb->prepare(
+			"SELECT next_ev.page_url, MAX(next_ev.page_title) as page_title, COUNT(*) as cnt
+			FROM $table cur
+			INNER JOIN $table next_ev ON cur.session_id = next_ev.session_id
+				AND next_ev.event_type = 'pageview'
+				AND next_ev.created_at > cur.created_at
+				AND next_ev.page_url != cur.page_url
+			WHERE cur.page_url = %s AND cur.event_type = 'pageview' AND cur.created_at >= %s
+				AND next_ev.id = (
+					SELECT MIN(n2.id) FROM $table n2
+					WHERE n2.session_id = cur.session_id
+					AND n2.event_type = 'pageview'
+					AND n2.id > cur.id
+					AND n2.page_url != cur.page_url
+				)
+			GROUP BY next_ev.page_url
+			ORDER BY cnt DESC
+			LIMIT 8",
+			$page_url, $since
+		));
+
+		// Klick-Events auf dieser Seite
+		$clicks = $wpdb->get_results($wpdb->prepare(
+			"SELECT event_label, event_value, COUNT(*) as cnt
+			FROM $table
+			WHERE page_url = %s AND event_type = 'click' AND created_at >= %s
+			GROUP BY event_label, event_value
+			ORDER BY cnt DESC
+			LIMIT 8",
+			$page_url, $since
+		));
+
+		// Scroll-Verteilung (Buckets: 0-25, 25-50, 50-75, 75-100)
+		$scroll_dist = $wpdb->get_results($wpdb->prepare(
+			"SELECT
+				CASE
+					WHEN scroll_depth BETWEEN 0 AND 25 THEN '0-25%%'
+					WHEN scroll_depth BETWEEN 26 AND 50 THEN '26-50%%'
+					WHEN scroll_depth BETWEEN 51 AND 75 THEN '51-75%%'
+					ELSE '76-100%%'
+				END as bucket,
+				COUNT(*) as cnt
+			FROM $table
+			WHERE page_url = %s AND event_type IN ('pageview','page_leave') AND scroll_depth > 0 AND created_at >= %s
+			GROUP BY bucket
+			ORDER BY bucket ASC",
+			$page_url, $since
+		));
+
+		// Geräte-Verteilung
+		$devices = $wpdb->get_results($wpdb->prepare(
+			"SELECT device_type, COUNT(*) as cnt
+			FROM $table
+			WHERE page_url = %s AND event_type = 'pageview' AND created_at >= %s AND device_type != ''
+			GROUP BY device_type
+			ORDER BY cnt DESC",
+			$page_url, $since
+		));
+
+		return new WP_REST_Response([
+			'next_pages' => $next_pages,
+			'clicks' => $clicks,
+			'scroll_distribution' => $scroll_dist,
+			'devices' => $devices,
+		]);
 	}
 
 	/**
@@ -633,7 +722,7 @@ class PO_Analytics {
 	}
 
 	/**
-	 * Tab: Alle Seiten (paginiert, mit Zeitraum-Wähler)
+	 * Tab: Alle Seiten (Suche, klickbare Links, Detail-Panel)
 	 */
 	private function render_tab_seiten() {
 		global $wpdb;
@@ -643,12 +732,19 @@ class PO_Analytics {
 		if (!in_array($days, [7, 14, 30, 90])) $days = 7;
 		$since = date('Y-m-d H:i:s', strtotime("-{$days} days"));
 
+		$search = sanitize_text_field($_GET['s'] ?? '');
 		$paged = max(1, absint($_GET['paged'] ?? 1));
 		$per_page = 30;
 		$offset = ($paged - 1) * $per_page;
 
+		$where_search = '';
+		if ($search !== '') {
+			$like = '%' . $wpdb->esc_like($search) . '%';
+			$where_search = $wpdb->prepare(" AND (page_url LIKE %s OR page_title LIKE %s)", $like, $like);
+		}
+
 		$total = (int) $wpdb->get_var($wpdb->prepare(
-			"SELECT COUNT(DISTINCT page_url) FROM $table WHERE event_type = 'pageview' AND created_at >= %s", $since
+			"SELECT COUNT(DISTINCT page_url) FROM $table WHERE event_type = 'pageview' AND created_at >= %s" . $where_search, $since
 		));
 
 		$pages = $wpdb->get_results($wpdb->prepare(
@@ -658,9 +754,10 @@ class PO_Analytics {
 				COUNT(*) as views,
 				COUNT(DISTINCT visitor_hash) as visitors,
 				ROUND(AVG(CASE WHEN scroll_depth > 0 THEN scroll_depth ELSE NULL END)) as avg_scroll,
-				ROUND(AVG(CASE WHEN time_on_page > 0 THEN time_on_page ELSE NULL END)) as avg_time
+				COALESCE(SUM(CASE WHEN time_on_page > 0 THEN time_on_page ELSE 0 END), 0) as total_time,
+				COUNT(DISTINCT CASE WHEN time_on_page > 0 THEN visitor_hash ELSE NULL END) as time_visitors
 			FROM $table
-			WHERE event_type IN ('pageview', 'page_leave') AND created_at >= %s
+			WHERE event_type IN ('pageview', 'page_leave') AND created_at >= %s" . $where_search . "
 			GROUP BY page_url
 			ORDER BY views DESC
 			LIMIT %d OFFSET %d",
@@ -669,48 +766,89 @@ class PO_Analytics {
 
 		$total_pages = ceil($total / $per_page);
 		$base_url = admin_url('admin.php?page=parkourone-analytics&tab=seiten');
+		$site_url = home_url();
 		?>
-		<!-- Zeitraum-Wähler -->
-		<div style="display: flex; gap: 8px; margin-bottom: 20px;">
+		<!-- Zeitraum + Suche -->
+		<div style="display: flex; gap: 8px; margin-bottom: 20px; align-items: center; flex-wrap: wrap;">
 			<?php foreach ([7, 14, 30, 90] as $d):
 				$active = ($d === $days);
 			?>
-			<a href="<?php echo esc_url($base_url . '&days=' . $d); ?>"
+			<a href="<?php echo esc_url($base_url . '&days=' . $d . ($search ? '&s=' . urlencode($search) : '')); ?>"
 			   style="padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 13px; <?php echo $active ? 'background: #2563eb; color: #fff;' : 'background: #f0f0f0; color: #444;'; ?>">
 				<?php echo $d; ?> Tage
 			</a>
 			<?php endforeach; ?>
+
+			<div style="margin-left: auto;">
+				<form method="get" style="display: flex; gap: 6px;">
+					<input type="hidden" name="page" value="parkourone-analytics">
+					<input type="hidden" name="tab" value="seiten">
+					<input type="hidden" name="days" value="<?php echo $days; ?>">
+					<input type="text" name="s" value="<?php echo esc_attr($search); ?>"
+						   placeholder="Seiten durchsuchen..."
+						   style="padding: 6px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; width: 220px;">
+					<button type="submit" style="padding: 6px 14px; border-radius: 6px; border: 1px solid #ddd; background: #f8f8f8; cursor: pointer; font-size: 13px;">Suchen</button>
+					<?php if ($search): ?>
+						<a href="<?php echo esc_url($base_url . '&days=' . $days); ?>" style="padding: 6px 10px; color: #888; text-decoration: none; font-size: 18px; line-height: 1;" title="Suche zurücksetzen">&times;</a>
+					<?php endif; ?>
+				</form>
+			</div>
 		</div>
 
 		<div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.1);">
-			<p style="color: #888; font-size: 13px; margin: 0 0 16px;"><?php echo number_format($total); ?> Seiten gefunden</p>
+			<p style="color: #888; font-size: 13px; margin: 0 0 16px;">
+				<?php echo number_format($total); ?> Seiten gefunden
+				<?php if ($search): ?>
+					<span>für &laquo;<?php echo esc_html($search); ?>&raquo;</span>
+				<?php endif; ?>
+			</p>
 			<?php if (empty($pages)): ?>
-				<p style="color: #888;">Noch keine Daten vorhanden.</p>
+				<p style="color: #888;">Keine Seiten gefunden<?php echo $search ? ' – versuche einen anderen Suchbegriff.' : '.'; ?></p>
 			<?php else: ?>
-				<table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+				<table id="po-pages-table" style="width: 100%; font-size: 13px; border-collapse: collapse;">
 					<thead>
 						<tr style="border-bottom: 2px solid #e5e7eb; text-align: left;">
 							<th style="padding: 8px 8px 8px 0; font-weight: 600;">Seite</th>
 							<th style="padding: 8px; text-align: right; font-weight: 600;">Views</th>
 							<th style="padding: 8px; text-align: right; font-weight: 600;">Besucher</th>
-							<th style="padding: 8px; text-align: right; font-weight: 600;">Scroll</th>
-							<th style="padding: 8px 0 8px 8px; text-align: right; font-weight: 600;">Verweildauer</th>
+							<th style="padding: 8px; text-align: right; font-weight: 600; min-width: 90px;">Scroll</th>
+							<th style="padding: 8px 0 8px 8px; text-align: right; font-weight: 600;">&#8709; / Besucher</th>
 						</tr>
 					</thead>
 					<tbody>
-						<?php foreach ($pages as $p): ?>
-						<tr style="border-bottom: 1px solid #eee;">
-							<td style="padding: 8px 8px 8px 0; max-width: 350px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<?php echo esc_attr($p->page_url); ?>">
-								<?php echo esc_html($p->page_title ?: $p->page_url); ?>
+						<?php foreach ($pages as $p):
+							$avg_per_visitor = $p->time_visitors > 0 ? round($p->total_time / $p->time_visitors) : 0;
+							$scroll_val = $p->avg_scroll ? (int)$p->avg_scroll : 0;
+							$scroll_color = $scroll_val >= 75 ? '#22c55e' : ($scroll_val >= 50 ? '#eab308' : ($scroll_val >= 25 ? '#f97316' : '#ef4444'));
+						?>
+						<tr class="po-page-row" data-url="<?php echo esc_attr($p->page_url); ?>" style="border-bottom: 1px solid #eee; cursor: pointer; transition: background .15s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+							<td style="padding: 8px 8px 8px 0; max-width: 350px;">
+								<div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<?php echo esc_attr($p->page_url); ?>">
+									<?php echo esc_html($p->page_title ?: $p->page_url); ?>
+								</div>
+								<a href="<?php echo esc_url($site_url . $p->page_url); ?>" target="_blank" onclick="event.stopPropagation();"
+								   style="font-size: 11px; color: #2563eb; text-decoration: none; opacity: 0.7;"
+								   onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
+									<?php echo esc_html($p->page_url); ?> &#8599;
+								</a>
 							</td>
 							<td style="padding: 8px; text-align: right; font-weight: 600;"><?php echo number_format($p->views); ?></td>
 							<td style="padding: 8px; text-align: right;"><?php echo number_format($p->visitors); ?></td>
-							<td style="padding: 8px; text-align: right;"><?php echo $p->avg_scroll ? $p->avg_scroll . '%' : '-'; ?></td>
+							<td style="padding: 8px; text-align: right;">
+								<?php if ($scroll_val > 0): ?>
+								<div style="display: flex; align-items: center; justify-content: flex-end; gap: 6px;">
+									<div style="width: 50px; height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden;">
+										<div style="width: <?php echo $scroll_val; ?>%; height: 100%; background: <?php echo $scroll_color; ?>; border-radius: 3px;"></div>
+									</div>
+									<span><?php echo $scroll_val; ?>%</span>
+								</div>
+								<?php else: ?>-<?php endif; ?>
+							</td>
 							<td style="padding: 8px 0 8px 8px; text-align: right;">
 								<?php
-								if ($p->avg_time) {
-									$m = floor($p->avg_time / 60);
-									$s = $p->avg_time % 60;
+								if ($avg_per_visitor > 0) {
+									$m = floor($avg_per_visitor / 60);
+									$s = $avg_per_visitor % 60;
 									echo $m > 0 ? "{$m}m {$s}s" : "{$s}s";
 								} else {
 									echo '-';
@@ -723,17 +861,165 @@ class PO_Analytics {
 				</table>
 
 				<?php if ($total_pages > 1): ?>
-				<div style="margin-top: 16px; display: flex; gap: 8px;">
+				<div style="margin-top: 16px; display: flex; gap: 8px; align-items: center;">
+					<?php if ($paged > 1): ?>
+						<a href="<?php echo esc_url($base_url . '&days=' . $days . '&paged=' . ($paged - 1) . ($search ? '&s=' . urlencode($search) : '')); ?>"
+						   style="padding: 6px 12px; border-radius: 6px; text-decoration: none; background: #f0f0f0;">&laquo;</a>
+					<?php endif; ?>
 					<?php for ($i = max(1, $paged - 3); $i <= min($total_pages, $paged + 3); $i++): ?>
-						<a href="<?php echo esc_url($base_url . '&days=' . $days . '&paged=' . $i); ?>"
+						<a href="<?php echo esc_url($base_url . '&days=' . $days . '&paged=' . $i . ($search ? '&s=' . urlencode($search) : '')); ?>"
 						   style="padding: 6px 12px; border-radius: 6px; text-decoration: none; <?php echo $i === $paged ? 'background: #2271b1; color: #fff;' : 'background: #f0f0f0;'; ?>">
 							<?php echo $i; ?>
 						</a>
 					<?php endfor; ?>
+					<?php if ($paged < $total_pages): ?>
+						<a href="<?php echo esc_url($base_url . '&days=' . $days . '&paged=' . ($paged + 1) . ($search ? '&s=' . urlencode($search) : '')); ?>"
+						   style="padding: 6px 12px; border-radius: 6px; text-decoration: none; background: #f0f0f0;">&raquo;</a>
+					<?php endif; ?>
+					<span style="color: #aaa; font-size: 12px; margin-left: 8px;">Seite <?php echo $paged; ?> von <?php echo $total_pages; ?></span>
 				</div>
 				<?php endif; ?>
 			<?php endif; ?>
 		</div>
+
+		<!-- Detail-Panel (per AJAX gefüllt) -->
+		<div id="po-page-detail" style="display: none; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.1); margin-top: 16px;">
+			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+				<h3 id="po-detail-title" style="margin: 0; font-size: 16px;"></h3>
+				<button onclick="document.getElementById('po-page-detail').style.display='none'" style="border: none; background: none; font-size: 20px; cursor: pointer; color: #888;">&times;</button>
+			</div>
+			<div id="po-detail-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+				<div id="po-detail-loading" style="grid-column: 1/-1; text-align: center; color: #888; padding: 20px;">Laden...</div>
+			</div>
+		</div>
+
+		<script>
+		(function(){
+			var detailEndpoint = '<?php echo esc_js(rest_url('parkourone/v1/analytics/page-detail')); ?>';
+			var nonce = '<?php echo esc_js(wp_create_nonce('wp_rest')); ?>';
+			var days = <?php echo $days; ?>;
+			var siteUrl = '<?php echo esc_js($site_url); ?>';
+			var activeUrl = '';
+
+			document.querySelectorAll('.po-page-row').forEach(function(row) {
+				row.addEventListener('click', function() {
+					var url = this.dataset.url;
+					var panel = document.getElementById('po-page-detail');
+					var title = document.getElementById('po-detail-title');
+					var content = document.getElementById('po-detail-content');
+
+					if (activeUrl === url && panel.style.display !== 'none') {
+						panel.style.display = 'none';
+						activeUrl = '';
+						return;
+					}
+					activeUrl = url;
+
+					title.textContent = (this.querySelector('div').textContent || '').trim();
+					content.innerHTML = '<div id="po-detail-loading" style="grid-column:1/-1;text-align:center;color:#888;padding:20px;">Laden...</div>';
+					panel.style.display = 'block';
+					panel.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+
+					fetch(detailEndpoint + '?page_url=' + encodeURIComponent(url) + '&days=' + days, {
+						headers: {'X-WP-Nonce': nonce}
+					})
+					.then(function(r){ return r.json(); })
+					.then(function(data){
+						var html = '';
+
+						// Nächste Seiten (Besucher-Fluss)
+						html += '<div>';
+						html += '<h4 style="font-size:14px;margin:0 0 10px;color:#1e3a5f;">Wohin gingen Besucher weiter?</h4>';
+						if (data.next_pages && data.next_pages.length) {
+							data.next_pages.forEach(function(p, i){
+								var name = p.page_title || p.page_url;
+								var maxCnt = data.next_pages[0].cnt;
+								var pct = Math.round((p.cnt / maxCnt) * 100);
+								html += '<div style="margin-bottom:8px;">';
+								html += '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px;">';
+								html += '<a href="' + siteUrl + p.page_url + '" target="_blank" style="color:#2563eb;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80%;">' + name + ' &#8599;</a>';
+								html += '<span style="font-weight:600;white-space:nowrap;margin-left:8px;">' + p.cnt + 'x</span>';
+								html += '</div>';
+								html += '<div style="width:100%;height:4px;background:#e5e7eb;border-radius:2px;overflow:hidden;">';
+								html += '<div style="width:' + pct + '%;height:100%;background:#2563eb;border-radius:2px;"></div>';
+								html += '</div></div>';
+							});
+						} else {
+							html += '<p style="color:#888;font-size:12px;">Keine Daten (Besucher haben die Seite verlassen)</p>';
+						}
+						html += '</div>';
+
+						// Klick-Events
+						html += '<div>';
+						html += '<h4 style="font-size:14px;margin:0 0 10px;color:#1e3a5f;">Klicks auf dieser Seite</h4>';
+						if (data.clicks && data.clicks.length) {
+							data.clicks.forEach(function(c){
+								var label = c.event_label || 'click';
+								var val = c.event_value || '';
+								if (val.length > 50) val = val.substr(0, 50) + '...';
+								html += '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid #f0f0f0;">';
+								html += '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:75%;" title="' + val + '"><code style="font-size:11px;background:#f0f0f0;padding:1px 4px;border-radius:3px;">' + label + '</code> ' + val + '</span>';
+								html += '<span style="font-weight:600;">' + c.cnt + '</span>';
+								html += '</div>';
+							});
+						} else {
+							html += '<p style="color:#888;font-size:12px;">Keine Klick-Events erfasst</p>';
+						}
+						html += '</div>';
+
+						// Scroll-Verteilung
+						html += '<div>';
+						html += '<h4 style="font-size:14px;margin:0 0 10px;color:#1e3a5f;">Scroll-Verteilung</h4>';
+						if (data.scroll_distribution && data.scroll_distribution.length) {
+							var scrollColors = {'0-25%':'#ef4444','26-50%':'#f97316','51-75%':'#eab308','76-100%':'#22c55e'};
+							var maxScroll = Math.max.apply(null, data.scroll_distribution.map(function(s){return parseInt(s.cnt);}));
+							data.scroll_distribution.forEach(function(s){
+								var pct = Math.round((s.cnt / maxScroll) * 100);
+								var color = scrollColors[s.bucket] || '#888';
+								html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px;">';
+								html += '<span style="width:60px;text-align:right;">' + s.bucket + '</span>';
+								html += '<div style="flex:1;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;">';
+								html += '<div style="width:' + pct + '%;height:100%;background:' + color + ';border-radius:4px;"></div>';
+								html += '</div>';
+								html += '<span style="width:30px;font-weight:600;">' + s.cnt + '</span>';
+								html += '</div>';
+							});
+						} else {
+							html += '<p style="color:#888;font-size:12px;">Keine Scroll-Daten</p>';
+						}
+						html += '</div>';
+
+						// Geräte
+						html += '<div>';
+						html += '<h4 style="font-size:14px;margin:0 0 10px;color:#1e3a5f;">Geräte</h4>';
+						if (data.devices && data.devices.length) {
+							var deviceIcons = {mobile:'&#128241;', tablet:'&#128187;', desktop:'&#128421;'};
+							var totalDev = data.devices.reduce(function(a,d){return a + parseInt(d.cnt);}, 0);
+							data.devices.forEach(function(d){
+								var pct = totalDev > 0 ? Math.round((d.cnt / totalDev) * 100) : 0;
+								var icon = deviceIcons[d.device_type] || '';
+								html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px;">';
+								html += '<span>' + icon + ' ' + d.device_type + '</span>';
+								html += '<div style="flex:1;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;">';
+								html += '<div style="width:' + pct + '%;height:100%;background:#6366f1;border-radius:4px;"></div>';
+								html += '</div>';
+								html += '<span style="font-weight:600;">' + pct + '%</span>';
+								html += '</div>';
+							});
+						} else {
+							html += '<p style="color:#888;font-size:12px;">Keine Geräte-Daten</p>';
+						}
+						html += '</div>';
+
+						content.innerHTML = html;
+					})
+					.catch(function(){
+						content.innerHTML = '<p style="color:#ef4444;grid-column:1/-1;text-align:center;">Fehler beim Laden der Details</p>';
+					});
+				});
+			});
+		})();
+		</script>
 		<?php
 	}
 
