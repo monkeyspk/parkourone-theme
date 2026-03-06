@@ -20,23 +20,8 @@ body.po-no-scroll {
 }
 
 @media (min-width: 1441px) {
-	.po-klassen-slider {
-		max-width: 1440px;
-		margin-left: auto;
-		margin-right: auto;
-		overflow: hidden;
-	}
-	.po-klassen-slider__headline {
-		padding: 0 120px;
-	}
-	.po-klassen-slider__filters {
-		padding: 0 120px;
-	}
 	.po-klassen-slider__track {
-		padding: 0 0 0 120px;
-	}
-	.po-klassen-slider__nav {
-		padding: 0 120px;
+		max-width: calc(50vw + 720px);
 	}
 }
 

@@ -5,20 +5,8 @@
 }
 
 @media (min-width: 1441px) {
-	.po-usp {
-		max-width: 1440px;
-		margin-left: auto;
-		margin-right: auto;
-		overflow: hidden;
-	}
-	.po-usp__headline {
-		padding: 0 120px;
-	}
 	.po-usp__wrapper {
-		padding: 0 0 0 120px;
-	}
-	.po-usp__nav {
-		padding: 0 120px;
+		max-width: calc(50vw + 720px);
 	}
 }
 
