@@ -3,6 +3,14 @@
 	overflow: hidden;
 }
 
+@media (min-width: 1441px) {
+	.po-schulen {
+		max-width: 1440px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+}
+
 .po-schulen__headline {
 	font-size: clamp(2rem, 5vw, 3rem);
 	font-weight: 700;

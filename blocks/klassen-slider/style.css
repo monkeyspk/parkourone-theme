@@ -19,6 +19,15 @@ body.po-no-scroll {
 	font-family: var(--po-font-sans);
 }
 
+@media (min-width: 1441px) {
+	.po-klassen-slider {
+		max-width: 1440px;
+		margin-left: auto;
+		margin-right: auto;
+		overflow: hidden;
+	}
+}
+
 .po-klassen-slider__headline {
 	font-size: clamp(28px, 4vw, 40px);
 	font-weight: 600;
