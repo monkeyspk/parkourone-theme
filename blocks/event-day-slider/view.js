@@ -38,7 +38,7 @@
 				loadMoreWrap.style.display = 'none';
 			}
 
-			applyFilter(activeFilter);
+			applyFilters();
 		}
 
 		if (loadMoreBtn) {
@@ -49,62 +49,100 @@
 		// FILTER
 		// ========================================
 
-		var activeFilter = 'all';
+		var currentAgeFilter = 'all';
+		var currentLocationFilter = 'all';
 
-		function applyFilter(filterValue) {
-			activeFilter = filterValue;
+		function applyFilters() {
+			var hasActiveFilter = currentAgeFilter !== 'all' || currentLocationFilter !== 'all';
 
-			allCards.forEach(function(card, index) {
-				// Hidden Cards (load-more) nicht anfassen
-				if (index >= visibleUpTo) return;
-
-				var filters = card.getAttribute('data-filters') || '';
-				var match = filterValue === 'all' || filters.indexOf(filterValue) !== -1;
-				card.style.display = match ? '' : 'none';
-			});
-
-			// Load-More Button anpassen:
-			// Bei aktivem Filter verstecken wir den Button und zeigen alle passenden
-			if (loadMoreWrap) {
-				if (filterValue !== 'all') {
-					// Bei Filter: alle Cards zeigen die passen
-					allCards.forEach(function(card) {
-						var filters = card.getAttribute('data-filters') || '';
-						var match = filters.indexOf(filterValue) !== -1;
-						if (match) {
-							card.classList.remove('is-hidden');
-							card.style.display = '';
-						} else {
-							card.style.display = 'none';
-						}
-					});
-					loadMoreWrap.style.display = 'none';
-				} else {
-					// Bei "Alle": hidden/visible State wiederherstellen
-					allCards.forEach(function(card, index) {
-						if (index >= visibleUpTo) {
-							card.classList.add('is-hidden');
-							card.style.display = '';
-						} else {
-							card.style.display = '';
-						}
-					});
-					loadMoreWrap.style.display = (visibleUpTo >= totalCount) ? 'none' : '';
-				}
+			if (hasActiveFilter) {
+				// Bei aktivem Filter: alle passenden Cards zeigen, Load-More verstecken
+				allCards.forEach(function(card) {
+					var filters = card.getAttribute('data-filters') || '';
+					var matchAge = currentAgeFilter === 'all' || filters.indexOf(currentAgeFilter) !== -1;
+					var matchLoc = currentLocationFilter === 'all' || filters.indexOf(currentLocationFilter) !== -1;
+					if (matchAge && matchLoc) {
+						card.classList.remove('is-hidden');
+						card.style.display = '';
+					} else {
+						card.style.display = 'none';
+					}
+				});
+				if (loadMoreWrap) loadMoreWrap.style.display = 'none';
+			} else {
+				// Bei "Alle": hidden/visible State wiederherstellen
+				allCards.forEach(function(card, index) {
+					if (index >= visibleUpTo) {
+						card.classList.add('is-hidden');
+						card.style.display = '';
+					} else {
+						card.style.display = '';
+					}
+				});
+				if (loadMoreWrap) loadMoreWrap.style.display = (visibleUpTo >= totalCount) ? 'none' : '';
 			}
 		}
 
 		// ========================================
-		// INLINE FILTER PILLS
+		// DROPDOWN FILTERS
 		// ========================================
 
-		var filterBtns = section.querySelectorAll('.po-eds__filter-btn');
+		var dropdowns = section.querySelectorAll('.po-eds__dropdown');
 
-		filterBtns.forEach(function(btn) {
-			btn.addEventListener('click', function() {
-				filterBtns.forEach(function(b) { b.classList.remove('is-active'); });
-				this.classList.add('is-active');
-				applyFilter(this.getAttribute('data-filter'));
+		dropdowns.forEach(function(dropdown) {
+			var trigger = dropdown.querySelector('.po-eds__dropdown-trigger');
+			var panel = dropdown.querySelector('.po-eds__dropdown-panel');
+			var valueEl = dropdown.querySelector('.po-eds__dropdown-value');
+			var options = dropdown.querySelectorAll('.po-eds__dropdown-option');
+			var filterType = dropdown.getAttribute('data-filter-type');
+
+			trigger.addEventListener('click', function(e) {
+				e.stopPropagation();
+				var isOpen = dropdown.classList.contains('is-open');
+
+				// Alle anderen Dropdowns schliessen
+				dropdowns.forEach(function(d) {
+					d.classList.remove('is-open');
+					d.querySelector('.po-eds__dropdown-trigger').setAttribute('aria-expanded', 'false');
+					d.querySelector('.po-eds__dropdown-panel').setAttribute('aria-hidden', 'true');
+				});
+
+				if (!isOpen) {
+					dropdown.classList.add('is-open');
+					trigger.setAttribute('aria-expanded', 'true');
+					panel.setAttribute('aria-hidden', 'false');
+				}
+			});
+
+			options.forEach(function(option) {
+				option.addEventListener('click', function(e) {
+					e.stopPropagation();
+					var value = option.getAttribute('data-value');
+
+					options.forEach(function(o) { o.classList.remove('is-selected'); });
+					option.classList.add('is-selected');
+					valueEl.textContent = option.textContent.trim();
+
+					if (filterType === 'age') {
+						currentAgeFilter = value;
+					} else if (filterType === 'location') {
+						currentLocationFilter = value;
+					}
+
+					applyFilters();
+					dropdown.classList.remove('is-open');
+					trigger.setAttribute('aria-expanded', 'false');
+					panel.setAttribute('aria-hidden', 'true');
+				});
+			});
+		});
+
+		// Dropdowns schliessen bei Klick ausserhalb
+		document.addEventListener('click', function() {
+			dropdowns.forEach(function(d) {
+				d.classList.remove('is-open');
+				d.querySelector('.po-eds__dropdown-trigger').setAttribute('aria-expanded', 'false');
+				d.querySelector('.po-eds__dropdown-panel').setAttribute('aria-hidden', 'true');
 			});
 		});
 

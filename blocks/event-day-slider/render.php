@@ -230,16 +230,37 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 
 	<?php if ($has_filters): ?>
 	<div class="po-eds__filters">
-		<button type="button" class="po-eds__filter-btn is-active" data-filter="all">Alle</button>
-		<?php foreach ($alter_terms as $term): ?>
-		<button type="button" class="po-eds__filter-btn" data-filter="<?php echo esc_attr($term->slug); ?>">
-			<span class="po-eds__filter-dot" style="background: <?php echo esc_attr($age_colors[$term->slug] ?? '#0066cc'); ?>"></span>
-			<?php echo esc_html($term->name); ?>
-		</button>
-		<?php endforeach; ?>
-		<?php foreach ($ortschaft_terms as $term): ?>
-		<button type="button" class="po-eds__filter-btn" data-filter="<?php echo esc_attr($term->slug); ?>"><?php echo esc_html($term->name); ?></button>
-		<?php endforeach; ?>
+		<?php if (!empty($alter_terms)): ?>
+		<div class="po-eds__dropdown" data-filter-type="age">
+			<button type="button" class="po-eds__dropdown-trigger" aria-expanded="false">
+				<span class="po-eds__dropdown-value">Alle Altersgruppen</span>
+				<svg class="po-eds__dropdown-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+			</button>
+			<div class="po-eds__dropdown-panel" aria-hidden="true">
+				<button type="button" class="po-eds__dropdown-option is-selected" data-value="all">Alle Altersgruppen</button>
+				<?php foreach ($alter_terms as $term): ?>
+				<button type="button" class="po-eds__dropdown-option" data-value="<?php echo esc_attr($term->slug); ?>">
+					<span class="po-eds__dropdown-dot" style="background: <?php echo esc_attr($age_colors[$term->slug] ?? '#0066cc'); ?>"></span>
+					<?php echo esc_html($term->name); ?>
+				</button>
+				<?php endforeach; ?>
+			</div>
+		</div>
+		<?php endif; ?>
+		<?php if (!empty($ortschaft_terms)): ?>
+		<div class="po-eds__dropdown" data-filter-type="location">
+			<button type="button" class="po-eds__dropdown-trigger" aria-expanded="false">
+				<span class="po-eds__dropdown-value">Alle Standorte</span>
+				<svg class="po-eds__dropdown-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+			</button>
+			<div class="po-eds__dropdown-panel" aria-hidden="true">
+				<button type="button" class="po-eds__dropdown-option is-selected" data-value="all">Alle Standorte</button>
+				<?php foreach ($ortschaft_terms as $term): ?>
+				<button type="button" class="po-eds__dropdown-option" data-value="<?php echo esc_attr($term->slug); ?>"><?php echo esc_html($term->name); ?></button>
+				<?php endforeach; ?>
+			</div>
+		</div>
+		<?php endif; ?>
 	</div>
 	<?php endif; ?>
 
