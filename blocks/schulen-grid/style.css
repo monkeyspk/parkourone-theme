@@ -5,7 +5,11 @@
 
 @media (min-width: 1441px) {
 	.po-schulen__grid {
-		max-width: calc(50vw + 720px);
+		max-width: 1376px;
+	}
+	.po-schulen__headline,
+	.po-schulen__nav {
+		max-width: 1376px;
 	}
 }
 

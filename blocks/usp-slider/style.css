@@ -6,7 +6,17 @@
 
 @media (min-width: 1441px) {
 	.po-usp__wrapper {
-		max-width: calc(50vw + 720px);
+		max-width: 1440px;
+		padding-left: 120px;
+		padding-right: 120px;
+	}
+	.po-usp__headline {
+		max-width: 1440px;
+		padding: 0 120px;
+	}
+	.po-usp__nav {
+		max-width: 1440px;
+		padding: 0 120px;
 	}
 }
 

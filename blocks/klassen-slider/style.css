@@ -21,7 +21,21 @@ body.po-no-scroll {
 
 @media (min-width: 1441px) {
 	.po-klassen-slider__track {
-		max-width: calc(50vw + 720px);
+		max-width: 1440px;
+		padding-left: 120px;
+		padding-right: 120px;
+	}
+	.po-klassen-slider__headline {
+		max-width: 1440px;
+		padding: 0 120px;
+	}
+	.po-klassen-slider__filters {
+		max-width: 1440px;
+		padding: 0 120px;
+	}
+	.po-klassen-slider__nav {
+		max-width: 1440px;
+		padding: 0 120px;
 	}
 }
 
