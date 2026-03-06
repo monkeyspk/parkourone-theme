@@ -140,6 +140,43 @@
 			});
 		});
 
+		// ========================================
+		// URL-PARAMETER FILTER (?alter=kids&standort=berlin-mitte&tag=1)
+		// ========================================
+
+		var urlParams = new URLSearchParams(window.location.search);
+		var paramMap = { age: 'alter', location: 'standort', weekday: 'tag' };
+
+		dropdowns.forEach(function(dropdown) {
+			var filterType = dropdown.getAttribute('data-filter-type');
+			var paramName = paramMap[filterType];
+			var paramValue = urlParams.get(paramName);
+			if (!paramValue) return;
+
+			var options = dropdown.querySelectorAll('.po-eds__dropdown-option');
+			var valueEl = dropdown.querySelector('.po-eds__dropdown-value');
+			var matched = false;
+
+			options.forEach(function(option) {
+				if (option.getAttribute('data-value') === paramValue) {
+					options.forEach(function(o) { o.classList.remove('is-selected'); });
+					option.classList.add('is-selected');
+					valueEl.textContent = option.textContent.trim();
+					matched = true;
+				}
+			});
+
+			if (matched) {
+				if (filterType === 'age') currentAgeFilter = paramValue;
+				else if (filterType === 'location') currentLocationFilter = paramValue;
+				else if (filterType === 'weekday') currentWeekdayFilter = paramValue;
+			}
+		});
+
+		if (urlParams.has('alter') || urlParams.has('standort') || urlParams.has('tag')) {
+			applyFilters();
+		}
+
 		// Dropdowns schliessen bei Klick ausserhalb
 		document.addEventListener('click', function() {
 			dropdowns.forEach(function(d) {
