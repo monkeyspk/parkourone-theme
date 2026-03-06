@@ -15,6 +15,54 @@
 	color: var(--po-color-text, #1d1d1f);
 	margin: 0 0 32px;
 	padding: 0 max(24px, calc((100vw - 1200px) / 2));
+	text-align: center;
+}
+
+/* ========================================
+   Inline Filter Pills
+   ======================================== */
+
+.po-eds__filters {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 8px;
+	max-width: 700px;
+	margin: 0 auto 24px;
+	padding: 0 24px;
+}
+
+.po-eds__filter-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 16px;
+	border-radius: 100px;
+	border: 1.5px solid #d1d1d6;
+	background: #fff;
+	font-size: 14px;
+	font-weight: 500;
+	color: #1d1d1f;
+	cursor: pointer;
+	transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+	font-family: inherit;
+}
+
+.po-eds__filter-btn:hover {
+	border-color: #1d1d1f;
+}
+
+.po-eds__filter-btn.is-active {
+	background: #1d1d1f;
+	color: #fff;
+	border-color: #1d1d1f;
+}
+
+.po-eds__filter-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	flex-shrink: 0;
 }
 
 /* Empty State */
@@ -198,153 +246,6 @@
 }
 
 /* ========================================
-   FAB Filter (Floating Action Button)
-   ======================================== */
-
-.po-eds__fab {
-	position: fixed;
-	bottom: 24px;
-	left: 50%;
-	transform: translateX(-50%) translateY(20px);
-	z-index: 100;
-	opacity: 0;
-	visibility: hidden;
-	transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-}
-
-.po-eds__fab.is-visible {
-	opacity: 1;
-	visibility: visible;
-	transform: translateX(-50%) translateY(0);
-}
-
-.po-eds__fab-trigger {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	padding: 12px 20px;
-	background: #fff;
-	border: none;
-	border-radius: 50px;
-	cursor: pointer;
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-	transition: transform 0.2s ease, box-shadow 0.2s ease;
-	font-family: inherit;
-}
-
-.po-eds__fab-trigger:hover {
-	transform: scale(1.02);
-	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
-}
-
-.po-eds__fab-text {
-	font-size: 14px;
-	font-weight: 500;
-	color: #1d1d1f;
-}
-
-.po-eds__fab-icon {
-	width: 18px;
-	height: 18px;
-	color: #1d1d1f;
-	transition: transform 0.3s ease;
-}
-
-.po-eds__fab.is-open .po-eds__fab-icon {
-	transform: rotate(45deg);
-}
-
-.po-eds__fab-dropdown {
-	position: absolute;
-	bottom: calc(100% + 12px);
-	left: 50%;
-	transform: translateX(-50%) translateY(10px);
-	min-width: 220px;
-	max-height: 60vh;
-	overflow-y: auto;
-	background: #fff;
-	border-radius: 16px;
-	padding: 8px;
-	opacity: 0;
-	visibility: hidden;
-	transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
-	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-	scrollbar-width: thin;
-	scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
-}
-
-.po-eds__fab-dropdown::-webkit-scrollbar {
-	width: 6px;
-}
-
-.po-eds__fab-dropdown::-webkit-scrollbar-track {
-	background: transparent;
-}
-
-.po-eds__fab-dropdown::-webkit-scrollbar-thumb {
-	background: rgba(0, 0, 0, 0.2);
-	border-radius: 3px;
-}
-
-.po-eds__fab.is-open .po-eds__fab-dropdown {
-	opacity: 1;
-	visibility: visible;
-	transform: translateX(-50%) translateY(0);
-}
-
-.po-eds__fab-group {
-	padding: 8px 0;
-	border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-.po-eds__fab-group:last-child {
-	border-bottom: none;
-}
-
-.po-eds__fab-group-label {
-	display: block;
-	font-size: 11px;
-	font-weight: 600;
-	text-transform: uppercase;
-	letter-spacing: 0.04em;
-	color: rgba(0, 0, 0, 0.5);
-	padding: 4px 12px 8px;
-}
-
-.po-eds__fab-option {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	width: 100%;
-	padding: 10px 12px;
-	background: none;
-	border: none;
-	border-radius: 8px;
-	cursor: pointer;
-	font-size: 14px;
-	color: #1d1d1f;
-	text-align: left;
-	transition: background 0.15s ease;
-	font-family: inherit;
-}
-
-.po-eds__fab-option:hover {
-	background: rgba(0, 0, 0, 0.05);
-}
-
-.po-eds__fab-option.is-active {
-	background: rgba(0, 0, 0, 0.08);
-	font-weight: 500;
-}
-
-.po-eds__fab-dot {
-	width: 8px;
-	height: 8px;
-	border-radius: 50%;
-	flex-shrink: 0;
-}
-
-/* ========================================
    Responsive
    ======================================== */
 
@@ -356,6 +257,17 @@
 	.po-eds__headline {
 		padding: 0 20px;
 		margin-bottom: 24px;
+	}
+
+	.po-eds__filters {
+		padding: 0 16px;
+		gap: 6px;
+		margin-bottom: 20px;
+	}
+
+	.po-eds__filter-btn {
+		padding: 6px 12px;
+		font-size: 13px;
 	}
 
 	.po-eds__list {

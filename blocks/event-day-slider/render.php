@@ -198,20 +198,8 @@ usort($all_events, function($a, $b) {
 	return strcmp($a['date_key'], $b['date_key']);
 });
 
-// Initiale Anzeige: Events der naechsten 14 Tage die Events haben
-$initial_count = 0;
-$initial_limit = 14; // 14 Tage mit Events
-$seen_days = [];
-$initial_items = 0;
-
-foreach ($all_events as $idx => $ev) {
-	if (!isset($seen_days[$ev['date_key']])) {
-		$seen_days[$ev['date_key']] = true;
-		$initial_count++;
-	}
-	if ($initial_count > $initial_limit) break;
-	$initial_items = $idx + 1;
-}
+// Initiale Anzeige: maximal 15 Events
+$initial_items = min(15, count($all_events));
 
 $total_events = count($all_events);
 $has_more = ($initial_items < $total_events);
@@ -238,6 +226,21 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 
 	<?php if ($headline): ?>
 		<h2 class="po-eds__headline"><?php echo wp_kses_post($headline); ?></h2>
+	<?php endif; ?>
+
+	<?php if ($has_filters): ?>
+	<div class="po-eds__filters">
+		<button type="button" class="po-eds__filter-btn is-active" data-filter="all">Alle</button>
+		<?php foreach ($alter_terms as $term): ?>
+		<button type="button" class="po-eds__filter-btn" data-filter="<?php echo esc_attr($term->slug); ?>">
+			<span class="po-eds__filter-dot" style="background: <?php echo esc_attr($age_colors[$term->slug] ?? '#0066cc'); ?>"></span>
+			<?php echo esc_html($term->name); ?>
+		</button>
+		<?php endforeach; ?>
+		<?php foreach ($ortschaft_terms as $term): ?>
+		<button type="button" class="po-eds__filter-btn" data-filter="<?php echo esc_attr($term->slug); ?>"><?php echo esc_html($term->name); ?></button>
+		<?php endforeach; ?>
+	</div>
 	<?php endif; ?>
 
 	<?php if (!$has_any_events): ?>
@@ -307,43 +310,6 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 	</div>
 	<?php endif; ?>
 
-	<?php endif; ?>
-
-	<?php // ======== FAB Filter ======== ?>
-	<?php if ($has_filters): ?>
-	<div class="po-eds__fab">
-		<button type="button" class="po-eds__fab-trigger">
-			<span class="po-eds__fab-text">Filtern</span>
-			<svg class="po-eds__fab-icon" viewBox="0 0 24 24" fill="none">
-				<path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-			</svg>
-		</button>
-		<div class="po-eds__fab-dropdown">
-			<div class="po-eds__fab-group">
-				<span class="po-eds__fab-group-label">Alle anzeigen</span>
-				<button type="button" class="po-eds__fab-option is-active" data-filter="all">Alle Trainings</button>
-			</div>
-			<?php if (!empty($alter_terms)): ?>
-			<div class="po-eds__fab-group">
-				<span class="po-eds__fab-group-label">Nach Alter</span>
-				<?php foreach ($alter_terms as $term): ?>
-				<button type="button" class="po-eds__fab-option" data-filter="<?php echo esc_attr($term->slug); ?>">
-					<span class="po-eds__fab-dot" style="background: <?php echo esc_attr($age_colors[$term->slug] ?? '#0066cc'); ?>"></span>
-					<?php echo esc_html($term->name); ?>
-				</button>
-				<?php endforeach; ?>
-			</div>
-			<?php endif; ?>
-			<?php if (!empty($ortschaft_terms)): ?>
-			<div class="po-eds__fab-group">
-				<span class="po-eds__fab-group-label">Nach Standort</span>
-				<?php foreach ($ortschaft_terms as $term): ?>
-				<button type="button" class="po-eds__fab-option" data-filter="<?php echo esc_attr($term->slug); ?>"><?php echo esc_html($term->name); ?></button>
-				<?php endforeach; ?>
-			</div>
-			<?php endif; ?>
-		</div>
-	</div>
 	<?php endif; ?>
 
 	<?php // ======== Modals (1 pro Event-ID) ======== ?>

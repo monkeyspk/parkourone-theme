@@ -17,7 +17,7 @@
 		var totalCount = parseInt(list.getAttribute('data-total') || '0', 10);
 		var loadMoreWrap = section.querySelector('.po-eds__load-more-wrap');
 		var loadMoreBtn = section.querySelector('.po-eds__load-more');
-		var loadBatch = 14; // Weitere 14 Tage mit Events pro Klick
+		var loadBatch = 15; // 15 Events pro Klick
 
 		// ========================================
 		// LOAD MORE
@@ -26,37 +26,18 @@
 		var visibleUpTo = initialCount; // Index bis wohin sichtbar
 
 		function showMoreItems() {
-			// Naechste Batch: 14 weitere Tage mit Events
-			var seenDays = {};
-			var dayCount = 0;
-			var newVisibleUpTo = visibleUpTo;
+			var newVisibleUpTo = Math.min(visibleUpTo + loadBatch, allCards.length);
 
-			for (var i = visibleUpTo; i < allCards.length; i++) {
-				var card = allCards[i];
-				// Datum aus der Card holen (data-index fuer Reihenfolge)
-				// Wir zaehlen "Tage" indem wir den Date-Text vergleichen
-				var dateEl = card.querySelector('.po-eds__card-date');
-				var dateText = dateEl ? dateEl.textContent.trim() : '';
-
-				if (dateText && !seenDays[dateText]) {
-					seenDays[dateText] = true;
-					dayCount++;
-				}
-
-				if (dayCount > loadBatch) break;
-
-				card.classList.remove('is-hidden');
-				newVisibleUpTo = i + 1;
+			for (var i = visibleUpTo; i < newVisibleUpTo; i++) {
+				allCards[i].classList.remove('is-hidden');
 			}
 
 			visibleUpTo = newVisibleUpTo;
 
-			// Hide button wenn alles sichtbar oder Filter aktiv
 			if (visibleUpTo >= totalCount && loadMoreWrap) {
 				loadMoreWrap.style.display = 'none';
 			}
 
-			// Filter erneut anwenden
 			applyFilter(activeFilter);
 		}
 
@@ -114,62 +95,18 @@
 		}
 
 		// ========================================
-		// FAB FILTER (Floating Action Button)
+		// INLINE FILTER PILLS
 		// ========================================
 
-		var fab = section.querySelector('.po-eds__fab');
-		var trigger = fab ? fab.querySelector('.po-eds__fab-trigger') : null;
-		var filterText = fab ? fab.querySelector('.po-eds__fab-text') : null;
-		var options = fab ? fab.querySelectorAll('.po-eds__fab-option') : [];
+		var filterBtns = section.querySelectorAll('.po-eds__filter-btn');
 
-		if (fab && trigger) {
-			// IntersectionObserver: FAB nur anzeigen wenn Block sichtbar
-			var observer = new IntersectionObserver(function(entries) {
-				entries.forEach(function(entry) {
-					if (entry.isIntersecting) {
-						fab.classList.add('is-visible');
-					} else {
-						fab.classList.remove('is-visible');
-						fab.classList.remove('is-open');
-					}
-				});
-			}, { threshold: 0.15, rootMargin: '-10% 0px -10% 0px' });
-
-			observer.observe(section);
-
-			// Toggle dropdown
-			trigger.addEventListener('click', function(e) {
-				e.stopPropagation();
-				fab.classList.toggle('is-open');
+		filterBtns.forEach(function(btn) {
+			btn.addEventListener('click', function() {
+				filterBtns.forEach(function(b) { b.classList.remove('is-active'); });
+				this.classList.add('is-active');
+				applyFilter(this.getAttribute('data-filter'));
 			});
-
-			// Close on outside click
-			document.addEventListener('click', function(e) {
-				if (!fab.contains(e.target)) {
-					fab.classList.remove('is-open');
-				}
-			});
-
-			// Filter option click
-			options.forEach(function(option) {
-				option.addEventListener('click', function() {
-					options.forEach(function(o) { o.classList.remove('is-active'); });
-					this.classList.add('is-active');
-
-					var filterValue = this.getAttribute('data-filter');
-					var filterName = this.textContent.trim();
-
-					if (filterValue === 'all') {
-						filterText.textContent = 'Filtern';
-					} else {
-						filterText.textContent = filterName;
-					}
-
-					applyFilter(filterValue);
-					fab.classList.remove('is-open');
-				});
-			});
-		}
+		});
 
 		// ========================================
 		// MODAL OEFFNEN/SCHLIESSEN
