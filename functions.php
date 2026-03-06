@@ -192,6 +192,7 @@ require_once get_template_directory() . '/inc/woocommerce/init.php';
 require_once get_template_directory() . '/inc/health-data-consent.php';
 require_once get_template_directory() . '/inc/promo-popup.php';
 require_once get_template_directory() . '/inc/redirects.php';
+require_once get_template_directory() . '/inc/probetraining-links.php';
 
 /**
  * ============================================

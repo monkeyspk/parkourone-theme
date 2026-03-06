@@ -103,6 +103,16 @@ function parkourone_register_admin_menu() {
 		'parkourone_redirects_page'
 	);
 
+	// Probetraining Links
+	add_submenu_page(
+		'parkourone',
+		'Probetraining Links',
+		'Probetraining Links',
+		'manage_options',
+		'parkourone-probetraining-links',
+		'parkourone_probetraining_links_page'
+	);
+
 	// Maintenance Mode
 	add_submenu_page(
 		'parkourone',
