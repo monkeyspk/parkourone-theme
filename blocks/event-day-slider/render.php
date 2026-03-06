@@ -233,11 +233,11 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 		<?php if (!empty($alter_terms)): ?>
 		<div class="po-eds__dropdown" data-filter-type="age">
 			<button type="button" class="po-eds__dropdown-trigger" aria-expanded="false">
-				<span class="po-eds__dropdown-value">Alle Altersgruppen</span>
+				<span class="po-eds__dropdown-value">Altersgruppe</span>
 				<svg class="po-eds__dropdown-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 			</button>
 			<div class="po-eds__dropdown-panel" aria-hidden="true">
-				<button type="button" class="po-eds__dropdown-option is-selected" data-value="all">Alle Altersgruppen</button>
+				<button type="button" class="po-eds__dropdown-option is-selected" data-value="all">Altersgruppe</button>
 				<?php foreach ($alter_terms as $term): ?>
 				<button type="button" class="po-eds__dropdown-option" data-value="<?php echo esc_attr($term->slug); ?>">
 					<span class="po-eds__dropdown-dot" style="background: <?php echo esc_attr($age_colors[$term->slug] ?? '#0066cc'); ?>"></span>
@@ -250,17 +250,33 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 		<?php if (!empty($ortschaft_terms)): ?>
 		<div class="po-eds__dropdown" data-filter-type="location">
 			<button type="button" class="po-eds__dropdown-trigger" aria-expanded="false">
-				<span class="po-eds__dropdown-value">Alle Standorte</span>
+				<span class="po-eds__dropdown-value">Standort</span>
 				<svg class="po-eds__dropdown-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 			</button>
 			<div class="po-eds__dropdown-panel" aria-hidden="true">
-				<button type="button" class="po-eds__dropdown-option is-selected" data-value="all">Alle Standorte</button>
+				<button type="button" class="po-eds__dropdown-option is-selected" data-value="all">Standort</button>
 				<?php foreach ($ortschaft_terms as $term): ?>
 				<button type="button" class="po-eds__dropdown-option" data-value="<?php echo esc_attr($term->slug); ?>"><?php echo esc_html($term->name); ?></button>
 				<?php endforeach; ?>
 			</div>
 		</div>
 		<?php endif; ?>
+		<div class="po-eds__dropdown" data-filter-type="weekday">
+			<button type="button" class="po-eds__dropdown-trigger" aria-expanded="false">
+				<span class="po-eds__dropdown-value">Wochentag</span>
+				<svg class="po-eds__dropdown-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+			</button>
+			<div class="po-eds__dropdown-panel" aria-hidden="true">
+				<button type="button" class="po-eds__dropdown-option is-selected" data-value="all">Wochentag</button>
+				<button type="button" class="po-eds__dropdown-option" data-value="1">Montag</button>
+				<button type="button" class="po-eds__dropdown-option" data-value="2">Dienstag</button>
+				<button type="button" class="po-eds__dropdown-option" data-value="3">Mittwoch</button>
+				<button type="button" class="po-eds__dropdown-option" data-value="4">Donnerstag</button>
+				<button type="button" class="po-eds__dropdown-option" data-value="5">Freitag</button>
+				<button type="button" class="po-eds__dropdown-option" data-value="6">Samstag</button>
+				<button type="button" class="po-eds__dropdown-option" data-value="0">Sonntag</button>
+			</div>
+		</div>
 	</div>
 	<?php endif; ?>
 
@@ -299,6 +315,7 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 		<button type="button"
 			class="po-eds__card<?php echo $is_soldout ? ' is-soldout' : ''; ?><?php echo $is_hidden ? ' is-hidden' : ''; ?>"
 			data-filters="<?php echo esc_attr($filter_data); ?>"
+			data-weekday="<?php echo date('w', $ev['timestamp']); ?>"
 			data-modal-target="<?php echo esc_attr($modal_id); ?>"
 			data-index="<?php echo $idx; ?>">
 			<?php if (!empty($ev['headcoach_image'])): ?>

@@ -51,17 +51,19 @@
 
 		var currentAgeFilter = 'all';
 		var currentLocationFilter = 'all';
+		var currentWeekdayFilter = 'all';
 
 		function applyFilters() {
-			var hasActiveFilter = currentAgeFilter !== 'all' || currentLocationFilter !== 'all';
+			var hasActiveFilter = currentAgeFilter !== 'all' || currentLocationFilter !== 'all' || currentWeekdayFilter !== 'all';
 
 			if (hasActiveFilter) {
-				// Bei aktivem Filter: alle passenden Cards zeigen, Load-More verstecken
 				allCards.forEach(function(card) {
 					var filters = card.getAttribute('data-filters') || '';
+					var weekday = card.getAttribute('data-weekday') || '';
 					var matchAge = currentAgeFilter === 'all' || filters.indexOf(currentAgeFilter) !== -1;
 					var matchLoc = currentLocationFilter === 'all' || filters.indexOf(currentLocationFilter) !== -1;
-					if (matchAge && matchLoc) {
+					var matchDay = currentWeekdayFilter === 'all' || weekday === currentWeekdayFilter;
+					if (matchAge && matchLoc && matchDay) {
 						card.classList.remove('is-hidden');
 						card.style.display = '';
 					} else {
@@ -70,7 +72,6 @@
 				});
 				if (loadMoreWrap) loadMoreWrap.style.display = 'none';
 			} else {
-				// Bei "Alle": hidden/visible State wiederherstellen
 				allCards.forEach(function(card, index) {
 					if (index >= visibleUpTo) {
 						card.classList.add('is-hidden');
@@ -127,6 +128,8 @@
 						currentAgeFilter = value;
 					} else if (filterType === 'location') {
 						currentLocationFilter = value;
+					} else if (filterType === 'weekday') {
+						currentWeekdayFilter = value;
 					}
 
 					applyFilters();

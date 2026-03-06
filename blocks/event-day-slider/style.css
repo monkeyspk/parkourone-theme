@@ -34,8 +34,7 @@
 .po-eds__dropdown {
 	position: relative;
 	flex: 1;
-	min-width: 180px;
-	max-width: 280px;
+	min-width: 150px;
 }
 
 .po-eds__dropdown-trigger {
