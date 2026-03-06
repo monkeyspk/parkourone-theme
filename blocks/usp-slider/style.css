@@ -11,6 +11,15 @@
 		margin-right: auto;
 		overflow: hidden;
 	}
+	.po-usp__headline {
+		padding: 0 120px;
+	}
+	.po-usp__wrapper {
+		padding: 0 0 0 120px;
+	}
+	.po-usp__nav {
+		padding: 0 120px;
+	}
 }
 
 .po-usp__headline {

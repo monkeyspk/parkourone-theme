@@ -26,6 +26,18 @@ body.po-no-scroll {
 		margin-right: auto;
 		overflow: hidden;
 	}
+	.po-klassen-slider__headline {
+		padding: 0 120px;
+	}
+	.po-klassen-slider__filters {
+		padding: 0 120px;
+	}
+	.po-klassen-slider__track {
+		padding: 0 0 0 120px;
+	}
+	.po-klassen-slider__nav {
+		padding: 0 120px;
+	}
 }
 
 .po-klassen-slider__headline {
