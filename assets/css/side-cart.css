@@ -241,23 +241,15 @@
 	color: var(--sc-accent);
 }
 
-/* Event info (date + location) */
+/* Event info (date, time, location – stacked) */
 .po-side-cart__item-event {
 	display: flex;
-	align-items: center;
-	gap: 4px;
+	flex-direction: column;
+	gap: 1px;
 	font-size: 13px;
 	color: var(--sc-text-secondary);
 	margin-top: 2px;
-}
-
-.po-side-cart__item-event .po-side-cart__item-date {
-	white-space: nowrap;
-}
-
-.po-side-cart__item-event .po-side-cart__item-location::before {
-	content: "\00b7";
-	margin-right: 4px;
+	line-height: 1.35;
 }
 
 /* Participant badges */

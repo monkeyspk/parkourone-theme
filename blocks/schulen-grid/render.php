@@ -94,4 +94,50 @@ if (empty($filtered_schulen)) {
 			</a>
 		<?php endforeach; ?>
 	</div>
+
+	<div class="po-schulen__nav">
+		<button type="button" class="po-schulen__nav-btn po-schulen__nav-prev" aria-label="Zurück" disabled>
+			<svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+		</button>
+		<button type="button" class="po-schulen__nav-btn po-schulen__nav-next" aria-label="Weiter">
+			<svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+		</button>
+	</div>
 </section>
+
+<script>
+(function(){
+	var section = document.querySelector('.po-schulen');
+	if (!section) return;
+
+	var grid = section.querySelector('.po-schulen__grid');
+	var prevBtn = section.querySelector('.po-schulen__nav-prev');
+	var nextBtn = section.querySelector('.po-schulen__nav-next');
+	if (!grid || !prevBtn || !nextBtn) return;
+
+	var cardWidth = grid.querySelector('.po-schule-card');
+	var scrollAmount = cardWidth ? cardWidth.offsetWidth + 24 : 320;
+
+	function updateButtons() {
+		prevBtn.disabled = grid.scrollLeft <= 5;
+		nextBtn.disabled = grid.scrollLeft + grid.offsetWidth >= grid.scrollWidth - 5;
+	}
+
+	prevBtn.addEventListener('click', function() {
+		grid.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+	});
+	nextBtn.addEventListener('click', function() {
+		grid.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+	});
+
+	grid.addEventListener('scroll', updateButtons, { passive: true });
+	updateButtons();
+
+	// Update on resize
+	window.addEventListener('resize', function() {
+		var card = grid.querySelector('.po-schule-card');
+		scrollAmount = card ? card.offsetWidth + 24 : 320;
+		updateButtons();
+	});
+})();
+</script>

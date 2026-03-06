@@ -308,11 +308,18 @@ function parkourone_get_cart_item_data($cart_item_key, $cart_item) {
 	}
 
 	// Display name and details
+	$termin_zeit = '';
 	if ($event_id) {
 		$display_name = get_the_title($event_id);
 		$details = isset($cart_item['minimal_event_details']) ? $cart_item['minimal_event_details'] : [];
 		$termin_datum = !empty($details['date']) ? $details['date'] : get_post_meta($product_id, '_event_date', true);
 		$termin_ort = !empty($details['venue']) ? $details['venue'] : '';
+		// Uhrzeit vom Event holen
+		$start_time = get_post_meta($event_id, '_event_start_time', true);
+		$end_time = get_post_meta($event_id, '_event_end_time', true);
+		if ($start_time) {
+			$termin_zeit = $start_time . ($end_time ? ' – ' . $end_time : '');
+		}
 	} elseif (!empty($cart_item['ab_gutschein_amount'])) {
 		$display_name = $product->get_name();
 		$termin_datum = '';
@@ -325,6 +332,14 @@ function parkourone_get_cart_item_data($cart_item_key, $cart_item) {
 		$display_name = $angebot_title ?: $product->get_name();
 		$termin_ort = get_post_meta($product_id, '_angebot_termin_ort', true);
 		$termin_datum = get_post_meta($product_id, '_angebot_termin_datum', true);
+		// Uhrzeit vom Angebot-Termin holen
+		if ($angebot_id) {
+			$termin_index = get_post_meta($product_id, '_angebot_termin_index', true);
+			$termine = get_post_meta($angebot_id, '_angebot_termine', true);
+			if (is_array($termine) && isset($termine[$termin_index]['uhrzeit'])) {
+				$termin_zeit = $termine[$termin_index]['uhrzeit'];
+			}
+		}
 	}
 
 	return [
@@ -338,6 +353,7 @@ function parkourone_get_cart_item_data($cart_item_key, $cart_item) {
 		'display_name'      => $display_name,
 		'termin_datum'      => $termin_datum ?? '',
 		'termin_ort'        => $termin_ort ?? '',
+		'termin_zeit'       => $termin_zeit,
 	];
 }
 
@@ -367,10 +383,13 @@ function parkourone_get_checkout_summary_html() {
 					</div>
 					<div class="po-checkout-summary__item-details">
 						<div class="po-checkout-summary__item-name"><?php echo esc_html($data['display_name']); ?></div>
-						<?php if ($data['termin_datum'] || $data['termin_ort']) : ?>
+						<?php if ($data['termin_datum'] || $data['termin_ort'] || $data['termin_zeit']) : ?>
 							<div class="po-checkout-summary__item-event">
 								<?php if ($data['termin_datum']) : ?>
 									<span><?php echo esc_html(date_i18n('d. M Y', strtotime($data['termin_datum']))); ?></span>
+								<?php endif; ?>
+								<?php if ($data['termin_zeit']) : ?>
+									<span><?php echo esc_html($data['termin_zeit']); ?></span>
 								<?php endif; ?>
 								<?php if ($data['termin_ort']) : ?>
 									<span><?php echo esc_html($data['termin_ort']); ?></span>
@@ -643,10 +662,13 @@ function parkourone_get_side_cart_items_html() {
 					<a href="<?php echo esc_url($data['product_permalink']); ?>" class="po-side-cart__item-name">
 						<?php echo esc_html($data['display_name']); ?>
 					</a>
-					<?php if ($data['termin_datum'] || $data['termin_ort']) : ?>
+					<?php if ($data['termin_datum'] || $data['termin_ort'] || $data['termin_zeit']) : ?>
 						<div class="po-side-cart__item-event">
 							<?php if ($data['termin_datum']) : ?>
 								<span class="po-side-cart__item-date"><?php echo esc_html(date_i18n('d. M Y', strtotime($data['termin_datum']))); ?></span>
+							<?php endif; ?>
+							<?php if ($data['termin_zeit']) : ?>
+								<span class="po-side-cart__item-time"><?php echo esc_html($data['termin_zeit']); ?></span>
 							<?php endif; ?>
 							<?php if ($data['termin_ort']) : ?>
 								<span class="po-side-cart__item-location"><?php echo esc_html($data['termin_ort']); ?></span>
