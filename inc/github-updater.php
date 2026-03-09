@@ -131,7 +131,7 @@ class ParkourONE_GitHub_Updater {
     /**
      * Admin-Seite rendern
      */
-    public function render_admin_page() {
+    public function render_admin_page($embedded = false) {
         $local_version = $this->get_local_version();
         $remote_version = $this->get_remote_version();
         $last_update = get_option('parkourone_last_update');
@@ -141,8 +141,10 @@ class ParkourONE_GitHub_Updater {
         $next_check_in = $last_check ? human_time_diff(time(), $last_check + $this->check_interval) : 'Jetzt';
 
         ?>
+        <?php if (!$embedded): ?>
         <div class="wrap">
             <h1>ParkourONE Theme Updates</h1>
+        <?php endif; ?>
 
             <?php
             // Feedback-Nachrichten basierend auf Query-Parametern
@@ -257,7 +259,9 @@ class ParkourONE_GitHub_Updater {
                 </details>
                 <?php endif; ?>
             </div>
+        <?php if (!$embedded): ?>
         </div>
+        <?php endif; ?>
         <?php
     }
 

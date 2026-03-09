@@ -116,13 +116,15 @@ add_action('admin_bar_menu', 'parkourone_maintenance_admin_bar', 100);
  * Admin-Seite für Maintenance Mode
  * Menü-Registrierung erfolgt in inc/admin-menu.php
  */
-function parkourone_maintenance_admin_page_html() {
+function parkourone_maintenance_admin_page_html($embedded = false) {
 	if (!current_user_can('manage_options')) return;
 
 	$is_active = parkourone_is_maintenance_active();
 	?>
+	<?php if (!$embedded): ?>
 	<div class="wrap">
 		<h1>Maintenance Mode</h1>
+	<?php endif; ?>
 
 		<div style="background: #fff; padding: 24px; border-radius: 8px; max-width: 600px; margin-top: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
 
@@ -158,7 +160,9 @@ function parkourone_maintenance_admin_page_html() {
 			</p>
 			<?php endif; ?>
 		</div>
+	<?php if (!$embedded): ?>
 	</div>
+	<?php endif; ?>
 	<?php
 }
 

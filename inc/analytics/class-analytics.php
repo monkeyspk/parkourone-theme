@@ -410,8 +410,9 @@ class PO_Analytics {
 			[$this, 'render_dashboard']
 		);
 
+		// Rohdaten & Einstellungen als Hidden Pages (erreichbar via URL, nicht in Sidebar)
 		add_submenu_page(
-			'parkourone',
+			null,
 			'Analytics Rohdaten',
 			'Analytics Rohdaten',
 			'manage_options',
@@ -420,7 +421,7 @@ class PO_Analytics {
 		);
 
 		add_submenu_page(
-			'parkourone',
+			null,
 			'Analytics Einstellungen',
 			'Analytics Einstellungen',
 			'manage_options',
@@ -526,6 +527,11 @@ class PO_Analytics {
 					<?php echo esc_html($label); ?>
 				</a>
 				<?php endforeach; ?>
+				<span style="flex: 1;"></span>
+				<a href="<?php echo esc_url(admin_url('admin.php?page=parkourone-analytics-raw')); ?>"
+				   style="padding: 10px 12px; text-decoration: none; font-size: 13px; color: #999; margin-bottom: -2px;">Rohdaten</a>
+				<a href="<?php echo esc_url(admin_url('admin.php?page=parkourone-analytics-settings')); ?>"
+				   style="padding: 10px 12px; text-decoration: none; font-size: 13px; color: #999; margin-bottom: -2px;">⚙ Einstellungen</a>
 			</nav>
 
 			<?php

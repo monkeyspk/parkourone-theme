@@ -98,25 +98,16 @@ function parkourone_register_admin_menu() {
 	// ── ANALYTICS & DATENSCHUTZ (Analytics + Cookie-Consent registrieren sich selbst)
 	add_submenu_page('parkourone', '', 'ANALYTICS & DATENSCHUTZ', 'manage_options', '#po-sep-analytics', '__return_false');
 
-	// ── SYSTEM ──────────────────────────
+	// ── SYSTEM (Maintenance + Updates als Tabs)
 	add_submenu_page('parkourone', '', 'SYSTEM', 'manage_options', '#po-sep-system', '__return_false');
 
 	add_submenu_page(
 		'parkourone',
-		'Maintenance Mode',
-		'Maintenance Mode',
+		'System',
+		'System',
 		'manage_options',
-		'parkourone-maintenance',
-		'parkourone_maintenance_admin_page_html'
-	);
-
-	add_submenu_page(
-		'parkourone',
-		'Theme Updates',
-		'Theme Updates',
-		'manage_options',
-		'parkourone-updates',
-		'parkourone_theme_updates_page'
+		'parkourone-system',
+		'parkourone_system_combined_page'
 	);
 }
 add_action('admin_menu', 'parkourone_register_admin_menu', 5);
@@ -262,14 +253,11 @@ function parkourone_sort_admin_submenu() {
 		// ── ANALYTICS & DATENSCHUTZ
 		'#po-sep-analytics'           => 40,
 		'parkourone-analytics'         => 41,
-		'parkourone-analytics-raw'     => 42,
-		'parkourone-analytics-settings' => 43,
-		'parkourone-consent'           => 44,
+		'parkourone-consent'           => 42,
 
 		// ── SYSTEM
 		'#po-sep-system'              => 90,
-		'parkourone-maintenance'       => 91,
-		'parkourone-updates'           => 92,
+		'parkourone-system'            => 91,
 	];
 
 	usort($submenu['parkourone'], function($a, $b) use ($order) {
@@ -1123,15 +1111,43 @@ function parkourone_fallback_images_page($embedded = false) {
 }
 
 /**
+ * System Seite (Maintenance + Theme Updates als Tabs)
+ */
+function parkourone_system_combined_page() {
+	$tab = $_GET['tab'] ?? 'maintenance';
+	$base_url = admin_url('admin.php?page=parkourone-system');
+	?>
+	<div class="wrap">
+		<h1>System</h1>
+		<nav class="nav-tab-wrapper">
+			<a href="<?php echo esc_url($base_url . '&tab=maintenance'); ?>" class="nav-tab <?php echo $tab === 'maintenance' ? 'nav-tab-active' : ''; ?>">Maintenance</a>
+			<a href="<?php echo esc_url($base_url . '&tab=updates'); ?>" class="nav-tab <?php echo $tab === 'updates' ? 'nav-tab-active' : ''; ?>">Theme Updates</a>
+		</nav>
+		<div style="margin-top: 20px;">
+			<?php
+			if ($tab === 'updates') {
+				parkourone_theme_updates_page(true);
+			} else {
+				parkourone_maintenance_admin_page_html(true);
+			}
+			?>
+		</div>
+	</div>
+	<?php
+}
+
+/**
  * Theme Updates Seite (Wrapper für GitHub Updater)
  */
-function parkourone_theme_updates_page() {
+function parkourone_theme_updates_page($embedded = false) {
 	// Verwende die existierende Render-Funktion vom GitHub Updater
 	if (class_exists('ParkourONE_GitHub_Updater')) {
 		$updater = new ParkourONE_GitHub_Updater();
-		$updater->render_admin_page();
+		$updater->render_admin_page($embedded);
 	} else {
-		echo '<div class="wrap"><h1>Theme Updates</h1><p>GitHub Updater nicht verfügbar.</p></div>';
+		if (!$embedded) echo '<div class="wrap"><h1>Theme Updates</h1>';
+		echo '<p>GitHub Updater nicht verfügbar.</p>';
+		if (!$embedded) echo '</div>';
 	}
 }
 
