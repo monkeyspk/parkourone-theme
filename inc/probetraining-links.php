@@ -4,7 +4,7 @@
  * Backend-Seite zum Erstellen vorgefertigter Filter-URLs für die Probetraining-Buchungsseite.
  */
 
-function parkourone_probetraining_links_page() {
+function parkourone_probetraining_links_page($embedded = false) {
 	// Taxonomie-Terms laden
 	$age_colors = [
 		'minis'   => '#ff9500',
@@ -44,8 +44,10 @@ function parkourone_probetraining_links_page() {
 	];
 
 	?>
+	<?php if (!$embedded): ?>
 	<div class="wrap">
 		<h1>Probetraining Links</h1>
+	<?php endif; ?>
 		<p>Erstelle vorgefertigte Links zur Probetraining-Seite mit vorausgewählten Filtern.</p>
 
 		<style>
@@ -160,6 +162,8 @@ function parkourone_probetraining_links_page() {
 			});
 		})();
 		</script>
+	<?php if (!$embedded): ?>
 	</div>
+	<?php endif; ?>
 	<?php
 }

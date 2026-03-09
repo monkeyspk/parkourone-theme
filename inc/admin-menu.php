@@ -54,22 +54,14 @@ function parkourone_register_admin_menu() {
 		'parkourone_auto_pages_admin_page'
 	);
 
+	// Probetraining (Steps + Links als Tabs)
 	add_submenu_page(
 		'parkourone',
-		'Probetraining Steps',
-		'Probetraining Steps',
+		'Probetraining',
+		'Probetraining',
 		'manage_options',
-		'parkourone-steps',
-		'parkourone_probetraining_steps_page'
-	);
-
-	add_submenu_page(
-		'parkourone',
-		'Probetraining Links',
-		'Probetraining Links',
-		'manage_options',
-		'parkourone-probetraining-links',
-		'parkourone_probetraining_links_page'
+		'parkourone-probetraining',
+		'parkourone_probetraining_combined_page'
 	);
 
 	add_submenu_page(
@@ -90,25 +82,14 @@ function parkourone_register_admin_menu() {
 		'parkourone_redirects_page'
 	);
 
-	// ── BILDER ──────────────────────────
-	add_submenu_page('parkourone', '', 'BILDER', 'manage_options', '#po-sep-bilder', '__return_false');
-
+	// Bilder (Kurs-Bilder + Fallback-Bilder als Tabs)
 	add_submenu_page(
 		'parkourone',
-		'Kurs-Bilder',
-		'Kurs-Bilder',
+		'Bilder',
+		'Bilder',
 		'manage_options',
-		'parkourone-images',
-		'parkourone_event_images_admin_page'
-	);
-
-	add_submenu_page(
-		'parkourone',
-		'Fallback-Bilder',
-		'Fallback-Bilder',
-		'manage_options',
-		'parkourone-fallback-images',
-		'parkourone_fallback_images_page'
+		'parkourone-bilder',
+		'parkourone_bilder_combined_page'
 	);
 
 	// ── INHALTE (CPTs werden in parkourone_add_cpts_to_menu() hinzugefügt)
@@ -265,15 +246,10 @@ function parkourone_sort_admin_submenu() {
 		'#po-sep-website'              => 10,
 		'parkourone-menu-footer'       => 11,
 		'parkourone-pages'             => 12,
-		'parkourone-steps'             => 13,
-		'parkourone-probetraining-links' => 14,
-		'parkourone-promo-popup'       => 15,
-		'parkourone-redirects'         => 16,
-
-		// ── BILDER
-		'#po-sep-bilder'              => 20,
-		'parkourone-images'            => 21,
-		'parkourone-fallback-images'   => 22,
+		'parkourone-probetraining'     => 13,
+		'parkourone-promo-popup'       => 14,
+		'parkourone-redirects'         => 15,
+		'parkourone-bilder'            => 16,
 
 		// ── INHALTE (CPTs)
 		'#po-sep-inhalte'             => 30,
@@ -899,7 +875,7 @@ function parkourone_menu_footer_page() {
 /**
  * Probetraining Steps Seite
  */
-function parkourone_probetraining_steps_page() {
+function parkourone_probetraining_steps_page($embedded = false) {
 	// Speichern
 	if (isset($_POST['parkourone_steps_save']) && check_admin_referer('parkourone_steps_nonce')) {
 		$steps = [];
@@ -931,8 +907,10 @@ function parkourone_probetraining_steps_page() {
 
 	$available_icons = ['location', 'users', 'calendar', 'check', 'star', 'heart'];
 	?>
+	<?php if (!$embedded): ?>
 	<div class="wrap">
 		<h1>Probetraining Steps</h1>
+	<?php endif; ?>
 		<p>Diese Schritte werden auf allen Seiten angezeigt, die den Steps-Block <strong>ohne eigene Steps</strong> verwenden.<br>
 		Wenn du auf einer einzelnen Seite individuelle Steps brauchst, kannst du sie dort im Block-Editor überschreiben.</p>
 
@@ -996,7 +974,9 @@ function parkourone_probetraining_steps_page() {
 				<button type="submit" name="parkourone_steps_save" class="button button-primary button-large">Steps speichern</button>
 			</p>
 		</form>
+	<?php if (!$embedded): ?>
 	</div>
+	<?php endif; ?>
 
 	<script>
 	document.addEventListener('DOMContentLoaded', function() {
@@ -1074,12 +1054,14 @@ function parkourone_get_global_steps() {
 /**
  * Fallback-Bilder Seite
  */
-function parkourone_fallback_images_page() {
+function parkourone_fallback_images_page($embedded = false) {
 	$categories = ['minis', 'kids', 'juniors', 'adults'];
 	$orientations = ['portrait', 'landscape'];
 	?>
+	<?php if (!$embedded): ?>
 	<div class="wrap">
 		<h1>Fallback-Bilder</h1>
+	<?php endif; ?>
 		<p>Diese Bilder werden automatisch verwendet, wenn ein Event/Kurs kein eigenes Bild hat.</p>
 
 		<style>
@@ -1134,7 +1116,9 @@ function parkourone_fallback_images_page() {
 			Lade neue Bilder per FTP/SFTP in folgende Ordner hoch:<br>
 			<code>/wp-content/themes/parkourone-theme/assets/images/fallback/[portrait|landscape]/[minis|kids|juniors|adults]/</code>
 		</div>
+	<?php if (!$embedded): ?>
 	</div>
+	<?php endif; ?>
 	<?php
 }
 
@@ -1376,3 +1360,59 @@ function parkourone_menu_builder_admin_scripts($hook) {
 	);
 }
 add_action('admin_enqueue_scripts', 'parkourone_menu_builder_admin_scripts');
+
+// =====================================================
+// Kombinierte Seiten (Tabs)
+// =====================================================
+
+/**
+ * Probetraining – kombinierte Seite (Steps + Links)
+ */
+function parkourone_probetraining_combined_page() {
+	$tab = $_GET['tab'] ?? 'steps';
+	$base_url = admin_url('admin.php?page=parkourone-probetraining');
+	?>
+	<div class="wrap">
+		<h1>Probetraining</h1>
+		<nav class="nav-tab-wrapper">
+			<a href="<?php echo esc_url($base_url . '&tab=steps'); ?>" class="nav-tab <?php echo $tab === 'steps' ? 'nav-tab-active' : ''; ?>">Steps</a>
+			<a href="<?php echo esc_url($base_url . '&tab=links'); ?>" class="nav-tab <?php echo $tab === 'links' ? 'nav-tab-active' : ''; ?>">Link-Generator</a>
+		</nav>
+		<div style="margin-top: 20px;">
+			<?php
+			if ($tab === 'links' && function_exists('parkourone_probetraining_links_page')) {
+				parkourone_probetraining_links_page(true);
+			} else {
+				parkourone_probetraining_steps_page(true);
+			}
+			?>
+		</div>
+	</div>
+	<?php
+}
+
+/**
+ * Bilder – kombinierte Seite (Kurs-Bilder + Fallback-Bilder)
+ */
+function parkourone_bilder_combined_page() {
+	$tab = $_GET['tab'] ?? 'kurs';
+	$base_url = admin_url('admin.php?page=parkourone-bilder');
+	?>
+	<div class="wrap">
+		<h1>Bilder</h1>
+		<nav class="nav-tab-wrapper">
+			<a href="<?php echo esc_url($base_url . '&tab=kurs'); ?>" class="nav-tab <?php echo $tab === 'kurs' ? 'nav-tab-active' : ''; ?>">Kurs-Bilder</a>
+			<a href="<?php echo esc_url($base_url . '&tab=fallback'); ?>" class="nav-tab <?php echo $tab === 'fallback' ? 'nav-tab-active' : ''; ?>">Fallback-Bilder</a>
+		</nav>
+		<div style="margin-top: 20px;">
+			<?php
+			if ($tab === 'fallback') {
+				parkourone_fallback_images_page(true);
+			} else {
+				parkourone_event_images_admin_page(true);
+			}
+			?>
+		</div>
+	</div>
+	<?php
+}

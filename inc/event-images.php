@@ -312,7 +312,7 @@ add_action('save_post_event', 'parkourone_save_event_image');
 // Menü-Registrierung erfolgt in inc/admin-menu.php
 // =====================================================
 
-function parkourone_event_images_admin_page() {
+function parkourone_event_images_admin_page($embedded = false) {
 	// Handle save
 	if (isset($_POST['save_event_images']) && wp_verify_nonce($_POST['event_images_nonce'], 'save_event_images')) {
 		$images = $_POST['event_images'] ?? [];
@@ -368,8 +368,10 @@ function parkourone_event_images_admin_page() {
 		return $pos_a - $pos_b;
 	});
 	?>
+	<?php if (!$embedded): ?>
 	<div class="wrap">
 		<h1>Kurs-Bilder verwalten</h1>
+	<?php endif; ?>
 		<p>Hier kannst du allen Kursen ein Bild zuweisen. Die Bilder werden im Klassen-Slider angezeigt.</p>
 
 		<form method="post">
@@ -435,7 +437,9 @@ function parkourone_event_images_admin_page() {
 				</button>
 			</p>
 		</form>
+	<?php if (!$embedded): ?>
 	</div>
+	<?php endif; ?>
 
 	<script>
 	jQuery(document).ready(function($) {
@@ -494,8 +498,8 @@ function parkourone_event_images_admin_scripts($hook) {
 		wp_enqueue_media();
 	}
 
-	// Auf Bulk-Admin-Seite
-	if ($hook === 'event_page_parkourone-event-images') {
+	// Auf Bulk-Admin-Seite oder kombinierter Bilder-Seite
+	if ($hook === 'event_page_parkourone-event-images' || strpos($hook, 'parkourone-bilder') !== false) {
 		wp_enqueue_media();
 	}
 
