@@ -6,7 +6,7 @@
 	"title": "Testimonial Highlight",
 	"category": "parkourone-startseite",
 	"icon": "format-quote",
-	"description": "Prominente Zitat-Darstellung im Apple-Style fuer maximale Wirkung.",
+	"description": "Prominente Zitat-Darstellung im Apple-Style für maximale Wirkung.",
 	"keywords": ["testimonial", "zitat", "quote", "bewertung", "highlight"],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
@@ -17,9 +17,9 @@
 			"type": "array",
 			"default": [
 				{
-					"text": "Parkour hat mein Leben veraendert. Ich habe nicht nur koerperliche Staerke gewonnen, sondern auch mentale.",
+					"text": "Parkour hat mein Leben verändert. Ich habe nicht nur körperliche Stärke gewonnen, sondern auch mentale.",
 					"author": "Sarah M.",
-					"role": "Schuelerin seit 2019",
+					"role": "Schülerin seit 2019",
 					"imageUrl": ""
 				}
 			]

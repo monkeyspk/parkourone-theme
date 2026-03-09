@@ -247,7 +247,7 @@
 		toggle.innerHTML =
 			'<span class="po-checkout-summary-toggle__text">' +
 				'<svg class="po-checkout-summary-toggle__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>' +
-				'Bestelluebersicht' +
+				'Bestellübersicht' +
 			'</span>' +
 			'<span class="po-checkout-summary-toggle__total">' + totalText + '</span>';
 

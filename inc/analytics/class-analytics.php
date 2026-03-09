@@ -1503,7 +1503,7 @@ class PO_Analytics {
 				)) / 1000, 1);
 				$this->save_insight('mobile_speed', 'red', 'Handy-Seite ist zu langsam',
 					"Deine Seite braucht auf dem Handy durchschnittlich {$avg_load} Sekunden zum Laden. {$slow_pct}% der mobilen Besucher warten über 3 Sekunden.",
-					'Tipp: Bilder komprimieren und prüfen ob grosse Dateien die Seite verlangsamen.', $avg_load);
+					'Tipp: Bilder komprimieren und prüfen ob große Dateien die Seite verlangsamen.', $avg_load);
 			} else {
 				$this->save_insight('mobile_speed', 'green', 'Handy-Performance ist gut',
 					"Deine Seite lädt auf dem Handy schnell genug. Nur {$slow_pct}% der Besuche waren langsam.",

@@ -102,11 +102,11 @@
 						}),
 						el(SelectControl, {
 							key: 'cat',
-							label: 'Altersgruppe (fuer Bilder)',
+							label: 'Altersgruppe (für Bilder)',
 							value: ageCategory || 'default',
 							options: categoryOptions,
 							onChange: function(value) { setAttributes({ ageCategory: value }); },
-							help: 'Bestimmt welche Bilder fuer die Schritte angezeigt werden'
+							help: 'Bestimmt welche Bilder für die Schritte angezeigt werden'
 						})
 					]),
 					el(PanelBody, { key: 'steps', title: 'Schritte', initialOpen: true }, [
@@ -115,7 +115,7 @@
 							key: 'add',
 							isPrimary: true,
 							onClick: addStep
-						}, 'Schritt hinzufuegen')
+						}, 'Schritt hinzufügen')
 					])
 				]),
 				el('div', blockProps,
@@ -127,7 +127,7 @@
 								className: 'po-steps-timeline__headline',
 								value: headline,
 								onChange: function(value) { setAttributes({ headline: value }); },
-								placeholder: 'Ueberschrift...'
+								placeholder: 'Überschrift...'
 							}),
 							el(RichText, {
 								key: 'sub',

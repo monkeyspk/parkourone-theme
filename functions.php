@@ -198,7 +198,7 @@ require_once get_template_directory() . '/inc/probetraining-links.php';
  * ============================================
  * MU-PLUGINS AUTOMATISCH INSTALLIEREN
  * Kopiert MU-Plugins vom Theme nach wp-content/mu-plugins/
- * Prueft Version — aktualisiert bei Theme-Update.
+ * Prüft Version — aktualisiert bei Theme-Update.
  * ============================================
  */
 function parkourone_install_mu_plugins() {
@@ -253,7 +253,7 @@ add_action('after_setup_theme', 'parkourone_install_mu_plugins');
 /**
  * ============================================
  * RESOURCE HINTS: PRECONNECT / DNS-PREFETCH
- * Fruehzeitig Verbindungen zu externen Domains aufbauen
+ * Frühzeitig Verbindungen zu externen Domains aufbauen
  * ============================================
  */
 function parkourone_resource_hints($hints, $relation_type) {
@@ -471,15 +471,16 @@ add_action('wp_nav_menu_item_custom_fields', 'parkourone_menu_item_description',
  */
 function parkourone_render_menu_preview_content() {
     ?>
-    <div style="background: #fff; border: 1px solid #c3c4c7; border-radius: 8px; padding: 40px; max-width: 1000px;">
+    <div style="background: #fff; border: 1px solid #c3c4c7; border-radius: 8px; padding: 40px; max-width: 1200px;">
         <style>
             .po-preview .po-menu__columns {
                 display: flex;
                 flex-wrap: wrap;
-                gap: 3rem;
+                gap: 2.5rem;
             }
             .po-preview .po-menu__column {
-                min-width: 180px;
+                flex: 1;
+                min-width: 150px;
                 padding: 1rem;
                 background: #f9f9f9;
                 border-radius: 8px;
@@ -492,16 +493,10 @@ function parkourone_render_menu_preview_content() {
                 font-weight: 600;
                 text-transform: uppercase;
             }
-            .po-preview .po-menu__column:nth-child(1)::before {
-                content: 'Spalte 1 (automatisch)';
-            }
-            .po-preview .po-menu__column:nth-child(2)::before {
-                content: 'Spalte 2 (automatisch)';
-            }
-            .po-preview .po-menu__column--manual::before {
-                content: 'Spalte 3 (manuell)' !important;
-                color: #2271b1;
-            }
+            .po-preview .po-menu__column:nth-child(1)::before { content: 'Spalte 1'; }
+            .po-preview .po-menu__column:nth-child(2)::before { content: 'Spalte 2'; }
+            .po-preview .po-menu__column:nth-child(3)::before { content: 'Spalte 3'; }
+            .po-preview .po-menu__column:nth-child(4)::before { content: 'Spalte 4'; }
             .po-preview .po-menu__list {
                 list-style: none;
                 margin: 0;
@@ -521,48 +516,124 @@ function parkourone_render_menu_preview_content() {
             .po-preview .po-menu__link--highlight {
                 font-weight: 700;
             }
-            .po-preview .po-menu__empty {
-                color: #666;
-            }
         </style>
         <div class="po-preview">
             <?php echo parkourone_render_main_menu(); ?>
         </div>
     </div>
 
-    <div style="margin-top: 20px; padding: 15px; background: #f0f6fc; border-radius: 4px; max-width: 1000px;">
-        <strong>Hinweis:</strong> Spalte 1 und 2 werden automatisch aus den Event-Kategorien generiert.
-        Spalte 3 kannst du unter <a href="<?php echo admin_url('nav-menus.php'); ?>">Design → Menüs</a> bearbeiten.
+    <div style="margin-top: 20px; padding: 15px; background: #f0f6fc; border-radius: 4px; max-width: 1200px;">
+        <strong>Hinweis:</strong> Auto-Blöcke werden automatisch aus den Event-Kategorien generiert.
+        Alle 4 Spalten können im <a href="<?php echo admin_url('admin.php?page=parkourone-menu-footer'); ?>">Menü Builder</a> bearbeitet werden.
     </div>
-
-    <p style="margin-top: 20px;">
-        <a href="<?php echo admin_url('nav-menus.php'); ?>" class="button button-primary">Spalte 3 bearbeiten</a>
-    </p>
     <?php
 }
 
 /**
  * Rendert das Hauptmenü für das Fullscreen Overlay
- *
- * Spalte 1: Stundenplan (fix) + Altersgruppen (dynamisch)
- * Spalte 2: Standorte (dynamisch)
- * Spalte 3: Manuelles Menü aus WordPress (Über uns, Kontakt, etc.)
+ * Liest die 4-Spalten-Konfiguration aus parkourone_menu_columns
  */
 function parkourone_render_main_menu() {
+    $columns = get_option('parkourone_menu_columns', []);
+
+    // Fallback auf Legacy-Rendering wenn Option leer
+    if (empty($columns)) {
+        return parkourone_render_main_menu_legacy();
+    }
+
     $output = '<nav class="po-menu__columns">';
 
-    // ========================================
-    // SPALTE 1: Stundenplan + Altersgruppen
-    // ========================================
+    foreach ($columns as $col) {
+        if (empty($col['items'])) continue;
+
+        $output .= '<div class="po-menu__column">';
+        $output .= '<ul class="po-menu__list">';
+
+        foreach ($col['items'] as $item) {
+            $output .= parkourone_render_menu_item($item);
+        }
+
+        $output .= '</ul>';
+        $output .= '</div>';
+    }
+
+    $output .= '</nav>';
+
+    return $output;
+}
+
+/**
+ * Rendert ein einzelnes Menü-Item
+ */
+function parkourone_render_menu_item($item) {
+    $output = '';
+    $type = $item['type'] ?? '';
+
+    switch ($type) {
+        case 'custom':
+            $url = $item['url'] ?? '#';
+            if (strpos($url, '/') === 0) {
+                $url = home_url($url);
+            }
+            $highlight_class = !empty($item['highlight']) ? ' po-menu__link--highlight' : '';
+            $output .= '<li class="po-menu__item">';
+            $output .= '<a href="' . esc_url($url) . '" class="po-menu__link' . $highlight_class . '">' . esc_html($item['label'] ?? '') . '</a>';
+            $output .= '</li>';
+            break;
+
+        case 'auto_block':
+            $source = $item['source'] ?? '';
+            $taxonomy = $item['taxonomy'] ?? 'event_category';
+            $parent = get_term_by('slug', $source, $taxonomy);
+            if ($parent) {
+                $children = get_terms([
+                    'taxonomy' => $taxonomy,
+                    'parent' => $parent->term_id,
+                    'hide_empty' => false,
+                    'orderby' => 'name',
+                    'order' => 'ASC'
+                ]);
+                if (!is_wp_error($children) && !empty($children)) {
+                    foreach ($children as $child) {
+                        $url = home_url('/' . $child->slug . '/');
+                        $output .= '<li class="po-menu__item">';
+                        $output .= '<a href="' . esc_url($url) . '" class="po-menu__link">' . esc_html($child->name) . '</a>';
+                        $output .= '</li>';
+                    }
+                }
+            }
+            break;
+
+        case 'page':
+            $page_id = $item['page_id'] ?? 0;
+            if ($page_id) {
+                $page = get_post($page_id);
+                if ($page && $page->post_status === 'publish') {
+                    $label = !empty($item['label']) ? $item['label'] : $page->post_title;
+                    $output .= '<li class="po-menu__item">';
+                    $output .= '<a href="' . esc_url(get_permalink($page_id)) . '" class="po-menu__link">' . esc_html($label) . '</a>';
+                    $output .= '</li>';
+                }
+            }
+            break;
+    }
+
+    return $output;
+}
+
+/**
+ * Legacy-Rendering (3 Spalten, hardcoded)
+ */
+function parkourone_render_main_menu_legacy() {
+    $output = '<nav class="po-menu__columns">';
+
+    // Spalte 1: Stundenplan + Altersgruppen
     $output .= '<div class="po-menu__column">';
     $output .= '<ul class="po-menu__list">';
-
-    // Stundenplan immer oben
     $output .= '<li class="po-menu__item">';
     $output .= '<a href="' . esc_url(home_url('/stundenplan/')) . '" class="po-menu__link po-menu__link--highlight">Stundenplan</a>';
     $output .= '</li>';
 
-    // Altersgruppen dynamisch aus event_category
     $alter_parent = get_term_by('slug', 'alter', 'event_category');
     if ($alter_parent) {
         $altersgruppen = get_terms([
@@ -572,26 +643,17 @@ function parkourone_render_main_menu() {
             'orderby' => 'name',
             'order' => 'ASC'
         ]);
-
         if (!is_wp_error($altersgruppen) && !empty($altersgruppen)) {
             foreach ($altersgruppen as $gruppe) {
-                // Name direkt aus der Event Category verwenden
-                $display_name = $gruppe->name;
-                $url = home_url('/' . $gruppe->slug . '/');
-
                 $output .= '<li class="po-menu__item">';
-                $output .= '<a href="' . esc_url($url) . '" class="po-menu__link">' . esc_html($display_name) . '</a>';
+                $output .= '<a href="' . esc_url(home_url('/' . $gruppe->slug . '/')) . '" class="po-menu__link">' . esc_html($gruppe->name) . '</a>';
                 $output .= '</li>';
             }
         }
     }
+    $output .= '</ul></div>';
 
-    $output .= '</ul>';
-    $output .= '</div>';
-
-    // ========================================
-    // SPALTE 2: Standorte
-    // ========================================
+    // Spalte 2: Standorte
     $ortschaft_parent = get_term_by('slug', 'ortschaft', 'event_category');
     if ($ortschaft_parent) {
         $standorte = get_terms([
@@ -601,32 +663,21 @@ function parkourone_render_main_menu() {
             'orderby' => 'name',
             'order' => 'ASC'
         ]);
-
         if (!is_wp_error($standorte) && !empty($standorte)) {
-            $output .= '<div class="po-menu__column">';
-            $output .= '<ul class="po-menu__list">';
-
+            $output .= '<div class="po-menu__column"><ul class="po-menu__list">';
             foreach ($standorte as $standort) {
-                // URL direkt mit dem Slug (ohne Präfix)
-                $url = home_url('/' . $standort->slug . '/');
-
                 $output .= '<li class="po-menu__item">';
-                $output .= '<a href="' . esc_url($url) . '" class="po-menu__link">' . esc_html($standort->name) . '</a>';
+                $output .= '<a href="' . esc_url(home_url('/' . $standort->slug . '/')) . '" class="po-menu__link">' . esc_html($standort->name) . '</a>';
                 $output .= '</li>';
             }
-
-            $output .= '</ul>';
-            $output .= '</div>';
+            $output .= '</ul></div>';
         }
     }
 
-    // ========================================
-    // SPALTE 3: Manuelles WordPress Menü
-    // ========================================
+    // Spalte 3: Manuelle Links
     $output .= parkourone_render_manual_menu_column();
 
     $output .= '</nav>';
-
     return $output;
 }
 
@@ -1043,8 +1094,8 @@ function parkourone_register_api_endpoints() {
 add_action('rest_api_init', 'parkourone_register_api_endpoints');
 
 /**
- * REST-Felder fuer WC-Produkte: price_html und featured_media_src_url.
- * Wird vom Produkt-Showcase-Block im Editor fuer die Live-Vorschau benoetigt.
+ * REST-Felder für WC-Produkte: price_html und featured_media_src_url.
+ * Wird vom Produkt-Showcase-Block im Editor für die Live-Vorschau benötigt.
  */
 function parkourone_register_product_rest_fields() {
 	if (!function_exists('wc_get_product')) {
@@ -1511,7 +1562,7 @@ add_action('wp_ajax_po_add_to_cart', 'parkourone_ajax_add_to_cart');
 add_action('wp_ajax_nopriv_po_add_to_cart', 'parkourone_ajax_add_to_cart');
 
 /**
- * AJAX: Produkt-Showcase — Add-to-Cart fuer Simple + Variable Products.
+ * AJAX: Produkt-Showcase — Add-to-Cart für Simple + Variable Products.
  */
 function parkourone_produkt_showcase_add_to_cart() {
 	check_ajax_referer('po_produkt_showcase_nonce', 'nonce');
@@ -1520,7 +1571,7 @@ function parkourone_produkt_showcase_add_to_cart() {
 		wp_send_json_error(['message' => 'WooCommerce nicht aktiv']);
 	}
 
-	// Session initialisieren falls nicht vorhanden (haeufig bei AJAX-Calls)
+	// Session initialisieren falls nicht vorhanden (häufig bei AJAX-Calls)
 	if (is_null(WC()->session)) {
 		WC()->session = new \WC_Session_Handler();
 		WC()->session->init();
@@ -1539,18 +1590,18 @@ function parkourone_produkt_showcase_add_to_cart() {
 
 	$product = wc_get_product($product_id);
 	if (!$product || !$product->is_purchasable()) {
-		wp_send_json_error(['message' => 'Produkt ist nicht verfuegbar']);
+		wp_send_json_error(['message' => 'Produkt ist nicht verfügbar']);
 	}
 
 	// Variable Products: Variation validieren und Attribute sammeln
 	if ($product->is_type('variable')) {
 		if (!$variation_id) {
-			wp_send_json_error(['message' => 'Bitte waehle eine Variante']);
+			wp_send_json_error(['message' => 'Bitte wähle eine Variante']);
 		}
 
 		$variation = wc_get_product($variation_id);
 		if (!$variation || !$variation->is_in_stock()) {
-			wp_send_json_error(['message' => 'Variante nicht verfuegbar']);
+			wp_send_json_error(['message' => 'Variante nicht verfügbar']);
 		}
 
 		// Variation-Attribute aus POST sammeln
@@ -1567,7 +1618,7 @@ function parkourone_produkt_showcase_add_to_cart() {
 	} else {
 		// Simple Product
 		if (!$product->is_in_stock()) {
-			wp_send_json_error(['message' => 'Produkt ist nicht verfuegbar']);
+			wp_send_json_error(['message' => 'Produkt ist nicht verfügbar']);
 		}
 		$added = WC()->cart->add_to_cart($product_id, 1);
 	}
@@ -1578,10 +1629,10 @@ function parkourone_produkt_showcase_add_to_cart() {
 			'cart_count' => WC()->cart->get_cart_contents_count(),
 		]);
 	} else {
-		// WC-Fehlermeldungen auslesen fuer bessere Diagnose
+		// WC-Fehlermeldungen auslesen für bessere Diagnose
 		$errors = wc_get_notices('error');
 		wc_clear_notices();
-		$error_msg = 'Fehler beim Hinzufuegen zum Warenkorb';
+		$error_msg = 'Fehler beim Hinzufügen zum Warenkorb';
 		if (!empty($errors)) {
 			$messages = array_map(function($e) {
 				return is_array($e) ? wp_strip_all_tags($e['notice']) : wp_strip_all_tags($e);
@@ -1624,7 +1675,7 @@ function parkourone_pt_add_to_cart() {
 
 	$product = wc_get_product($product_id);
 	if (!$product || !$product->is_purchasable() || !$product->is_in_stock()) {
-		wp_send_json_error(['message' => 'Produkt ist nicht verfuegbar']);
+		wp_send_json_error(['message' => 'Produkt ist nicht verfügbar']);
 	}
 
 	$cart_item_data = [
@@ -1646,7 +1697,7 @@ function parkourone_pt_add_to_cart() {
 	} else {
 		$errors = wc_get_notices('error');
 		wc_clear_notices();
-		$error_msg = 'Fehler beim Hinzufuegen zum Warenkorb';
+		$error_msg = 'Fehler beim Hinzufügen zum Warenkorb';
 		if (!empty($errors)) {
 			$messages = array_map(function($e) {
 				return is_array($e) ? wp_strip_all_tags($e['notice']) : wp_strip_all_tags($e);

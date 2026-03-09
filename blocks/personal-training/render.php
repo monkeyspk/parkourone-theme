@@ -18,7 +18,7 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'po-pt']);
 
     <?php if (empty($product_id) && current_user_can('manage_options')): ?>
         <div class="po-pt__notice">
-            Kein WooCommerce-Produkt konfiguriert. Bitte im Block-Editor unter den Block-Einstellungen ein Produkt auswaehlen.
+            Kein WooCommerce-Produkt konfiguriert. Bitte im Block-Editor unter den Block-Einstellungen ein Produkt auswählen.
         </div>
     <?php endif; ?>
 

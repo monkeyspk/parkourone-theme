@@ -1,10 +1,10 @@
 <?php
 /**
- * Title: Infos fuer Mitglieder
+ * Title: Infos für Mitglieder
  * Slug: parkourone/page-infos
  * Categories: parkourone-seiten
- * Description: Info-Seite mit Buerozeiten, Kosten, Kuendigung, Verletzungs-Rueckerstattung, AHV und FAQ
- * Keywords: infos, mitglieder, buero, kuendigung, verletzung, ahv, rueckerstattung
+ * Description: Info-Seite mit Bürozeiten, Kosten, Kündigung, Verletzungs-Rückerstattung, AHV und FAQ
+ * Keywords: infos, mitglieder, büro, kündigung, verletzung, ahv, rückerstattung
  * Viewport Width: 1400
  * Block Types: core/post-content
  * Post Types: page

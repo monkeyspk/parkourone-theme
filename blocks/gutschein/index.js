@@ -49,7 +49,7 @@
 			}
 
 			// Produkt-Dropdown Optionen
-			var productOptions = [{ label: loading ? 'Produkte werden geladen...' : '— Produkt waehlen —', value: 0 }];
+			var productOptions = [{ label: loading ? 'Produkte werden geladen...' : '— Produkt wählen —', value: 0 }];
 			productOptions = productOptions.concat(products);
 
 			return el('div', null, [
@@ -58,7 +58,7 @@
 						el(SelectControl, {
 							key: 'product-select',
 							label: 'Gutschein-Produkt',
-							help: attributes.productId ? 'Produkt-ID: ' + attributes.productId : 'Waehle das WooCommerce-Produkt fuer den Gutschein.',
+							help: attributes.productId ? 'Produkt-ID: ' + attributes.productId : 'Wähle das WooCommerce-Produkt für den Gutschein.',
 							value: attributes.productId || 0,
 							options: productOptions,
 							onChange: function(v) { setAttributes({ productId: parseInt(v, 10) }); }
@@ -174,7 +174,7 @@
 								fontSize: '13px',
 								color: '#ff8a8a'
 							}
-						}, 'Kein Produkt gewaehlt — bitte in den Block-Einstellungen ein WooCommerce-Produkt auswaehlen.'),
+						}, 'Kein Produkt gewählt — bitte in den Block-Einstellungen ein WooCommerce-Produkt auswählen.'),
 						el('h2', {
 							key: 'headline',
 							style: { fontSize: '28px', fontWeight: '600', margin: '0 0 8px', color: '#fff' }

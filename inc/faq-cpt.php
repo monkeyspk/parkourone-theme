@@ -231,7 +231,7 @@ function parkourone_get_category_pages_map() {
 		'standort' => 'Standort-Seiten',
 		'startseite' => 'Startseite',
 		'gutschein' => 'Gutschein-Seite',
-		'klassenwechsel' => 'Der grosse Sprung',
+		'klassenwechsel' => 'Der große Sprung',
 	];
 }
 
@@ -733,7 +733,7 @@ function parkourone_get_default_faqs() {
 		],
 
 		// =====================================================
-		// KLASSENWECHSEL - Für "Der grosse Sprung" Seite
+		// KLASSENWECHSEL - Für "Der große Sprung" Seite
 		// =====================================================
 		[
 			'question' => 'Warum sollte ich wechseln?',

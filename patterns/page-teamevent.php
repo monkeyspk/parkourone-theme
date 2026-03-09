@@ -3,7 +3,7 @@
  * Title: Teamevent
  * Slug: parkourone/page-teamevent
  * Categories: parkourone-seiten
- * Description: Parkour als Teamevent – Teambuilding fuer Firmen und Gruppen
+ * Description: Parkour als Teamevent – Teambuilding für Firmen und Gruppen
  * Keywords: teamevent, teambuilding, firmen, event, gruppe, corporate
  * Viewport Width: 1400
  * Block Types: core/post-content

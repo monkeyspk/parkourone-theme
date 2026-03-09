@@ -80,7 +80,7 @@
 			}
 
 			// Produkt-Dropdown Optionen
-			var productOptions = [{ label: loading ? 'Produkte werden geladen...' : '— Produkt waehlen —', value: 0 }];
+			var productOptions = [{ label: loading ? 'Produkte werden geladen...' : '— Produkt wählen —', value: 0 }];
 			productOptions = productOptions.concat(products);
 
 			return el('div', null, [
@@ -91,7 +91,7 @@
 						el(SelectControl, {
 							key: 'product-select',
 							label: 'Training-Produkt',
-							help: attributes.productId ? 'Produkt-ID: ' + attributes.productId : 'Waehle das WooCommerce-Produkt fuer das Personal Training.',
+							help: attributes.productId ? 'Produkt-ID: ' + attributes.productId : 'Wähle das WooCommerce-Produkt für das Personal Training.',
 							value: attributes.productId || 0,
 							options: productOptions,
 							onChange: function(v) { setAttributes({ productId: parseInt(v, 10) }); }
@@ -190,14 +190,14 @@
 							variant: 'secondary',
 							onClick: addPackage,
 							style: { marginTop: '8px' }
-						}, '+ Paket hinzufuegen')
+						}, '+ Paket hinzufügen')
 					]),
 
 					// Panel: Optionen
 					el(PanelBody, { key: 'options', title: 'Optionen (Woran arbeiten)', initialOpen: false }, [
 						el(TextControl, {
 							key: 'work-on-label',
-							label: 'Ueberschrift',
+							label: 'Überschrift',
 							value: attributes.workOnLabel || '',
 							onChange: function(v) { setAttributes({ workOnLabel: v }); }
 						}),
@@ -229,7 +229,7 @@
 							variant: 'secondary',
 							onClick: addWorkOnOption,
 							style: { marginTop: '4px' }
-						}, '+ Option hinzufuegen')
+						}, '+ Option hinzufügen')
 					])
 				]),
 
@@ -256,7 +256,7 @@
 								fontSize: '13px',
 								color: '#ff8a8a'
 							}
-						}, 'Kein Produkt gewaehlt — bitte in den Block-Einstellungen ein WooCommerce-Produkt auswaehlen.'),
+						}, 'Kein Produkt gewählt — bitte in den Block-Einstellungen ein WooCommerce-Produkt auswählen.'),
 
 						el('h2', {
 							key: 'headline',

@@ -14,7 +14,7 @@ $location_terms = $filters['location'] ?? [];
 $offer_terms    = $filters['offer'] ?? [];
 $weekday_terms  = $filters['weekday'] ?? [];
 
-// Farben fuer Altersgruppen (gleich wie Klassen-Slider)
+// Farben für Altersgruppen (gleich wie Klassen-Slider)
 $age_colors = [
 	'minis'   => '#ff9500',
 	'kids'    => '#34c759',
@@ -120,7 +120,7 @@ $has_filters = !empty($age_terms) || !empty($location_terms) || !empty($offer_te
 		<div class="po-eb__skeleton-row"></div>
 	</div>
 
-	<!-- List Container (gefuellt via view.js) -->
+	<!-- List Container (gefüllt via view.js) -->
 	<div class="po-eb__list" data-event-list></div>
 
 	<!-- Empty State -->

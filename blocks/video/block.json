@@ -6,7 +6,7 @@
 	"title": "Video",
 	"category": "parkourone-blocks",
 	"icon": "video-alt3",
-	"description": "Video-Block fuer YouTube/Vimeo-Embeds und selbst-gehostete MP4s.",
+	"description": "Video-Block für YouTube/Vimeo-Embeds und selbst-gehostete MP4s.",
 	"keywords": ["video", "youtube", "vimeo", "mp4", "film"],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",

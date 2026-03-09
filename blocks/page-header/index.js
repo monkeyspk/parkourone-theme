@@ -30,8 +30,8 @@
 						onChange: function(val) { setAttributes({ variant: val }); }
 					}),
 					el('p', { style: { fontSize: '12px', color: '#757575', marginTop: '8px' } },
-						attributes.variant === 'centered' ? 'Grosser zentrierter Text mit optionalem Stats-Counter. Ideal f\u00fcr Hauptseiten.' :
-						attributes.variant === 'split' ? 'Text links, grosses Bild rechts. Ideal f\u00fcr Unterseiten.' :
+						attributes.variant === 'centered' ? 'Großer zentrierter Text mit optionalem Stats-Counter. Ideal für Hauptseiten.' :
+						attributes.variant === 'split' ? 'Text links, großes Bild rechts. Ideal für Unterseiten.' :
 						attributes.variant === 'banner' ? 'Kompakter Querformat-Banner mit Bild und kleinem Titel. Ideal wenn weniger Platz gew\u00fcnscht.' :
 						'Vollbild-Hintergrundbild mit Text-Overlay. Ideal f\u00fcr visuelle Impact.'
 					)

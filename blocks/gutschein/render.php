@@ -5,7 +5,7 @@ $image        = $attributes['image'] ?? '';
 $inspirations = $attributes['inspirations'] ?? [];
 $cta_text     = $attributes['ctaText'] ?? 'In den Warenkorb';
 
-// Produkt-ID: primaer aus Block-Attribut, Fallback auf Plugin-Settings
+// Produkt-ID: primär aus Block-Attribut, Fallback auf Plugin-Settings
 $product_id     = !empty($attributes['productId']) ? intval($attributes['productId']) : '';
 $preset_amounts = [25, 50, 100];
 $min_amount     = 10;
@@ -22,7 +22,7 @@ if (class_exists('AB_Gutschein_Settings')) {
 
 $nonce = wp_create_nonce('ab_gutschein_nonce');
 
-// Icons fuer Inspirations-Karten
+// Icons für Inspirations-Karten
 $icons = [
     'ticket'   => '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>',
     'user'     => '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
@@ -73,7 +73,7 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'po-gutschein']);
     <?php endif; ?>
 
     <div class="po-gutschein__selector">
-        <h3 class="po-gutschein__selector-title">Betrag waehlen</h3>
+        <h3 class="po-gutschein__selector-title">Betrag wählen</h3>
         <div class="po-gutschein__amounts">
             <?php foreach ($preset_amounts as $amount): ?>
                 <button type="button" class="po-gutschein__amount" data-amount="<?php echo esc_attr($amount); ?>">
@@ -104,12 +104,12 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'po-gutschein']);
         </button>
         <div class="po-gutschein__recipient-form" hidden>
             <div class="po-gutschein__field">
-                <label for="po-gutschein-email">E-Mail des Empfaengers</label>
+                <label for="po-gutschein-email">E-Mail des Empfängers</label>
                 <input type="email" id="po-gutschein-email" class="po-gutschein__input" placeholder="empfaenger@email.de">
             </div>
             <div class="po-gutschein__field">
-                <label for="po-gutschein-message">Persoenliche Nachricht</label>
-                <textarea id="po-gutschein-message" class="po-gutschein__textarea" rows="3" maxlength="500" placeholder="Alles Gute zum Geburtstag! Viel Spass beim Parkour..."></textarea>
+                <label for="po-gutschein-message">Persönliche Nachricht</label>
+                <textarea id="po-gutschein-message" class="po-gutschein__textarea" rows="3" maxlength="500" placeholder="Alles Gute zum Geburtstag! Viel Spaß beim Parkour..."></textarea>
                 <span class="po-gutschein__char-count"><span class="po-gutschein__char-current">0</span>/500</span>
             </div>
         </div>

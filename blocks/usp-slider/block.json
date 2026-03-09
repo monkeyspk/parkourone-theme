@@ -6,7 +6,7 @@
 	"title": "USP Slider",
 	"category": "parkourone-startseite",
 	"icon": "star-filled",
-	"description": "Apple-Style Slider fuer Alleinstellungsmerkmale (USPs) mit fullbleed Cards und Modals.",
+	"description": "Apple-Style Slider für Alleinstellungsmerkmale (USPs) mit fullbleed Cards und Modals.",
 	"keywords": ["usp", "vorteile", "benefits", "slider", "features", "warum"],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
@@ -32,7 +32,7 @@
 				{
 					"eyebrow": "Community",
 					"headline": "Werde Teil einer starken Community.",
-					"text": "Schliesse dich uns an und erlebe die Unterstützung und Inspiration einer Gemeinschaft, die dir hilft, deine Ziele zu erreichen.",
+					"text": "Schließe dich uns an und erlebe die Unterstützung und Inspiration einer Gemeinschaft, die dir hilft, deine Ziele zu erreichen.",
 					"modalText": "Bei ParkourONE trainierst du nie allein. Unsere Community motiviert, unterstützt und pusht sich gegenseitig. Vom Anfänger bis zum Fortgeschrittenen – hier findet jeder seinen Platz und Trainingspartner.",
 					"buttonText": "Probetraining buchen",
 					"buttonUrl": "/probetraining-buchen/",
@@ -57,10 +57,10 @@
 					"imageUrl": ""
 				},
 				{
-					"eyebrow": "Spass & Abenteuer",
-					"headline": "Erlebe Spass und Abenteuer.",
+					"eyebrow": "Spaß & Abenteuer",
+					"headline": "Erlebe Spaß und Abenteuer.",
 					"text": "Unsere abwechslungsreichen Trainings bereichern deinen Alltag und bringen frischen Wind in dein Leben.",
-					"modalText": "Vergiss langweilige Fitnessstudios! Bei uns ist jedes Training ein Abenteuer. Neue Spots, neue Challenges, neue Moves – Langeweile gibt es bei Parkour nicht. Komm vorbei und erlebe selbst, wie viel Spass Bewegung machen kann.",
+					"modalText": "Vergiss langweilige Fitnessstudios! Bei uns ist jedes Training ein Abenteuer. Neue Spots, neue Challenges, neue Moves – Langeweile gibt es bei Parkour nicht. Komm vorbei und erlebe selbst, wie viel Spaß Bewegung machen kann.",
 					"buttonText": "Probetraining buchen",
 					"buttonUrl": "/probetraining-buchen/",
 					"imageUrl": ""

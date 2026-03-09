@@ -6,7 +6,7 @@
 	"title": "Inquiry Form",
 	"category": "parkourone-blocks",
 	"icon": "email",
-	"description": "Wiederverwendbares Anfrage-Formular fuer Workshop, Schulen und Teamevent-Seiten.",
+	"description": "Wiederverwendbares Anfrage-Formular für Workshop, Schulen und Teamevent-Seiten.",
 	"keywords": ["formular", "anfrage", "kontakt", "inquiry", "workshop"],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",

@@ -3,7 +3,7 @@ $headline   = $attributes['headline'] ?? 'Nächste Probetrainings';
 $buttonText = $attributes['buttonText'] ?? 'Jetzt buchen';
 $unique_id  = 'eds-' . uniqid();
 
-// Farben fuer Altersgruppen
+// Farben für Altersgruppen
 $age_colors = [
 	'minis'   => '#ff9500',
 	'kids'    => '#34c759',
@@ -13,7 +13,7 @@ $age_colors = [
 	'masters' => '#ff2d55'
 ];
 
-// Mood-Texte fuer Modal
+// Mood-Texte für Modal
 $mood_texts = [
 	'minis'   => 'Erste Bewegungserfahrungen in spielerischer Atmosphäre - hier entdecken die Kleinsten ihre motorischen Fähigkeiten.',
 	'kids'    => 'Spielerisch Bewegungstalente entdecken: Klettern, Springen und Balancieren in einer sicheren Umgebung.',
@@ -99,12 +99,12 @@ if ($query->have_posts()) {
 			}
 		}
 
-		// Ferienkurse ueberspringen
+		// Ferienkurse überspringen
 		if ($offer_slug === 'ferienkurs') continue;
 
 		$color = $age_colors[$age_slug] ?? '#0066cc';
 
-		// Event-Daten fuer Modal merken (nur einmal pro Event-ID)
+		// Event-Daten für Modal merken (nur einmal pro Event-ID)
 		if (!isset($event_data_for_modals[$event_id])) {
 			$event_data_for_modals[$event_id] = [
 				'event_id'        => $event_id,
@@ -182,7 +182,7 @@ if ($query->have_posts()) {
 	wp_reset_postdata();
 }
 
-// Pro Event-ID pruefen ob IRGENDEIN zukuenftiges Datum noch Plaetze hat
+// Pro Event-ID prüfen ob IRGENDEIN zukünftiges Datum noch Plätze hat
 $event_has_availability = [];
 foreach ($all_events as $ev) {
 	if ($ev['stock'] > 0) {
@@ -371,7 +371,7 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 			<div class="po-steps" data-step="0" data-class-title="<?php echo esc_attr($ev['title']); ?>">
 				<div class="po-steps__track">
 
-					<?php // Slide 0: Uebersicht ?>
+					<?php // Slide 0: Übersicht ?>
 					<div class="po-steps__slide is-active" data-slide="0">
 						<header class="po-steps__header">
 							<span class="po-steps__eyebrow">Probetraining</span>
@@ -415,7 +415,7 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 						</button>
 					</div>
 
-					<?php // Slide 1: Termin waehlen ?>
+					<?php // Slide 1: Termin wählen ?>
 					<div class="po-steps__slide is-next" data-slide="1">
 						<header class="po-steps__header">
 							<span class="po-steps__eyebrow">Schritt 1 von 2</span>

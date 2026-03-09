@@ -1,9 +1,9 @@
 <?php
 /**
- * Title: Der grosse Sprung
+ * Title: Der große Sprung
  * Slug: parkourone/page-der-grosse-sprung
  * Categories: parkourone-seiten
- * Description: Klassenwechsel-Landingpage – bestehende Schueler:innen wechseln in die naechste Altersgruppe
+ * Description: Klassenwechsel-Landingpage – bestehende Schüler:innen wechseln in die nächste Altersgruppe
  * Keywords: klassenwechsel, wechsel, upgrade, sprung, altersgruppe, gutschein
  * Viewport Width: 1400
  * Block Types: core/post-content
@@ -11,7 +11,7 @@
  */
 ?>
 
-<!-- wp:parkourone/page-header {"variant":"split","title":"Der grosse Sprung","titleAccent":"Du bist bereit für die nächste Herausforderung!","description":"In unseren weiterführenden Parkour-Klassen erwarten dich neue Herausforderungen, spannende Bewegungen und ein motivierendes Umfeld. Hier kannst du deine Fähigkeiten weiterentwickeln, neue Freundschaften knüpfen und deine Leidenschaft für Parkour auf das nächste Level bringen.","ctaText":"Klasse wechseln","ctaUrl":"#stundenplan","align":"full"} /-->
+<!-- wp:parkourone/page-header {"variant":"split","title":"Der große Sprung","titleAccent":"Du bist bereit für die nächste Herausforderung!","description":"In unseren weiterführenden Parkour-Klassen erwarten dich neue Herausforderungen, spannende Bewegungen und ein motivierendes Umfeld. Hier kannst du deine Fähigkeiten weiterentwickeln, neue Freundschaften knüpfen und deine Leidenschaft für Parkour auf das nächste Level bringen.","ctaText":"Klasse wechseln","ctaUrl":"#stundenplan","align":"full"} /-->
 
 <!-- wp:spacer {"height":"80px"} -->
 <div style="height:80px" aria-hidden="true" class="wp-block-spacer"></div>

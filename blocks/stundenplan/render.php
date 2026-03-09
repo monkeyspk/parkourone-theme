@@ -56,7 +56,7 @@ if ($site_location && $site_location['detected'] && !empty($ortschaft_terms)) {
 		}
 	}
 
-	// Fallback: Name-basiertes Matching (fuer Umlaute wie zürich/zurich)
+	// Fallback: Name-basiertes Matching (für Umlaute wie zürich/zurich)
 	if (empty($local_ortschaft_slugs)) {
 		$site_name_lower = mb_strtolower($site_location['name']);
 		foreach ($ortschaft_terms as $term) {
@@ -578,7 +578,7 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 					</div>
 				</div>
 
-				<?php // Coach-Slide (ausserhalb des normalen Step-Flows) ?>
+				<?php // Coach-Slide (außerhalb des normalen Step-Flows) ?>
 				<?php if ($klasse['coach_has_profile'] && isset($coach_profiles[$klasse['headcoach']])):
 					$coach = $coach_profiles[$klasse['headcoach']];
 				?>

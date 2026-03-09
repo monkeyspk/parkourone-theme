@@ -3,8 +3,8 @@
  * Title: Impulsworkshop
  * Slug: parkourone/page-impulsworkshop
  * Categories: parkourone-seiten
- * Description: Impulsworkshop fuer Gemeinden und Staedte – Parkour als Werkzeug fuer Bewegungsfoerderung
- * Keywords: impulsworkshop, rubikone, gemeinden, staedte, workshop, anfrage
+ * Description: Impulsworkshop für Gemeinden und Städte – Parkour als Werkzeug für Bewegungsförderung
+ * Keywords: impulsworkshop, rubikone, gemeinden, städte, workshop, anfrage
  * Viewport Width: 1400
  * Block Types: core/post-content
  * Post Types: page

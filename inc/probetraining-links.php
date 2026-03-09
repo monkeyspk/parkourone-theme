@@ -1,7 +1,7 @@
 <?php
 /**
  * Probetraining Link-Generator
- * Backend-Seite zum Erstellen vorgefertigter Filter-URLs fuer die Probetraining-Buchungsseite.
+ * Backend-Seite zum Erstellen vorgefertigter Filter-URLs für die Probetraining-Buchungsseite.
  */
 
 function parkourone_probetraining_links_page() {

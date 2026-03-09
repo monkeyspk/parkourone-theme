@@ -33,7 +33,9 @@ function parkourone_register_admin_menu() {
 		'parkourone_admin_dashboard'
 	);
 
-	// Menü & Footer
+	// ── WEBSITE ──────────────────────────
+	add_submenu_page('parkourone', '', 'WEBSITE', 'manage_options', '#po-sep-website', '__return_false');
+
 	add_submenu_page(
 		'parkourone',
 		'Menü & Footer',
@@ -43,7 +45,6 @@ function parkourone_register_admin_menu() {
 		'parkourone_menu_footer_page'
 	);
 
-	// Seiten Generator
 	add_submenu_page(
 		'parkourone',
 		'Seiten Generator',
@@ -53,27 +54,6 @@ function parkourone_register_admin_menu() {
 		'parkourone_auto_pages_admin_page'
 	);
 
-	// Kurs-Bilder
-	add_submenu_page(
-		'parkourone',
-		'Kurs-Bilder',
-		'Kurs-Bilder',
-		'manage_options',
-		'parkourone-images',
-		'parkourone_event_images_admin_page'
-	);
-
-	// Fallback-Bilder
-	add_submenu_page(
-		'parkourone',
-		'Fallback-Bilder',
-		'Fallback-Bilder',
-		'manage_options',
-		'parkourone-fallback-images',
-		'parkourone_fallback_images_page'
-	);
-
-	// Probetraining Steps
 	add_submenu_page(
 		'parkourone',
 		'Probetraining Steps',
@@ -83,27 +63,6 @@ function parkourone_register_admin_menu() {
 		'parkourone_probetraining_steps_page'
 	);
 
-	// Promo Popup
-	add_submenu_page(
-		'parkourone',
-		'Promo Popup',
-		'Promo Popup',
-		'manage_options',
-		'parkourone-promo-popup',
-		'parkourone_promo_popup_page'
-	);
-
-	// Redirects
-	add_submenu_page(
-		'parkourone',
-		'Redirects',
-		'Redirects',
-		'manage_options',
-		'parkourone-redirects',
-		'parkourone_redirects_page'
-	);
-
-	// Probetraining Links
 	add_submenu_page(
 		'parkourone',
 		'Probetraining Links',
@@ -113,7 +72,54 @@ function parkourone_register_admin_menu() {
 		'parkourone_probetraining_links_page'
 	);
 
-	// Maintenance Mode
+	add_submenu_page(
+		'parkourone',
+		'Promo Popup',
+		'Promo Popup',
+		'manage_options',
+		'parkourone-promo-popup',
+		'parkourone_promo_popup_page'
+	);
+
+	add_submenu_page(
+		'parkourone',
+		'Redirects',
+		'Redirects',
+		'manage_options',
+		'parkourone-redirects',
+		'parkourone_redirects_page'
+	);
+
+	// ── BILDER ──────────────────────────
+	add_submenu_page('parkourone', '', 'BILDER', 'manage_options', '#po-sep-bilder', '__return_false');
+
+	add_submenu_page(
+		'parkourone',
+		'Kurs-Bilder',
+		'Kurs-Bilder',
+		'manage_options',
+		'parkourone-images',
+		'parkourone_event_images_admin_page'
+	);
+
+	add_submenu_page(
+		'parkourone',
+		'Fallback-Bilder',
+		'Fallback-Bilder',
+		'manage_options',
+		'parkourone-fallback-images',
+		'parkourone_fallback_images_page'
+	);
+
+	// ── INHALTE (CPTs werden in parkourone_add_cpts_to_menu() hinzugefügt)
+	add_submenu_page('parkourone', '', 'INHALTE', 'manage_options', '#po-sep-inhalte', '__return_false');
+
+	// ── ANALYTICS & DATENSCHUTZ (Analytics + Cookie-Consent registrieren sich selbst)
+	add_submenu_page('parkourone', '', 'ANALYTICS & DATENSCHUTZ', 'manage_options', '#po-sep-analytics', '__return_false');
+
+	// ── SYSTEM ──────────────────────────
+	add_submenu_page('parkourone', '', 'SYSTEM', 'manage_options', '#po-sep-system', '__return_false');
+
 	add_submenu_page(
 		'parkourone',
 		'Maintenance Mode',
@@ -123,7 +129,6 @@ function parkourone_register_admin_menu() {
 		'parkourone_maintenance_admin_page_html'
 	);
 
-	// Theme Updates
 	add_submenu_page(
 		'parkourone',
 		'Theme Updates',
@@ -183,6 +188,23 @@ function parkourone_admin_menu_logo_styles() {
 			max-width: 28px;
 			padding: 0 4px !important;
 		}
+		/* ParkourONE Admin Menu – Gruppen-Header */
+		#adminmenu .toplevel_page_parkourone li a[href*="#po-sep-"] {
+			pointer-events: none;
+			cursor: default;
+			color: #a7aaad !important;
+			font-size: 10px !important;
+			font-weight: 700 !important;
+			letter-spacing: 1.5px !important;
+			text-transform: uppercase;
+			padding: 8px 12px 4px !important;
+			margin-top: 6px;
+			border-top: 1px solid #3c3c3e;
+		}
+		#adminmenu .toplevel_page_parkourone li a[href*="#po-sep-"]:hover {
+			background: transparent !important;
+			color: #a7aaad !important;
+		}
 	</style>
 	<?php
 }
@@ -224,6 +246,65 @@ function parkourone_hide_original_cpt_menus() {
 	}
 }
 add_action('admin_menu', 'parkourone_hide_original_cpt_menus', 999);
+
+/**
+ * Menü-Einträge in logische Gruppen sortieren
+ * Läuft mit Prio 9999, also nachdem alle Plugins ihre Einträge registriert haben.
+ */
+function parkourone_sort_admin_submenu() {
+	global $submenu;
+	if (empty($submenu['parkourone'])) return;
+
+	// Gewünschte Reihenfolge: slug => Position
+	// Items die hier nicht gelistet sind landen am Ende
+	$order = [
+		// Dashboard
+		'parkourone'                    => 1,
+
+		// ── WEBSITE
+		'#po-sep-website'              => 10,
+		'parkourone-menu-footer'       => 11,
+		'parkourone-pages'             => 12,
+		'parkourone-steps'             => 13,
+		'parkourone-probetraining-links' => 14,
+		'parkourone-promo-popup'       => 15,
+		'parkourone-redirects'         => 16,
+
+		// ── BILDER
+		'#po-sep-bilder'              => 20,
+		'parkourone-images'            => 21,
+		'parkourone-fallback-images'   => 22,
+
+		// ── INHALTE (CPTs)
+		'#po-sep-inhalte'             => 30,
+		'edit.php?post_type=coach'     => 31,
+		'edit.php?post_type=faq'       => 32,
+		'edit.php?post_type=testimonial' => 33,
+		'edit.php?post_type=job'       => 34,
+		'edit.php?post_type=angebot'   => 35,
+
+		// ── ANALYTICS & DATENSCHUTZ
+		'#po-sep-analytics'           => 40,
+		'parkourone-analytics'         => 41,
+		'parkourone-analytics-raw'     => 42,
+		'parkourone-analytics-settings' => 43,
+		'parkourone-consent'           => 44,
+
+		// ── SYSTEM
+		'#po-sep-system'              => 90,
+		'parkourone-maintenance'       => 91,
+		'parkourone-updates'           => 92,
+	];
+
+	usort($submenu['parkourone'], function($a, $b) use ($order) {
+		$slug_a = $a[2] ?? '';
+		$slug_b = $b[2] ?? '';
+		$pos_a = $order[$slug_a] ?? 80; // Unbekannte Items vor SYSTEM
+		$pos_b = $order[$slug_b] ?? 80;
+		return $pos_a - $pos_b;
+	});
+}
+add_action('admin_menu', 'parkourone_sort_admin_submenu', 9999);
 
 /**
  * Dashboard Seite
@@ -381,21 +462,17 @@ function parkourone_get_school_presets() {
 function parkourone_menu_footer_page() {
 	$presets = parkourone_get_school_presets();
 
-	// Menü-Links speichern
+	// Menü-Builder speichern
 	if (isset($_POST['parkourone_menu_save']) && check_admin_referer('parkourone_menu_nonce')) {
-		$menu_links = [];
-		if (!empty($_POST['menu_link_name']) && is_array($_POST['menu_link_name'])) {
-			foreach ($_POST['menu_link_name'] as $i => $name) {
-				if (!empty($name)) {
-					$menu_links[] = [
-						'name' => sanitize_text_field($name),
-						'url' => sanitize_text_field($_POST['menu_link_url'][$i] ?? '')
-					];
-				}
-			}
+		$raw = wp_unslash($_POST['po_menu_columns_data'] ?? '');
+		$decoded = json_decode($raw, true);
+		if (is_array($decoded)) {
+			$columns = parkourone_sanitize_menu_columns($decoded);
+			update_option('parkourone_menu_columns', $columns);
+			echo '<div class="notice notice-success"><p>Menü gespeichert!</p></div>';
+		} else {
+			echo '<div class="notice notice-error"><p>Fehler beim Speichern – ungültige Daten.</p></div>';
 		}
-		update_option('parkourone_menu_links', $menu_links);
-		echo '<div class="notice notice-success"><p>Menü-Links gespeichert!</p></div>';
 	}
 
 	// Footer speichern
@@ -423,17 +500,8 @@ function parkourone_menu_footer_page() {
 		echo '<div class="notice notice-success"><p>Footer-Einstellungen gespeichert!</p></div>';
 	}
 
-	// Menü-Links laden
-	$menu_links = get_option('parkourone_menu_links', []);
-	if (empty($menu_links)) {
-		// Standard-Links als Fallback
-		$menu_links = [
-			['name' => 'Über uns', 'url' => '/ueber-uns/'],
-			['name' => 'Angebote', 'url' => '/angebote/'],
-			['name' => 'Team', 'url' => '/team/'],
-			['name' => 'Kontakt', 'url' => '/kontakt/'],
-		];
-	}
+	// Menü-Spalten laden (mit automatischer Migration)
+	$menu_columns = parkourone_get_menu_columns();
 
 	// Aktuelle Werte laden
 	$options = get_option('parkourone_footer', []);
@@ -485,56 +553,109 @@ function parkourone_menu_footer_page() {
 			.po-footer-preview { background: #1d1d1f; color: #fff; padding: 30px; border-radius: 8px; margin-top: 20px; }
 			.po-preset-section { background: #f0f6fc; margin: -20px -20px 20px; padding: 20px; border-bottom: 2px solid #2271b1; }
 			.po-preset-select { min-width: 250px; }
-			.po-menu-links-list { display: flex; flex-direction: column; gap: 10px; }
-			.po-menu-link-row { display: flex; gap: 10px; align-items: center; }
-			.po-menu-link-row input { flex: 1; max-width: 280px; }
-			.po-menu-link-row .button { flex-shrink: 0; }
+			/* Menu Builder */
+			.po-mb-layout { display: flex; gap: 24px; }
+			.po-mb-sidebar { width: 240px; flex-shrink: 0; background: #f6f7f7; padding: 16px; border-radius: 8px; border: 1px solid #c3c4c7; }
+			.po-mb-sidebar h3 { margin: 0 0 12px; font-size: 14px; text-transform: uppercase; color: #646970; letter-spacing: 0.5px; }
+			.po-mb-sidebar h4 { margin: 16px 0 8px; font-size: 13px; color: #1d2327; }
+			.po-mb-sidebar h4:first-child { margin-top: 0; }
+			.po-mb-sidebar-section { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #ddd; }
+			.po-mb-sidebar-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+			.po-mb-sidebar .button { display: block; width: 100%; text-align: center; margin-top: 6px; }
+			.po-mb-columns { display: flex; gap: 16px; flex: 1; min-width: 0; }
+			.po-mb-column { flex: 1; min-width: 0; background: #f9f9f9; border-radius: 8px; border: 1px solid #c3c4c7; display: flex; flex-direction: column; }
+			.po-mb-column-header { padding: 12px; border-bottom: 1px solid #ddd; }
+			.po-mb-column-number { display: block; font-size: 11px; text-transform: uppercase; color: #646970; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px; }
+			.po-mb-column-title-input { width: 100%; font-size: 12px; padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; }
+			.po-mb-dropzone { min-height: 120px; padding: 8px; flex: 1; }
+			.po-mb-placeholder { height: 40px; background: #e8f0fe; border: 2px dashed #2271b1; border-radius: 6px; margin-bottom: 6px; }
+			.po-mb-item { display: flex; align-items: center; gap: 6px; padding: 8px 10px; background: #fff; border: 1px solid #c3c4c7; border-radius: 6px; margin-bottom: 6px; cursor: default; font-size: 13px; }
+			.po-mb-item--highlight { border-left: 3px solid #1d1d1f; font-weight: 600; }
+			.po-mb-item--auto { border-left: 3px solid #2271b1; background: #f0f6fc; }
+			.po-mb-handle { cursor: move; color: #999; font-size: 16px; line-height: 1; flex-shrink: 0; user-select: none; }
+			.po-mb-type { font-size: 10px; text-transform: uppercase; color: #fff; background: #646970; padding: 1px 5px; border-radius: 3px; flex-shrink: 0; letter-spacing: 0.5px; }
+			.po-mb-item--auto .po-mb-type { background: #2271b1; }
+			.po-mb-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+			.po-mb-highlight-toggle { background: none; border: none; cursor: pointer; font-size: 16px; color: #dba617; padding: 0 2px; flex-shrink: 0; }
+			.po-mb-remove { background: none; border: none; cursor: pointer; color: #a00; font-size: 18px; font-weight: 700; padding: 0 2px; flex-shrink: 0; line-height: 1; }
+			.po-mb-remove:hover { color: #dc3232; }
 		</style>
 
 		<div class="po-admin-tabs">
-			<a href="#menu3" class="po-admin-tab active" data-tab="menu3">Menü (3. Spalte)</a>
+			<a href="#menubuilder" class="po-admin-tab active" data-tab="menubuilder">Menü Builder</a>
 			<a href="#footer" class="po-admin-tab" data-tab="footer">Footer-Einstellungen</a>
 			<a href="#preview" class="po-admin-tab" data-tab="preview">Vorschau</a>
 		</div>
 
-		<!-- Menü 3. Spalte -->
-		<div class="po-admin-panel active" id="panel-menu3">
-			<h2>Menü - 3. Spalte</h2>
-			<p>Das Hauptmenü hat 3 Spalten:</p>
-			<ul style="margin-bottom: 20px;">
-				<li><strong>Spalte 1:</strong> Stundenplan + Altersgruppen (automatisch aus Events)</li>
-				<li><strong>Spalte 2:</strong> Standorte (automatisch aus Event-Kategorien)</li>
-				<li><strong>Spalte 3:</strong> Diese Links hier (manuell)</li>
-			</ul>
+		<!-- Menü Builder -->
+		<div class="po-admin-panel active" id="panel-menubuilder">
+			<h2>Menü Builder</h2>
+			<p>Ziehe Elemente zwischen den 4 Spalten hin und her. Auto-Blöcke generieren ihre Links automatisch aus den Event-Kategorien.</p>
 
 			<form method="post">
 				<?php wp_nonce_field('parkourone_menu_nonce'); ?>
+				<input type="hidden" name="po_menu_columns_data" id="po-mb-data" value="">
 
-				<div class="po-form-section">
-					<h3>Links für Spalte 3</h3>
-					<p class="description" style="margin-bottom: 15px;">Füge hier Seiten wie "Über uns", "Angebote", "Team", "Kontakt" hinzu.</p>
+				<div id="po-menu-builder" class="po-mb">
+					<div class="po-mb-layout">
+						<!-- Verfügbare Elemente -->
+						<div class="po-mb-sidebar">
+							<h3>Verfügbare Elemente</h3>
 
-					<div class="po-menu-links-list" id="menu-links-list">
-						<?php if (!empty($menu_links)): ?>
-							<?php foreach ($menu_links as $link): ?>
-								<div class="po-menu-link-row">
-									<input type="text" name="menu_link_name[]" value="<?php echo esc_attr($link['name']); ?>" placeholder="Link-Text (z.B. Über uns)">
-									<input type="text" name="menu_link_url[]" value="<?php echo esc_attr($link['url']); ?>" placeholder="URL (z.B. /ueber-uns/)">
-									<button type="button" class="button po-remove-menu-link">×</button>
-								</div>
-							<?php endforeach; ?>
-						<?php else: ?>
-							<div class="po-menu-link-row">
-								<input type="text" name="menu_link_name[]" placeholder="Link-Text (z.B. Über uns)">
-								<input type="text" name="menu_link_url[]" placeholder="URL (z.B. /ueber-uns/)">
-								<button type="button" class="button po-remove-menu-link">×</button>
+							<div class="po-mb-sidebar-section">
+								<h4>Auto-Blöcke</h4>
+								<button type="button" class="button po-mb-add-auto" data-source="alter" data-taxonomy="event_category" data-label="Altersgruppen">+ Altersgruppen</button>
+								<button type="button" class="button po-mb-add-auto" data-source="ortschaft" data-taxonomy="event_category" data-label="Standorte">+ Standorte</button>
 							</div>
-						<?php endif; ?>
+
+							<div class="po-mb-sidebar-section">
+								<h4>Seite hinzufügen</h4>
+								<input type="text" id="po-mb-page-search" placeholder="Seite suchen..." class="widefat" style="margin-bottom: 6px;">
+								<select id="po-mb-page-select" class="widefat" style="margin-bottom: 6px;">
+									<option value="">— Seite wählen —</option>
+									<?php
+									$pages = get_pages(['sort_column' => 'post_title', 'sort_order' => 'ASC']);
+									foreach ($pages as $page):
+									?>
+										<option value="<?php echo esc_attr($page->ID); ?>"><?php echo esc_html($page->post_title); ?></option>
+									<?php endforeach; ?>
+								</select>
+								<button type="button" class="button" id="po-mb-add-page">+ Seite hinzufügen</button>
+							</div>
+
+							<div class="po-mb-sidebar-section">
+								<h4>Custom Link</h4>
+								<input type="text" id="po-mb-custom-label" placeholder="Link-Text" class="widefat" style="margin-bottom: 6px;">
+								<input type="text" id="po-mb-custom-url" placeholder="URL (z.B. /kontakt/)" class="widefat" style="margin-bottom: 6px;">
+								<button type="button" class="button" id="po-mb-add-custom">+ Link hinzufügen</button>
+							</div>
+						</div>
+
+						<!-- 4 Spalten -->
+						<div class="po-mb-columns">
+							<?php for ($col = 0; $col < 4; $col++): ?>
+								<?php $col_data = $menu_columns[$col] ?? ['title' => '', 'items' => []]; ?>
+								<div class="po-mb-column" data-col="<?php echo $col; ?>">
+									<div class="po-mb-column-header">
+										<span class="po-mb-column-number">Spalte <?php echo $col + 1; ?></span>
+										<input type="text" class="po-mb-column-title-input" value="<?php echo esc_attr($col_data['title'] ?? ''); ?>" placeholder="Optionaler Titel">
+									</div>
+									<div class="po-mb-dropzone" data-col="<?php echo $col; ?>">
+										<?php
+										if (!empty($col_data['items'])):
+											foreach ($col_data['items'] as $item):
+												parkourone_render_menu_builder_item($item);
+											endforeach;
+										endif;
+										?>
+									</div>
+								</div>
+							<?php endfor; ?>
+						</div>
 					</div>
-					<button type="button" class="button" id="add-menu-link" style="margin-top: 10px;">+ Link hinzufügen</button>
 				</div>
 
-				<p>
+				<p style="margin-top: 20px;">
 					<button type="submit" name="parkourone_menu_save" class="button button-primary button-large">Menü speichern</button>
 				</p>
 			</form>
@@ -569,7 +690,7 @@ function parkourone_menu_footer_page() {
 					</div>
 					<div class="po-form-row">
 						<label>Adresse</label>
-						<textarea name="footer_company_address" placeholder="Strasse Nr.&#10;PLZ Stadt"><?php echo esc_textarea($options['company_address']); ?></textarea>
+						<textarea name="footer_company_address" placeholder="Straße Nr.&#10;PLZ Stadt"><?php echo esc_textarea($options['company_address']); ?></textarea>
 					</div>
 				</div>
 
@@ -668,7 +789,7 @@ function parkourone_menu_footer_page() {
 
 		<!-- Vorschau -->
 		<div class="po-admin-panel" id="panel-preview">
-			<h2>Menü-Vorschau (3 Spalten)</h2>
+			<h2>Menü-Vorschau (4 Spalten)</h2>
 			<p>So sieht das Menü mit den aktuellen Einstellungen aus:</p>
 			<?php
 			// Menü-Vorschau laden
@@ -768,25 +889,7 @@ function parkourone_menu_footer_page() {
 				});
 			});
 
-			// Menü-Links hinzufügen
-			document.getElementById('add-menu-link').addEventListener('click', function() {
-				var row = document.createElement('div');
-				row.className = 'po-menu-link-row';
-				row.innerHTML = '<input type="text" name="menu_link_name[]" placeholder="Link-Text (z.B. Über uns)">' +
-					'<input type="text" name="menu_link_url[]" placeholder="URL (z.B. /ueber-uns/)">' +
-					'<button type="button" class="button po-remove-menu-link">×</button>';
-				document.getElementById('menu-links-list').appendChild(row);
-			});
-
-			// Menü-Links entfernen
-			document.getElementById('menu-links-list').addEventListener('click', function(e) {
-				if (e.target.classList.contains('po-remove-menu-link')) {
-					var rows = this.querySelectorAll('.po-menu-link-row');
-					if (rows.length > 1) {
-						e.target.closest('.po-menu-link-row').remove();
-					}
-				}
-			});
+			// (Menü-Builder Logik ist in admin-menu-builder.js)
 		});
 		</script>
 	</div>
@@ -1079,3 +1182,197 @@ function parkourone_fix_submenu_highlight($submenu_file) {
 	return $submenu_file;
 }
 add_filter('submenu_file', 'parkourone_fix_submenu_highlight');
+
+// =====================================================
+// Menü Builder – Hilfsfunktionen
+// =====================================================
+
+/**
+ * Menü-Spalten laden (mit automatischer Migration von Legacy-Daten)
+ */
+function parkourone_get_menu_columns() {
+	$columns = get_option('parkourone_menu_columns', []);
+
+	if (!empty($columns)) {
+		return $columns;
+	}
+
+	// Migration: Legacy-Daten übernehmen
+	$legacy_links = get_option('parkourone_menu_links', []);
+
+	$columns = [
+		[
+			'title' => '',
+			'items' => [
+				['type' => 'custom', 'label' => 'Stundenplan', 'url' => '/stundenplan/', 'highlight' => true],
+				['type' => 'auto_block', 'source' => 'alter', 'taxonomy' => 'event_category', 'label' => 'Altersgruppen'],
+			]
+		],
+		[
+			'title' => '',
+			'items' => [
+				['type' => 'auto_block', 'source' => 'ortschaft', 'taxonomy' => 'event_category', 'label' => 'Standorte'],
+			]
+		],
+		[
+			'title' => '',
+			'items' => []
+		],
+		[
+			'title' => '',
+			'items' => []
+		],
+	];
+
+	// Bestehende manuelle Links in Spalte 3 übernehmen
+	if (!empty($legacy_links)) {
+		foreach ($legacy_links as $link) {
+			if (!empty($link['name'])) {
+				$columns[2]['items'][] = [
+					'type' => 'custom',
+					'label' => $link['name'],
+					'url' => $link['url'] ?? '#',
+					'highlight' => false,
+				];
+			}
+		}
+	} else {
+		// Standard-Links
+		$columns[2]['items'] = [
+			['type' => 'custom', 'label' => 'Über uns', 'url' => '/ueber-uns/', 'highlight' => false],
+			['type' => 'custom', 'label' => 'Angebote', 'url' => '/angebote/', 'highlight' => false],
+			['type' => 'custom', 'label' => 'Team', 'url' => '/team/', 'highlight' => false],
+			['type' => 'custom', 'label' => 'Kontakt', 'url' => '/kontakt/', 'highlight' => false],
+		];
+	}
+
+	// Migration speichern
+	update_option('parkourone_menu_columns', $columns);
+
+	return $columns;
+}
+
+/**
+ * Menü-Spalten sanitizen
+ */
+function parkourone_sanitize_menu_columns($raw) {
+	$columns = [];
+	foreach ($raw as $col) {
+		if (!is_array($col)) continue;
+		$sanitized_col = [
+			'title' => sanitize_text_field($col['title'] ?? ''),
+			'items' => [],
+		];
+		if (!empty($col['items']) && is_array($col['items'])) {
+			foreach ($col['items'] as $item) {
+				$sanitized_item = parkourone_sanitize_menu_item($item);
+				if ($sanitized_item) {
+					$sanitized_col['items'][] = $sanitized_item;
+				}
+			}
+		}
+		$columns[] = $sanitized_col;
+	}
+	// Ensure exactly 4 columns
+	while (count($columns) < 4) {
+		$columns[] = ['title' => '', 'items' => []];
+	}
+	return array_slice($columns, 0, 4);
+}
+
+/**
+ * Einzelnes Menü-Item sanitizen
+ */
+function parkourone_sanitize_menu_item($item) {
+	if (!is_array($item) || empty($item['type'])) return null;
+
+	switch ($item['type']) {
+		case 'custom':
+			return [
+				'type' => 'custom',
+				'label' => sanitize_text_field($item['label'] ?? ''),
+				'url' => sanitize_text_field($item['url'] ?? '#'),
+				'highlight' => !empty($item['highlight']),
+			];
+		case 'auto_block':
+			return [
+				'type' => 'auto_block',
+				'source' => sanitize_key($item['source'] ?? ''),
+				'taxonomy' => sanitize_key($item['taxonomy'] ?? 'event_category'),
+				'label' => sanitize_text_field($item['label'] ?? ''),
+			];
+		case 'page':
+			return [
+				'type' => 'page',
+				'page_id' => absint($item['page_id'] ?? 0),
+				'label' => sanitize_text_field($item['label'] ?? ''),
+			];
+		default:
+			return null;
+	}
+}
+
+/**
+ * Menu-Builder Item im Admin rendern (für die Dropzone)
+ */
+function parkourone_render_menu_builder_item($item) {
+	$type = $item['type'] ?? '';
+	$extra_class = '';
+	$type_label = '';
+	$display_label = '';
+	$extra_buttons = '';
+	$data_json = esc_attr(json_encode($item, JSON_UNESCAPED_UNICODE));
+
+	switch ($type) {
+		case 'custom':
+			$type_label = 'Link';
+			$display_label = esc_html($item['label'] ?? '');
+			if (!empty($item['url']) && $item['url'] !== '#') {
+				$display_label .= ' → ' . esc_html($item['url']);
+			}
+			$hl = !empty($item['highlight']);
+			$extra_class = $hl ? ' po-mb-item--highlight' : '';
+			$extra_buttons = '<button type="button" class="po-mb-highlight-toggle" title="' . ($hl ? 'Hervorhebung entfernen' : 'Hervorheben') . '">' . ($hl ? '★' : '☆') . '</button>';
+			break;
+		case 'auto_block':
+			$type_label = 'Auto';
+			$display_label = esc_html($item['label'] ?? $item['source'] ?? '');
+			$extra_class = ' po-mb-item--auto';
+			break;
+		case 'page':
+			$type_label = 'Seite';
+			$page_title = $item['label'] ?? '';
+			if (empty($page_title) && !empty($item['page_id'])) {
+				$page_title = get_the_title($item['page_id']);
+			}
+			$display_label = esc_html($page_title);
+			break;
+	}
+
+	echo '<div class="po-mb-item' . $extra_class . '" data-item=\'' . $data_json . '\'>';
+	echo '<span class="po-mb-handle">⋮⋮</span>';
+	echo '<span class="po-mb-type">' . esc_html($type_label) . '</span>';
+	echo '<span class="po-mb-label">' . $display_label . '</span>';
+	echo $extra_buttons;
+	echo '<button type="button" class="po-mb-remove" title="Entfernen">×</button>';
+	echo '</div>';
+}
+
+/**
+ * Admin-Scripts für Menü Builder laden
+ */
+function parkourone_menu_builder_admin_scripts($hook) {
+	if (strpos($hook, 'parkourone-menu-footer') === false && strpos($hook, 'page_parkourone-menu-footer') === false) {
+		return;
+	}
+
+	wp_enqueue_script('jquery-ui-sortable');
+	wp_enqueue_script(
+		'parkourone-menu-builder',
+		get_template_directory_uri() . '/assets/js/admin-menu-builder.js',
+		['jquery', 'jquery-ui-sortable'],
+		filemtime(get_template_directory() . '/assets/js/admin-menu-builder.js'),
+		true
+	);
+}
+add_action('admin_enqueue_scripts', 'parkourone_menu_builder_admin_scripts');

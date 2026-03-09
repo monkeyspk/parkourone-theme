@@ -3,7 +3,7 @@
  * Title: Schulen
  * Slug: parkourone/page-schulen
  * Categories: parkourone-seiten
- * Description: Parkour fuer Schulen – Schulprojekte, Projektwochen und Kooperationen
+ * Description: Parkour für Schulen – Schulprojekte, Projektwochen und Kooperationen
  * Keywords: schulen, schule, bildung, parkour, kinder, projektwoche
  * Viewport Width: 1400
  * Block Types: core/post-content

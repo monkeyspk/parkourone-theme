@@ -129,7 +129,7 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => $block_class]);
                     </label>
                     <select class="po-produkt-showcase__variation-select"
                             data-attribute-name="<?php echo esc_attr($attr['name']); ?>">
-                        <option value="">— <?php echo esc_html($attr['label']); ?> waehlen —</option>
+                        <option value="">— <?php echo esc_html($attr['label']); ?> wählen —</option>
                         <?php foreach ($attr['options'] as $option): ?>
                         <option value="<?php echo esc_attr($option); ?>">
                             <?php echo esc_html($option); ?>

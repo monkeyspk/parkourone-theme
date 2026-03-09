@@ -2,12 +2,12 @@
 /**
  * ParkourONE Performance Optimierung
  *
- * MU-Plugin: Laeuft vor allen anderen Plugins und Themes.
- * Entfernt unnoetige Scripts/Styles, bereinigt den HTML-Head
+ * MU-Plugin: Läuft vor allen anderen Plugins und Themes.
+ * Entfernt unnötige Scripts/Styles, bereinigt den HTML-Head
  * und optimiert die Ladezeit.
  *
  * Wird automatisch vom Theme installiert.
- * Version wird geprueft — bei Theme-Update wird die Datei aktualisiert.
+ * Version wird geprüft — bei Theme-Update wird die Datei aktualisiert.
  *
  * @package ParkourONE
  * @since 1.0.0
@@ -45,11 +45,11 @@ remove_action('wp_head', 'rest_output_link_wp_head');
 remove_action('wp_head', 'wp_oembed_add_discovery_links');
 remove_action('wp_head', 'wp_oembed_add_host_js');
 
-// RSS Feed Links (kein Blog, keine Feeds noetig)
+// RSS Feed Links (kein Blog, keine Feeds nötig)
 remove_action('wp_head', 'feed_links', 2);
 remove_action('wp_head', 'feed_links_extra', 3);
 
-// Angrenzende Posts (rel="prev/next") - nicht noetig
+// Angrenzende Posts (rel="prev/next") - nicht nötig
 remove_action('wp_head', 'adjacent_posts_rel_link_wp_head', 10);
 
 // WordPress Emoji Scripts und Styles entfernen
@@ -75,7 +75,7 @@ add_filter('wp_resource_hints', function ($hints, $relation_type) {
 
 
 // ==========================================================================
-// 2. UNNOETIGE SCRIPTS & STYLES ENTFERNEN
+// 2. UNNÖTIGE SCRIPTS & STYLES ENTFERNEN
 //    Plugins laden oft den gesamten Block-Editor im Frontend.
 // ==========================================================================
 
@@ -85,7 +85,7 @@ add_action('wp_enqueue_scripts', function () {
 	}
 
 	// -------------------------------------------------------
-	// WordPress Block-Editor Scripts (nur im Admin noetig)
+	// WordPress Block-Editor Scripts (nur im Admin nötig)
 	// Spart ca. 700 KiB
 	// -------------------------------------------------------
 	$editor_scripts = [
@@ -131,7 +131,7 @@ add_action('wp_enqueue_scripts', function () {
 		wp_deregister_script($handle);
 	}
 
-	// React/ReactDOM (nur fuer Block-Editor noetig)
+	// React/ReactDOM (nur für Block-Editor nötig)
 	wp_dequeue_script('react');
 	wp_dequeue_script('react-dom');
 	wp_dequeue_script('react-jsx-runtime');
@@ -152,7 +152,7 @@ add_action('wp_enqueue_scripts', function () {
 
 	// -------------------------------------------------------
 	// Easy Timetable Plugin
-	// Theme hat eigenen Stundenplan-Block, Plugin unnoetig
+	// Theme hat eigenen Stundenplan-Block, Plugin unnötig
 	// Spart ca. 100+ KiB
 	// -------------------------------------------------------
 	$easy_timetable = [
@@ -194,7 +194,7 @@ add_action('wp_enqueue_scripts', function () {
 
 	// -------------------------------------------------------
 	// WordPress Embed Script (oEmbed)
-	// Nur laden wenn tatsaechlich Embeds vorhanden
+	// Nur laden wenn tatsächlich Embeds vorhanden
 	// -------------------------------------------------------
 	if (!has_shortcode($content, 'embed')) {
 		wp_dequeue_script('wp-embed');
@@ -205,7 +205,7 @@ add_action('wp_enqueue_scripts', function () {
 
 // ==========================================================================
 // 3. JQUERY MIGRATE ENTFERNEN
-//    Kompatibilitaetsschicht fuer veraltete jQuery-APIs (5 KiB)
+//    Kompatibilitätsschicht für veraltete jQuery-APIs (5 KiB)
 // ==========================================================================
 
 add_action('wp_default_scripts', function ($scripts) {
@@ -224,7 +224,7 @@ add_action('wp_default_scripts', function ($scripts) {
 
 // ==========================================================================
 // 4. HEARTBEAT API AUF FRONTEND DEAKTIVIEREN
-//    Heartbeat pollt alle 15-60 Sekunden — nur im Admin noetig
+//    Heartbeat pollt alle 15-60 Sekunden — nur im Admin nötig
 // ==========================================================================
 
 add_action('init', function () {
@@ -236,7 +236,7 @@ add_action('init', function () {
 
 // ==========================================================================
 // 5. GLOBALE STYLES / SVG OPTIMIEREN
-//    WordPress gibt grosse Inline-SVGs fuer Duotone-Filter aus
+//    WordPress gibt große Inline-SVGs für Duotone-Filter aus
 // ==========================================================================
 
 remove_action('wp_body_open', 'wp_global_styles_render_svg_filters');

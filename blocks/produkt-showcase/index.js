@@ -133,7 +133,7 @@
 			}
 
 			// Dropdown options
-			var productOptions = [{ label: loading ? 'Produkte werden geladen...' : '— Produkt waehlen —', value: 0 }];
+			var productOptions = [{ label: loading ? 'Produkte werden geladen...' : '— Produkt wählen —', value: 0 }];
 			productOptions = productOptions.concat(productList);
 
 			// Current active product
@@ -259,7 +259,7 @@
 								borderRadius: '8px', padding: '10px 16px', marginBottom: '16px', fontSize: '13px',
 								color: isDark ? '#ff8a8a' : '#d63638'
 							}
-						}, 'Kein Produkt gewaehlt.'),
+						}, 'Kein Produkt gewählt.'),
 						el('h2', {
 							key: 'title',
 							style: { fontSize: '28px', fontWeight: '700', margin: '0 0 12px', color: isDark ? '#fff' : '#1d1d1f', letterSpacing: '-0.02em' }
@@ -317,14 +317,14 @@
 						products.length === 0 && el('div', {
 							key: 'empty',
 							style: { padding: '16px', textAlign: 'center', color: '#6e6e73', fontSize: '13px' }
-						}, 'Klicke "+" um ein Produkt hinzuzufuegen.'),
+						}, 'Klicke "+" um ein Produkt hinzuzufügen.'),
 
 						// Active product controls
 						activeProduct && el('div', { key: 'active-controls' }, [
 							el(SelectControl, {
 								key: 'product-select',
 								label: 'Produkt',
-								help: activeProduct.productId ? 'Produkt-ID: ' + activeProduct.productId : 'Waehle ein WooCommerce-Produkt.',
+								help: activeProduct.productId ? 'Produkt-ID: ' + activeProduct.productId : 'Wähle ein WooCommerce-Produkt.',
 								value: activeProduct.productId || 0,
 								options: productOptions,
 								onChange: function(v) { updateProduct(activeIdx, 'productId', parseInt(v, 10)); }
@@ -361,8 +361,8 @@
 						}, 'Layout: ' + layoutLabel)
 					]),
 
-					// Panel 3: Inhalte ueberschreiben (for active product)
-					activeProduct && el(PanelBody, { key: 'content', title: 'Inhalte ueberschreiben (Produkt ' + (activeIdx + 1) + ')', initialOpen: false }, [
+					// Panel 3: Inhalte überschreiben (for active product)
+					activeProduct && el(PanelBody, { key: 'content', title: 'Inhalte überschreiben (Produkt ' + (activeIdx + 1) + ')', initialOpen: false }, [
 						el(TextControl, {
 							key: 'headline',
 							label: 'Headline (leer = Produkttitel)',
@@ -405,7 +405,7 @@
 											key: 'btn',
 											variant: 'secondary',
 											onClick: obj.open
-										}, activeProduct.imageUrl ? 'Bild wechseln' : 'Bild ueberschreiben'),
+										}, activeProduct.imageUrl ? 'Bild wechseln' : 'Bild überschreiben'),
 										activeProduct.imageUrl && el(Button, {
 											key: 'remove',
 											variant: 'link',
@@ -429,7 +429,7 @@
 							background: isDark ? '#1d1d1f' : '#f5f5f7', color: isDark ? 'rgba(255,255,255,0.5)' : '#6e6e73',
 							borderRadius: '16px', padding: '60px 32px', textAlign: 'center', fontSize: '15px'
 						}
-					}, 'Klicke "+" in den Block-Einstellungen um Produkte hinzuzufuegen.'),
+					}, 'Klicke "+" in den Block-Einstellungen um Produkte hinzuzufügen.'),
 
 					// Single product: horizontal
 					products.length === 1 && renderHorizontalPreview(products[0]),

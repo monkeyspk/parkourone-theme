@@ -47,7 +47,7 @@
 							label: 'Layout',
 							value: attributes.layout,
 							options: [
-								{ label: 'Ein Zitat (gross)', value: 'single' },
+								{ label: 'Ein Zitat (groß)', value: 'single' },
 								{ label: 'Zwei Zitate (nebeneinander)', value: 'double' }
 							],
 							onChange: function(v) { setAttributes({ layout: v }); }
@@ -116,10 +116,10 @@
 													? el('div', null, [
 														el('img', { key: 'img', src: quote.imageUrl, style: { width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', marginBottom: '8px' } }),
 														el('br', { key: 'br' }),
-														el(Button, { key: 'change', onClick: obj.open, variant: 'secondary', isSmall: true }, 'Aendern'),
+														el(Button, { key: 'change', onClick: obj.open, variant: 'secondary', isSmall: true }, 'Ändern'),
 														el(Button, { key: 'remove', onClick: function() { updateQuote(activeQuote, 'imageUrl', ''); }, variant: 'link', isDestructive: true, isSmall: true, style: { marginLeft: '8px' } }, 'Entfernen')
 													])
-													: el(Button, { onClick: obj.open, variant: 'secondary' }, 'Bild waehlen')
+													: el(Button, { onClick: obj.open, variant: 'secondary' }, 'Bild wählen')
 											);
 										}
 									})

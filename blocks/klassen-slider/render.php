@@ -196,7 +196,7 @@ usort($klassen, function($a, $b) {
 
 $unique_id = 'klassen-slider-' . uniqid();
 
-// Hole Taxonomie-Terms fuer Filter
+// Hole Taxonomie-Terms für Filter
 $alter_parent = get_term_by('slug', 'alter', 'event_category');
 $ortschaft_parent = get_term_by('slug', 'ortschaft', 'event_category');
 
@@ -233,7 +233,7 @@ if ($ortschaft_parent && !is_wp_error($ortschaft_parent)) {
 	});
 }
 
-// Farben fuer Altersgruppen
+// Farben für Altersgruppen
 $age_colors = [
 	'minis' => '#ff9500',
 	'kids' => '#34c759',
@@ -524,7 +524,7 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 					</div>
 				</div>
 
-				<?php // Coach-Slide (ausserhalb des normalen Step-Flows) ?>
+				<?php // Coach-Slide (außerhalb des normalen Step-Flows) ?>
 				<?php if ($klasse['coach_has_profile'] && isset($coach_profiles[$klasse['headcoach']])):
 					$coach = $coach_profiles[$klasse['headcoach']];
 				?>

@@ -22,7 +22,7 @@
 				el(InspectorControls, { key: 'controls' }, [
 					el(PanelBody, { key: 'main', title: 'Einstellungen', initialOpen: true },
 						el(TextControl, {
-							label: 'Ueberschrift',
+							label: 'Überschrift',
 							value: attributes.headline || '',
 							onChange: function(v) { setAttributes({ headline: v }); },
 							help: 'z.B. "Warum ParkourONE?" oder "Warum Parkour in Berlin?"'
@@ -88,10 +88,10 @@
 												slide.imageUrl
 													? el('div', null, [
 														el('img', { key: 'img', src: slide.imageUrl, style: { maxWidth: '100%', borderRadius: '8px', marginBottom: '8px' } }),
-														el(Button, { key: 'change', onClick: obj.open, variant: 'secondary', isSmall: true, style: { marginRight: '8px' } }, 'Aendern'),
+														el(Button, { key: 'change', onClick: obj.open, variant: 'secondary', isSmall: true, style: { marginRight: '8px' } }, 'Ändern'),
 														el(Button, { key: 'remove', onClick: function() { updateSlide(activeSlide, 'imageUrl', ''); }, variant: 'link', isDestructive: true, isSmall: true }, 'Entfernen')
 													])
-													: el(Button, { onClick: obj.open, variant: 'secondary' }, 'Bild waehlen')
+													: el(Button, { onClick: obj.open, variant: 'secondary' }, 'Bild wählen')
 											);
 										}
 									})

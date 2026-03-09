@@ -656,7 +656,7 @@ function parkourone_auto_pages_admin_page() {
 			</div>
 			<select id="po-header-variant" name="header_variant" style="padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid #ddd; font-size: 14px; min-width: 280px;">
 				<option value="split" selected>Split – Text links, Bild rechts</option>
-				<option value="centered">Centered – Grosser Text zentriert</option>
+				<option value="centered">Centered – Großer Text zentriert</option>
 				<option value="fullscreen">Fullscreen – Vollbild mit Overlay</option>
 			</select>
 			<small style="color: #666; flex-basis: 100%;">Dieser Stil wird für alle neu erstellten Stadt- und Kategorie-Seiten verwendet. Du kannst den Stil später im Block-Editor ändern.</small>
@@ -1005,7 +1005,7 @@ function parkourone_auto_pages_admin_page() {
 						<div style="background: #f6f7f7; padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem;">
 							<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
 								<input type="checkbox" name="overwrite_categories" id="overwrite-categories" value="1">
-								<span><strong>Bestehende ueberschreiben</strong></span>
+								<span><strong>Bestehende überschreiben</strong></span>
 							</label>
 							<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; margin-top: 8px;">
 								<input type="checkbox" name="force_categories" id="force-categories" value="1">
@@ -1285,7 +1285,7 @@ function parkourone_get_template_pages() {
 		],
 		[
 			'slug' => 'der-grosse-sprung',
-			'title' => 'Der grosse Sprung',
+			'title' => 'Der große Sprung',
 			'description' => 'Klassenwechsel-Landingpage – bestehende Schüler:innen wechseln in die nächste Altersgruppe',
 			'blocks' => 'Page-Header, Intro-Section, Steps-Carousel, Stundenplan, FAQ',
 			'pattern_file' => 'page-der-grosse-sprung.php',
@@ -1444,7 +1444,7 @@ function parkourone_handle_page_generation() {
 		$updated = 0;
 
 		if (empty($cities)) {
-			add_settings_error('po_auto_pages', 'no_cities_selected', 'Bitte waehle mindestens eine Stadt aus. Falls alle bereits existieren, aktiviere "Bestehende ueberschreiben".', 'error');
+			add_settings_error('po_auto_pages', 'no_cities_selected', 'Bitte wähle mindestens eine Stadt aus. Falls alle bereits existieren, aktiviere "Bestehende überschreiben".', 'error');
 		} else {
 			foreach ($cities as $city_slug) {
 				$existing = get_page_by_path($city_slug);
@@ -1510,7 +1510,7 @@ function parkourone_handle_page_generation() {
 		$updated = 0;
 
 		if (empty($categories)) {
-			add_settings_error('po_auto_pages', 'no_categories_selected', 'Bitte waehle mindestens eine Zielgruppe aus. Falls alle bereits existieren, aktiviere "Bestehende ueberschreiben".', 'error');
+			add_settings_error('po_auto_pages', 'no_categories_selected', 'Bitte wähle mindestens eine Zielgruppe aus. Falls alle bereits existieren, aktiviere "Bestehende überschreiben".', 'error');
 		} else {
 			foreach ($categories as $cat_slug) {
 				$existing = get_page_by_path($cat_slug);
@@ -1654,14 +1654,6 @@ function parkourone_generate_city_page_content($city_slug, $city, $header_varian
 
 <!-- wp:parkourone/text-reveal {"text":"{$text_reveal_text}","textSize":"large","textAlign":"center"} /-->
 
-<!-- wp:spacer {"height":"40px"} -->
-<div style="height:40px" aria-hidden="true" class="wp-block-spacer"></div>
-<!-- /wp:spacer -->
-
-<!-- wp:image {"align":"full","sizeSlug":"full"} -->
-<figure class="wp-block-image alignfull size-full"><img src="{$theme_uri}/assets/images/fallback/juniors/grosserpsrung.jpg" alt="Parkour Training in {$city_name}"/></figure>
-<!-- /wp:image -->
-
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
@@ -1782,14 +1774,6 @@ function parkourone_generate_location_page_content($location_slug, $location_nam
 <!-- /wp:spacer -->
 
 <!-- wp:parkourone/text-reveal {"text":"{$text_reveal_text}","textSize":"large","textAlign":"center"} /-->
-
-<!-- wp:spacer {"height":"40px"} -->
-<div style="height:40px" aria-hidden="true" class="wp-block-spacer"></div>
-<!-- /wp:spacer -->
-
-<!-- wp:image {"align":"full","sizeSlug":"full"} -->
-<figure class="wp-block-image alignfull size-full"><img src="{$theme_uri}/assets/images/fallback/landscape/adults/1T2A6249.jpg" alt="Parkour Training in {$location_name} bei ParkourONE {$site_name}"/></figure>
-<!-- /wp:image -->
 
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
@@ -1933,7 +1917,7 @@ function parkourone_generate_category_page_content($cat_slug, $seo, $header_vari
 	// Probetraining-Preis dynamisch
 	$probetraining_price = parkourone_get_probetraining_price();
 
-	// Alle Standorte abrufen (fuer Statistiken)
+	// Alle Standorte abrufen (für Statistiken)
 	$locations = parkourone_get_all_locations();
 
 	// Einzelner Slider mit Location-Filter (statt mehrere Slider pro Standort)
@@ -1995,14 +1979,6 @@ function parkourone_generate_category_page_content($cat_slug, $seo, $header_vari
 <!-- /wp:spacer -->
 
 <!-- wp:parkourone/text-reveal {"text":"{$text_reveal_text}","textSize":"large","textAlign":"center"} /-->
-
-<!-- wp:spacer {"height":"40px"} -->
-<div style="height:40px" aria-hidden="true" class="wp-block-spacer"></div>
-<!-- /wp:spacer -->
-
-<!-- wp:image {"align":"full","sizeSlug":"full"} -->
-<figure class="wp-block-image alignfull size-full"><img src="{$theme_uri}/assets/images/fallback/juniors/grosserpsrung.jpg" alt="Parkour {$display_name} Training in {$site_name}"/></figure>
-<!-- /wp:image -->
 
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>

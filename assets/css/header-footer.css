@@ -222,11 +222,12 @@
 .po-menu__columns {
     display: flex;
     flex-wrap: wrap;
-    gap: 4rem;
+    gap: 3rem;
 }
 
 .po-menu__column {
-    min-width: 200px;
+    flex: 1;
+    min-width: 160px;
 }
 
 .po-menu__column--with-children {
@@ -440,11 +441,11 @@ body:not(.wp-admin) .wp-block-post-content > style:first-child + .po-hero {
 /* Tablet */
 @media (max-width: 1024px) {
     .po-menu__columns {
-        gap: 3rem;
+        gap: 2rem;
     }
 
     .po-menu__column {
-        min-width: 180px;
+        min-width: 140px;
     }
 }
 
