@@ -1947,23 +1947,141 @@ p#referrer_field {
    Thank You / Bestätigungsseite (Plugin: custom-events)
    ========================================================================== */
 
-.booking-info-container {
-	font-size: 15px;
+.booking-info-wrapper {
+	margin-bottom: 40px;
 }
 
+.booking-info-container {
+	font-size: 15px;
+	font-family: var(--wc-font);
+	color: var(--wc-text);
+	max-width: 960px;
+	margin: 0 auto;
+}
+
+/* Begrüssung */
 .booking-info-container h3 {
-	font-size: 1.5em;
-	font-weight: 600;
+	font-size: 1.1em;
+	font-weight: 500;
+	color: var(--wc-text-secondary);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	margin-bottom: 24px;
+}
+
+/* Info-Grid */
+.booking-info-container .info-grid {
+	grid-gap: 16px;
+	margin-bottom: 24px;
+}
+
+/* Info-Boxen */
+.booking-info-container .info-box {
+	background: var(--wc-bg);
+	border: 1px solid var(--wc-border);
+	border-radius: var(--wc-radius-sm);
+	box-shadow: none;
+	padding: 20px 24px;
 }
 
 .booking-info-container .info-box h4 {
-	font-size: 1.15em;
+	font-size: 1em;
 	font-weight: 600;
+	color: var(--wc-text);
+	margin-bottom: 12px;
+}
+
+.booking-info-container .event-detail {
+	color: var(--wc-text);
+	line-height: 1.6;
+	margin-bottom: 6px;
+}
+
+.booking-info-container .event-detail strong {
+	font-weight: 600;
+	color: var(--wc-text);
+}
+
+.booking-info-container .note {
+	font-size: 0.9em;
+	color: var(--wc-text-secondary);
+	line-height: 1.5;
+	margin-top: 12px;
+}
+
+/* Maps-Link */
+.booking-info-container .maps-link {
+	color: var(--wc-accent);
+	font-weight: 500;
+	line-height: 1.5;
+}
+
+.booking-info-container .maps-link:hover {
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+/* Coach */
+.booking-info-container .coach-image {
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	box-shadow: none;
+	border: 2px solid var(--wc-border);
+}
+
+.booking-info-container .coach-details {
+	color: var(--wc-text);
+	font-size: 0.95em;
+	line-height: 1.5;
+}
+
+.booking-info-container .coach-details strong {
+	font-weight: 600;
+	color: var(--wc-text);
+}
+
+.booking-info-container .coach-details a {
+	color: var(--wc-accent);
+	font-weight: 500;
+}
+
+/* Bestelldetails */
+.booking-info-container .order-details-box {
+	background: var(--wc-bg);
+	border: 1px solid var(--wc-border);
+	border-radius: var(--wc-radius-sm);
+	box-shadow: none;
+	padding: 20px 24px;
 }
 
 .booking-info-container .order-details-box h4 {
-	font-size: 1.15em;
+	font-size: 1em;
 	font-weight: 600;
+	color: var(--wc-text);
+	margin-bottom: 16px;
+}
+
+.booking-info-container .order-details-table th {
+	color: var(--wc-text-secondary);
+	font-weight: 500;
+	font-size: 0.9em;
+}
+
+.booking-info-container .order-details-table td {
+	color: var(--wc-text);
+	font-size: 0.9em;
+}
+
+.booking-info-container .order-details-table th,
+.booking-info-container .order-details-table td {
+	padding: 8px 0;
+	border-bottom: 1px solid var(--wc-border);
+}
+
+.booking-info-container .order-details-table tr:last-child th,
+.booking-info-container .order-details-table tr:last-child td {
+	border-bottom: none;
 }
 
 /* ==========================================================================
