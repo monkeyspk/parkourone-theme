@@ -7,6 +7,14 @@
 $variant = $attributes['variant'] ?? 'centered';
 $title = $attributes['title'] ?? 'Parkour Training';
 $title_accent = $attributes['titleAccent'] ?? '';
+
+// Dynamic titleAccent: Wenn leer oder gleich dem rohen Standort-Namen → location_text verwenden
+$site_location = function_exists('parkourone_get_site_location') ? parkourone_get_site_location() : null;
+if ($site_location) {
+	if (empty($title_accent) || $title_accent === $site_location['name']) {
+		$title_accent = $site_location['location_text'];
+	}
+}
 $description = $attributes['description'] ?? '';
 $image = $attributes['image'] ?? '';
 $image_alt = $attributes['imageAlt'] ?? '';
