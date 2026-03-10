@@ -395,6 +395,11 @@ function parkourone_webp_bulk_convert() {
 	$new_offset = $offset + $batch_size;
 	$done = $new_offset >= $total;
 
+	// Stats-Cache invalidieren nach Konvertierung
+	if ($done) {
+		delete_transient('parkourone_webp_stats');
+	}
+
 	wp_send_json_success([
 		'converted' => $converted,
 		'skipped' => $skipped,
@@ -411,8 +416,9 @@ add_action('wp_ajax_parkourone_webp_bulk_convert', 'parkourone_webp_bulk_convert
 // =====================================================
 
 function parkourone_webp_get_stats() {
-	$upload_dir = wp_get_upload_dir();
-	$base_dir = $upload_dir['basedir'];
+	// Transient-Cache: Stats nur alle 5 Minuten neu berechnen
+	$cached = get_transient('parkourone_webp_stats');
+	if ($cached !== false) return $cached;
 
 	$total_images = (int) wp_count_attachments()->{'image/jpeg'} + (int) wp_count_attachments()->{'image/png'};
 
@@ -435,11 +441,14 @@ function parkourone_webp_get_stats() {
 		}
 	}
 
-	return [
+	$stats = [
 		'total' => $total_images,
 		'converted' => $webp_count,
 		'percent' => $total_images > 0 ? round($webp_count / $total_images * 100) : 0
 	];
+
+	set_transient('parkourone_webp_stats', $stats, 5 * MINUTE_IN_SECONDS);
+	return $stats;
 }
 
 // =====================================================
@@ -477,14 +486,7 @@ function parkourone_webp_on_theme_switch() {
 }
 add_action('after_switch_theme', 'parkourone_webp_on_theme_switch');
 
-// Einmalig bei erstem Laden konvertieren (wenn noch nicht geschehen)
-function parkourone_webp_maybe_convert_assets() {
-	if (get_option('parkourone_webp_assets_converted')) return;
-
-	parkourone_webp_convert_theme_assets();
-	update_option('parkourone_webp_assets_converted', true);
-}
-add_action('admin_init', 'parkourone_webp_maybe_convert_assets');
+// Theme-Assets werden nur per Button oder Theme-Wechsel konvertiert, nicht auf admin_init
 
 // AJAX: Theme-Assets konvertieren
 function parkourone_webp_convert_assets_ajax() {
