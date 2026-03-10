@@ -213,13 +213,16 @@ function parkourone_get_coach_avatar_url($coach_id, $size = '300x300') {
 		}
 	}
 
-	// Cache-Miss: Versuche zu cachen
+	// Cache-Miss: Im Frontend NICHT downloaden (würde Seite blockieren)
+	// Stattdessen externe URL als Fallback zurückgeben
 	if (!empty($api_image)) {
-		$result = parkourone_cache_coach_avatar($api_image, $coach_id);
-		if ($result && !empty($result['sizes'][$size])) {
-			return $result['sizes'][$size];
+		// Nur im Admin/Cron cachen, nie im Frontend
+		if (is_admin() || wp_doing_cron()) {
+			$result = parkourone_cache_coach_avatar($api_image, $coach_id);
+			if ($result && !empty($result['sizes'][$size])) {
+				return $result['sizes'][$size];
+			}
 		}
-		// Fallback: Externe URL
 		return $api_image;
 	}
 
@@ -257,16 +260,26 @@ function parkourone_get_coach_display_image($coach_id, $size = '300x300') {
 function parkourone_get_coach_display_image_by_name($coach_name, $size = '300x300', $event_image_url = '') {
 	if (empty($coach_name)) return $event_image_url;
 
+	// Statischer Cache: Vermeidet wiederholte DB-Queries pro Request
+	static $cache = [];
+	$cache_key = $coach_name . '|' . $size;
+	if (isset($cache[$cache_key])) {
+		return $cache[$cache_key] ?: $event_image_url;
+	}
+
 	// Coach-Post finden
 	if (function_exists('parkourone_get_coach_by_name')) {
 		$coach_data = parkourone_get_coach_by_name($coach_name);
 		if ($coach_data && !empty($coach_data['id'])) {
 			$image = parkourone_get_coach_display_image($coach_data['id'], $size);
-			if (!empty($image)) return $image;
+			if (!empty($image)) {
+				$cache[$cache_key] = $image;
+				return $image;
+			}
 		}
 	}
 
-	// Fallback: Event-Bild
+	$cache[$cache_key] = false;
 	return $event_image_url;
 }
 
