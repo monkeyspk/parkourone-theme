@@ -197,6 +197,8 @@ require_once get_template_directory() . '/inc/health-data-consent.php';
 require_once get_template_directory() . '/inc/promo-popup.php';
 require_once get_template_directory() . '/inc/redirects.php';
 require_once get_template_directory() . '/inc/probetraining-links.php';
+require_once get_template_directory() . '/inc/webp-converter.php';
+require_once get_template_directory() . '/inc/coach-avatar-cache.php';
 
 /**
  * ============================================
@@ -256,11 +258,79 @@ add_action('after_setup_theme', 'parkourone_install_mu_plugins');
 
 /**
  * ============================================
+ * HERO IMAGE PRELOAD (LCP Optimization)
+ * Preloads the hero image so the browser discovers it early
+ * ============================================
+ */
+function parkourone_preload_hero_image() {
+	if (is_admin() || !is_singular()) return;
+
+	$post = get_post();
+	if (!$post || !has_block('parkourone/hero', $post)) return;
+
+	$blocks = parse_blocks($post->post_content);
+	foreach ($blocks as $block) {
+		if ($block['blockName'] !== 'parkourone/hero') continue;
+
+		$attrs = $block['attrs'] ?? [];
+		$imageUrl = $attrs['imageUrl'] ?? '';
+
+		if (!empty($imageUrl)) {
+			$desktopImage = $imageUrl;
+			$mobileImage = $imageUrl;
+		} else {
+			// Fallback images — same logic as render.php
+			$ageCategory = $attrs['ageCategory'] ?? '';
+			$fallback_categories = ['adults', 'kids', 'juniors'];
+			if (!empty($ageCategory)) {
+				array_unshift($fallback_categories, $ageCategory);
+				$fallback_categories = array_unique($fallback_categories);
+			}
+			// Use first category deterministically for preload (not random)
+			$category = $fallback_categories[0];
+
+			$landscape = function_exists('parkourone_get_fallback_image') ? parkourone_get_fallback_image($category, 'landscape') : '';
+			$portrait = function_exists('parkourone_get_fallback_image') ? parkourone_get_fallback_image($category, 'portrait') : '';
+
+			$desktopImage = $landscape ?: (get_template_directory_uri() . '/assets/images/hero/startseite-desltop.jpg');
+			$mobileImage = $portrait ?: (get_template_directory_uri() . '/assets/images/hero/mobile-startbild.jpg');
+		}
+
+		// Preload mobile image (default) and desktop image (min-width: 768px)
+		if ($desktopImage === $mobileImage) {
+			echo '<link rel="preload" as="image" href="' . esc_url($desktopImage) . '" fetchpriority="high">' . "\n";
+		} else {
+			echo '<link rel="preload" as="image" href="' . esc_url($mobileImage) . '" media="(max-width: 767px)" fetchpriority="high">' . "\n";
+			echo '<link rel="preload" as="image" href="' . esc_url($desktopImage) . '" media="(min-width: 768px)" fetchpriority="high">' . "\n";
+		}
+		break; // Only first hero block
+	}
+}
+add_action('wp_head', 'parkourone_preload_hero_image', 1);
+
+/**
+ * ============================================
  * RESOURCE HINTS: PRECONNECT / DNS-PREFETCH
  * Frühzeitig Verbindungen zu externen Domains aufbauen
  * ============================================
  */
 function parkourone_resource_hints($hints, $relation_type) {
+	if ($relation_type === 'preconnect') {
+		$hints[] = [
+			'href' => 'https://academyboard.parkourone.com',
+			'crossorigin' => 'anonymous',
+		];
+		$hints[] = [
+			'href' => 'https://use.typekit.net',
+			'crossorigin' => 'anonymous',
+		];
+	}
+
+	if ($relation_type === 'dns-prefetch') {
+		$hints[] = 'https://academyboard.parkourone.com';
+		$hints[] = 'https://www.googletagmanager.com';
+	}
+
 	return $hints;
 }
 add_filter('wp_resource_hints', 'parkourone_resource_hints', 10, 2);
@@ -943,8 +1013,30 @@ function parkourone_register_blocks() {
 add_action('init', 'parkourone_register_blocks');
 
 function parkourone_enqueue_swiper() {
-    wp_enqueue_style('swiper', get_template_directory_uri() . '/assets/vendor/swiper/swiper-bundle.min.css', [], '11.0.0');
-    wp_enqueue_script('swiper', get_template_directory_uri() . '/assets/vendor/swiper/swiper-bundle.min.js', [], '11.0.0', true);
+    // Only register — actual enqueue happens when a slider block is present
+    wp_register_style('swiper', get_template_directory_uri() . '/assets/vendor/swiper/swiper-bundle.min.css', [], '11.0.0');
+    wp_register_script('swiper', get_template_directory_uri() . '/assets/vendor/swiper/swiper-bundle.min.js', [], '11.0.0', true);
+
+    // Only load if a slider block is on the page
+    $slider_blocks = [
+        'parkourone/klassen-slider',
+        'parkourone/testimonials-slider',
+        'parkourone/steps-carousel',
+        'parkourone/angebote-karussell',
+        'parkourone/usp-slider',
+        'parkourone/event-day-slider',
+    ];
+
+    $post = get_post();
+    if ($post) {
+        foreach ($slider_blocks as $block_name) {
+            if (has_block($block_name, $post)) {
+                wp_enqueue_style('swiper');
+                wp_enqueue_script('swiper');
+                break;
+            }
+        }
+    }
 }
 add_action('wp_enqueue_scripts', 'parkourone_enqueue_swiper');
 
@@ -1018,6 +1110,68 @@ function parkourone_enqueue_theme_styles() {
     );
 }
 add_action('wp_enqueue_scripts', 'parkourone_enqueue_theme_styles');
+
+/**
+ * ============================================
+ * PERFORMANCE: CSS Defer (non-critical stylesheets)
+ * Uses media="print" + onload trick to load CSS async
+ * ============================================
+ */
+function parkourone_defer_non_critical_css($html, $handle, $href, $media) {
+	if (is_admin()) return $html;
+
+	$defer_handles = [
+		'parkourone-animations',
+		'parkourone-health-consent',
+		'po-consent-banner',
+		'parkourone-woocommerce',
+		'parkourone-side-cart',
+	];
+
+	if (in_array($handle, $defer_handles, true)) {
+		// Handle both single and double quotes WordPress may use
+		$html = str_replace(
+			["media='all'", 'media="all"'],
+			["media='print' onload=\"this.media='all'\"", 'media="print" onload="this.media=\'all\'"'],
+			$html
+		);
+		// Add noscript fallback
+		$html .= '<noscript><link rel="stylesheet" href="' . esc_url($href) . '"></noscript>' . "\n";
+	}
+
+	return $html;
+}
+add_filter('style_loader_tag', 'parkourone_defer_non_critical_css', 10, 4);
+
+/**
+ * Inline critical CSS for animated elements (prevents FOUC before animations.css loads)
+ */
+function parkourone_inline_critical_animation_css() {
+	echo "<style>[data-animate]{opacity:0}</style>\n";
+}
+add_action('wp_head', 'parkourone_inline_critical_animation_css', 5);
+
+/**
+ * ============================================
+ * PERFORMANCE: Script defer attributes
+ * ============================================
+ */
+function parkourone_defer_scripts($tag, $handle, $src) {
+	if (is_admin()) return $tag;
+
+	$defer_handles = [
+		'parkourone-scroll-animations',
+		'parkourone-accessibility',
+		'parkourone-side-cart',
+	];
+
+	if (in_array($handle, $defer_handles, true) && strpos($tag, 'defer') === false) {
+		$tag = str_replace(' src=', ' defer src=', $tag);
+	}
+
+	return $tag;
+}
+add_filter('script_loader_tag', 'parkourone_defer_scripts', 10, 3);
 
 /**
  * Rendert den Custom Header mit Fullscreen-Menü
@@ -2066,6 +2220,7 @@ function parkourone_sync_coaches_from_events() {
 		}
 	}
 
+	do_action('parkourone_coaches_synced');
 }
 
 function parkourone_sync_coaches_on_admin_load($screen) {

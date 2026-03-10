@@ -54,11 +54,12 @@ foreach ($all_coaches as $coach) {
 	$hero_bild = get_post_meta($coach_id, '_coach_hero_bild', true);
 	$philosophie_bild = get_post_meta($coach_id, '_coach_philosophie_bild', true);
 	$moment_bild = get_post_meta($coach_id, '_coach_moment_bild', true);
-	$api_image = get_post_meta($coach_id, '_coach_api_image', true);
-	$profile_image = get_post_meta($coach_id, '_coach_profile_image', true);
 
-	// Fallback: Manuelles Profilbild > API-Image (AcademyBoard)
-	$card_image = !empty($profile_image) ? $profile_image : $api_image;
+	// Cached Coach-Avatar (Profilbild > Cached API > Raw API)
+	$card_image = function_exists('parkourone_get_coach_display_image')
+		? parkourone_get_coach_display_image($coach_id, '300x300')
+		: (get_post_meta($coach_id, '_coach_profile_image', true) ?: get_post_meta($coach_id, '_coach_api_image', true));
+	$api_image = $card_image; // Für Modal-Avatar gleiche Quelle
 	
 	$coach_key = strtolower(trim($coach->post_title));
 	$locations = $coach_locations[$coach_key] ?? [];
@@ -182,7 +183,9 @@ if (!function_exists('parkourone_get_coach_trainings_with_dates')) {
 			<?php endif; ?>
 				<div class="po-tg__card-image-wrap">
 					<?php if (!empty($m['card_image'])): ?>
-					<div class="po-tg__card-image" style="background-image: url('<?php echo esc_url($m['card_image']); ?>')"></div>
+					<div class="po-tg__card-image">
+						<img src="<?php echo esc_url($m['card_image']); ?>" alt="<?php echo esc_attr($m['name']); ?>" loading="lazy" width="154" height="154">
+					</div>
 					<?php else: ?>
 					<div class="po-tg__card-image po-tg__card-image--empty">
 						<span class="po-tg__card-initials"><?php echo esc_html(parkourone_get_initials($m['name'])); ?></span>
@@ -247,9 +250,13 @@ $trainings = parkourone_get_coach_trainings_with_dates($m['name']);
 		
 		<div class="po-tg-coach">
 			<div class="po-tg-coach__header">
-				<?php if (!empty($m['api_image'])): ?>
+				<?php
+				$modal_avatar = function_exists('parkourone_get_coach_display_image')
+					? parkourone_get_coach_display_image($m['id'], '80x80')
+					: ($m['api_image'] ?? '');
+				if (!empty($modal_avatar)): ?>
 				<div class="po-tg-coach__avatar">
-					<img src="<?php echo esc_url($m['api_image']); ?>" alt="<?php echo esc_attr($m['name']); ?>">
+					<img src="<?php echo esc_url($modal_avatar); ?>" alt="<?php echo esc_attr($m['name']); ?>" width="80" height="80" loading="lazy">
 				</div>
 				<?php endif; ?>
 				<h2 class="po-tg-coach__name"><?php echo esc_html($m['name']); ?></h2>
@@ -267,7 +274,7 @@ $trainings = parkourone_get_coach_trainings_with_dates($m['name']);
 			
 			<?php if (!empty($m['hero_bild'])): ?>
 			<div class="po-tg-coach__hero-image">
-				<img src="<?php echo esc_url($m['hero_bild']); ?>" alt="<?php echo esc_attr($m['name']); ?>">
+				<img src="<?php echo esc_url($m['hero_bild']); ?>" alt="<?php echo esc_attr($m['name']); ?>" width="800" height="450" loading="lazy">
 			</div>
 			<?php endif; ?>
 			
@@ -299,7 +306,7 @@ $trainings = parkourone_get_coach_trainings_with_dates($m['name']);
 				<div class="po-tg-coach__content">
 					<p><strong>Meine Geschichte.</strong> <?php echo esc_html($m['kurzvorstellung']); ?></p>
 					<?php if (!empty($m['philosophie_bild'])): ?>
-					<img src="<?php echo esc_url($m['philosophie_bild']); ?>" alt="<?php echo esc_attr($m['name']); ?>" class="po-tg-coach__image">
+					<img src="<?php echo esc_url($m['philosophie_bild']); ?>" alt="<?php echo esc_attr($m['name']); ?>" class="po-tg-coach__image" width="600" height="400" loading="lazy">
 					<?php endif; ?>
 					<?php if (!empty($m['video_url'])): ?>
 					<div class="po-tg-coach__video">
@@ -315,7 +322,7 @@ $trainings = parkourone_get_coach_trainings_with_dates($m['name']);
 				<div class="po-tg-coach__content">
 					<p><strong>Ein Parkour Moment, der mich geprägt hat.</strong> <?php echo esc_html($m['moment']); ?></p>
 					<?php if (!empty($m['moment_bild'])): ?>
-					<img src="<?php echo esc_url($m['moment_bild']); ?>" alt="<?php echo esc_attr($m['name']); ?> - Parkour Moment" class="po-tg-coach__image">
+					<img src="<?php echo esc_url($m['moment_bild']); ?>" alt="<?php echo esc_attr($m['name']); ?> - Parkour Moment" class="po-tg-coach__image" width="600" height="400" loading="lazy">
 					<?php endif; ?>
 				</div>
 			</div>

@@ -139,7 +139,13 @@ if ($query->have_posts()) {
 			'id' => $event_id,
 			'title' => get_the_title(),
 			'headcoach' => $headcoach_name,
-			'headcoach_image' => get_post_meta($event_id, '_event_headcoach_image_url', true),
+			'headcoach_image' => function_exists('parkourone_get_coach_display_image_by_name')
+			? parkourone_get_coach_display_image_by_name(
+				get_post_meta($event_id, '_event_headcoach', true),
+				'80x80',
+				get_post_meta($event_id, '_event_headcoach_image_url', true)
+			)
+			: get_post_meta($event_id, '_event_headcoach_image_url', true),
 			'start_time' => $start_time,
 			'end_time' => $end_time,
 			'venue' => get_post_meta($event_id, '_event_venue', true),
@@ -169,7 +175,10 @@ if ($query->have_posts()) {
 					$hero_bild = get_post_meta($coach_id, '_coach_hero_bild', true);
 					$philosophie_bild = $coach_data['philosophie_bild'] ?? '';
 					$moment_bild = $coach_data['moment_bild'] ?? '';
-					$api_image = $coach_data['api_image'] ?? '';
+					// Cached Coach-Avatar
+					$cached_avatar = function_exists('parkourone_get_coach_display_image')
+						? parkourone_get_coach_display_image($coach_id, '300x300')
+						: ($coach_data['api_image'] ?? '');
 
 					$coach_profiles[$headcoach_name] = [
 						'id' => $coach_id,
@@ -184,7 +193,7 @@ if ($query->have_posts()) {
 						'hero_bild' => $hero_bild,
 						'philosophie_bild' => $philosophie_bild,
 						'moment_bild' => $moment_bild,
-						'card_image' => $hero_bild ?: $philosophie_bild ?: $moment_bild ?: $api_image
+						'card_image' => $hero_bild ?: $philosophie_bild ?: $moment_bild ?: $cached_avatar
 					];
 				}
 			}

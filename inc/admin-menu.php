@@ -1122,11 +1122,18 @@ function parkourone_system_combined_page() {
 		<nav class="nav-tab-wrapper">
 			<a href="<?php echo esc_url($base_url . '&tab=maintenance'); ?>" class="nav-tab <?php echo $tab === 'maintenance' ? 'nav-tab-active' : ''; ?>">Maintenance</a>
 			<a href="<?php echo esc_url($base_url . '&tab=updates'); ?>" class="nav-tab <?php echo $tab === 'updates' ? 'nav-tab-active' : ''; ?>">Theme Updates</a>
+			<a href="<?php echo esc_url($base_url . '&tab=webp'); ?>" class="nav-tab <?php echo $tab === 'webp' ? 'nav-tab-active' : ''; ?>">WebP</a>
 		</nav>
 		<div style="margin-top: 20px;">
 			<?php
 			if ($tab === 'updates') {
 				parkourone_theme_updates_page(true);
+			} elseif ($tab === 'webp') {
+				if (function_exists('parkourone_webp_admin_page')) {
+					parkourone_webp_admin_page(true);
+				} else {
+					echo '<p>WebP-Konvertierung nicht verfügbar (kein GD/Imagick WebP-Support).</p>';
+				}
 			} else {
 				parkourone_maintenance_admin_page_html(true);
 			}

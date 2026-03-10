@@ -79,7 +79,9 @@ if ($query->have_posts()) {
 		$start_time = get_post_meta($event_id, '_event_start_time', true);
 		$end_time   = get_post_meta($event_id, '_event_end_time', true);
 		$headcoach  = get_post_meta($event_id, '_event_headcoach', true);
-		$headcoach_image = get_post_meta($event_id, '_event_headcoach_image_url', true);
+		$headcoach_image = function_exists('parkourone_get_coach_display_image_by_name')
+			? parkourone_get_coach_display_image_by_name($headcoach, '80x80', get_post_meta($event_id, '_event_headcoach_image_url', true))
+			: get_post_meta($event_id, '_event_headcoach_image_url', true);
 		$venue      = get_post_meta($event_id, '_event_venue', true);
 
 		// Taxonomien ermitteln
