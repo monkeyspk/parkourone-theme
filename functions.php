@@ -2257,6 +2257,10 @@ function parkourone_get_preset_coaches($school = 'berlin') {
 			['name' => 'Ole', 'email' => 'ole.brekenfeld@parkourone.com', 'rolle' => 'Co-Leitung', 'image' => ''],
 			['name' => 'Paul', 'email' => 'paul.reithmeier@parkourone.com', 'rolle' => 'Co-Leitung', 'image' => ''],
 		],
+		'rheinruhr' => [
+			['name' => 'Deniz', 'email' => 'deniz@parkourone.com', 'rolle' => 'Schulleiter', 'image' => ''],
+			['name' => 'Emil', 'email' => 'emil@parkourone.com', 'rolle' => 'Coach', 'image' => ''],
+		],
 		'schweiz' => [
 			// Hier können Schweizer Coaches hinzugefügt werden
 		],
@@ -2331,6 +2335,26 @@ function parkourone_coaches_admin_notice() {
 	}
 
 	if (empty($schools_with_presets)) return;
+
+	// Erkannte Schule (Subdomain) vorselektieren
+	$detected_school = '';
+	if (function_exists('parkourone_get_site_location')) {
+		$location = parkourone_get_site_location();
+		$subdomain_to_school = [
+			'berlin' => 'berlin',
+			'schweiz' => 'schweiz',
+			'dresden' => 'dresden',
+			'hannover' => 'hannover',
+			'muenster' => 'muenster',
+			'augsburg' => 'augsburg',
+			'duisburg' => 'rheinruhr',
+			'düsseldorf' => 'rheinruhr',
+			'krefeld' => 'rheinruhr',
+			'localhost' => 'berlin',
+			'new' => 'berlin',
+		];
+		$detected_school = $subdomain_to_school[$location['slug']] ?? '';
+	}
 	?>
 	<div class="notice notice-info is-dismissible" id="po-coaches-import-notice">
 		<p><strong>Coaches importieren</strong></p>
@@ -2338,7 +2362,7 @@ function parkourone_coaches_admin_notice() {
 		<p>
 			<select id="po-coach-school-select" style="margin-right: 10px;">
 				<?php foreach ($schools_with_presets as $slug => $info): ?>
-					<option value="<?php echo esc_attr($slug); ?>"><?php echo esc_html($info['name']); ?> (<?php echo $info['not_imported']; ?> von <?php echo $info['total']; ?> neu)</option>
+					<option value="<?php echo esc_attr($slug); ?>"<?php echo $slug === $detected_school ? ' selected' : ''; ?>><?php echo esc_html($info['name']); ?> (<?php echo $info['not_imported']; ?> von <?php echo $info['total']; ?> neu)</option>
 				<?php endforeach; ?>
 			</select>
 			<button type="button" class="button button-primary" id="po-import-coaches">Coaches importieren</button>
