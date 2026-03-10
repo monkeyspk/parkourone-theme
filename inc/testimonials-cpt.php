@@ -454,14 +454,39 @@ function parkourone_get_preset_testimonials($school = 'schweiz') {
 		// DRESDEN - Google Reviews
 		// =====================================================
 		'dresden' => [
-			// Hier Dresden Reviews einfügen
+			// Kids / Minis
+			['name' => 'Charlotte Krondorf', 'stars' => 5, 'text' => 'Mein Junge war begeistert von den Trainingsinhalten, freundliche, coole Trainer, zugewandt. Prima Organisation des Kurses und Elterninformation.', 'source' => 'Google Review', 'age_group' => 'kids'],
+			['name' => 'Philla wu', 'stars' => 5, 'text' => 'Felix hat einen tollen Umgang mit den Kindern, sehr motivierend und aufbauend. Gerade bei den Minis ganz stark. Danke bis bald', 'source' => 'Google Review', 'age_group' => 'kids'],
+			['name' => 'Sophie Risse', 'stars' => 5, 'text' => 'Tolle Betreuung, zum Schnuppertraining hat sich mein Sohn sehr wohl gefühlt', 'source' => 'Google Review', 'age_group' => 'kids'],
+			['name' => 'Melanie Berthold', 'stars' => 5, 'text' => 'Die Kinder waren vom Probetraining begeistert und werden definitiv weiterhin in einer der Klassen trainieren.', 'source' => 'Google Review', 'age_group' => 'kids'],
+			['name' => 'Carsten Meybaum', 'stars' => 5, 'text' => 'Der Workshop war hervorragend. Die Kinder hatten richtig viel Spaß. Die Trainer sind spitze - in sportlicher als auch menschlicher Hinsicht. Wir werden ParkourONE definitiv wieder buchen :-)', 'source' => 'Google Review', 'age_group' => 'kids'],
+			// Adults
+			['name' => 'Silvio Rädisch', 'stars' => 5, 'text' => 'Super Coach Felix zum Einführungsworkshop. Konnte alle meine Fragen stellen. Glücklich so einen coolen Coach gehabt zu haben. Gut strukturierte Vorgehensweise, schön kleinschrittig die Aufgaben erklärt. Sehr zu empfehlen.', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Beate Messerschmidt', 'stars' => 5, 'text' => 'Es war mega toll. Super gut und individuelle Hinführung zur Technik und zu eigenen Herausforderung. Jederzeit wieder, ob in der Schule oder in meiner Freizeit.', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'T.J.', 'stars' => 5, 'text' => 'Richtig toller Workshop! Wir hatten alle sehr viel Spaß.', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Johannes Schulte', 'stars' => 5, 'text' => 'Starkes Team!', 'source' => 'Google Review', 'age_group' => 'adults'],
 		],
 
 		// =====================================================
 		// HANNOVER - Google Reviews
 		// =====================================================
 		'hannover' => [
-			// Hier Hannover Reviews einfügen
+			// Kids / Minis
+			['name' => 'Ulla Riedel-Bunjes', 'stars' => 5, 'text' => 'Mein Sohn geht immer gern zum Training. Schon oft hat er uns vorgeführt, was er dort alles gelernt hat. Ich habe den Eindruck, dass die Trainer*Innen sehr achtsam mit den Kindern umgehen und ihre Freude am Parcour mit viel Engagement weitergeben! Ein sehr schöner Sport!', 'source' => 'Google Review', 'age_group' => 'kids'],
+			['name' => 'Ester Apel', 'stars' => 5, 'text' => 'Wir können ParkourOne nur empfehlen. Die Trainer sind sehr engagiert, total sympathisch und man merkt ihnen an, dass sie selber ganz viel Spaß am Training haben. Im Umgang mit den Schülern sind sie absolut toll. Unser Sohn geht sehr gerne zum Training.', 'source' => 'Google Review', 'age_group' => 'kids'],
+			['name' => 'Sabine Bertram', 'stars' => 5, 'text' => 'Seit einigen Jahren trainiert mein Sohn bei ParkourONE in Hannover und als Mutter kann ich sagen, dass er auf vielen Ebenen davon profitiert hat: er ist rundum gut trainiert, ist mutiger und selbstbewusster geworden und geht nach wie vor sehr sehr gerne zum Training. Absolute Empfehlung!', 'source' => 'Google Review', 'age_group' => 'kids'],
+			['name' => 'Sabrina Bertram', 'stars' => 5, 'text' => 'Das Kind geht sehr gern zum Training - wir Eltern begrüßen den ganzheitlichen Ansatz: Frische Luft, Gruppendynamik, klare Regeln und dazu wird der ganze Körper und Geist trainiert - für uns perfekt!', 'source' => 'Google Review', 'age_group' => 'kids'],
+			['name' => 'Jochen Butenholz', 'stars' => 5, 'text' => 'Eine tolle Einrichtung für unseren 10-jährigen Jungen, insbesondere, weil es nicht nur um Austoben und persönliche Leistung geht, sondern um Sozialverhalten in der Gruppe.', 'source' => 'Google Review', 'age_group' => 'kids'],
+			['name' => 'Anna Böhning', 'stars' => 5, 'text' => 'Unsere Tochter war sehr begeistert von dem Training!', 'source' => 'Google Review', 'age_group' => 'kids'],
+			// Juniors
+			['name' => 'Wibke F.', 'stars' => 5, 'text' => 'Die Jungs von ParkourONE vermitteln den Kindern nicht nur geniale sportliche Fähigkeiten, sondern sie vermitteln auch die richtigen Werte!!! Und das ist mir fast noch wichtiger! Mein Kind ist glücklich und geht seit Jahren gerne zum Training, und ich stehe zu 100% Prozent dahinter und fahre gerne jede Woche 2 Stunden um meinem Kind die Teilnahme zu ermöglichen!', 'source' => 'Google Review', 'age_group' => 'juniors'],
+			// Adults
+			['name' => 'Sir Chrisi', 'stars' => 5, 'text' => 'Bin mittlerweile seit 8 Jahren beim Parkourtraining und ich muss sagen dass das Training überdurchschnittlich gut ist. Die Coaches sind alle nett, freundlich und kompetent. Man lernt, egal auf welchem Aktivitätslevel man sich befindet, wie man sich athletisch bewegt und alles was man über Parkour wissen muss.', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Lasse Gellrich', 'stars' => 5, 'text' => 'Ich bin nun seit einem Jahr dabei. Das Training findet in einer wundervollen Atmosphäre statt. Die Trainer sind total bemüht und kompetent und haben einen tollen ganzheitlichen Ansatz bezüglich körperlicher Bewegung.', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Lili W.', 'stars' => 5, 'text' => 'Es ist erstaunlich, wie viel mit wie wenig zu erreichen ist. Das Training hat unsere Erwartungen voll erfüllt und wir bedanken uns bei allen Coaches für die tolle Zeit mit und bei euch!', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Jonas Jung', 'stars' => 5, 'text' => 'Super sympathische Coaches mit jeder Menge Erfahrung und Fachwissen das sie immer gern teilen. Für Parkour DIE Anlaufstelle in Hannover!', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Elias K.', 'stars' => 5, 'text' => 'Ich würde 6 Sterne geben wenn das ginge! Kleine Gruppe, alle super nett und man lernt sehr viel!', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => '21 Jugendherbergen zwischen Harz, Heide und Weser', 'stars' => 5, 'text' => 'Wir bieten in unserer Jugendherberge Hannover ein Klassenfahrtprogramm mit ParkourONE Hannover an und sind super zufrieden!', 'source' => 'Google Review', 'age_group' => 'adults'],
 		],
 
 		// =====================================================
@@ -475,7 +500,22 @@ function parkourone_get_preset_testimonials($school = 'schweiz') {
 		// AUGSBURG - Google Reviews
 		// =====================================================
 		'augsburg' => [
-			// Hier Augsburg Reviews einfügen
+			// Kids / Minis
+			['name' => 'Moritz Jacobs', 'stars' => 5, 'text' => 'Unser Sohn ist seit fast 2 Jahren jeden Montag bei Mike und den Minis und er liebt es! Hier wird so liebevoll mit den Kleinen geübt und auch die vermittelten Werte sind super. Große Empfehlung, bitte weiter so!', 'source' => 'Google Review', 'age_group' => 'kids'],
+			['name' => 'Nastassia Schneider', 'stars' => 5, 'text' => 'Ich freue mich sehr, dass mein sechsjähriger Sohn angefangen hat, diese Kurse zu besuchen! Sport, Teamgeist, gegenseitige Hilfe, Geschicklichkeit, Freundlichkeit, Zielstrebigkeit – all diese Eigenschaften werden von den Leitern der Gruppe vermittelt.', 'source' => 'Google Review', 'age_group' => 'kids'],
+			['name' => 'usagi points', 'stars' => 5, 'text' => 'Inzwischen sind wir seit etwas über vier Jahren dabei. Unser Sohn geht in die Kids-Klasse. Das Wertesystem, kein Leistungsdruck und die ruhige und wertschätzende Art des Trainers sind gut für ihn geeignet.', 'source' => 'Google Review', 'age_group' => 'kids'],
+			['name' => 'Manuela Prinz', 'stars' => 5, 'text' => 'Tolles Training für die Kinder und auch als Erwachsener macht es echt Spaß an den offenen Sessions teilzunehmen.', 'source' => 'Google Review', 'age_group' => 'kids'],
+			['name' => 'Paul Ziegler', 'stars' => 5, 'text' => 'Engagierte Trainer, sehr angenehme und kommunikative Kontakte und genau das Richtige für meinen sehr agilen Sohn. Tolles Konzept!!!', 'source' => 'Google Review', 'age_group' => 'kids'],
+			// Juniors
+			['name' => 'Kathrin Jung-Can', 'stars' => 5, 'text' => 'Hier finden Jugendliche, die gerne Parkour machen wollen Anschluss. Tolle Gruppen, ausgebildete und nette Trainer. Mein Sohn ist sehr glücklich da mit gleichaltrigen auf Augenhöhe Sport zu machen. Das Rahmenprogramm ist beispielhaft.', 'source' => 'Google Review', 'age_group' => 'juniors'],
+			// Adults
+			['name' => 'Katharina Popp', 'stars' => 5, 'text' => 'Ich finde kaum die richtigen Worte, um auszudrücken wie großartig dieses Angebot ist. Mike und sein Team sind derart tolle Coaches und vor allem auch ganz besondere Menschen.', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Sandra Bissinger', 'stars' => 5, 'text' => 'Tolle sportlich, kreative Einheiten mit viel Spaß, guter Laune und einer Wertevermittlung, wo sich andere echt ne Scheibe abschneiden können. Der respektvolle Umgang dort bringt mich echt zum Staunen.', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Jonas Jung', 'stars' => 5, 'text' => 'Super sympathische Coaches mit jeder Menge Erfahrung und Fachwissen dass sie immer gern teilen. Für Parkour DIE Anlaufstelle in Augsburg!', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Harald Flatschart', 'stars' => 5, 'text' => 'Tolles Training! Spaß und Leistungsorientierung hervorragend verbunden. Nette und kompetente Trainer!', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Jonathan Erfurt', 'stars' => 5, 'text' => 'Kann jedem empfehlen ob klein oder groß der Gruppe anschließen und mit trainieren. Das gute an der Gruppe ist, dass man gar nicht sportlich sein soll.', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Hvarstit', 'stars' => 5, 'text' => 'Sehr erfahrene Trainer, familiäre Atmosphäre, professionelle Betreuung! Absolut zu empfehlen, wenn man für sich oder seine Kinder eine Anlaufstelle sucht, um Parkour zu lernen und zu leben.', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Lukas Stamm', 'stars' => 5, 'text' => 'Immer viel Spaß in den Trainings, kleine Gruppen und Top Coaches!', 'source' => 'Google Review', 'age_group' => 'adults'],
 		],
 
 		// =====================================================
