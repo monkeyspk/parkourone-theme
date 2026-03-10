@@ -84,9 +84,10 @@ if (!empty($videoBackgroundUrl)) {
 	</video>
 	<?php endif; ?>
 
-	<picture class="po-hero__bg-picture">
+	<picture class="po-hero__bg-picture" style="display:block;position:absolute;inset:0;z-index:0;">
 		<source media="(min-width: 768px)" srcset="<?php echo esc_url($desktopImage); ?>">
 		<img src="<?php echo esc_url($mobileImage); ?>" alt="" class="po-hero__bg-img"
+			 style="display:block;width:100%;height:100%;object-fit:cover;object-position:center;"
 			 fetchpriority="high" loading="eager" decoding="async" width="1920" height="1080">
 	</picture>
 
