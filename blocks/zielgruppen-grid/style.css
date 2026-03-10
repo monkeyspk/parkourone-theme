@@ -38,8 +38,6 @@
 
 .po-cg__card {
 	aspect-ratio: 3/4;
-	background-size: cover;
-	background-position: center;
 	background-color: #6e6e73;
 	border-radius: 16px;
 	display: flex;
@@ -49,6 +47,15 @@
 	position: relative;
 	overflow: hidden;
 	transition: transform 0.3s ease;
+}
+
+.po-cg__card-img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
 }
 
 .po-cg__card::before {
@@ -92,8 +99,6 @@
 .po-cg__slide {
 	flex: 0 0 260px;
 	aspect-ratio: 3/4;
-	background-size: cover;
-	background-position: center;
 	background-color: #6e6e73;
 	border-radius: 16px;
 	display: flex;
@@ -102,6 +107,15 @@
 	text-decoration: none;
 	position: relative;
 	overflow: hidden;
+}
+
+.po-cg__slide-img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
 }
 
 .po-cg__slide::before {

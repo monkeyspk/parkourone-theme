@@ -507,13 +507,15 @@ function parkourone_wc_enqueue_assets() {
 		return;
 	}
 
-	// WooCommerce styles
-	wp_enqueue_style(
-		'parkourone-woocommerce',
-		get_template_directory_uri() . '/assets/css/woocommerce.css',
-		[],
-		filemtime(get_template_directory() . '/assets/css/woocommerce.css')
-	);
+	// WooCommerce styles — only on shop-related pages
+	if (is_woocommerce() || is_cart() || is_checkout() || is_account_page()) {
+		wp_enqueue_style(
+			'parkourone-woocommerce',
+			get_template_directory_uri() . '/assets/css/woocommerce.css',
+			[],
+			filemtime(get_template_directory() . '/assets/css/woocommerce.css')
+		);
+	}
 
 	// Side Cart styles
 	wp_enqueue_style(

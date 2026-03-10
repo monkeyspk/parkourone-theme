@@ -49,7 +49,10 @@ foreach ($categories as $index => $cat) {
 	
 	<div class="po-cg__grid po-cg__grid--<?php echo esc_attr($count); ?>">
 		<?php foreach ($categories as $cat): ?>
-			<a href="<?php echo esc_url($cat['linkUrl'] ?? '#'); ?>" class="po-cg__card"<?php if (!empty($cat['imageUrl'])): ?> style="background-image: url('<?php echo esc_url($cat['imageUrl']); ?>')"<?php endif; ?>>
+			<a href="<?php echo esc_url($cat['linkUrl'] ?? '#'); ?>" class="po-cg__card">
+				<?php if (!empty($cat['imageUrl'])): ?>
+				<img src="<?php echo esc_url($cat['imageUrl']); ?>" alt="<?php echo esc_attr($cat['label'] ?? ''); ?>" class="po-cg__card-img" loading="lazy" width="600" height="800">
+				<?php endif; ?>
 				<span class="po-cg__label">→ <?php echo esc_html($cat['label'] ?? ''); ?></span>
 			</a>
 		<?php endforeach; ?>
@@ -58,7 +61,10 @@ foreach ($categories as $index => $cat) {
 	<div class="po-cg__slider">
 		<div class="po-cg__slider-track">
 			<?php foreach ($categories as $cat): ?>
-				<a href="<?php echo esc_url($cat['linkUrl'] ?? '#'); ?>" class="po-cg__slide"<?php if (!empty($cat['imageUrl'])): ?> style="background-image: url('<?php echo esc_url($cat['imageUrl']); ?>')"<?php endif; ?>>
+				<a href="<?php echo esc_url($cat['linkUrl'] ?? '#'); ?>" class="po-cg__slide">
+					<?php if (!empty($cat['imageUrl'])): ?>
+					<img src="<?php echo esc_url($cat['imageUrl']); ?>" alt="<?php echo esc_attr($cat['label'] ?? ''); ?>" class="po-cg__slide-img" loading="lazy" width="260" height="347">
+					<?php endif; ?>
 					<span class="po-cg__label">→ <?php echo esc_html($cat['label'] ?? ''); ?></span>
 				</a>
 			<?php endforeach; ?>

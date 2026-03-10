@@ -116,23 +116,17 @@
 			// ========================================
 			this.protectAgainstFingerprinting(hasConsent);
 
-			// Script patterns to block
-			const blockPatterns = [
-				{ pattern: /google-analytics\.com|googletagmanager\.com|gtag/, category: 'analytics' },
-				{ pattern: /facebook\.net|connect\.facebook|fbevents\.js/, category: 'marketing' },
-				{ pattern: /doubleclick\.net|googlesyndication|googleads/, category: 'marketing' },
-				{ pattern: /youtube\.com\/embed|youtube-nocookie\.com/, category: 'functional' },
-				{ pattern: /maps\.googleapis\.com|maps\.google\.com/, category: 'functional' },
-				{ pattern: /mailerlite|mlcdn/, category: 'marketing' },
-				{ pattern: /sourcebuster|sbjs/, category: 'analytics' },
-				{ pattern: /typekit\.net|use\.typekit/, category: 'functional' },
-				{ pattern: /fonts\.adobe\.com/, category: 'functional' },
-			];
+			// Combined regex patterns per category (single test per category)
+			const categoryPatterns = {
+				analytics: /google-analytics\.com|googletagmanager\.com|gtag|sourcebuster|sbjs/,
+				marketing: /facebook\.net|connect\.facebook|fbevents\.js|doubleclick\.net|googlesyndication|googleads|mailerlite|mlcdn/,
+				functional: /youtube\.com\/embed|youtube-nocookie\.com|maps\.googleapis\.com|maps\.google\.com|typekit\.net|use\.typekit|fonts\.adobe\.com/,
+			};
 
 			// Check if script should be blocked
 			const shouldBlock = (src) => {
 				if (!src) return false;
-				for (const { pattern, category } of blockPatterns) {
+				for (const [category, pattern] of Object.entries(categoryPatterns)) {
 					if (pattern.test(src) && !hasConsent(category)) {
 						return { blocked: true, category };
 					}
@@ -204,7 +198,7 @@
 				});
 			});
 
-			observer.observe(document.documentElement, {
+			observer.observe(document.head, {
 				childList: true,
 				subtree: true
 			});
@@ -684,37 +678,11 @@
 		}
 
 		/**
-		 * Fingerprinting-Schutz
-		 * Warnt vor Canvas/WebGL Fingerprinting Versuchen
+		 * Fingerprinting-Schutz (removed — prototype overrides caused TBT issues
+		 * with minimal real privacy benefit)
 		 */
 		protectAgainstFingerprinting(hasConsent) {
-			// Canvas Fingerprinting Detection
-			const originalToDataURL = HTMLCanvasElement.prototype.toDataURL;
-			HTMLCanvasElement.prototype.toDataURL = function(...args) {
-				// Nur warnen wenn kein Consent für Analytics/Marketing
-				if (!hasConsent('analytics') && !hasConsent('marketing')) {
-					// Prüfen ob es sich um ein verstecktes Canvas handelt (typisch für Fingerprinting)
-					if (this.width < 300 && this.height < 300 && !this.isConnected) {
-						console.warn('PO Consent: Possible canvas fingerprinting detected and blocked');
-						// Leicht verrauschte Daten zurückgeben um Fingerprinting zu erschweren
-						return 'data:image/png;base64,blocked';
-					}
-				}
-				return originalToDataURL.apply(this, args);
-			};
-
-			// WebGL Fingerprinting Detection
-			const originalGetParameter = WebGLRenderingContext.prototype.getParameter;
-			WebGLRenderingContext.prototype.getParameter = function(param) {
-				// UNMASKED_VENDOR_WEBGL und UNMASKED_RENDERER_WEBGL sind Fingerprinting-typisch
-				if (!hasConsent('analytics') && !hasConsent('marketing')) {
-					if (param === 37445 || param === 37446) { // UNMASKED constants
-						console.warn('PO Consent: WebGL fingerprinting attempt blocked');
-						return 'blocked';
-					}
-				}
-				return originalGetParameter.call(this, param);
-			};
+			// Intentionally empty — removed toDataURL and getParameter overrides
 		}
 	}
 

@@ -77,20 +77,6 @@ if (!empty($videoBackgroundUrl)) {
 }
 ?>
 
-<style>
-#<?php echo esc_attr($unique_id); ?> {
-	background-image: url('<?php echo esc_url($mobileImage); ?>');
-}
-@media (min-width: 768px) {
-	#<?php echo esc_attr($unique_id); ?> {
-		background-image: url('<?php echo esc_url($desktopImage); ?>');
-	}
-}
-#<?php echo esc_attr($unique_id); ?> .po-hero__overlay {
-	background: rgba(0, 0, 0, <?php echo esc_attr($overlayOpacity / 100); ?>);
-}
-</style>
-
 <section class="<?php echo esc_attr(implode(' ', $classes)); ?>" id="<?php echo esc_attr($unique_id); ?>">
 	<?php if (!empty($videoBackgroundUrl)): ?>
 	<video class="po-hero__video-bg" autoplay muted loop playsinline>
@@ -98,7 +84,13 @@ if (!empty($videoBackgroundUrl)) {
 	</video>
 	<?php endif; ?>
 
-	<div class="po-hero__overlay"></div>
+	<picture class="po-hero__bg-picture">
+		<source media="(min-width: 768px)" srcset="<?php echo esc_url($desktopImage); ?>">
+		<img src="<?php echo esc_url($mobileImage); ?>" alt="" class="po-hero__bg-img"
+			 fetchpriority="high" loading="eager" decoding="async" width="1920" height="1080">
+	</picture>
+
+	<div class="po-hero__overlay" style="background: rgba(0, 0, 0, <?php echo esc_attr($overlayOpacity / 100); ?>)"></div>
 
 	<div class="po-hero__content">
 		<?php if ($eyebrow): ?>
