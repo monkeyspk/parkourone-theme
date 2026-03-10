@@ -456,21 +456,27 @@ add_filter('woocommerce_update_order_review_fragments', function($fragments) {
 });
 
 // =====================================================
-// Payment Gateway Filter — only allow enabled methods
+// Payment Gateway Filter — ungenutzte Sub-Gateways ausblenden
 // =====================================================
-// PayPal Payments registers many sub-gateways (Bancontact, Blik, EPS, etc.)
-// even when they are not set up. Whitelist only the methods we actually use.
+// PayPal Payments registriert viele Sub-Gateways (Bancontact, Blik, EPS, etc.)
+// die nicht eingerichtet sind. Nur diese spezifisch entfernen.
 
 add_filter('woocommerce_available_payment_gateways', function($gateways) {
-	$allowed = [
-		'woocommerce_payments', // WooPayments (Karte)
-		'ppcp-gateway',         // PayPal
+	$blocked = [
+		'ppcp-bancontact',
+		'ppcp-blik',
+		'ppcp-eps',
+		'ppcp-ideal',
+		'ppcp-multibanco',
+		'ppcp-mybank',
+		'ppcp-p24',
+		'ppcp-trustly',
+		'ppcp-oxxo',
+		'ppcp-card-button-gateway',
 	];
 
-	foreach ($gateways as $id => $gateway) {
-		if (!in_array($id, $allowed, true)) {
-			unset($gateways[$id]);
-		}
+	foreach ($blocked as $id) {
+		unset($gateways[$id]);
 	}
 
 	return $gateways;
