@@ -1944,6 +1944,29 @@ p#referrer_field {
 }
 
 /* ==========================================================================
+   Thank You / Bestätigungsseite (Plugin: custom-events)
+   ========================================================================== */
+
+.booking-info-container {
+	font-size: 15px;
+}
+
+.booking-info-container h3 {
+	font-size: 1.5em;
+	font-weight: 600;
+}
+
+.booking-info-container .info-box h4 {
+	font-size: 1.15em;
+	font-weight: 600;
+}
+
+.booking-info-container .order-details-box h4 {
+	font-size: 1.15em;
+	font-weight: 600;
+}
+
+/* ==========================================================================
    Hidden attribute fix (required for some themes)
    ========================================================================== */
 
