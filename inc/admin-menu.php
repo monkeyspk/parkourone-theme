@@ -350,6 +350,7 @@ function parkourone_get_school_presets() {
 			'social_instagram' => 'https://instagram.com/parkourone_ch',
 			'zentrale_name' => '',
 			'zentrale_url' => '',
+			'location_display_text' => 'in der Schweiz',
 		],
 		'berlin' => [
 			'label' => 'Berlin',
@@ -405,6 +406,7 @@ function parkourone_get_school_presets() {
 			'social_instagram' => 'https://instagram.com/parkourone_rheinruhr',
 			'zentrale_name' => 'ParkourONE Schweiz',
 			'zentrale_url' => 'https://parkourone.com',
+			'location_display_text' => 'im Ruhrgebiet',
 		],
 		'augsburg' => [
 			'label' => 'Augsburg',
@@ -457,6 +459,7 @@ function parkourone_menu_footer_page() {
 				? wp_unslash($_POST['footer_newsletter_embed'] ?? '')
 				: wp_kses_post(wp_unslash($_POST['footer_newsletter_embed'] ?? '')),
 			'mailerlite_api_key' => sanitize_text_field($_POST['footer_mailerlite_api_key'] ?? ''),
+			'location_display_text' => sanitize_text_field($_POST['footer_location_display_text'] ?? ''),
 			// Standorte + Copyright Jahr werden automatisch generiert
 		];
 
@@ -483,6 +486,7 @@ function parkourone_menu_footer_page() {
 		'newsletter_text' => '',
 		'newsletter_embed' => '',
 		'mailerlite_api_key' => '',
+		'location_display_text' => '',
 		// Automatisch: Standorte, Zentrale, Copyright Jahr (siehe footer/render.php)
 	];
 	$options = wp_parse_args($options, $defaults);
@@ -642,6 +646,17 @@ function parkourone_menu_footer_page() {
 							</select>
 							<button type="button" id="load-preset" class="button" style="margin-left: 10px;">Vorlage laden</button>
 							<p class="description" style="margin-top: 8px;">Wähle eine Schule aus und klicke "Vorlage laden" um die Felder automatisch auszufüllen.</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="po-form-section">
+					<h3>Standort-Text</h3>
+					<div class="po-form-row">
+						<label>Standort-Text</label>
+						<div>
+							<input type="text" name="footer_location_display_text" value="<?php echo esc_attr($options['location_display_text']); ?>" placeholder="in Berlin">
+							<p class="description">Wird überall im Theme verwendet, z.B. "Parkour <strong><?php echo esc_html($options['location_display_text'] ?: 'in Berlin'); ?></strong>". Beispiele: "in der Schweiz", "im Ruhrgebiet", "in Duisburg &amp; Düsseldorf". Leer = automatisch aus Subdomain.</p>
 						</div>
 					</div>
 				</div>
@@ -837,6 +852,9 @@ function parkourone_menu_footer_page() {
 				}
 				if (preset.zentrale_url !== undefined) {
 					document.querySelector('[name="footer_zentrale_url"]').value = preset.zentrale_url;
+				}
+				if (preset.location_display_text !== undefined) {
+					document.querySelector('[name="footer_location_display_text"]').value = preset.location_display_text;
 				}
 
 				alert('Vorlage "' + preset.label + '" geladen! Vergiss nicht zu speichern.');

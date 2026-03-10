@@ -155,6 +155,11 @@ add_action('init', 'parkourone_register_custom_block_attributes', 999);
 // =====================================================
 
 function parkourone_get_site_location() {
+	static $location = null;
+	if ($location !== null) {
+		return $location;
+	}
+
 	$host = parse_url(home_url(), PHP_URL_HOST);
 
 	// Subdomain extrahieren (z.B. "berlin" aus "berlin.parkourone.com")
@@ -181,21 +186,38 @@ function parkourone_get_site_location() {
 
 	$subdomain = strtolower($parts[0]);
 
-	// Prüfen ob Subdomain im Mapping existiert
 	if (isset($location_names[$subdomain])) {
-		return [
+		$location = [
 			'slug' => $subdomain,
 			'name' => $location_names[$subdomain],
 			'detected' => true
 		];
+	} else {
+		// Fallback: Ersten Teil als Standort verwenden
+		$location = [
+			'slug' => $subdomain,
+			'name' => ucfirst($subdomain),
+			'detected' => false
+		];
 	}
 
-	// Fallback: Ersten Teil als Standort verwenden
-	return [
-		'slug' => $subdomain,
-		'name' => ucfirst($subdomain),
-		'detected' => false
-	];
+	// location_text: Admin-Einstellung oder automatisch generiert
+	$footer_options = get_option('parkourone_footer', []);
+	$custom_text = $footer_options['location_display_text'] ?? '';
+
+	if (!empty(trim($custom_text))) {
+		$location['location_text'] = trim($custom_text);
+	} else {
+		// Automatischer Fallback: "in {Name}" (mit Artikel für bestimmte Orte)
+		$locations_with_article = ['schweiz', 'türkei', 'ukraine', 'slowakei', 'mongolei'];
+		if (in_array(strtolower($location['slug']), $locations_with_article)) {
+			$location['location_text'] = "in der {$location['name']}";
+		} else {
+			$location['location_text'] = "in {$location['name']}";
+		}
+	}
+
+	return $location;
 }
 
 /**
@@ -644,7 +666,7 @@ function parkourone_auto_pages_admin_page() {
 			<div>
 				<strong style="font-size: 1.1rem;">Erkannter Standort: <?php echo esc_html($site_location['name']); ?></strong>
 				<br>
-				<small style="opacity: 0.9;">Alle generierten Seiten werden automatisch für <strong>"Parkour <?php echo esc_html($site_location['name']); ?>"</strong> SEO-optimiert.</small>
+				<small style="opacity: 0.9;">Alle generierten Seiten werden automatisch für <strong>"Parkour <?php echo esc_html($site_location['location_text']); ?>"</strong> SEO-optimiert.</small>
 			</div>
 		</div>
 
@@ -1907,6 +1929,7 @@ function parkourone_generate_category_page_content($cat_slug, $seo, $header_vari
 	// Site-Standort automatisch erkennen
 	$site_location = parkourone_get_site_location();
 	$site_name = $site_location['name'];
+	$location_text = $site_location['location_text'];
 
 	// Theme URI für Bilder
 	$theme_uri = get_template_directory_uri();
@@ -1930,7 +1953,7 @@ function parkourone_generate_category_page_content($cat_slug, $seo, $header_vari
 	$hero_headline = "Parkour {$display_name} {$site_name} – Dein Training";
 	$hero_subtext = str_replace(
 		['Parkour', 'unseren', 'unsere'],
-		["Parkour in {$site_name}", 'unseren', 'unsere'],
+		["Parkour {$location_text}", 'unseren', 'unsere'],
 		$seo['intro_text']
 	);
 
@@ -1952,7 +1975,7 @@ function parkourone_generate_category_page_content($cat_slug, $seo, $header_vari
 	], JSON_UNESCAPED_UNICODE);
 
 	// Apple-Style Text-Reveal Text mit SEO-Keywords
-	$text_reveal_text = "Parkour {$display_name} in {$site_name} bedeutet mehr als nur Sport. Es ist eine Reise zu dir selbst. Bei ParkourONE trainierst du in einer motivierenden Umgebung mit erfahrenen Coaches. Kleine Gruppen, individuelle Betreuung und eine starke Community warten auf dich.";
+	$text_reveal_text = "Parkour {$display_name} {$location_text} bedeutet mehr als nur Sport. Es ist eine Reise zu dir selbst. Bei ParkourONE trainierst du in einer motivierenden Umgebung mit erfahrenen Coaches. Kleine Gruppen, individuelle Betreuung und eine starke Community warten auf dich.";
 
 	$content = <<<BLOCKS
 <!-- wp:parkourone/page-header {"variant":"{$header_variant}","title":"Parkour {$display_name}","titleAccent":"{$site_name}","description":"{$hero_subtext}","ctaText":"Probetraining buchen","ctaUrl":"/probetraining-buchen/","stats":{$category_stats},"ageCategory":"{$age_category_attr}","align":"full"} /-->
@@ -1961,7 +1984,7 @@ function parkourone_generate_category_page_content($cat_slug, $seo, $header_vari
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:parkourone/steps-carousel {"headline":"Parkour {$display_name} Probetraining in {$site_name}","subheadline":"In 4 einfachen Schritten zum ersten Training","ageCategory":"{$cat_slug}","backgroundColor":"light","align":"full"} /-->
+<!-- wp:parkourone/steps-carousel {"headline":"Parkour {$display_name} Probetraining {$location_text}","subheadline":"In 4 einfachen Schritten zum ersten Training","ageCategory":"{$cat_slug}","backgroundColor":"light","align":"full"} /-->
 
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
@@ -1972,7 +1995,7 @@ function parkourone_generate_category_page_content($cat_slug, $seo, $header_vari
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:parkourone/testimonials-slider {"headline":"Das sagen Parkour {$display_name} Teilnehmer in {$site_name}","align":"full"} /-->
+<!-- wp:parkourone/testimonials-slider {"headline":"Das sagen Parkour {$display_name} Teilnehmer {$location_text}","align":"full"} /-->
 
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
@@ -1990,7 +2013,7 @@ function parkourone_generate_category_page_content($cat_slug, $seo, $header_vari
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:parkourone/about-section {"subheadline":"PARKOUR {$display_name} {$site_name}","headline":"Training bei ParkourONE","text":"Bei ParkourONE {$site_name} glauben wir an das Recht auf persönliches Wohlbefinden und die Kraft der Gemeinschaft. Unter dem Motto 'ONE for all – all for ONE' begleiten wir dich auf deinem Parkour-Weg. Unsere {$display_name}-Trainings in {$site_name} sind darauf ausgelegt, dich zu inspirieren, zu fördern und herauszufordern.","ctaText":"Mehr über uns","ctaUrl":"/ueber-uns/","align":"full"} /-->
+<!-- wp:parkourone/about-section {"subheadline":"PARKOUR {$display_name} {$site_name}","headline":"Training bei ParkourONE","text":"Bei ParkourONE {$site_name} glauben wir an das Recht auf persönliches Wohlbefinden und die Kraft der Gemeinschaft. Unter dem Motto 'ONE for all – all for ONE' begleiten wir dich auf deinem Parkour-Weg. Unsere {$display_name}-Trainings {$location_text} sind darauf ausgelegt, dich zu inspirieren, zu fördern und herauszufordern.","ctaText":"Mehr über uns","ctaUrl":"/ueber-uns/","align":"full"} /-->
 BLOCKS;
 
 	return $content;
@@ -2158,6 +2181,7 @@ function parkourone_get_page_seo_meta($post_id) {
 	$location_slug = get_post_meta($post_id, '_parkourone_location_slug', true);
 	$site_location = parkourone_get_site_location();
 	$site_name = $site_location['name'];
+	$location_text = $site_location['location_text'];
 
 	$meta = [
 		'title' => '',
@@ -2192,7 +2216,7 @@ function parkourone_get_page_seo_meta($post_id) {
 		$seo = parkourone_get_seo_content($cat_slug);
 
 		$meta['title'] = "Parkour {$display_name} {$site_name} – Training | ParkourONE";
-		$meta['description'] = $seo['meta_description'] ?? "Parkour {$display_name} in {$site_name}. Professionelles Training, erfahrene Coaches, sichere Umgebung. Jetzt Probetraining buchen!";
+		$meta['description'] = $seo['meta_description'] ?? "Parkour {$display_name} {$location_text}. Professionelles Training, erfahrene Coaches, sichere Umgebung. Jetzt Probetraining buchen!";
 		$meta['keywords'] = "Parkour {$display_name}, Parkour {$display_name} {$site_name}, {$display_name} Parkour Training";
 	}
 
@@ -2207,7 +2231,7 @@ function parkourone_get_page_seo_meta($post_id) {
 			],
 			'kurse-workshops' => [
 				'title' => "Parkour Kurse & Workshops {$site_name} | ParkourONE",
-				'description' => "Parkour Workshops, Ferienkurse & Events in {$site_name}. Für Anfänger & Fortgeschrittene, Kinder & Erwachsene. Jetzt Kurs buchen!",
+				'description' => "Parkour Workshops, Ferienkurse & Events {$location_text}. Für Anfänger & Fortgeschrittene, Kinder & Erwachsene. Jetzt Kurs buchen!",
 				'keywords' => "Parkour Workshop {$site_name}, Parkour Ferienkurs, Parkour Event, Parkour Kurs buchen"
 			],
 			'team' => [
