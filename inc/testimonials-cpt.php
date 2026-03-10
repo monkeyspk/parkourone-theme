@@ -487,13 +487,13 @@ function parkourone_get_preset_testimonials($school = 'schweiz') {
 			['name' => 'Annamaria', 'stars' => 5, 'text' => 'Sehr nette Trainer, kleine Gruppen und cooles, effizientes Training auf der frischen Luft. Unser 10jähriger Sohn war sehr begeistert beim Probetraining!', 'source' => 'Google Review', 'age_group' => 'kids'],
 			['name' => 'Markus Humpert', 'stars' => 5, 'text' => 'Unser elfjähriger Sohn war nach seinem ersten Probetraining absolut begeistert und freut sich schon jetzt auf die weiteren Parkour-Einheiten.', 'source' => 'Google Review', 'age_group' => 'kids'],
 			['name' => 'Katarina Fritzsche', 'stars' => 5, 'text' => 'Super Coaches, toller Sport. Unser Sohn profitiert sehr davon!', 'source' => 'Google Review', 'age_group' => 'kids'],
-			// Adults
-			['name' => 'Johannes Schulte', 'stars' => 5, 'text' => 'DIE Parkour Schule für Anfänger und Fortgeschrittene in jedem Alter. Und immer an geilen Spots!', 'source' => 'Google Review', 'age_group' => 'adults'],
-			['name' => 'Jana Frankenberg', 'stars' => 5, 'text' => 'Ein großartiger und faszinierender Sport - nicht nur auf physischer sondern auch mentaler Ebene. Es gibt so vieles zu entdecken und auszuprobieren, Aufgaben und Herausforderungen an denen man wächst, mit den erfahrenen Coaches.', 'source' => 'Google Review', 'age_group' => 'adults'],
-			['name' => 'Fabian Schubert', 'stars' => 5, 'text' => 'Super Parkour-Schule mit klasse Unterrichtskonzept! Die Coaches gehen individuell auf die Schüler ein, die persönliche Entwicklung wird gefördert und ist wichtiger als bloße sportliche Leistung. Top!', 'source' => 'Google Review', 'age_group' => 'adults'],
-			['name' => 'Maurice Kaiser', 'stars' => 5, 'text' => 'Klasse Parkourschule. Sehr erfahrene Coaches mit viel Wissen bei der Vermittlung von Parkour. Deniz bringt als ein Urgestein der deutschen Parkouszene viel Leidenschaft in die Schule. Weiter so!', 'source' => 'Google Review', 'age_group' => 'adults'],
-			['name' => 'Jonas Jung', 'stars' => 5, 'text' => 'Super sympathische Coaches mit jeder Menge Erfahrung und Fachwissen das sie immer gern teilen. Für Parkour DIE Anlaufstelle in Duisburg, Düsseldorf und Umgebung!', 'source' => 'Google Review', 'age_group' => 'adults'],
-			['name' => 'Angelina Stockbrügger', 'stars' => 5, 'text' => 'Hammertraining', 'source' => 'Google Review', 'age_group' => 'adults'],
+			// Juniors & Adults (Rheinruhr: gleiche Zielgruppe)
+			['name' => 'Johannes Schulte', 'stars' => 5, 'text' => 'DIE Parkour Schule für Anfänger und Fortgeschrittene in jedem Alter. Und immer an geilen Spots!', 'source' => 'Google Review', 'age_group' => ['juniors', 'adults']],
+			['name' => 'Jana Frankenberg', 'stars' => 5, 'text' => 'Ein großartiger und faszinierender Sport - nicht nur auf physischer sondern auch mentaler Ebene. Es gibt so vieles zu entdecken und auszuprobieren, Aufgaben und Herausforderungen an denen man wächst, mit den erfahrenen Coaches.', 'source' => 'Google Review', 'age_group' => ['juniors', 'adults']],
+			['name' => 'Fabian Schubert', 'stars' => 5, 'text' => 'Super Parkour-Schule mit klasse Unterrichtskonzept! Die Coaches gehen individuell auf die Schüler ein, die persönliche Entwicklung wird gefördert und ist wichtiger als bloße sportliche Leistung. Top!', 'source' => 'Google Review', 'age_group' => ['juniors', 'adults']],
+			['name' => 'Maurice Kaiser', 'stars' => 5, 'text' => 'Klasse Parkourschule. Sehr erfahrene Coaches mit viel Wissen bei der Vermittlung von Parkour. Deniz bringt als ein Urgestein der deutschen Parkouszene viel Leidenschaft in die Schule. Weiter so!', 'source' => 'Google Review', 'age_group' => ['juniors', 'adults']],
+			['name' => 'Jonas Jung', 'stars' => 5, 'text' => 'Super sympathische Coaches mit jeder Menge Erfahrung und Fachwissen das sie immer gern teilen. Für Parkour DIE Anlaufstelle in Duisburg, Düsseldorf und Umgebung!', 'source' => 'Google Review', 'age_group' => ['juniors', 'adults']],
+			['name' => 'Angelina Stockbrügger', 'stars' => 5, 'text' => 'Hammertraining', 'source' => 'Google Review', 'age_group' => ['juniors', 'adults']],
 		],
 	];
 
