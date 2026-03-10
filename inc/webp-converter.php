@@ -344,8 +344,10 @@ function parkourone_webp_bulk_convert() {
 	check_ajax_referer('parkourone_webp_bulk', 'nonce');
 	if (!current_user_can('manage_options')) wp_die('Keine Berechtigung');
 
+	@set_time_limit(120); // Mehr Zeit für Konvertierung
+
 	$offset = (int) ($_POST['offset'] ?? 0);
-	$batch_size = 20;
+	$batch_size = 5; // Klein halten — jedes Bild hat viele Größen
 
 	$attachments = get_posts([
 		'post_type' => 'attachment',
@@ -606,6 +608,9 @@ function parkourone_webp_admin_page($embedded = false) {
 		btn.textContent = 'Konvertiere...';
 		progress.style.display = 'block';
 
+		let retries = 0;
+		const maxRetries = 3;
+
 		function runBatch(offset) {
 			const formData = new FormData();
 			formData.append('action', 'parkourone_webp_bulk_convert');
@@ -615,6 +620,7 @@ function parkourone_webp_admin_page($embedded = false) {
 			fetch(ajaxurl, { method: 'POST', body: formData })
 				.then(r => r.json())
 				.then(data => {
+					retries = 0;
 					if (data.success) {
 						const d = data.data;
 						bar.style.width = d.percent + '%';
@@ -638,11 +644,25 @@ function parkourone_webp_admin_page($embedded = false) {
 					}
 				})
 				.catch(() => {
-					status.textContent = 'Verbindungsfehler. Bitte erneut versuchen.';
-					btn.disabled = false;
-					btn.textContent = 'Erneut versuchen';
+					retries++;
+					if (retries <= maxRetries) {
+						status.textContent = 'Verbindungsfehler — Versuch ' + retries + '/' + maxRetries + '...';
+						setTimeout(() => runBatch(offset), 2000);
+					} else {
+						status.textContent = 'Mehrfach fehlgeschlagen bei Bild ' + offset + '. Bitte erneut versuchen.';
+						btn.disabled = false;
+						btn.textContent = 'Erneut versuchen';
+						btn.onclick = function() { retries = 0; parkouroneWebpBulkAt(offset); };
+					}
 				});
 		}
+
+		window.parkouroneWebpBulkAt = function(o) {
+			btn.disabled = true;
+			btn.textContent = 'Konvertiere...';
+			progress.style.display = 'block';
+			runBatch(o);
+		};
 
 		runBatch(0);
 	}
