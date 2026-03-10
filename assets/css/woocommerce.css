@@ -1948,129 +1948,156 @@ p#referrer_field {
    ========================================================================== */
 
 .booking-info-wrapper {
-	margin-bottom: 40px;
+	margin-bottom: 40px !important;
 }
 
 .booking-info-container {
-	font-size: 15px;
-	font-family: var(--wc-font);
-	color: var(--wc-text);
-	max-width: 960px;
-	margin: 0 auto;
+	font-size: 15px !important;
+	font-family: var(--wc-font) !important;
+	color: var(--wc-text) !important;
+	max-width: 960px !important;
+	margin: 0 auto !important;
 }
 
 /* Begrüssung */
 .booking-info-container h3 {
-	font-size: 1.1em;
-	font-weight: 500;
-	color: var(--wc-text-secondary);
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
-	margin-bottom: 24px;
+	font-size: 0.8em !important;
+	font-weight: 600 !important;
+	color: var(--wc-text-secondary) !important;
+	text-transform: uppercase !important;
+	letter-spacing: 1px !important;
+	margin-bottom: 24px !important;
 }
 
 /* Info-Grid */
 .booking-info-container .info-grid {
-	grid-gap: 16px;
-	margin-bottom: 24px;
+	grid-gap: 16px !important;
+	margin-bottom: 24px !important;
 }
 
 /* Info-Boxen */
 .booking-info-container .info-box {
-	background: var(--wc-bg);
-	border: 1px solid var(--wc-border);
-	border-radius: var(--wc-radius-sm);
-	box-shadow: none;
-	padding: 20px 24px;
+	background: #fff !important;
+	border: 1px solid var(--wc-border) !important;
+	border-radius: var(--wc-radius-sm) !important;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06) !important;
+	padding: 24px !important;
 }
 
 .booking-info-container .info-box h4 {
-	font-size: 1em;
-	font-weight: 600;
-	color: var(--wc-text);
-	margin-bottom: 12px;
+	font-size: 1.05em !important;
+	font-weight: 700 !important;
+	color: var(--wc-text) !important;
+	margin-bottom: 14px !important;
+	margin-top: 0 !important;
 }
 
 .booking-info-container .event-detail {
-	color: var(--wc-text);
-	line-height: 1.6;
-	margin-bottom: 6px;
+	color: var(--wc-text) !important;
+	line-height: 1.6 !important;
+	margin-bottom: 6px !important;
 }
 
 .booking-info-container .event-detail strong {
-	font-weight: 600;
-	color: var(--wc-text);
+	font-weight: 600 !important;
+	color: var(--wc-text) !important;
 }
 
 .booking-info-container .note {
-	font-size: 0.9em;
-	color: var(--wc-text-secondary);
-	line-height: 1.5;
-	margin-top: 12px;
+	font-size: 0.87em !important;
+	color: var(--wc-text-secondary) !important;
+	line-height: 1.55 !important;
+	margin-top: 14px !important;
 }
 
 /* Maps-Link */
 .booking-info-container .maps-link {
-	color: var(--wc-accent);
-	font-weight: 500;
-	line-height: 1.5;
+	color: var(--wc-accent) !important;
+	font-weight: 500 !important;
+	line-height: 1.5 !important;
 }
 
 .booking-info-container .maps-link:hover {
-	text-decoration: underline;
-	text-underline-offset: 2px;
+	text-decoration: underline !important;
+	text-underline-offset: 2px !important;
 }
 
 /* Coach */
 .booking-info-container .coach-image {
-	width: 44px;
-	height: 44px;
-	border-radius: 50%;
-	box-shadow: none;
-	border: 2px solid var(--wc-border);
+	width: 48px !important;
+	height: 48px !important;
+	border-radius: 50% !important;
+	box-shadow: none !important;
+	border: 2px solid var(--wc-border) !important;
 }
 
 .booking-info-container .coach-details {
-	color: var(--wc-text);
-	font-size: 0.95em;
-	line-height: 1.5;
+	color: var(--wc-text) !important;
+	font-size: 0.93em !important;
+	line-height: 1.5 !important;
 }
 
 .booking-info-container .coach-details strong {
-	font-weight: 600;
-	color: var(--wc-text);
+	font-weight: 600 !important;
+	color: var(--wc-text) !important;
 }
 
 .booking-info-container .coach-details a {
-	color: var(--wc-accent);
-	font-weight: 500;
+	color: var(--wc-accent) !important;
+	font-weight: 500 !important;
 }
 
-/* Bestelldetails */
+/* Bestelldetails-Box */
 .booking-info-container .order-details-box {
-	background: var(--wc-bg);
-	border: 1px solid var(--wc-border);
-	border-radius: var(--wc-radius-sm);
-	box-shadow: none;
-	padding: 20px 24px;
+	background: #fff !important;
+	border: 1px solid var(--wc-border) !important;
+	border-radius: var(--wc-radius-sm) !important;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06) !important;
+	padding: 24px !important;
 }
 
 .booking-info-container .order-details-box h4 {
-	font-size: 1em;
-	font-weight: 600;
-	color: var(--wc-text);
-	margin-bottom: 16px;
+	font-size: 1.05em !important;
+	font-weight: 700 !important;
+	color: var(--wc-text) !important;
+	margin-top: 0 !important;
+	margin-bottom: 16px !important;
 }
 
 .booking-info-container .order-details-table th {
-	color: var(--wc-text-secondary);
-	font-weight: 500;
-	font-size: 0.9em;
+	color: var(--wc-text-secondary) !important;
+	font-weight: 500 !important;
+	font-size: 0.9em !important;
 }
 
 .booking-info-container .order-details-table td {
-	color: var(--wc-text);
-	font-size: 0.9em;
+	color: var(--wc-text) !important;
+	font-size: 0.9em !important;
+}
+
+.booking-info-container .order-details-table th,
+.booking-info-container .order-details-table td {
+	padding: 8px 0 !important;
+	border-bottom: 1px solid var(--wc-border) !important;
+}
+
+.booking-info-container .order-details-table tr:last-child th,
+.booking-info-container .order-details-table tr:last-child td {
+	border-bottom: none !important;
+}
+
+/* ---------- WooCommerce Standard Thank-You Bereich ---------- */
+
+.woocommerce-order-received .woocommerce-order h2,
+.woocommerce-order-received .woocommerce h2 {
+	font-size: 1.3em !important;
+	font-weight: 600 !important;
+}
+
+.woocommerce-order-received .woocommerce-order > p,
+.woocommerce-order-received .woocommerce-thankyou-order-received {
+	font-size: 15px !important;
+	color: var(--wc-text-secondary) !important;
 }
 
 .booking-info-container .order-details-table th,
