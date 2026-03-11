@@ -118,6 +118,11 @@
 	border: 1px solid #ddd;
 }
 
+.po-angebote-grid__badge--kurs {
+	background: #007aff;
+	color: #fff;
+}
+
 .po-angebote-grid__card-content {
 	padding: 1.25rem;
 }

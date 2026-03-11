@@ -65,10 +65,11 @@ add_action('init', 'parkourone_register_angebot_cpt');
 
 function parkourone_create_default_angebot_kategorien() {
 	$kategorien = [
-		'kostenlos' => 'Kostenlos',
-		'workshop' => 'Workshop',
-		'camp' => 'Camp',
-		'privatunterricht' => 'Privatunterricht'
+		'kostenlos'        => 'Kostenlos',
+		'workshop'         => 'Workshop',
+		'camp'             => 'Camp',
+		'privatunterricht' => 'Privatunterricht',
+		'kurs'             => 'Kurs',
 	];
 
 	foreach ($kategorien as $slug => $name) {
@@ -696,6 +697,9 @@ function parkourone_get_angebot_by_id($id) {
 function parkourone_angebot_create_woo_products($post_id) {
 	if (!class_exists('WooCommerce')) return;
 
+	// AB-Angebote: Produkte kommen vom Event-System, keine neuen erstellen
+	if (get_post_meta($post_id, '_angebot_quelle', true) === 'academyboard') return;
+
 	$buchungsart = get_post_meta($post_id, '_angebot_buchungsart', true);
 	if ($buchungsart !== 'woocommerce') return;
 
@@ -810,10 +814,11 @@ function parkourone_angebot_cleanup() {
 }
 add_action('parkourone_angebot_cleanup_cron', 'parkourone_angebot_cleanup');
 
-// Bei Angebot-Löschung auch Produkte löschen
+// Bei Angebot-Löschung auch Produkte löschen (nicht bei AB-Angeboten, die gehören dem Event-System)
 function parkourone_angebot_delete_products($post_id) {
 	if (get_post_type($post_id) !== 'angebot') return;
 	if (!class_exists('WooCommerce')) return;
+	if (get_post_meta($post_id, '_angebot_quelle', true) === 'academyboard') return;
 
 	$termine = get_post_meta($post_id, '_angebot_termine', true);
 	if (!is_array($termine)) return;
@@ -1387,3 +1392,340 @@ function parkourone_angebot_skip_setup() {
 	wp_send_json_success();
 }
 add_action('wp_ajax_po_angebote_skip_setup', 'parkourone_angebot_skip_setup');
+
+// =====================================================
+// Academyboard Event → Angebot Sync
+// =====================================================
+
+/**
+ * Sync eines Events (Ferienkurs/Workshop/Kurs) in das Angebote-System.
+ * Wird bei jedem save_post_event ausgelöst (Prio 30, nach Event-Image-Save).
+ * Probetraining-Events werden übersprungen.
+ */
+function parkourone_sync_event_to_angebot($post_id) {
+	if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+	if (wp_is_post_revision($post_id)) return;
+	if (get_post_type($post_id) !== 'event') return;
+	if (get_post_status($post_id) !== 'publish') return;
+
+	// Angebotstyp aus event_category ermitteln (Kind-Term unter Parent 'angebot')
+	$angebot_typ = parkourone_get_event_angebot_typ($post_id);
+	if (!$angebot_typ) return;
+
+	// Probetraining → skip
+	if ($angebot_typ === 'probetraining') return;
+
+	// Nur bekannte Typen synchronisieren
+	$sync_typen = ['ferienkurs', 'workshop', 'kurs'];
+	if (!in_array($angebot_typ, $sync_typen, true)) return;
+
+	// Event-Kategorie → Angebot-Kategorie mappen (ferienkurs → kurs)
+	$kategorie_map = [
+		'ferienkurs' => 'kurs',
+		'workshop'   => 'workshop',
+		'kurs'       => 'kurs',
+	];
+	$angebot_kategorie = $kategorie_map[$angebot_typ];
+
+	// Bestehendes Angebot suchen
+	$existing = get_posts([
+		'post_type'      => 'angebot',
+		'posts_per_page' => 1,
+		'post_status'    => 'any',
+		'meta_query'     => [
+			['key' => '_angebot_academyboard_event_id', 'value' => $post_id]
+		],
+		'fields' => 'ids',
+	]);
+
+	$event_title = get_the_title($post_id);
+
+	// Termin-Daten aufbereiten
+	$termine = parkourone_build_angebot_termine_from_event($post_id);
+
+	if (!empty($existing)) {
+		// UPDATE: Nur AB-Felder aktualisieren, Admin-Felder nicht überschreiben
+		$angebot_id = $existing[0];
+
+		wp_update_post([
+			'ID'         => $angebot_id,
+			'post_title' => $event_title,
+		]);
+
+		update_post_meta($angebot_id, '_angebot_termine', $termine);
+		update_post_meta($angebot_id, '_angebot_wo', get_post_meta($post_id, '_event_venue', true));
+		update_post_meta($angebot_id, '_angebot_ansprechperson', get_post_meta($post_id, '_event_headcoach', true));
+	} else {
+		// NEU: Draft-Angebot erstellen
+		$angebot_id = wp_insert_post([
+			'post_type'   => 'angebot',
+			'post_title'  => $event_title,
+			'post_status' => 'draft',
+		]);
+
+		if (is_wp_error($angebot_id)) return;
+
+		// Verknüpfung + Quelle
+		update_post_meta($angebot_id, '_angebot_academyboard_event_id', $post_id);
+		update_post_meta($angebot_id, '_angebot_quelle', 'academyboard');
+
+		// AB-Daten übernehmen
+		update_post_meta($angebot_id, '_angebot_termine', $termine);
+		update_post_meta($angebot_id, '_angebot_wo', get_post_meta($post_id, '_event_venue', true));
+		update_post_meta($angebot_id, '_angebot_ansprechperson', get_post_meta($post_id, '_event_headcoach', true));
+
+		// Saison: einmalig (Events haben konkrete Termine)
+		update_post_meta($angebot_id, '_angebot_saison', 'einmalig');
+
+		// Kategorie setzen
+		wp_set_object_terms($angebot_id, $angebot_kategorie, 'angebot_kategorie');
+	}
+}
+add_action('save_post_event', 'parkourone_sync_event_to_angebot', 30);
+
+/**
+ * Ermittelt den Angebotstyp eines Events aus der event_category Taxonomie.
+ * Sucht Kind-Terms unter dem Parent 'angebot'.
+ */
+function parkourone_get_event_angebot_typ($event_id) {
+	$terms = wp_get_post_terms($event_id, 'event_category', ['fields' => 'all']);
+	if (is_wp_error($terms) || empty($terms)) return null;
+
+	foreach ($terms as $term) {
+		if (!$term->parent) continue;
+		$parent = get_term($term->parent, 'event_category');
+		if ($parent && !is_wp_error($parent) && $parent->slug === 'angebot') {
+			return $term->slug;
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Baut die Angebot-Termine aus den Event-Daten.
+ * Event-Datum (DD-MM-YYYY / DD.MM.YYYY) → Angebot-Datum (YYYY-MM-DD)
+ * WC-Produkte werden per _event_id + _event_date gesucht und wiederverwendet.
+ */
+function parkourone_build_angebot_termine_from_event($event_id) {
+	$event_dates = get_post_meta($event_id, '_event_dates', true);
+	if (!is_array($event_dates)) return [];
+
+	$start_time = get_post_meta($event_id, '_event_start_time', true);
+	$end_time   = get_post_meta($event_id, '_event_end_time', true);
+	$venue      = get_post_meta($event_id, '_event_venue', true);
+
+	$uhrzeit = '';
+	if ($start_time) {
+		$uhrzeit = $start_time;
+		if ($end_time) {
+			$uhrzeit .= ' - ' . $end_time;
+		}
+	}
+
+	$termine = [];
+
+	foreach ($event_dates as $date_entry) {
+		if (empty($date_entry['date'])) continue;
+
+		// Datum parsen (DD-MM-YYYY oder DD.MM.YYYY → YYYY-MM-DD)
+		$date_str = str_replace('.', '-', $date_entry['date']);
+		$parts = explode('-', $date_str);
+		if (count($parts) !== 3) continue;
+
+		$day   = str_pad($parts[0], 2, '0', STR_PAD_LEFT);
+		$month = str_pad($parts[1], 2, '0', STR_PAD_LEFT);
+		$year  = $parts[2];
+		$datum_iso = "$year-$month-$day";
+
+		// Ort: aus date_entry oder Fallback auf Event-Venue
+		$ort = !empty($date_entry['venue']) ? $date_entry['venue'] : $venue;
+
+		// WC-Produkt suchen (via _event_id + _event_date)
+		$produkt_id  = 0;
+		$kapazitaet  = 0;
+		$event_products = get_posts([
+			'post_type'      => 'product',
+			'posts_per_page' => 1,
+			'post_status'    => 'publish',
+			'meta_query'     => [
+				['key' => '_event_id', 'value' => $event_id],
+				['key' => '_event_date', 'value' => $date_entry['date']],
+			],
+			'fields' => 'ids',
+		]);
+
+		if (!empty($event_products)) {
+			$produkt_id = $event_products[0];
+			if (class_exists('WooCommerce')) {
+				$wc_product = wc_get_product($produkt_id);
+				if ($wc_product) {
+					$kapazitaet = (int) $wc_product->get_stock_quantity();
+				}
+			}
+		}
+
+		$termine[] = [
+			'datum'      => $datum_iso,
+			'uhrzeit'    => $uhrzeit,
+			'ort'        => $ort ?: '',
+			'preis'      => '',
+			'kapazitaet' => $kapazitaet ?: 0,
+			'produkt_id' => $produkt_id,
+		];
+	}
+
+	return $termine;
+}
+
+/**
+ * Manueller Sync: Alle non-Probetraining Events durchgehen und Angebote erstellen/aktualisieren.
+ * Gibt ein Array mit Statistiken zurück.
+ */
+function parkourone_sync_all_events_to_angebote() {
+	$events = get_posts([
+		'post_type'      => 'event',
+		'posts_per_page' => -1,
+		'post_status'    => 'publish',
+	]);
+
+	$created = 0;
+	$updated = 0;
+
+	foreach ($events as $event) {
+		$angebot_typ = parkourone_get_event_angebot_typ($event->ID);
+		if (!$angebot_typ || $angebot_typ === 'probetraining') continue;
+		if (!in_array($angebot_typ, ['ferienkurs', 'workshop', 'kurs'], true)) continue;
+
+		// Prüfen ob schon vorhanden
+		$existing = get_posts([
+			'post_type'      => 'angebot',
+			'posts_per_page' => 1,
+			'post_status'    => 'any',
+			'meta_query'     => [
+				['key' => '_angebot_academyboard_event_id', 'value' => $event->ID]
+			],
+			'fields' => 'ids',
+		]);
+
+		$was_existing = !empty($existing);
+
+		// Sync auslösen (nutzt die gleiche Funktion)
+		parkourone_sync_event_to_angebot($event->ID);
+
+		if ($was_existing) {
+			$updated++;
+		} else {
+			$created++;
+		}
+	}
+
+	return ['created' => $created, 'updated' => $updated];
+}
+
+// =====================================================
+// Admin UI: Quelle-Spalte, Hinweis, Manueller Sync
+// =====================================================
+
+/**
+ * Custom Column: "Quelle" in Angebote-Liste
+ */
+function parkourone_angebot_admin_columns($columns) {
+	$new = [];
+	foreach ($columns as $key => $val) {
+		$new[$key] = $val;
+		if ($key === 'title') {
+			$new['angebot_quelle'] = 'Quelle';
+		}
+	}
+	return $new;
+}
+add_filter('manage_angebot_posts_columns', 'parkourone_angebot_admin_columns');
+
+function parkourone_angebot_admin_column_content($column, $post_id) {
+	if ($column !== 'angebot_quelle') return;
+
+	$quelle = get_post_meta($post_id, '_angebot_quelle', true);
+	if ($quelle === 'academyboard') {
+		echo '<span style="display:inline-block;padding:2px 8px;background:#0073aa;color:#fff;border-radius:3px;font-size:11px;font-weight:600;">AB</span>';
+	} else {
+		echo '<span style="color:#999;">Manuell</span>';
+	}
+}
+add_action('manage_angebot_posts_custom_column', 'parkourone_angebot_admin_column_content', 10, 2);
+
+/**
+ * Admin-Notice auf Edit-Screen für AB-Angebote
+ */
+function parkourone_angebot_ab_edit_notice() {
+	$screen = get_current_screen();
+	if (!$screen || $screen->post_type !== 'angebot' || $screen->base !== 'post') return;
+
+	global $post;
+	if (!$post || get_post_meta($post->ID, '_angebot_quelle', true) !== 'academyboard') return;
+
+	?>
+	<div class="notice notice-info" style="border-left-color:#0073aa;">
+		<p>
+			<strong>Aus Eventsystem:</strong>
+			Titel und Termine werden automatisch aus dem Academyboard synchronisiert.
+			Änderungen an diesen Feldern werden beim nächsten Import überschrieben.
+		</p>
+	</div>
+	<?php
+}
+add_action('admin_notices', 'parkourone_angebot_ab_edit_notice');
+
+/**
+ * Manueller Sync-Button auf Angebote-Listenseite
+ */
+function parkourone_angebot_sync_button_notice() {
+	$screen = get_current_screen();
+	if (!$screen || $screen->post_type !== 'angebot' || $screen->base !== 'edit') return;
+
+	// Event-CPT muss existieren
+	if (!post_type_exists('event')) return;
+
+	?>
+	<div class="notice notice-info" id="po-event-sync-notice" style="display:flex;align-items:center;gap:1rem;">
+		<p style="flex:1;margin:0;">
+			<strong>Event-Sync:</strong> Ferienkurse, Workshops und Kurse aus dem Eventsystem als Angebote importieren.
+		</p>
+		<button type="button" class="button button-primary" id="po-sync-events-btn">Events synchronisieren</button>
+	</div>
+	<script>
+	jQuery(document).ready(function($) {
+		$('#po-sync-events-btn').on('click', function() {
+			var $btn = $(this);
+			$btn.prop('disabled', true).text('Synchronisiere...');
+			$.post(ajaxurl, { action: 'po_sync_events_to_angebote', _wpnonce: '<?php echo wp_create_nonce('po_sync_events'); ?>' }, function(response) {
+				if (response.success) {
+					var d = response.data;
+					$('#po-event-sync-notice').html(
+						'<p><strong>' + d.created + ' neue Angebote erstellt, ' + d.updated + ' aktualisiert.</strong> <a href="">Seite neu laden</a></p>'
+					);
+				} else {
+					alert('Fehler: ' + (response.data || 'Unbekannt'));
+					$btn.prop('disabled', false).text('Events synchronisieren');
+				}
+			});
+		});
+	});
+	</script>
+	<?php
+}
+add_action('admin_notices', 'parkourone_angebot_sync_button_notice');
+
+/**
+ * AJAX: Manueller Event-Sync
+ */
+function parkourone_ajax_sync_events_to_angebote() {
+	check_ajax_referer('po_sync_events', '_wpnonce');
+	if (!current_user_can('edit_posts')) {
+		wp_send_json_error('Keine Berechtigung');
+	}
+
+	$result = parkourone_sync_all_events_to_angebote();
+	wp_send_json_success($result);
+}
+add_action('wp_ajax_po_sync_events_to_angebote', 'parkourone_ajax_sync_events_to_angebote');

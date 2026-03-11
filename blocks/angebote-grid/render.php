@@ -21,10 +21,11 @@ $kategorien = get_terms([
 ]);
 
 $kategorie_labels = [
-	'kostenlos' => 'Kostenlos',
-	'workshop' => 'Workshop',
-	'camp' => 'Camp',
-	'privatunterricht' => 'Privatunterricht'
+	'kostenlos'        => 'Kostenlos',
+	'workshop'         => 'Workshop',
+	'camp'             => 'Camp',
+	'privatunterricht' => 'Privatunterricht',
+	'kurs'             => 'Kurs',
 ];
 ?>
 

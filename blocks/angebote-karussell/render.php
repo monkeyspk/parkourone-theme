@@ -40,10 +40,11 @@ if (empty($angebote)) {
 }
 
 $kategorie_labels = [
-	'kostenlos' => 'Kostenlos',
-	'workshop' => 'Workshop',
-	'camp' => 'Camp',
-	'privatunterricht' => 'Privatunterricht'
+	'kostenlos'        => 'Kostenlos',
+	'workshop'         => 'Workshop',
+	'camp'             => 'Camp',
+	'privatunterricht' => 'Privatunterricht',
+	'kurs'             => 'Kurs',
 ];
 
 if (empty($angebote)) {
