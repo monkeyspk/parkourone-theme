@@ -1346,6 +1346,14 @@ function parkourone_get_template_pages() {
 			'pattern_file' => 'page-infos.php',
 			'page_slug' => 'infos',
 		],
+		[
+			'slug' => 'personal-training',
+			'title' => 'Personal Training',
+			'description' => 'Personal Training mit individuellen Coaching-Paketen und FAQ',
+			'blocks' => 'Page-Header, Personal-Training, FAQ',
+			'pattern_file' => 'page-personal-training.php',
+			'page_slug' => 'personal-training',
+		],
 	];
 
 	// Prüfen ob Seiten bereits existieren
