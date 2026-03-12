@@ -1,7 +1,8 @@
 <?php
 $headline = $attributes['headline'] ?? 'Warum ParkourONE?';
 $slides = $attributes['slides'] ?? [];
-$unique_id = 'usp-slider-' . uniqid();
+static $po_usp_instance = 0; $po_usp_instance++;
+$unique_id = 'usp-slider-' . $po_usp_instance;
 
 // Standard-Bilder für USP-Slides - Landscape-Bilder aus verschiedenen Kategorien
 $categories = ['adults', 'juniors', 'kids', 'adults', 'juniors'];
@@ -28,7 +29,7 @@ unset($slide);
 	<div class="po-usp__wrapper">
 		<div class="po-usp__track">
 			<?php foreach ($slides as $index => $slide): ?>
-				<article class="po-usp__card" data-modal="<?php echo esc_attr($unique_id . '-modal-' . $index); ?>">
+				<article class="po-usp__card" data-modal-target="<?php echo esc_attr($unique_id . '-modal-' . $index); ?>">
 					<?php if (!empty($slide['imageUrl'])): ?>
 					<div class="po-usp__card-image">
 						<img src="<?php echo esc_url($slide['imageUrl']); ?>" alt="<?php echo esc_attr($slide['eyebrow'] ?? ''); ?>" loading="lazy">
@@ -89,83 +90,4 @@ unset($slide);
 </div>
 <?php endforeach; ?>
 
-<script>
-(function() {
-	var section = document.getElementById('<?php echo esc_js($unique_id); ?>');
-	if (!section) return;
-
-	var wrapper = section.querySelector('.po-usp__wrapper');
-	var track = section.querySelector('.po-usp__track');
-	var cards = section.querySelectorAll('.po-usp__card');
-	var prevBtn = section.querySelector('.po-usp__nav-prev');
-	var nextBtn = section.querySelector('.po-usp__nav-next');
-
-	function getCardWidth() {
-		return cards[0].offsetWidth + 24;
-	}
-
-	function getVisibleCards() {
-		return Math.floor(wrapper.offsetWidth / getCardWidth());
-	}
-
-	function updateNav() {
-		var scrollLeft = wrapper.scrollLeft;
-		var maxScroll = track.scrollWidth - wrapper.offsetWidth;
-		prevBtn.disabled = scrollLeft <= 0;
-		nextBtn.disabled = scrollLeft >= maxScroll - 10;
-	}
-
-	prevBtn.addEventListener('click', function() {
-		wrapper.scrollBy({ left: -getCardWidth() * getVisibleCards(), behavior: 'smooth' });
-	});
-
-	nextBtn.addEventListener('click', function() {
-		wrapper.scrollBy({ left: getCardWidth() * getVisibleCards(), behavior: 'smooth' });
-	});
-
-	wrapper.addEventListener('scroll', updateNav);
-	window.addEventListener('resize', updateNav);
-	updateNav();
-
-	// Cards sind komplett klickbar
-	cards.forEach(function(card) {
-		var modalId = card.getAttribute('data-modal');
-		var modal = document.getElementById(modalId);
-		if (!modal) return;
-
-		var closeBtn = modal.querySelector('.po-overlay__close');
-		var backdrop = modal.querySelector('.po-overlay__backdrop');
-
-		function openModal(e) {
-			e.preventDefault();
-			modal.classList.add('is-active');
-			modal.setAttribute('aria-hidden', 'false');
-			document.body.classList.add('po-no-scroll');
-		}
-
-		function closeModal() {
-			modal.classList.remove('is-active');
-			modal.setAttribute('aria-hidden', 'true');
-			document.body.classList.remove('po-no-scroll');
-		}
-
-		card.addEventListener('click', openModal);
-		closeBtn.addEventListener('click', closeModal);
-		backdrop.addEventListener('click', closeModal);
-
-		// Close modal when clicking anchor links (e.g. #anfrage)
-		modal.querySelectorAll('a[href^="#"]').forEach(function(link) {
-			link.addEventListener('click', function() {
-				closeModal();
-			});
-		});
-
-		document.addEventListener('keydown', function(e) {
-			if (e.key === 'Escape' && modal.classList.contains('is-active')) {
-				closeModal();
-			}
-		});
-	});
-})();
-</script>
 <?php endif; ?>

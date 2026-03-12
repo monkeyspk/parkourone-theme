@@ -54,7 +54,8 @@ if (!empty($imageUrl)) {
 	$desktopImage = $landscape_fallback ?: (get_template_directory_uri() . '/assets/images/hero/startseite-desltop.jpg');
 	$mobileImage = $portrait_fallback ?: (get_template_directory_uri() . '/assets/images/hero/mobile-startbild.jpg');
 }
-$unique_id = 'hero-' . uniqid();
+static $po_hero_instance = 0; $po_hero_instance++;
+$unique_id = 'hero-' . $po_hero_instance;
 
 // YouTube Video ID extrahieren
 $youtube_id = '';
@@ -167,62 +168,3 @@ if (!empty($videoBackgroundUrl)) {
 </div>
 <?php endif; ?>
 
-<script>
-(function() {
-	var heroId = '<?php echo esc_js($unique_id); ?>';
-	var hero = document.getElementById(heroId);
-	if (!hero) return;
-
-	// Smooth scroll für Anchor-Links
-	hero.querySelectorAll('.po-hero__button[href^="#"]').forEach(function(btn) {
-		btn.addEventListener('click', function(e) {
-			var targetId = this.getAttribute('href').substring(1);
-			var target = document.getElementById(targetId);
-			if (target) {
-				e.preventDefault();
-				target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-			}
-		});
-	});
-
-	<?php if ($youtube_id): ?>
-	// Video Modal
-	var modal = document.getElementById(heroId + '-modal');
-	var videoBtn = hero.querySelector('.po-hero__button--video');
-	var iframe = modal ? modal.querySelector('.po-video-modal__iframe') : null;
-	var closeBtn = modal ? modal.querySelector('.po-video-modal__close') : null;
-	var backdrop = modal ? modal.querySelector('.po-video-modal__backdrop') : null;
-
-	function openModal() {
-		if (!modal || !iframe) return;
-		iframe.src = iframe.dataset.src;
-		modal.classList.add('is-active');
-		modal.setAttribute('aria-hidden', 'false');
-		document.body.style.overflow = 'hidden';
-	}
-
-	function closeModal() {
-		if (!modal || !iframe) return;
-		modal.classList.remove('is-active');
-		modal.setAttribute('aria-hidden', 'true');
-		iframe.src = '';
-		document.body.style.overflow = '';
-	}
-
-	if (videoBtn) {
-		videoBtn.addEventListener('click', openModal);
-	}
-	if (closeBtn) {
-		closeBtn.addEventListener('click', closeModal);
-	}
-	if (backdrop) {
-		backdrop.addEventListener('click', closeModal);
-	}
-	document.addEventListener('keydown', function(e) {
-		if (e.key === 'Escape' && modal && modal.classList.contains('is-active')) {
-			closeModal();
-		}
-	});
-	<?php endif; ?>
-})();
-</script>

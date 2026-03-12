@@ -102,7 +102,8 @@ usort($members, function($a, $b) {
 	return strcasecmp($a['name'], $b['name']);
 });
 
-$unique_id = 'team-grid-' . uniqid();
+static $po_teamgrid_instance = 0; $po_teamgrid_instance++;
+$unique_id = 'team-grid-' . $po_teamgrid_instance;
 
 if (!function_exists('parkourone_get_initials')) {
 	function parkourone_get_initials($name) {
@@ -238,10 +239,10 @@ if (!function_exists('parkourone_get_coach_trainings_with_dates')) {
 <?php
 $trainings = parkourone_get_coach_trainings_with_dates($m['name']);
 ?>
-<div class="po-tg-modal" id="<?php echo esc_attr($unique_id . '-modal-' . $m['id']); ?>" aria-hidden="true" role="dialog" aria-modal="true">
-	<div class="po-tg-modal__backdrop"></div>
-	<div class="po-tg-modal__panel">
-		<button class="po-tg-modal__close" aria-label="Schließen">
+<div class="po-overlay" id="<?php echo esc_attr($unique_id . '-modal-' . $m['id']); ?>" aria-hidden="true" role="dialog" aria-modal="true">
+	<div class="po-overlay__backdrop"></div>
+	<div class="po-overlay__panel po-overlay__panel--coach">
+		<button class="po-overlay__close" aria-label="Schließen">
 			<svg viewBox="0 0 24 24" fill="none">
 				<circle cx="12" cy="12" r="12" fill="#1d1d1f"/>
 				<path d="M8 8l8 8M16 8l-8 8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
@@ -527,152 +528,4 @@ $mood_texts = [
 
 <?php endforeach; ?>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-	var section = document.getElementById('<?php echo esc_js($anchor ?: $unique_id); ?>');
-	if (!section) return;
-	
-	var fab = section.querySelector('.po-tg__filter-fab');
-	var trigger = section.querySelector('.po-tg__filter-trigger');
-	var filterText = section.querySelector('.po-tg__filter-text');
-	var options = section.querySelectorAll('.po-tg__filter-option');
-	var cards = section.querySelectorAll('.po-tg__card');
-	
-	if (fab && trigger) {
-		var observer = new IntersectionObserver(function(entries) {
-			entries.forEach(function(entry) {
-				if (entry.isIntersecting) {
-					fab.classList.add('is-visible');
-				} else {
-					fab.classList.remove('is-visible');
-					fab.classList.remove('is-open');
-				}
-			});
-		}, { threshold: 0.15, rootMargin: '-10% 0px -10% 0px' });
-		
-		observer.observe(section);
-		
-		trigger.addEventListener('click', function(e) {
-			e.stopPropagation();
-			fab.classList.toggle('is-open');
-		});
-		
-		document.addEventListener('click', function(e) {
-			if (!fab.contains(e.target)) {
-				fab.classList.remove('is-open');
-			}
-		});
-		
-		options.forEach(function(option) {
-			option.addEventListener('click', function() {
-				options.forEach(function(o) { o.classList.remove('is-active'); });
-				this.classList.add('is-active');
-				
-				var filterValue = this.getAttribute('data-filter');
-				var filterName = this.textContent;
-				
-				if (filterValue === 'all') {
-					filterText.textContent = 'Standort filtern';
-				} else {
-					filterText.textContent = filterName;
-				}
-				
-				cards.forEach(function(card) {
-					var locations = card.getAttribute('data-locations') || '';
-					if (filterValue === 'all' || locations.indexOf(filterValue) !== -1) {
-						card.style.display = '';
-					} else {
-						card.style.display = 'none';
-					}
-				});
-				
-				fab.classList.remove('is-open');
-			});
-		});
-	}
-	
-	var buttons = section.querySelectorAll('[data-modal-target]');
-	
-	buttons.forEach(function(btn) {
-		var modalId = btn.getAttribute('data-modal-target');
-		var modal = document.getElementById(modalId);
-		if (!modal) return;
-		
-		var closeBtn = modal.querySelector('.po-tg-modal__close');
-		var backdrop = modal.querySelector('.po-tg-modal__backdrop');
-		
-		function openModal() {
-			modal.classList.add('is-active');
-			document.body.classList.add('po-tg-no-scroll');
-		}
-		
-		function closeModal() {
-			modal.classList.remove('is-active');
-			document.body.classList.remove('po-tg-no-scroll');
-		}
-		
-		btn.addEventListener('click', openModal);
-		if (closeBtn) closeBtn.addEventListener('click', closeModal);
-		if (backdrop) backdrop.addEventListener('click', closeModal);
-		
-		document.addEventListener('keydown', function(e) {
-			if (e.key === 'Escape' && modal.classList.contains('is-active')) {
-				closeModal();
-			}
-		});
-		
-		// Separate Buchungs-Modals öffnen
-		modal.querySelectorAll('.po-tg-coach__booking-trigger').forEach(function(trigger) {
-			trigger.addEventListener('click', function(e) {
-				e.preventDefault();
-				e.stopPropagation();
-				var index = this.getAttribute('data-training-index');
-				var coachId = modal.id.split('-modal-')[1];
-				var bookingModalId = '<?php echo esc_js($unique_id); ?>-booking-' + coachId + '-' + index;
-				var bookingModal = document.getElementById(bookingModalId);
-
-				if (bookingModal) {
-					bookingModal.classList.add('is-active');
-					bookingModal.setAttribute('aria-hidden', 'false');
-					document.body.classList.add('po-no-scroll');
-				}
-			});
-		});
-
-	});
-
-	// Buchungs-Modals (po-overlay) schliessen Handler
-	document.querySelectorAll('.po-overlay').forEach(function(bookingModal) {
-		var closeBtn = bookingModal.querySelector('.po-overlay__close');
-		var backdrop = bookingModal.querySelector('.po-overlay__backdrop');
-
-		function closeBookingModal() {
-			bookingModal.classList.remove('is-active');
-			bookingModal.setAttribute('aria-hidden', 'true');
-			document.body.classList.remove('po-no-scroll');
-		}
-
-		if (closeBtn) {
-			closeBtn.addEventListener('click', function(e) {
-				e.preventDefault();
-				e.stopPropagation();
-				closeBookingModal();
-			});
-		}
-
-		if (backdrop) {
-			backdrop.addEventListener('click', function(e) {
-				e.preventDefault();
-				closeBookingModal();
-			});
-		}
-
-		document.addEventListener('keydown', function(e) {
-			if (e.key === 'Escape' && bookingModal.classList.contains('is-active')) {
-				closeBookingModal();
-			}
-		});
-	});
-});
-</script>
 

@@ -10,7 +10,8 @@ if (empty($text)) return;
 $clean_text = wp_strip_all_tags($text);
 $words = preg_split('/\s+/', $clean_text);
 
-$unique_id = 'text-reveal-' . uniqid();
+static $po_text_reveal_instance = 0; $po_text_reveal_instance++;
+$unique_id = 'text-reveal-' . $po_text_reveal_instance;
 
 $align_class = '';
 if ($align === 'wide') $align_class = 'alignwide';
@@ -61,60 +62,3 @@ if ($align === 'full') $align_class = 'alignfull';
 	</div>
 </section>
 
-<script>
-(function() {
-	var section = document.getElementById('<?php echo esc_js($unique_id); ?>');
-	if (!section) return;
-
-	var words = section.querySelectorAll('.po-text-reveal__word');
-	var totalWords = words.length;
-
-	function updateWords() {
-		var rect = section.getBoundingClientRect();
-		var windowHeight = window.innerHeight;
-		var sectionTop = rect.top;
-
-		var startTrigger = windowHeight * 0.85;
-		var endTrigger = windowHeight * 0.15;
-		var range = startTrigger - endTrigger;
-
-		var progress = 0;
-
-		if (rect.bottom < 0) {
-			progress = 1;
-		} else if (sectionTop > windowHeight) {
-			progress = 0;
-		} else if (sectionTop <= startTrigger) {
-			if (sectionTop <= endTrigger) {
-				progress = 1;
-			} else {
-				progress = (startTrigger - sectionTop) / range;
-			}
-		}
-
-		progress = Math.max(0, Math.min(1, progress));
-		var visibleCount = Math.ceil(progress * totalWords);
-
-		for (var i = 0; i < words.length; i++) {
-			if (i < visibleCount) {
-				words[i].classList.add('is-visible');
-			} else {
-				words[i].classList.remove('is-visible');
-			}
-		}
-	}
-
-	updateWords();
-
-	var ticking = false;
-	window.addEventListener('scroll', function() {
-		if (!ticking) {
-			requestAnimationFrame(function() {
-				updateWords();
-				ticking = false;
-			});
-			ticking = true;
-		}
-	}, { passive: true });
-})();
-</script>

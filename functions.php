@@ -1146,6 +1146,15 @@ function parkourone_enqueue_theme_styles() {
         [],
         filemtime(get_template_directory() . '/assets/css/health-consent.css')
     );
+
+    // Shared Overlay Handler (modal open/close for all .po-overlay modals)
+    wp_enqueue_script(
+        'parkourone-overlay-handler',
+        get_template_directory_uri() . '/assets/js/overlay-handler.js',
+        [],
+        filemtime(get_template_directory() . '/assets/js/overlay-handler.js'),
+        true
+    );
 }
 add_action('wp_enqueue_scripts', 'parkourone_enqueue_theme_styles');
 

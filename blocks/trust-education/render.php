@@ -20,7 +20,8 @@ if (!empty($attributes['align'])) {
 	$section_classes[] = 'align' . $attributes['align'];
 }
 
-$unique_id = 'po-trust-' . uniqid();
+static $po_trust_instance = 0; $po_trust_instance++;
+$unique_id = 'po-trust-' . $po_trust_instance;
 $theme_uri = get_template_directory_uri();
 
 // Icon paths
@@ -164,39 +165,3 @@ $icon_images = [
 	</div>
 </div>
 
-<script>
-(function() {
-	var section = document.getElementById('<?php echo esc_js($unique_id); ?>');
-	if (!section) return;
-
-	var btn = section.querySelector('[data-modal-target]');
-	var modalId = btn ? btn.getAttribute('data-modal-target') : null;
-	var modal = modalId ? document.getElementById(modalId) : null;
-	if (!btn || !modal) return;
-
-	var closeBtn = modal.querySelector('.po-overlay__close');
-	var backdrop = modal.querySelector('.po-overlay__backdrop');
-
-	function openModal() {
-		modal.classList.add('is-active');
-		modal.setAttribute('aria-hidden', 'false');
-		document.body.classList.add('po-no-scroll');
-	}
-
-	function closeModal() {
-		modal.classList.remove('is-active');
-		modal.setAttribute('aria-hidden', 'true');
-		document.body.classList.remove('po-no-scroll');
-	}
-
-	btn.addEventListener('click', openModal);
-	if (closeBtn) closeBtn.addEventListener('click', closeModal);
-	if (backdrop) backdrop.addEventListener('click', closeModal);
-
-	document.addEventListener('keydown', function(e) {
-		if (e.key === 'Escape' && modal.classList.contains('is-active')) {
-			closeModal();
-		}
-	});
-})();
-</script>

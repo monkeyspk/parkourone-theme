@@ -17,6 +17,7 @@
 	],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
 	"style": "file:./style.css",
 	"render": "file:./render.php",
 	"attributes": {

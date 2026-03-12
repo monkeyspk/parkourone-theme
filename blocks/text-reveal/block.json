@@ -47,5 +47,6 @@
 	},
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
 	"render": "file:./render.php"
 }

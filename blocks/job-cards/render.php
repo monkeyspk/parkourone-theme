@@ -17,7 +17,8 @@ $headline = $attributes['headline'] ?? 'Werde Teil unseres Teams';
 $intro = $attributes['intro'] ?? '';
 $bgColor = $attributes['backgroundColor'] ?? '#f5f5f7';
 $anchor = $attributes['anchor'] ?? '';
-$unique_id = $anchor ?: ('po-jobs-' . uniqid());
+static $po_jobs_instance = 0; $po_jobs_instance++;
+$unique_id = $anchor ?: ('po-jobs-' . $po_jobs_instance);
 ?>
 <section class="po-jobs alignfull" id="<?php echo esc_attr($unique_id); ?>" style="background-color: <?php echo esc_attr($bgColor); ?>">
 	<div class="po-jobs__header">
@@ -126,81 +127,3 @@ $unique_id = $anchor ?: ('po-jobs-' . uniqid());
 </div>
 <?php endforeach; ?>
 
-<script>
-(function() {
-	var section = document.getElementById('<?php echo esc_js($unique_id); ?>');
-	if (!section) return;
-
-	// Nav Buttons
-	var grid = section.querySelector('.po-jobs__grid');
-	var prevBtn = section.querySelector('.po-jobs__nav-prev');
-	var nextBtn = section.querySelector('.po-jobs__nav-next');
-	var nav = section.querySelector('.po-jobs__nav');
-
-	if (grid && prevBtn && nextBtn) {
-		function getCardWidth() {
-			var firstCard = grid.querySelector('.po-job-card');
-			if (!firstCard) return 340;
-			return firstCard.offsetWidth + 24; // card width + gap
-		}
-
-		function getVisibleCards() {
-			return Math.max(1, Math.floor(grid.offsetWidth / getCardWidth()));
-		}
-
-		function updateNav() {
-			var sl = grid.scrollLeft;
-			var maxScroll = grid.scrollWidth - grid.offsetWidth;
-			prevBtn.disabled = sl <= 0;
-			nextBtn.disabled = sl >= maxScroll - 10;
-			if (nav) nav.style.display = maxScroll <= 0 ? 'none' : '';
-		}
-
-		prevBtn.addEventListener('click', function() {
-			grid.scrollBy({ left: -getCardWidth() * getVisibleCards(), behavior: 'smooth' });
-		});
-
-		nextBtn.addEventListener('click', function() {
-			grid.scrollBy({ left: getCardWidth() * getVisibleCards(), behavior: 'smooth' });
-		});
-
-		grid.addEventListener('scroll', updateNav);
-		window.addEventListener('resize', updateNav);
-		updateNav();
-	}
-
-	// Modal Buttons
-	var buttons = section.querySelectorAll('[data-modal-target]');
-
-	buttons.forEach(function(btn) {
-		var modalId = btn.getAttribute('data-modal-target');
-		var modal = document.getElementById(modalId);
-		if (!modal) return;
-
-		var closeBtn = modal.querySelector('.po-overlay__close');
-		var backdrop = modal.querySelector('.po-overlay__backdrop');
-
-		function openModal() {
-			modal.classList.add('is-active');
-			modal.setAttribute('aria-hidden', 'false');
-			document.body.classList.add('po-no-scroll');
-		}
-
-		function closeModal() {
-			modal.classList.remove('is-active');
-			modal.setAttribute('aria-hidden', 'true');
-			document.body.classList.remove('po-no-scroll');
-		}
-
-		btn.addEventListener('click', openModal);
-		if (closeBtn) closeBtn.addEventListener('click', closeModal);
-		if (backdrop) backdrop.addEventListener('click', closeModal);
-
-		document.addEventListener('keydown', function(e) {
-			if (e.key === 'Escape' && modal.classList.contains('is-active')) {
-				closeModal();
-			}
-		});
-	});
-})();
-</script>
