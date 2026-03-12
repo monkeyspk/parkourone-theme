@@ -263,9 +263,15 @@ function parkourone_angebot_termine_metabox($post) {
 						<span style="font-size: 13px;">
 							<strong style="color: #2271b1;"><?php echo $total_sold; ?></strong> gebucht
 							von <strong><?php echo $initial_stock; ?></strong> Plätzen
-							&mdash; <strong style="color: <?php echo $stock_qty > 0 ? '#00a32a' : '#d63638'; ?>;"><?php echo $stock_qty; ?></strong> verfügbar
+							&mdash; <span class="po-stock-display-<?php echo $pid; ?>"><strong style="color: <?php echo $stock_qty > 0 ? '#00a32a' : '#d63638'; ?>;"><?php echo $stock_qty; ?></strong> verfügbar</span>
 						</span>
-						<a href="<?php echo get_edit_post_link($pid); ?>" style="margin-left: 8px; font-size: 12px;">WC-Produkt bearbeiten</a>
+						<span class="po-stock-adjust" style="margin-left: 12px;">
+							<button type="button" class="button button-small po-stock-btn" data-product-id="<?php echo $pid; ?>" data-action="decrease" title="Stock -1" style="padding: 0 6px; min-height: 26px; line-height: 24px;">−</button>
+							<input type="number" class="po-stock-input" data-product-id="<?php echo $pid; ?>" value="<?php echo $stock_qty; ?>" style="width: 50px; height: 26px; text-align: center; margin: 0 2px;" min="0">
+							<button type="button" class="button button-small po-stock-btn" data-product-id="<?php echo $pid; ?>" data-action="increase" title="Stock +1" style="padding: 0 6px; min-height: 26px; line-height: 24px;">+</button>
+							<button type="button" class="button button-small po-stock-save" data-product-id="<?php echo $pid; ?>" style="margin-left: 4px; min-height: 26px; line-height: 24px;">Speichern</button>
+							<span class="po-stock-msg-<?php echo $pid; ?>" style="margin-left: 6px; font-size: 12px;"></span>
+						</span>
 					</td>
 				</tr>
 				<?php endif; endif; ?>
@@ -304,6 +310,52 @@ function parkourone_angebot_termine_metabox($post) {
 
 		$(document).on('click', '.termin-remove', function() {
 			$(this).closest('.angebot-termin').remove();
+		});
+
+		// Stock +/- Buttons
+		$(document).on('click', '.po-stock-btn', function() {
+			var pid = $(this).data('product-id');
+			var input = $('.po-stock-input[data-product-id="' + pid + '"]');
+			var val = parseInt(input.val()) || 0;
+			if ($(this).data('action') === 'decrease') {
+				input.val(Math.max(0, val - 1));
+			} else {
+				input.val(val + 1);
+			}
+		});
+
+		// Stock speichern via AJAX
+		$(document).on('click', '.po-stock-save', function() {
+			var btn = $(this);
+			var pid = btn.data('product-id');
+			var newStock = parseInt($('.po-stock-input[data-product-id="' + pid + '"]').val());
+			var msg = $('.po-stock-msg-' + pid);
+
+			if (isNaN(newStock) || newStock < 0) {
+				msg.html('<span style="color:#d63638;">Ungültiger Wert</span>');
+				return;
+			}
+
+			btn.prop('disabled', true).text('...');
+			$.post(ajaxurl, {
+				action: 'po_update_wc_stock',
+				product_id: pid,
+				stock: newStock,
+				_wpnonce: '<?php echo wp_create_nonce('po_update_wc_stock'); ?>'
+			}, function(response) {
+				btn.prop('disabled', false).text('Speichern');
+				if (response.success) {
+					var color = newStock > 0 ? '#00a32a' : '#d63638';
+					$('.po-stock-display-' + pid).html('<strong style="color:' + color + ';">' + newStock + '</strong> verfügbar');
+					msg.html('<span style="color:#00a32a;">✓</span>');
+					setTimeout(function() { msg.html(''); }, 2000);
+				} else {
+					msg.html('<span style="color:#d63638;">' + (response.data || 'Fehler') + '</span>');
+				}
+			}).fail(function() {
+				btn.prop('disabled', false).text('Speichern');
+				msg.html('<span style="color:#d63638;">Netzwerkfehler</span>');
+			});
 		});
 	});
 	</script>
@@ -1429,6 +1481,36 @@ function parkourone_get_product_total_sold($product_id) {
 	if (!$product) return 0;
 	return (int) $product->get_total_sales();
 }
+
+/**
+ * AJAX: WC-Produkt Stock direkt aus Angebot-Backend anpassen.
+ */
+function parkourone_ajax_update_wc_stock() {
+	check_ajax_referer('po_update_wc_stock');
+
+	if (!current_user_can('edit_products')) {
+		wp_send_json_error('Keine Berechtigung');
+	}
+
+	$product_id = intval($_POST['product_id'] ?? 0);
+	$new_stock  = intval($_POST['stock'] ?? -1);
+
+	if (!$product_id || $new_stock < 0) {
+		wp_send_json_error('Ungültige Parameter');
+	}
+
+	$product = wc_get_product($product_id);
+	if (!$product) {
+		wp_send_json_error('Produkt nicht gefunden');
+	}
+
+	$product->set_stock_quantity($new_stock);
+	$product->set_manage_stock(true);
+	$product->save();
+
+	wp_send_json_success(['stock' => $new_stock]);
+}
+add_action('wp_ajax_po_update_wc_stock', 'parkourone_ajax_update_wc_stock');
 
 // =====================================================
 // Academyboard Event → Angebot Sync
