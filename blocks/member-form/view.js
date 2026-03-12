@@ -90,6 +90,37 @@
 		}
 	});
 
+	// ===== URL Hash Deep-Link =====
+	// z.B. /infos/#rueckerstattung öffnet das Rückerstattungs-Modal
+	function checkHashAndOpen() {
+		var hash = window.location.hash.replace('#', '');
+		if (!hash) return;
+
+		var section = document.querySelector('[data-form-hash="' + hash + '"]');
+		if (!section) return;
+
+		var btn = section.querySelector('[data-modal-target]');
+		if (!btn) return;
+
+		var modalId = btn.getAttribute('data-modal-target');
+		var modal = document.getElementById(modalId);
+		if (modal) {
+			// Kurz warten bis Seite gerendert ist
+			setTimeout(function() {
+				section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+				openModal(modal);
+			}, 300);
+		}
+	}
+
+	// Hash prüfen bei Seitenload und bei Hash-Änderung
+	if (document.readyState === 'complete') {
+		checkHashAndOpen();
+	} else {
+		window.addEventListener('load', checkHashAndOpen);
+	}
+	window.addEventListener('hashchange', checkHashAndOpen);
+
 	// ===== Form Validation + Submission =====
 
 	document.addEventListener('submit', function(e) {
@@ -167,13 +198,13 @@
 			var fileInput = form.querySelector('[name="sportdispens"]');
 			if (fileInput && fileInput.files.length > 0) {
 				var file = fileInput.files[0];
-				var allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+				var allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
 				var maxSize = 64 * 1024 * 1024; // 64MB
 
 				if (allowedTypes.indexOf(file.type) === -1) {
 					valid = false;
 					markInvalid(fileInput);
-					showMessage(msg, 'error', 'Nur JPG, PNG oder GIF Dateien sind erlaubt.');
+					showMessage(msg, 'error', 'Nur PDF, JPG, PNG oder GIF Dateien sind erlaubt.');
 					focusFirstInvalid(form);
 					return;
 				}

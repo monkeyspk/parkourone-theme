@@ -3064,9 +3064,9 @@ function parkourone_handle_verletzungen_form() {
 		$mime = finfo_file($finfo, $file['tmp_name']);
 		finfo_close($finfo);
 
-		$allowed_mimes = ['image/jpeg', 'image/png', 'image/gif'];
+		$allowed_mimes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
 		if (!in_array($mime, $allowed_mimes, true)) {
-			wp_send_json_error(['message' => 'Nur JPG, PNG oder GIF Dateien sind erlaubt.']);
+			wp_send_json_error(['message' => 'Nur PDF, JPG, PNG oder GIF Dateien sind erlaubt.']);
 		}
 
 		// Size check (64MB)

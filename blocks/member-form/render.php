@@ -41,7 +41,15 @@ if (!empty($attributes['align'])) {
 }
 ?>
 
-<section class="<?php echo esc_attr(implode(' ', $section_classes)); ?>" id="<?php echo esc_attr($unique_id); ?>">
+<?php
+// Stabiler Hash-Anchor für Deep-Links (z.B. /infos/#rueckerstattung)
+$hash_map = [
+	'verletzungen' => 'rueckerstattung',
+	'ahv'          => 'ahv',
+];
+$form_hash = $hash_map[$formType] ?? $formType;
+?>
+<section class="<?php echo esc_attr(implode(' ', $section_classes)); ?>" id="<?php echo esc_attr($unique_id); ?>" data-form-hash="<?php echo esc_attr($form_hash); ?>">
 	<!-- Karte -->
 	<div class="po-memberform__card">
 		<div class="po-memberform__card-icon" aria-hidden="true">
@@ -133,8 +141,9 @@ if (!empty($attributes['align'])) {
 								<input type="text" name="kontoinhaber" id="<?php echo esc_attr($unique_id); ?>_kontoinhaber" required>
 							</div>
 							<div class="po-memberform__field po-memberform__field--full">
-								<label for="<?php echo esc_attr($unique_id); ?>_sportdispens">Sportdispens hochladen <span class="optional">(jpg, png, gif – max. 64 MB)</span></label>
-								<input type="file" name="sportdispens" id="<?php echo esc_attr($unique_id); ?>_sportdispens" accept=".jpg,.jpeg,.png,.gif">
+								<label for="<?php echo esc_attr($unique_id); ?>_sportdispens">Arztzeugnis / Sportdispens hochladen <span class="optional">(PDF, JPG, PNG – max. 64 MB)</span></label>
+								<input type="file" name="sportdispens" id="<?php echo esc_attr($unique_id); ?>_sportdispens" accept=".jpg,.jpeg,.png,.gif,.pdf,application/pdf">
+								<span class="po-memberform__field-hint">Das Arztzeugnis muss mindestens 30 Tage Trainingsausfall bescheinigen. Pro 30 Tage wird ein Monat rückerstattet. Es werden nur Arztzeugnisse akzeptiert, die maximal 30 Tage zurückliegen.</span>
 							</div>
 
 							<!-- Checkboxen -->
