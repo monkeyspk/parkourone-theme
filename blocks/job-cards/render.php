@@ -46,6 +46,15 @@ $unique_id = $anchor ?: ('po-jobs-' . uniqid());
 			</article>
 		<?php endforeach; ?>
 	</div>
+
+	<div class="po-jobs__nav">
+		<button type="button" class="po-jobs__nav-btn po-jobs__nav-prev" aria-label="Zurück" disabled>
+			<svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+		</button>
+		<button type="button" class="po-jobs__nav-btn po-jobs__nav-next" aria-label="Weiter">
+			<svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+		</button>
+	</div>
 </section>
 
 <?php foreach ($jobs as $index => $j):
@@ -122,6 +131,45 @@ $unique_id = $anchor ?: ('po-jobs-' . uniqid());
 	var section = document.getElementById('<?php echo esc_js($unique_id); ?>');
 	if (!section) return;
 
+	// Nav Buttons
+	var grid = section.querySelector('.po-jobs__grid');
+	var prevBtn = section.querySelector('.po-jobs__nav-prev');
+	var nextBtn = section.querySelector('.po-jobs__nav-next');
+	var nav = section.querySelector('.po-jobs__nav');
+
+	if (grid && prevBtn && nextBtn) {
+		function getCardWidth() {
+			var firstCard = grid.querySelector('.po-job-card');
+			if (!firstCard) return 340;
+			return firstCard.offsetWidth + 24; // card width + gap
+		}
+
+		function getVisibleCards() {
+			return Math.max(1, Math.floor(grid.offsetWidth / getCardWidth()));
+		}
+
+		function updateNav() {
+			var sl = grid.scrollLeft;
+			var maxScroll = grid.scrollWidth - grid.offsetWidth;
+			prevBtn.disabled = sl <= 0;
+			nextBtn.disabled = sl >= maxScroll - 10;
+			if (nav) nav.style.display = maxScroll <= 0 ? 'none' : '';
+		}
+
+		prevBtn.addEventListener('click', function() {
+			grid.scrollBy({ left: -getCardWidth() * getVisibleCards(), behavior: 'smooth' });
+		});
+
+		nextBtn.addEventListener('click', function() {
+			grid.scrollBy({ left: getCardWidth() * getVisibleCards(), behavior: 'smooth' });
+		});
+
+		grid.addEventListener('scroll', updateNav);
+		window.addEventListener('resize', updateNav);
+		updateNav();
+	}
+
+	// Modal Buttons
 	var buttons = section.querySelectorAll('[data-modal-target]');
 
 	buttons.forEach(function(btn) {
