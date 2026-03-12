@@ -7,18 +7,50 @@
 	"category": "parkourone-blocks",
 	"icon": "tickets-alt",
 	"description": "Event-Buchungsliste mit Filtern, Klassen-Cards und Booking-Modal.",
-	"keywords": ["event", "buchung", "booking", "probetraining", "kurse", "filter"],
+	"keywords": [
+		"event",
+		"buchung",
+		"booking",
+		"probetraining",
+		"kurse",
+		"filter"
+	],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
 	"style": "file:./style.css",
 	"render": "file:./render.php",
 	"attributes": {
-		"headline": { "type": "string", "default": "Trainings buchen" },
-		"filterAge": { "type": "string", "default": "" },
-		"filterLocation": { "type": "string", "default": "" },
-		"filterOffer": { "type": "string", "default": "" },
-		"filterWeekday": { "type": "string", "default": "" },
-		"buttonText": { "type": "string", "default": "Jetzt buchen" }
+		"headline": {
+			"type": "string",
+			"default": "Trainings buchen"
+		},
+		"filterAge": {
+			"type": "string",
+			"default": ""
+		},
+		"filterLocation": {
+			"type": "string",
+			"default": ""
+		},
+		"filterOffer": {
+			"type": "string",
+			"default": ""
+		},
+		"filterWeekday": {
+			"type": "string",
+			"default": ""
+		},
+		"buttonText": {
+			"type": "string",
+			"default": "Jetzt buchen"
+		}
 	},
-	"supports": { "align": ["full", "wide"], "html": false }
+	"supports": {
+		"align": [
+			"full",
+			"wide"
+		],
+		"html": false,
+		"anchor": true
+	}
 }

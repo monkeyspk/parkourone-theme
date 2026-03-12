@@ -7,24 +7,70 @@
 	"category": "parkourone-blocks",
 	"icon": "email",
 	"description": "Wiederverwendbares Anfrage-Formular für Workshop, Schulen und Teamevent-Seiten.",
-	"keywords": ["formular", "anfrage", "kontakt", "inquiry", "workshop"],
+	"keywords": [
+		"formular",
+		"anfrage",
+		"kontakt",
+		"inquiry",
+		"workshop"
+	],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
 	"style": "file:./style.css",
 	"viewScript": "file:./view.js",
 	"render": "file:./render.php",
 	"attributes": {
-		"headline": { "type": "string", "default": "Jetzt anfragen" },
-		"subtext": { "type": "string", "default": "" },
-		"formType": { "type": "string", "default": "workshop" },
-		"recipientEmail": { "type": "string", "default": "" },
-		"showLocation": { "type": "boolean", "default": true },
-		"showParticipants": { "type": "boolean", "default": true },
-		"showDates": { "type": "boolean", "default": true },
-		"showProjectLength": { "type": "boolean", "default": false },
-		"showClassCount": { "type": "boolean", "default": false },
-		"submitText": { "type": "string", "default": "Anfrage senden" },
-		"backgroundColor": { "type": "string", "default": "dark" }
+		"headline": {
+			"type": "string",
+			"default": "Jetzt anfragen"
+		},
+		"subtext": {
+			"type": "string",
+			"default": ""
+		},
+		"formType": {
+			"type": "string",
+			"default": "workshop"
+		},
+		"recipientEmail": {
+			"type": "string",
+			"default": ""
+		},
+		"showLocation": {
+			"type": "boolean",
+			"default": true
+		},
+		"showParticipants": {
+			"type": "boolean",
+			"default": true
+		},
+		"showDates": {
+			"type": "boolean",
+			"default": true
+		},
+		"showProjectLength": {
+			"type": "boolean",
+			"default": false
+		},
+		"showClassCount": {
+			"type": "boolean",
+			"default": false
+		},
+		"submitText": {
+			"type": "string",
+			"default": "Anfrage senden"
+		},
+		"backgroundColor": {
+			"type": "string",
+			"default": "dark"
+		}
 	},
-	"supports": { "align": ["full", "wide"], "html": false }
+	"supports": {
+		"align": [
+			"full",
+			"wide"
+		],
+		"html": false,
+		"anchor": true
+	}
 }

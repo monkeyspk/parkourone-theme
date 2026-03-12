@@ -308,6 +308,16 @@
 	color: #0066cc;
 }
 
+/* Coach Image */
+.po-angebote-modal__coach-img {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	object-fit: cover;
+	vertical-align: middle;
+	margin-right: 0.25rem;
+}
+
 /* Pricing Link */
 .po-angebote-modal__pricing-link {
 	display: inline-flex;

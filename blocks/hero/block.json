@@ -7,26 +7,74 @@
 	"category": "parkourone-startseite",
 	"icon": "cover-image",
 	"description": "Cinematischer Fullscreen Hero mit Video-Modal und Stats.",
-	"keywords": ["hero", "header", "banner", "startseite", "video"],
+	"keywords": [
+		"hero",
+		"header",
+		"banner",
+		"startseite",
+		"video"
+	],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
 	"style": "file:./style.css",
 	"render": "file:./render.php",
 	"attributes": {
-		"eyebrow": { "type": "string", "default": "" },
-		"headline": { "type": "string", "default": "Stärke deinen Körper, schärfe deinen Geist" },
-		"subtext": { "type": "string", "default": "Entdecke Parkour – für alle Altersgruppen, an mehreren Standorten." },
-		"layout": { "type": "string", "default": "centered" },
-		"buttonText": { "type": "string", "default": "Jetzt starten" },
-		"buttonUrl": { "type": "string", "default": "#stundenplan" },
-		"secondButtonText": { "type": "string", "default": "" },
-		"secondButtonUrl": { "type": "string", "default": "" },
-		"videoButtonText": { "type": "string", "default": "Film ansehen" },
-		"videoUrl": { "type": "string", "default": "" },
-		"imageUrl": { "type": "string", "default": "" },
-		"imageId": { "type": "number", "default": 0 },
-		"videoBackgroundUrl": { "type": "string", "default": "" },
-		"overlayOpacity": { "type": "number", "default": 50 },
+		"eyebrow": {
+			"type": "string",
+			"default": ""
+		},
+		"headline": {
+			"type": "string",
+			"default": "Stärke deinen Körper, schärfe deinen Geist"
+		},
+		"subtext": {
+			"type": "string",
+			"default": "Entdecke Parkour – für alle Altersgruppen, an mehreren Standorten."
+		},
+		"layout": {
+			"type": "string",
+			"default": "centered"
+		},
+		"buttonText": {
+			"type": "string",
+			"default": "Jetzt starten"
+		},
+		"buttonUrl": {
+			"type": "string",
+			"default": "#stundenplan"
+		},
+		"secondButtonText": {
+			"type": "string",
+			"default": ""
+		},
+		"secondButtonUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"videoButtonText": {
+			"type": "string",
+			"default": "Film ansehen"
+		},
+		"videoUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"imageUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"imageId": {
+			"type": "number",
+			"default": 0
+		},
+		"videoBackgroundUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayOpacity": {
+			"type": "number",
+			"default": 50
+		},
 		"stats": {
 			"type": "array",
 			"default": [],
@@ -34,8 +82,21 @@
 				"type": "object"
 			}
 		},
-		"ageCategory": { "type": "string", "default": "" },
-		"useRandomFallback": { "type": "boolean", "default": false }
+		"ageCategory": {
+			"type": "string",
+			"default": ""
+		},
+		"useRandomFallback": {
+			"type": "boolean",
+			"default": false
+		}
 	},
-	"supports": { "align": ["full", "wide"], "html": false }
+	"supports": {
+		"align": [
+			"full",
+			"wide"
+		],
+		"html": false,
+		"anchor": true
+	}
 }

@@ -97,7 +97,12 @@ document.addEventListener('DOMContentLoaded', function() {
 		if (data.voraussetzungen) details.push({ label: 'Voraussetzungen', value: data.voraussetzungen });
 		if (data.was_mitbringen) details.push({ label: 'Was mitbringen', value: data.was_mitbringen });
 		if (data.preis) details.push({ label: 'Preis', value: data.preis });
-		if (data.ansprechperson) details.push({ label: 'Coach', value: data.ansprechperson });
+		if (data.ansprechperson) {
+			var coachValue = data.ansprechperson_image
+				? '<img src="' + data.ansprechperson_image + '" alt="" class="po-angebote-modal__coach-img"> ' + escapeHtml(data.ansprechperson)
+				: escapeHtml(data.ansprechperson);
+			details.push({ label: 'Coach', value: coachValue, raw: true });
+		}
 
 		if (details.length > 0) {
 			html += '<div class="po-angebote-modal__details">';

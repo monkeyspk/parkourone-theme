@@ -7,10 +7,20 @@
 	"category": "parkourone",
 	"icon": "slides",
 	"description": "Apple-Style Timeline mit nummerierten Schritten und Bildern",
-	"keywords": ["steps", "timeline", "schritte", "apple", "prozess"],
+	"keywords": [
+		"steps",
+		"timeline",
+		"schritte",
+		"apple",
+		"prozess"
+	],
 	"supports": {
 		"html": false,
-		"align": ["wide", "full"]
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true
 	},
 	"attributes": {
 		"headline": {
@@ -49,7 +59,12 @@
 		"ageCategory": {
 			"type": "string",
 			"default": "default",
-			"enum": ["kids", "juniors", "adults", "default"]
+			"enum": [
+				"kids",
+				"juniors",
+				"adults",
+				"default"
+			]
 		},
 		"align": {
 			"type": "string",
@@ -58,7 +73,11 @@
 		"backgroundColor": {
 			"type": "string",
 			"default": "light",
-			"enum": ["light", "dark", "white"]
+			"enum": [
+				"light",
+				"dark",
+				"white"
+			]
 		}
 	},
 	"textdomain": "parkourone",

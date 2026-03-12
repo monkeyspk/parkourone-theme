@@ -247,6 +247,28 @@ function parkourone_angebot_termine_metabox($post) {
 						<p class="description">Optional: ID eines bestehenden WooCommerce Produkts für die Buchung.</p>
 					</td>
 				</tr>
+				<?php
+				// Live WC-Buchungsstatus anzeigen
+				$pid = intval($termin['produkt_id'] ?? 0);
+				if ($pid && class_exists('WooCommerce')):
+					$wc_prod = wc_get_product($pid);
+					if ($wc_prod):
+						$stock_qty = $wc_prod->get_stock_quantity();
+						$total_sold = parkourone_get_product_total_sold($pid);
+						$initial_stock = $stock_qty + $total_sold;
+				?>
+				<tr>
+					<th><label>Buchungsstatus</label></th>
+					<td>
+						<span style="font-size: 13px;">
+							<strong style="color: #2271b1;"><?php echo $total_sold; ?></strong> gebucht
+							von <strong><?php echo $initial_stock; ?></strong> Plätzen
+							&mdash; <strong style="color: <?php echo $stock_qty > 0 ? '#00a32a' : '#d63638'; ?>;"><?php echo $stock_qty; ?></strong> verfügbar
+						</span>
+						<a href="<?php echo get_edit_post_link($pid); ?>" style="margin-left: 8px; font-size: 12px;">WC-Produkt bearbeiten</a>
+					</td>
+				</tr>
+				<?php endif; endif; ?>
 			</table>
 			<hr style="margin: 20px 0;">
 		</div>
@@ -1394,6 +1416,21 @@ function parkourone_angebot_skip_setup() {
 add_action('wp_ajax_po_angebote_skip_setup', 'parkourone_angebot_skip_setup');
 
 // =====================================================
+// WC Buchungs-Helpers
+// =====================================================
+
+/**
+ * Ermittelt die Anzahl verkaufter Einheiten eines WC-Produkts.
+ * Nutzt WooCommerce's eigenen total_sales Counter (performant).
+ */
+function parkourone_get_product_total_sold($product_id) {
+	if (!class_exists('WooCommerce')) return 0;
+	$product = wc_get_product($product_id);
+	if (!$product) return 0;
+	return (int) $product->get_total_sales();
+}
+
+// =====================================================
 // Academyboard Event → Angebot Sync
 // =====================================================
 
@@ -1448,6 +1485,14 @@ function parkourone_sync_event_to_angebot($post_id) {
 	$event_start_time  = get_post_meta($post_id, '_event_start_time', true);
 	$event_end_time    = get_post_meta($post_id, '_event_end_time', true);
 	$event_coach_email = get_post_meta($post_id, '_event_headcoach_email', true);
+	$event_lat         = get_post_meta($post_id, '_event_venue_lat', true);
+	$event_lng         = get_post_meta($post_id, '_event_venue_lng', true);
+
+	// Google Maps Link aus Koordinaten generieren
+	$maps_link = '';
+	if (!empty($event_lat) && !empty($event_lng)) {
+		$maps_link = 'https://www.google.com/maps?q=' . $event_lat . ',' . $event_lng;
+	}
 
 	// Preis formatieren mit WooCommerce-Währung
 	$preis_display = '';
@@ -1465,9 +1510,6 @@ function parkourone_sync_event_to_angebot($post_id) {
 		}
 	}
 
-	// Buchungsart: wenn Preis > 0 und WC-Produkte existieren → woocommerce
-	$has_price = !empty($event_price) && floatval($event_price) > 0;
-
 	// Termin-Daten aufbereiten (mit Preis)
 	$termine = parkourone_build_angebot_termine_from_event($post_id);
 
@@ -1480,7 +1522,25 @@ function parkourone_sync_event_to_angebot($post_id) {
 			'post_title' => $event_title,
 		]);
 
-		// Immer aus AB aktualisieren
+		// Termine: bestehende Kapazität beibehalten wenn manuell korrigiert
+		$existing_termine = get_post_meta($angebot_id, '_angebot_termine', true);
+		if (is_array($existing_termine) && !empty($existing_termine)) {
+			// Lookup: datum → bestehende Kapazität
+			$existing_kap = [];
+			foreach ($existing_termine as $et) {
+				if (!empty($et['datum'])) {
+					$existing_kap[$et['datum']] = $et['kapazitaet'] ?? 0;
+				}
+			}
+			// Neue Termine: Kapazität nur überschreiben wenn AB einen WC-Stock liefert,
+			// sonst bestehenden manuellen Wert beibehalten
+			foreach ($termine as &$termin) {
+				if (isset($existing_kap[$termin['datum']]) && empty($termin['kapazitaet'])) {
+					$termin['kapazitaet'] = $existing_kap[$termin['datum']];
+				}
+			}
+			unset($termin);
+		}
 		update_post_meta($angebot_id, '_angebot_termine', $termine);
 		update_post_meta($angebot_id, '_angebot_wo', $event_venue);
 		update_post_meta($angebot_id, '_angebot_ansprechperson', $event_headcoach);
@@ -1497,6 +1557,15 @@ function parkourone_sync_event_to_angebot($post_id) {
 		}
 		if (!empty($event_coach_email)) {
 			update_post_meta($angebot_id, '_angebot_kontakt_email', $event_coach_email);
+		}
+		if (!empty($maps_link)) {
+			update_post_meta($angebot_id, '_angebot_maps_link', $maps_link);
+		}
+
+		// Featured + Buchungsart sicherstellen für AB-Events
+		update_post_meta($angebot_id, '_angebot_featured', '1');
+		if (empty(get_post_meta($angebot_id, '_angebot_buchungsart', true))) {
+			update_post_meta($angebot_id, '_angebot_buchungsart', 'woocommerce');
 		}
 	} else {
 		// NEU: Draft-Angebot erstellen
@@ -1530,9 +1599,13 @@ function parkourone_sync_event_to_angebot($post_id) {
 		if (!empty($event_coach_email)) {
 			update_post_meta($angebot_id, '_angebot_kontakt_email', $event_coach_email);
 		}
+		if (!empty($maps_link)) {
+			update_post_meta($angebot_id, '_angebot_maps_link', $maps_link);
+		}
 
-		// Buchungsart: WooCommerce wenn Preis vorhanden, sonst kostenlos
-		update_post_meta($angebot_id, '_angebot_buchungsart', $has_price ? 'woocommerce' : 'kostenlos');
+		// AB-Events: immer WooCommerce-Buchung + Featured
+		update_post_meta($angebot_id, '_angebot_buchungsart', 'woocommerce');
+		update_post_meta($angebot_id, '_angebot_featured', '1');
 
 		// Kategorie setzen
 		wp_set_object_terms($angebot_id, $angebot_kategorie, 'angebot_kategorie');
@@ -1701,6 +1774,7 @@ function parkourone_angebot_admin_columns($columns) {
 		$new[$key] = $val;
 		if ($key === 'title') {
 			$new['angebot_quelle'] = 'Quelle';
+			$new['angebot_buchungen'] = 'Buchungen';
 		}
 	}
 	return $new;
@@ -1708,13 +1782,48 @@ function parkourone_angebot_admin_columns($columns) {
 add_filter('manage_angebot_posts_columns', 'parkourone_angebot_admin_columns');
 
 function parkourone_angebot_admin_column_content($column, $post_id) {
-	if ($column !== 'angebot_quelle') return;
+	if ($column === 'angebot_quelle') {
+		$quelle = get_post_meta($post_id, '_angebot_quelle', true);
+		if ($quelle === 'academyboard') {
+			echo '<span style="display:inline-block;padding:2px 8px;background:#0073aa;color:#fff;border-radius:3px;font-size:11px;font-weight:600;">AB</span>';
+		} else {
+			echo '<span style="color:#999;">Manuell</span>';
+		}
+		return;
+	}
 
-	$quelle = get_post_meta($post_id, '_angebot_quelle', true);
-	if ($quelle === 'academyboard') {
-		echo '<span style="display:inline-block;padding:2px 8px;background:#0073aa;color:#fff;border-radius:3px;font-size:11px;font-weight:600;">AB</span>';
-	} else {
-		echo '<span style="color:#999;">Manuell</span>';
+	if ($column === 'angebot_buchungen') {
+		$termine = get_post_meta($post_id, '_angebot_termine', true);
+		if (!is_array($termine) || empty($termine)) {
+			echo '<span style="color:#999;">—</span>';
+			return;
+		}
+
+		$total_sold = 0;
+		$total_capacity = 0;
+		$has_products = false;
+
+		foreach ($termine as $termin) {
+			$pid = intval($termin['produkt_id'] ?? 0);
+			$kap = intval($termin['kapazitaet'] ?? 0);
+			if ($pid && class_exists('WooCommerce')) {
+				$sold = parkourone_get_product_total_sold($pid);
+				$total_sold += $sold;
+				$has_products = true;
+			}
+			$total_capacity += $kap;
+		}
+
+		if (!$has_products) {
+			echo '<span style="color:#999;">—</span>';
+			return;
+		}
+
+		$pct = $total_capacity > 0 ? round(($total_sold / $total_capacity) * 100) : 0;
+		$color = $pct >= 80 ? '#00a32a' : ($pct >= 50 ? '#dba617' : '#2271b1');
+		echo '<strong style="color:' . $color . ';">' . $total_sold . '</strong>';
+		echo '<span style="color:#999;"> / ' . $total_capacity . '</span>';
+		echo '<br><span style="font-size:11px;color:#999;">' . $pct . '% belegt</span>';
 	}
 }
 add_action('manage_angebot_posts_custom_column', 'parkourone_angebot_admin_column_content', 10, 2);

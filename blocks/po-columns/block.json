@@ -7,10 +7,20 @@
 	"category": "parkourone-basis",
 	"icon": "columns",
 	"description": "Spalten-Layout mit 2-4 Spalten",
-	"keywords": ["spalten", "columns", "layout", "grid", "basis"],
+	"keywords": [
+		"spalten",
+		"columns",
+		"layout",
+		"grid",
+		"basis"
+	],
 	"supports": {
 		"html": false,
-		"align": ["wide", "full"]
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true
 	},
 	"attributes": {
 		"columns": {
@@ -32,10 +42,22 @@
 		"columnContent": {
 			"type": "array",
 			"default": [
-				{ "content": "", "backgroundColor": "" },
-				{ "content": "", "backgroundColor": "" },
-				{ "content": "", "backgroundColor": "" },
-				{ "content": "", "backgroundColor": "" }
+				{
+					"content": "",
+					"backgroundColor": ""
+				},
+				{
+					"content": "",
+					"backgroundColor": ""
+				},
+				{
+					"content": "",
+					"backgroundColor": ""
+				},
+				{
+					"content": "",
+					"backgroundColor": ""
+				}
 			]
 		}
 	},

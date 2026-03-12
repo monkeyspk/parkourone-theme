@@ -7,10 +7,20 @@
 	"category": "parkourone",
 	"icon": "text",
 	"description": "Apple-Style Text der beim Scrollen Wort für Wort sichtbar wird",
-	"keywords": ["text", "reveal", "scroll", "animation", "apple"],
+	"keywords": [
+		"text",
+		"reveal",
+		"scroll",
+		"animation",
+		"apple"
+	],
 	"supports": {
 		"html": false,
-		"align": ["wide", "full"]
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true
 	},
 	"attributes": {
 		"text": {
@@ -24,7 +34,11 @@
 		"textSize": {
 			"type": "string",
 			"default": "large",
-			"enum": ["medium", "large", "xlarge"]
+			"enum": [
+				"medium",
+				"large",
+				"xlarge"
+			]
 		},
 		"textAlign": {
 			"type": "string",

@@ -1,20 +1,39 @@
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "parkourone/event-day-slider",
-    "version": "3.0.0",
-    "title": "Nächste Trainings",
-    "category": "parkourone-blocks",
-    "icon": "list-view",
-    "description": "Chronologische Liste der nächsten Trainings mit Buchungs-Modal und Filter.",
-    "keywords": ["event", "training", "liste", "probetraining", "buchung"],
-    "textdomain": "parkourone",
-    "editorScript": "file:./index.js",
-    "style": "file:./style.css",
-    "render": "file:./render.php",
-    "attributes": {
-        "headline": { "type": "string", "default": "Nächste Probetrainings" },
-        "buttonText": { "type": "string", "default": "Jetzt buchen" }
-    },
-    "supports": { "align": ["full", "wide"], "html": false }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/event-day-slider",
+	"version": "3.0.0",
+	"title": "Nächste Trainings",
+	"category": "parkourone-blocks",
+	"icon": "list-view",
+	"description": "Chronologische Liste der nächsten Trainings mit Buchungs-Modal und Filter.",
+	"keywords": [
+		"event",
+		"training",
+		"liste",
+		"probetraining",
+		"buchung"
+	],
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"headline": {
+			"type": "string",
+			"default": "Nächste Probetrainings"
+		},
+		"buttonText": {
+			"type": "string",
+			"default": "Jetzt buchen"
+		}
+	},
+	"supports": {
+		"align": [
+			"full",
+			"wide"
+		],
+		"html": false,
+		"anchor": true
+	}
 }

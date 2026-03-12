@@ -7,10 +7,22 @@
 	"category": "parkourone-basis",
 	"icon": "editor-textcolor",
 	"description": "Einfacher Text-Block mit Formatierungsoptionen",
-	"keywords": ["text", "absatz", "paragraph", "basis"],
+	"keywords": [
+		"text",
+		"absatz",
+		"paragraph",
+		"basis"
+	],
 	"supports": {
 		"html": false,
-		"align": ["left", "center", "right", "wide", "full"]
+		"align": [
+			"left",
+			"center",
+			"right",
+			"wide",
+			"full"
+		],
+		"anchor": true
 	},
 	"attributes": {
 		"content": {

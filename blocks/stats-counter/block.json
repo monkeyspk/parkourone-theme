@@ -7,7 +7,13 @@
 	"category": "parkourone-startseite",
 	"icon": "chart-bar",
 	"description": "Emotionale Statistiken mit animierten Zahlen im Apple-Style.",
-	"keywords": ["stats", "zahlen", "counter", "statistik", "fakten"],
+	"keywords": [
+		"stats",
+		"zahlen",
+		"counter",
+		"statistik",
+		"fakten"
+	],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
 	"style": "file:./style.css",
@@ -43,8 +49,19 @@
 		"style": {
 			"type": "string",
 			"default": "light",
-			"enum": ["light", "dark", "gradient"]
+			"enum": [
+				"light",
+				"dark",
+				"gradient"
+			]
 		}
 	},
-	"supports": { "align": ["full", "wide"], "html": false }
+	"supports": {
+		"align": [
+			"full",
+			"wide"
+		],
+		"html": false,
+		"anchor": true
+	}
 }

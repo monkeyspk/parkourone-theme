@@ -7,20 +7,56 @@
 	"category": "parkourone-startseite",
 	"icon": "megaphone",
 	"description": "Dunkler Promo-Banner mit Badge, Text, Button und Bild.",
-	"keywords": ["banner", "promo", "kampagne", "werbung"],
+	"keywords": [
+		"banner",
+		"promo",
+		"kampagne",
+		"werbung"
+	],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
 	"style": "file:./style.css",
 	"render": "file:./render.php",
 	"attributes": {
-		"badgeUrl": { "type": "string", "default": "" },
-		"headline": { "type": "string", "default": "EINSTEIN BEI PARKOURONE" },
-		"subtext": { "type": "string", "default": "Warum alle mal Parkour ausprobieren sollten. Moderatorin Kathrin Hönegger testet ihre Körperwahrnehmung im Training mit ParkourONE." },
-		"buttonText": { "type": "string", "default": "SENDUNG SCHAUEN" },
-		"buttonUrl": { "type": "string", "default": "#" },
-		"buttonIcon": { "type": "string", "default": "play" },
-		"imageUrl": { "type": "string", "default": "" },
-		"imageAlt": { "type": "string", "default": "" }
+		"badgeUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"headline": {
+			"type": "string",
+			"default": "EINSTEIN BEI PARKOURONE"
+		},
+		"subtext": {
+			"type": "string",
+			"default": "Warum alle mal Parkour ausprobieren sollten. Moderatorin Kathrin Hönegger testet ihre Körperwahrnehmung im Training mit ParkourONE."
+		},
+		"buttonText": {
+			"type": "string",
+			"default": "SENDUNG SCHAUEN"
+		},
+		"buttonUrl": {
+			"type": "string",
+			"default": "#"
+		},
+		"buttonIcon": {
+			"type": "string",
+			"default": "play"
+		},
+		"imageUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"imageAlt": {
+			"type": "string",
+			"default": ""
+		}
 	},
-	"supports": { "align": ["full", "wide"], "html": false }
+	"supports": {
+		"align": [
+			"full",
+			"wide"
+		],
+		"html": false,
+		"anchor": true
+	}
 }

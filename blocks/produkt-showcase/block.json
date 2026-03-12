@@ -7,15 +7,35 @@
 	"category": "parkourone-blocks",
 	"icon": "cart",
 	"description": "Zeigt 1-3 WooCommerce-Produkte mit Auto-Layout: 1 = horizontal, 2 = 2-Spalten, 3 = 3-Spalten Grid. Varianten-Support.",
-	"keywords": ["produkt", "product", "shop", "warenkorb", "showcase", "grid"],
+	"keywords": [
+		"produkt",
+		"product",
+		"shop",
+		"warenkorb",
+		"showcase",
+		"grid"
+	],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
 	"viewScript": "file:./view.js",
 	"style": "file:./style.css",
 	"render": "file:./render.php",
 	"attributes": {
-		"products": { "type": "array", "default": [] },
-		"themeVariant": { "type": "string", "default": "light" }
+		"products": {
+			"type": "array",
+			"default": []
+		},
+		"themeVariant": {
+			"type": "string",
+			"default": "light"
+		}
 	},
-	"supports": { "align": ["full", "wide"], "html": false }
+	"supports": {
+		"align": [
+			"full",
+			"wide"
+		],
+		"html": false,
+		"anchor": true
+	}
 }

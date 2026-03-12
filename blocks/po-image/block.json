@@ -7,10 +7,22 @@
 	"category": "parkourone-basis",
 	"icon": "format-image",
 	"description": "Bild-Block mit Upload, Grösse und Link-Optionen",
-	"keywords": ["bild", "image", "foto", "basis"],
+	"keywords": [
+		"bild",
+		"image",
+		"foto",
+		"basis"
+	],
 	"supports": {
 		"html": false,
-		"align": ["left", "center", "right", "wide", "full"]
+		"align": [
+			"left",
+			"center",
+			"right",
+			"wide",
+			"full"
+		],
+		"anchor": true
 	},
 	"attributes": {
 		"mediaId": {

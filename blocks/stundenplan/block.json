@@ -7,17 +7,49 @@
 	"category": "parkourone-blocks",
 	"icon": "calendar-alt",
 	"description": "Wochenübersicht der Trainingszeiten als Stundenplan-Grid.",
-	"keywords": ["stundenplan", "schedule", "woche", "training", "zeiten"],
+	"keywords": [
+		"stundenplan",
+		"schedule",
+		"woche",
+		"training",
+		"zeiten"
+	],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
 	"style": "file:./style.css",
 	"render": "file:./render.php",
 	"attributes": {
-		"headline": { "type": "string", "default": "Stundenplan" },
-		"filterAge": { "type": "string", "default": "" },
-		"filterLocation": { "type": "string", "default": "" },
-		"buttonText": { "type": "string", "default": "Probetraining buchen" },
-		"filterLayout": { "type": "string", "default": "fab", "enum": ["fab", "inline"] }
+		"headline": {
+			"type": "string",
+			"default": "Stundenplan"
+		},
+		"filterAge": {
+			"type": "string",
+			"default": ""
+		},
+		"filterLocation": {
+			"type": "string",
+			"default": ""
+		},
+		"buttonText": {
+			"type": "string",
+			"default": "Probetraining buchen"
+		},
+		"filterLayout": {
+			"type": "string",
+			"default": "fab",
+			"enum": [
+				"fab",
+				"inline"
+			]
+		}
 	},
-	"supports": { "align": ["full", "wide"], "html": false }
+	"supports": {
+		"align": [
+			"full",
+			"wide"
+		],
+		"html": false,
+		"anchor": true
+	}
 }

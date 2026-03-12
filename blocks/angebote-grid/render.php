@@ -50,6 +50,7 @@ $kategorie_labels = [
 
 			$kurzbeschreibung = get_post_meta($id, '_angebot_kurzbeschreibung', true);
 			$buchungsart = get_post_meta($id, '_angebot_buchungsart', true);
+			$ansprechperson = get_post_meta($id, '_angebot_ansprechperson', true);
 			$bild = parkourone_get_angebot_image($id, 'medium_large');
 
 			// Daten für Modal
@@ -67,7 +68,10 @@ $kategorie_labels = [
 				'voraussetzungen' => get_post_meta($id, '_angebot_voraussetzungen', true),
 				'was_mitbringen' => get_post_meta($id, '_angebot_was_mitbringen', true),
 				'preis' => get_post_meta($id, '_angebot_preis', true),
-				'ansprechperson' => get_post_meta($id, '_angebot_ansprechperson', true),
+				'ansprechperson' => $ansprechperson,
+				'ansprechperson_image' => function_exists('parkourone_get_coach_display_image_by_name')
+					? parkourone_get_coach_display_image_by_name($ansprechperson, '80x80')
+					: '',
 				'buchungsart' => $buchungsart,
 				'teilnehmer_typ' => get_post_meta($id, '_angebot_teilnehmer_typ', true) ?: 'standard',
 				'cta_url' => get_post_meta($id, '_angebot_cta_url', true),

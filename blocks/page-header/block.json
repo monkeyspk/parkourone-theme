@@ -7,7 +7,12 @@
 	"category": "parkourone-about",
 	"icon": "heading",
 	"description": "Flexibler Page Header mit 4 Varianten: Centered, Split, Fullscreen, Banner",
-	"keywords": ["header", "hero", "titel", "seite"],
+	"keywords": [
+		"header",
+		"hero",
+		"titel",
+		"seite"
+	],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./editor.css",
@@ -18,7 +23,12 @@
 		"variant": {
 			"type": "string",
 			"default": "centered",
-			"enum": ["centered", "split", "fullscreen", "banner"]
+			"enum": [
+				"centered",
+				"split",
+				"fullscreen",
+				"banner"
+			]
 		},
 		"title": {
 			"type": "string",
@@ -78,7 +88,11 @@
 		}
 	},
 	"supports": {
-		"align": ["full", "wide"],
-		"html": false
+		"align": [
+			"full",
+			"wide"
+		],
+		"html": false,
+		"anchor": true
 	}
 }

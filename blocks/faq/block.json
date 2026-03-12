@@ -7,10 +7,20 @@
 	"category": "parkourone-blocks",
 	"icon": "editor-help",
 	"description": "Häufig gestellte Fragen als Accordion mit Schema.org SEO-Markup",
-	"keywords": ["faq", "fragen", "accordion", "hilfe", "support"],
+	"keywords": [
+		"faq",
+		"fragen",
+		"accordion",
+		"hilfe",
+		"support"
+	],
 	"supports": {
 		"html": false,
-		"align": ["wide", "full"]
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true
 	},
 	"attributes": {
 		"headline": {

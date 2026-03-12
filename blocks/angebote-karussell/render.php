@@ -69,6 +69,7 @@ if (empty($angebote)) {
 			$kategorie_slug = !empty($terms) ? $terms[0] : '';
 			$kategorie_name = $kategorie_labels[$kategorie_slug] ?? '';
 			$kurzbeschreibung = get_post_meta($id, '_angebot_kurzbeschreibung', true);
+			$ansprechperson = get_post_meta($id, '_angebot_ansprechperson', true);
 			$bild = parkourone_get_angebot_image($id, 'medium_large');
 
 			// Modal-Daten
@@ -86,7 +87,10 @@ if (empty($angebote)) {
 				'voraussetzungen' => get_post_meta($id, '_angebot_voraussetzungen', true),
 				'was_mitbringen' => get_post_meta($id, '_angebot_was_mitbringen', true),
 				'preis' => get_post_meta($id, '_angebot_preis', true),
-				'ansprechperson' => get_post_meta($id, '_angebot_ansprechperson', true),
+				'ansprechperson' => $ansprechperson,
+				'ansprechperson_image' => function_exists('parkourone_get_coach_display_image_by_name')
+					? parkourone_get_coach_display_image_by_name($ansprechperson, '80x80')
+					: '',
 				'buchungsart' => get_post_meta($id, '_angebot_buchungsart', true),
 				'teilnehmer_typ' => get_post_meta($id, '_angebot_teilnehmer_typ', true) ?: 'standard',
 				'cta_url' => get_post_meta($id, '_angebot_cta_url', true),

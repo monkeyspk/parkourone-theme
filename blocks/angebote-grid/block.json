@@ -7,15 +7,34 @@
 	"category": "parkourone-blocks",
 	"icon": "grid-view",
 	"description": "Zeigt alle Angebote als Grid mit Filter und Modal-Details.",
-	"keywords": ["angebote", "workshops", "events", "grid", "filter"],
+	"keywords": [
+		"angebote",
+		"workshops",
+		"events",
+		"grid",
+		"filter"
+	],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
 	"style": "file:./style.css",
 	"viewScript": "file:./view.js",
 	"render": "file:./render.php",
 	"attributes": {
-		"showFilter": { "type": "boolean", "default": true },
-		"columns": { "type": "number", "default": 3 }
+		"showFilter": {
+			"type": "boolean",
+			"default": true
+		},
+		"columns": {
+			"type": "number",
+			"default": 3
+		}
 	},
-	"supports": { "align": ["full", "wide"], "html": false }
+	"supports": {
+		"align": [
+			"full",
+			"wide"
+		],
+		"html": false,
+		"anchor": true
+	}
 }

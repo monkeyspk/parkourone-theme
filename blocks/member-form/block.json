@@ -7,19 +7,51 @@
 	"category": "parkourone-blocks",
 	"icon": "id-alt",
 	"description": "Mitglieder-Formular als Karte mit Modal-Popup (Verletzungs-Rückerstattung oder AHV-Nummer).",
-	"keywords": ["formular", "mitglieder", "verletzung", "ahv", "rückerstattung", "member"],
+	"keywords": [
+		"formular",
+		"mitglieder",
+		"verletzung",
+		"ahv",
+		"rückerstattung",
+		"member"
+	],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
 	"style": "file:./style.css",
 	"viewScript": "file:./view.js",
 	"render": "file:./render.php",
 	"attributes": {
-		"formType": { "type": "string", "default": "verletzungen" },
-		"headline": { "type": "string", "default": "" },
-		"description": { "type": "string", "default": "" },
-		"buttonText": { "type": "string", "default": "" },
-		"recipientEmail": { "type": "string", "default": "" },
-		"backgroundColor": { "type": "string", "default": "white" }
+		"formType": {
+			"type": "string",
+			"default": "verletzungen"
+		},
+		"headline": {
+			"type": "string",
+			"default": ""
+		},
+		"description": {
+			"type": "string",
+			"default": ""
+		},
+		"buttonText": {
+			"type": "string",
+			"default": ""
+		},
+		"recipientEmail": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColor": {
+			"type": "string",
+			"default": "white"
+		}
 	},
-	"supports": { "align": ["full", "wide"], "html": false }
+	"supports": {
+		"align": [
+			"full",
+			"wide"
+		],
+		"html": false,
+		"anchor": true
+	}
 }

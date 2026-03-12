@@ -7,7 +7,13 @@
 	"category": "parkourone-blocks",
 	"icon": "editor-alignleft",
 	"description": "Elegante Intro-Sektion mit Headline, Text und Benefits im Apple-Style.",
-	"keywords": ["intro", "einleitung", "benefits", "vorteile", "text"],
+	"keywords": [
+		"intro",
+		"einleitung",
+		"benefits",
+		"vorteile",
+		"text"
+	],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
 	"style": "file:./style.css",
@@ -40,16 +46,28 @@
 		"layout": {
 			"type": "string",
 			"default": "default",
-			"enum": ["default", "centered", "split"]
+			"enum": [
+				"default",
+				"centered",
+				"split"
+			]
 		},
 		"backgroundColor": {
 			"type": "string",
 			"default": "white",
-			"enum": ["white", "light", "gradient"]
+			"enum": [
+				"white",
+				"light",
+				"gradient"
+			]
 		}
 	},
 	"supports": {
-		"align": ["full", "wide"],
-		"html": false
+		"align": [
+			"full",
+			"wide"
+		],
+		"html": false,
+		"anchor": true
 	}
 }

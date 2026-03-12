@@ -7,21 +7,51 @@
 	"category": "parkourone-blocks",
 	"icon": "universal-access-alt",
 	"description": "Personal Training Buchung mit Paket-Auswahl und Warenkorb-Integration.",
-	"keywords": ["personal", "training", "coaching", "buchen", "pakete"],
+	"keywords": [
+		"personal",
+		"training",
+		"coaching",
+		"buchen",
+		"pakete"
+	],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
 	"viewScript": "file:./view.js",
 	"style": "file:./style.css",
 	"render": "file:./render.php",
 	"attributes": {
-		"headline": { "type": "string", "default": "Personal Training" },
-		"subtext": { "type": "string", "default": "Individuelles Coaching für deine persönlichen Ziele. Wähle dein Paket und starte durch." },
+		"headline": {
+			"type": "string",
+			"default": "Personal Training"
+		},
+		"subtext": {
+			"type": "string",
+			"default": "Individuelles Coaching für deine persönlichen Ziele. Wähle dein Paket und starte durch."
+		},
 		"packages": {
 			"type": "array",
 			"default": [
-				{ "title": "Einzel-Session", "hours": "1", "price": "120", "description": "Eine intensive Stunde für schnelle Fortschritte.", "highlighted": false },
-				{ "title": "3er-Paket", "hours": "3", "price": "330", "description": "Drei Sessions für nachhaltiges Training.", "highlighted": true },
-				{ "title": "5er-Paket", "hours": "5", "price": "500", "description": "Fünf Sessions für maximale Entwicklung.", "highlighted": false }
+				{
+					"title": "Einzel-Session",
+					"hours": "1",
+					"price": "120",
+					"description": "Eine intensive Stunde für schnelle Fortschritte.",
+					"highlighted": false
+				},
+				{
+					"title": "3er-Paket",
+					"hours": "3",
+					"price": "330",
+					"description": "Drei Sessions für nachhaltiges Training.",
+					"highlighted": true
+				},
+				{
+					"title": "5er-Paket",
+					"hours": "5",
+					"price": "500",
+					"description": "Fünf Sessions für maximale Entwicklung.",
+					"highlighted": false
+				}
 			]
 		},
 		"workOnOptions": {
@@ -35,9 +65,25 @@
 				"Sonstiges"
 			]
 		},
-		"workOnLabel": { "type": "string", "default": "Woran möchtest du arbeiten?" },
-		"productId": { "type": "number", "default": 0 },
-		"ctaText": { "type": "string", "default": "Jetzt buchen" }
+		"workOnLabel": {
+			"type": "string",
+			"default": "Woran möchtest du arbeiten?"
+		},
+		"productId": {
+			"type": "number",
+			"default": 0
+		},
+		"ctaText": {
+			"type": "string",
+			"default": "Jetzt buchen"
+		}
 	},
-	"supports": { "align": ["full", "wide"], "html": false }
+	"supports": {
+		"align": [
+			"full",
+			"wide"
+		],
+		"html": false,
+		"anchor": true
+	}
 }

@@ -7,10 +7,21 @@
 	"category": "parkourone-startseite",
 	"icon": "format-quote",
 	"description": "Horizontaler Slider mit Kundenbewertungen - intelligent nach Seitentyp",
-	"keywords": ["testimonials", "bewertungen", "reviews", "slider", "google", "altersgruppen"],
+	"keywords": [
+		"testimonials",
+		"bewertungen",
+		"reviews",
+		"slider",
+		"google",
+		"altersgruppen"
+	],
 	"supports": {
 		"html": false,
-		"align": ["wide", "full"]
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true
 	},
 	"attributes": {
 		"headline": {

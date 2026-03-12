@@ -887,6 +887,14 @@ function parkourone_allowed_block_types($allowed_blocks, $editor_context) {
         'parkourone/produkt-showcase',
         'parkourone/footer',
 
+        // Formulare & Buchung
+        'parkourone/member-form',
+        'parkourone/personal-training',
+        'parkourone/inquiry-form',
+        'parkourone/event-booking',
+        'parkourone/pricing-table',
+        'parkourone/video',
+
         // Basis Blöcke für Schulleiter (Ticket #2)
         'parkourone/po-text',
         'parkourone/po-image',
@@ -1011,6 +1019,35 @@ function parkourone_register_blocks() {
     }
 }
 add_action('init', 'parkourone_register_blocks');
+
+/**
+ * Anchor-Support für alle ParkourONE-Blöcke.
+ * Setzt die im Editor eingetragene Anchor-ID als id-Attribut auf das äussere Element.
+ * Blöcke die get_block_wrapper_attributes() nutzen, bekommen den Anchor automatisch.
+ */
+function parkourone_block_anchor_support($block_content, $block) {
+	if (empty($block['attrs']['anchor'])) return $block_content;
+	if (strpos($block['blockName'] ?? '', 'parkourone/') !== 0) return $block_content;
+
+	$anchor = esc_attr($block['attrs']['anchor']);
+	$block_content = trim($block_content);
+
+	if (preg_match('/^<[^>]*\bid=["\']' . preg_quote($anchor, '/') . '["\']/', $block_content)) {
+		// Anchor ist bereits gesetzt (z.B. via get_block_wrapper_attributes)
+		return $block_content;
+	}
+
+	if (preg_match('/^(<[^>]*)\bid="[^"]*"/', $block_content)) {
+		// Bestehende id ersetzen
+		$block_content = preg_replace('/^(<[^>]*)\bid="[^"]*"/', '$1id="' . $anchor . '"', $block_content, 1);
+	} else {
+		// id zum ersten Element hinzufügen
+		$block_content = preg_replace('/^(<\w+)(\s|>)/', '$1 id="' . $anchor . '"$2', $block_content, 1);
+	}
+
+	return $block_content;
+}
+add_filter('render_block', 'parkourone_block_anchor_support', 10, 2);
 
 function parkourone_enqueue_swiper() {
     // Only register — actual enqueue happens when a slider block is present

@@ -7,7 +7,13 @@
 	"category": "parkourone-startseite",
 	"icon": "format-quote",
 	"description": "Prominente Zitat-Darstellung im Apple-Style für maximale Wirkung.",
-	"keywords": ["testimonial", "zitat", "quote", "bewertung", "highlight"],
+	"keywords": [
+		"testimonial",
+		"zitat",
+		"quote",
+		"bewertung",
+		"highlight"
+	],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
 	"style": "file:./style.css",
@@ -27,13 +33,26 @@
 		"layout": {
 			"type": "string",
 			"default": "single",
-			"enum": ["single", "double"]
+			"enum": [
+				"single",
+				"double"
+			]
 		},
 		"style": {
 			"type": "string",
 			"default": "light",
-			"enum": ["light", "dark"]
+			"enum": [
+				"light",
+				"dark"
+			]
 		}
 	},
-	"supports": { "align": ["full", "wide"], "html": false }
+	"supports": {
+		"align": [
+			"full",
+			"wide"
+		],
+		"html": false,
+		"anchor": true
+	}
 }

@@ -7,30 +7,94 @@
 	"category": "parkourone-layout",
 	"icon": "align-full-width",
 	"description": "Vollständiger Footer mit Kontakt, Standorten und Newsletter.",
-	"keywords": ["footer", "fußzeile", "kontakt"],
+	"keywords": [
+		"footer",
+		"fußzeile",
+		"kontakt"
+	],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
 	"style": "file:./style.css",
 	"render": "file:./render.php",
 	"attributes": {
-		"companyName": { "type": "string", "default": "" },
-		"companyAddress": { "type": "string", "default": "" },
-		"socialInstagram": { "type": "string", "default": "" },
-		"socialYoutube": { "type": "string", "default": "" },
-		"socialPodcast": { "type": "string", "default": "" },
-		"phone": { "type": "string", "default": "" },
-		"email": { "type": "string", "default": "" },
-		"contactFormUrl": { "type": "string", "default": "" },
-		"phoneHours": { "type": "string", "default": "" },
-		"standorte": { "type": "array", "default": [] },
-		"zentraleName": { "type": "string", "default": "" },
-		"zentraleUrl": { "type": "string", "default": "" },
-		"newsletterHeadline": { "type": "string", "default": "" },
-		"newsletterText": { "type": "string", "default": "" },
-		"impressumUrl": { "type": "string", "default": "" },
-		"datenschutzUrl": { "type": "string", "default": "" },
-		"cookiesUrl": { "type": "string", "default": "" },
-		"copyrightYear": { "type": "string", "default": "" }
+		"companyName": {
+			"type": "string",
+			"default": ""
+		},
+		"companyAddress": {
+			"type": "string",
+			"default": ""
+		},
+		"socialInstagram": {
+			"type": "string",
+			"default": ""
+		},
+		"socialYoutube": {
+			"type": "string",
+			"default": ""
+		},
+		"socialPodcast": {
+			"type": "string",
+			"default": ""
+		},
+		"phone": {
+			"type": "string",
+			"default": ""
+		},
+		"email": {
+			"type": "string",
+			"default": ""
+		},
+		"contactFormUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"phoneHours": {
+			"type": "string",
+			"default": ""
+		},
+		"standorte": {
+			"type": "array",
+			"default": []
+		},
+		"zentraleName": {
+			"type": "string",
+			"default": ""
+		},
+		"zentraleUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"newsletterHeadline": {
+			"type": "string",
+			"default": ""
+		},
+		"newsletterText": {
+			"type": "string",
+			"default": ""
+		},
+		"impressumUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"datenschutzUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"cookiesUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"copyrightYear": {
+			"type": "string",
+			"default": ""
+		}
 	},
-	"supports": { "align": ["full"], "html": false }
+	"supports": {
+		"align": [
+			"full"
+		],
+		"html": false,
+		"anchor": true
+	}
 }

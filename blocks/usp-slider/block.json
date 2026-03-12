@@ -7,7 +7,14 @@
 	"category": "parkourone-startseite",
 	"icon": "star-filled",
 	"description": "Apple-Style Slider für Alleinstellungsmerkmale (USPs) mit fullbleed Cards und Modals.",
-	"keywords": ["usp", "vorteile", "benefits", "slider", "features", "warum"],
+	"keywords": [
+		"usp",
+		"vorteile",
+		"benefits",
+		"slider",
+		"features",
+		"warum"
+	],
 	"textdomain": "parkourone",
 	"editorScript": "file:./index.js",
 	"style": "file:./style.css",
@@ -68,5 +75,12 @@
 			]
 		}
 	},
-	"supports": { "align": ["full", "wide"], "html": false }
+	"supports": {
+		"align": [
+			"full",
+			"wide"
+		],
+		"html": false,
+		"anchor": true
+	}
 }

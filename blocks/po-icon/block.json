@@ -7,10 +7,20 @@
 	"category": "parkourone-basis",
 	"icon": "star-filled",
 	"description": "Icon-Block mit Auswahl aus Lucide Icons",
-	"keywords": ["icon", "symbol", "lucide", "basis"],
+	"keywords": [
+		"icon",
+		"symbol",
+		"lucide",
+		"basis"
+	],
 	"supports": {
 		"html": false,
-		"align": ["left", "center", "right"]
+		"align": [
+			"left",
+			"center",
+			"right"
+		],
+		"anchor": true
 	},
 	"attributes": {
 		"icon": {
