@@ -2146,6 +2146,7 @@ function parkourone_sync_coaches_from_events() {
 	$api_coaches = [];
 
 	foreach ($events as $event) {
+		// Headcoach
 		$name = get_post_meta($event->ID, '_event_headcoach', true);
 		$image = get_post_meta($event->ID, '_event_headcoach_image_url', true);
 		$email = get_post_meta($event->ID, '_event_headcoach_email', true);
@@ -2155,6 +2156,23 @@ function parkourone_sync_coaches_from_events() {
 				'image' => $image,
 				'email' => $email
 			];
+		}
+
+		// Assistenz-Coaches aus AcademyBoard (Format: [{"name": "...", "image_url": "..."}, ...])
+		$coaches_meta = get_post_meta($event->ID, '_event_coaches', true);
+		if (!empty($coaches_meta)) {
+			$coaches_list = is_array($coaches_meta) ? $coaches_meta : json_decode($coaches_meta, true);
+			if (is_array($coaches_list)) {
+				foreach ($coaches_list as $coach) {
+					$coach_name = $coach['name'] ?? '';
+					if (!empty($coach_name) && !isset($api_coaches[$coach_name])) {
+						$api_coaches[$coach_name] = [
+							'image' => $coach['image_url'] ?? '',
+							'email' => ''
+						];
+					}
+				}
+			}
 		}
 	}
 

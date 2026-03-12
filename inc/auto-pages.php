@@ -151,6 +151,30 @@ function parkourone_register_custom_block_attributes() {
 add_action('init', 'parkourone_register_custom_block_attributes', 999);
 
 // =====================================================
+// Slug → Display-Name mit automatischer Umlaut-Erkennung
+// =====================================================
+
+function parkourone_slug_to_display_name($slug) {
+	// Ausnahmen: Slugs wo ue/ae/oe KEIN Umlaut ist
+	$exceptions = ['duisburg', 'buer', 'coesfeld', 'soest', 'raesfeld', 'hoenoe'];
+
+	$name = str_replace('-', ' ', $slug);
+
+	// Prüfe jedes Wort einzeln gegen Ausnahmen
+	$words = explode(' ', $name);
+	$words = array_map(function($word) use ($exceptions) {
+		if (in_array($word, $exceptions)) {
+			return ucfirst($word);
+		}
+		// Umlaut-Konvertierung
+		$word = str_replace(['ue', 'ae', 'oe'], ['ü', 'ä', 'ö'], $word);
+		return ucfirst($word);
+	}, $words);
+
+	return implode(' ', $words);
+}
+
+// =====================================================
 // Automatische Standort-Erkennung aus Subdomain
 // =====================================================
 
@@ -196,7 +220,7 @@ function parkourone_get_site_location() {
 		// Fallback: Ersten Teil als Standort verwenden
 		$location = [
 			'slug' => $subdomain,
-			'name' => ucfirst($subdomain),
+			'name' => parkourone_slug_to_display_name($subdomain),
 			'detected' => false
 		];
 	}
@@ -421,7 +445,7 @@ function parkourone_get_city_display_name($city_slug) {
 		'brig' => 'Brig',
 		'thun' => 'Thun'
 	];
-	return $names[$city_slug] ?? ucfirst($city_slug);
+	return $names[$city_slug] ?? parkourone_slug_to_display_name($city_slug);
 }
 
 // =====================================================
@@ -2201,7 +2225,7 @@ function parkourone_get_page_seo_meta($post_id) {
 	// Ortschaft-Seite (z.B. Berlin Tiergarten, Berlin Mitte)
 	if ($location_slug && empty($meta['title'])) {
 		// Location Display Name aus Slug generieren
-		$location_name = ucwords(str_replace('-', ' ', $location_slug));
+		$location_name = parkourone_slug_to_display_name($location_slug);
 		// Wenn Site-Name im Location-Name vorkommt, diesen nutzen
 		// z.B. "berlin-tiergarten" → "Berlin Tiergarten"
 		$meta['title'] = "Parkour in {$location_name} – Training & Kurse | ParkourONE {$site_name}";

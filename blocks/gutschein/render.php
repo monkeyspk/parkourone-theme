@@ -20,6 +20,7 @@ if (class_exists('AB_Gutschein_Settings')) {
     $max_amount     = floatval(AB_Gutschein_Settings::get_setting('max_amount', 500));
 }
 
+$woo_currency = function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol() : '€';
 $nonce = wp_create_nonce('ab_gutschein_nonce');
 
 // Icons für Inspirations-Karten
@@ -32,7 +33,7 @@ $icons = [
 $wrapper_attributes = get_block_wrapper_attributes(['class' => 'po-gutschein']);
 ?>
 
-<section <?php echo $wrapper_attributes; ?>>
+<section <?php echo $wrapper_attributes; ?> data-currency="<?php echo esc_attr($woo_currency); ?>">
 
     <?php if (empty($product_id) && current_user_can('manage_options')): ?>
         <div class="po-gutschein__notice">
@@ -77,7 +78,7 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'po-gutschein']);
         <div class="po-gutschein__amounts">
             <?php foreach ($preset_amounts as $amount): ?>
                 <button type="button" class="po-gutschein__amount" data-amount="<?php echo esc_attr($amount); ?>">
-                    <?php echo number_format($amount, 0, ',', '.'); ?>&nbsp;&euro;
+                    <?php echo number_format($amount, 0, ',', '.'); ?>&nbsp;<?php echo esc_html($woo_currency); ?>
                 </button>
             <?php endforeach; ?>
         </div>
@@ -91,7 +92,7 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'po-gutschein']);
                        max="<?php echo esc_attr($max_amount); ?>"
                        step="1"
                        placeholder="<?php echo esc_attr($min_amount . ' – ' . $max_amount); ?>">
-                <span class="po-gutschein__custom-currency">&euro;</span>
+                <span class="po-gutschein__custom-currency"><?php echo esc_html($woo_currency); ?></span>
             </div>
         </div>
     </div>

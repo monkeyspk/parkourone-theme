@@ -14,6 +14,7 @@
 
     var selectedPackage = null;
     var ctaLabel = cta.textContent.trim();
+    var currency = root.dataset.currency || '€';
 
     // ── Package Card Selection ──
 
@@ -26,7 +27,7 @@
             price: card.dataset.packagePrice
         };
         cta.disabled = false;
-        cta.textContent = ctaLabel + ' \u2013 ' + parseFloat(selectedPackage.price).toLocaleString('de-DE') + ' \u20ac';
+        cta.textContent = ctaLabel + ' \u2013 ' + parseFloat(selectedPackage.price).toLocaleString('de-DE') + ' ' + currency;
     }
 
     cards.forEach(function(card) {

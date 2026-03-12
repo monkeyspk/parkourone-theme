@@ -11,10 +11,11 @@ $product_id = !empty($attributes['productId']) ? intval($attributes['productId']
 
 $nonce = wp_create_nonce('po_pt_nonce');
 
+$woo_currency = function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol() : '€';
 $wrapper_attributes = get_block_wrapper_attributes(['class' => 'po-pt']);
 ?>
 
-<section <?php echo $wrapper_attributes; ?>>
+<section <?php echo $wrapper_attributes; ?> data-currency="<?php echo esc_attr($woo_currency); ?>">
 
     <?php if (empty($product_id) && current_user_can('manage_options')): ?>
         <div class="po-pt__notice">
@@ -41,7 +42,7 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'po-pt']);
                         <span class="po-pt__card-badge">Beliebt</span>
                     <?php endif; ?>
                     <span class="po-pt__card-title"><?php echo esc_html($pkg['title'] ?? ''); ?></span>
-                    <span class="po-pt__card-price"><?php echo esc_html(number_format((float)($pkg['price'] ?? 0), 0, ',', '.')); ?>&nbsp;&euro;</span>
+                    <span class="po-pt__card-price"><?php echo esc_html(number_format((float)($pkg['price'] ?? 0), 0, ',', '.')); ?>&nbsp;<?php echo esc_html($woo_currency); ?></span>
                     <span class="po-pt__card-hours"><?php echo esc_html($pkg['hours'] ?? '1'); ?>&nbsp;<?php echo ((int)($pkg['hours'] ?? 1)) === 1 ? 'Stunde' : 'Stunden'; ?></span>
                     <span class="po-pt__card-desc"><?php echo esc_html($pkg['description'] ?? ''); ?></span>
                     <span class="po-pt__card-radio" aria-hidden="true"></span>

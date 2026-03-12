@@ -18,12 +18,13 @@
 
     var selectedAmount = 0;
     var ctaLabel = cta.textContent.trim();
+    var currency = root.dataset.currency || '€';
 
     function setAmount(val) {
         selectedAmount = parseFloat(val) || 0;
         cta.disabled = selectedAmount <= 0;
         if (selectedAmount > 0) {
-            cta.textContent = ctaLabel + ' \u2013 ' + selectedAmount.toLocaleString('de-DE') + ' \u20ac';
+            cta.textContent = ctaLabel + ' \u2013 ' + selectedAmount.toLocaleString('de-DE') + ' ' + currency;
         } else {
             cta.textContent = ctaLabel;
         }

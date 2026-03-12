@@ -1440,11 +1440,39 @@ function parkourone_sync_event_to_angebot($post_id) {
 
 	$event_title = get_the_title($post_id);
 
-	// Termin-Daten aufbereiten
+	// Event-Daten sammeln
+	$event_venue       = get_post_meta($post_id, '_event_venue', true);
+	$event_headcoach   = get_post_meta($post_id, '_event_headcoach', true);
+	$event_description = get_post_meta($post_id, '_event_description', true);
+	$event_price       = get_post_meta($post_id, '_event_price', true);
+	$event_start_time  = get_post_meta($post_id, '_event_start_time', true);
+	$event_end_time    = get_post_meta($post_id, '_event_end_time', true);
+	$event_coach_email = get_post_meta($post_id, '_event_headcoach_email', true);
+
+	// Preis formatieren mit WooCommerce-Währung
+	$preis_display = '';
+	if (!empty($event_price) && floatval($event_price) > 0) {
+		$currency_symbol = function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol() : '€';
+		$preis_display = number_format(floatval($event_price), 0, ',', '.') . ' ' . $currency_symbol;
+	}
+
+	// Wann-Text aus Zeiten bauen
+	$wann_text = '';
+	if ($event_start_time) {
+		$wann_text = $event_start_time;
+		if ($event_end_time) {
+			$wann_text .= ' – ' . $event_end_time;
+		}
+	}
+
+	// Buchungsart: wenn Preis > 0 und WC-Produkte existieren → woocommerce
+	$has_price = !empty($event_price) && floatval($event_price) > 0;
+
+	// Termin-Daten aufbereiten (mit Preis)
 	$termine = parkourone_build_angebot_termine_from_event($post_id);
 
 	if (!empty($existing)) {
-		// UPDATE: Nur AB-Felder aktualisieren, Admin-Felder nicht überschreiben
+		// UPDATE: AB-Felder aktualisieren
 		$angebot_id = $existing[0];
 
 		wp_update_post([
@@ -1452,9 +1480,24 @@ function parkourone_sync_event_to_angebot($post_id) {
 			'post_title' => $event_title,
 		]);
 
+		// Immer aus AB aktualisieren
 		update_post_meta($angebot_id, '_angebot_termine', $termine);
-		update_post_meta($angebot_id, '_angebot_wo', get_post_meta($post_id, '_event_venue', true));
-		update_post_meta($angebot_id, '_angebot_ansprechperson', get_post_meta($post_id, '_event_headcoach', true));
+		update_post_meta($angebot_id, '_angebot_wo', $event_venue);
+		update_post_meta($angebot_id, '_angebot_ansprechperson', $event_headcoach);
+
+		// Beschreibung, Preis, Zeiten, Coach-E-Mail nur aktualisieren wenn vorhanden
+		if (!empty($event_description)) {
+			update_post_meta($angebot_id, '_angebot_kurzbeschreibung', $event_description);
+		}
+		if (!empty($preis_display)) {
+			update_post_meta($angebot_id, '_angebot_preis', $preis_display);
+		}
+		if (!empty($wann_text)) {
+			update_post_meta($angebot_id, '_angebot_wann', $wann_text);
+		}
+		if (!empty($event_coach_email)) {
+			update_post_meta($angebot_id, '_angebot_kontakt_email', $event_coach_email);
+		}
 	} else {
 		// NEU: Draft-Angebot erstellen
 		$angebot_id = wp_insert_post([
@@ -1469,13 +1512,27 @@ function parkourone_sync_event_to_angebot($post_id) {
 		update_post_meta($angebot_id, '_angebot_academyboard_event_id', $post_id);
 		update_post_meta($angebot_id, '_angebot_quelle', 'academyboard');
 
-		// AB-Daten übernehmen
+		// Alle AB-Daten übernehmen
 		update_post_meta($angebot_id, '_angebot_termine', $termine);
-		update_post_meta($angebot_id, '_angebot_wo', get_post_meta($post_id, '_event_venue', true));
-		update_post_meta($angebot_id, '_angebot_ansprechperson', get_post_meta($post_id, '_event_headcoach', true));
-
-		// Saison: einmalig (Events haben konkrete Termine)
+		update_post_meta($angebot_id, '_angebot_wo', $event_venue);
+		update_post_meta($angebot_id, '_angebot_ansprechperson', $event_headcoach);
 		update_post_meta($angebot_id, '_angebot_saison', 'einmalig');
+
+		if (!empty($event_description)) {
+			update_post_meta($angebot_id, '_angebot_kurzbeschreibung', $event_description);
+		}
+		if (!empty($preis_display)) {
+			update_post_meta($angebot_id, '_angebot_preis', $preis_display);
+		}
+		if (!empty($wann_text)) {
+			update_post_meta($angebot_id, '_angebot_wann', $wann_text);
+		}
+		if (!empty($event_coach_email)) {
+			update_post_meta($angebot_id, '_angebot_kontakt_email', $event_coach_email);
+		}
+
+		// Buchungsart: WooCommerce wenn Preis vorhanden, sonst kostenlos
+		update_post_meta($angebot_id, '_angebot_buchungsart', $has_price ? 'woocommerce' : 'kostenlos');
 
 		// Kategorie setzen
 		wp_set_object_terms($angebot_id, $angebot_kategorie, 'angebot_kategorie');
@@ -1511,9 +1568,17 @@ function parkourone_build_angebot_termine_from_event($event_id) {
 	$event_dates = get_post_meta($event_id, '_event_dates', true);
 	if (!is_array($event_dates)) return [];
 
-	$start_time = get_post_meta($event_id, '_event_start_time', true);
-	$end_time   = get_post_meta($event_id, '_event_end_time', true);
-	$venue      = get_post_meta($event_id, '_event_venue', true);
+	$start_time  = get_post_meta($event_id, '_event_start_time', true);
+	$end_time    = get_post_meta($event_id, '_event_end_time', true);
+	$venue       = get_post_meta($event_id, '_event_venue', true);
+	$event_price = get_post_meta($event_id, '_event_price', true);
+
+	// Preis formatieren für Termin-Anzeige
+	$preis_termin = '';
+	if (!empty($event_price) && floatval($event_price) > 0) {
+		$currency_symbol = function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol() : '€';
+		$preis_termin = number_format(floatval($event_price), 0, ',', '.') . ' ' . $currency_symbol;
+	}
 
 	$uhrzeit = '';
 	if ($start_time) {
@@ -1569,7 +1634,7 @@ function parkourone_build_angebot_termine_from_event($event_id) {
 			'datum'      => $datum_iso,
 			'uhrzeit'    => $uhrzeit,
 			'ort'        => $ort ?: '',
-			'preis'      => '',
+			'preis'      => $preis_termin,
 			'kapazitaet' => $kapazitaet ?: 0,
 			'produkt_id' => $produkt_id,
 		];
