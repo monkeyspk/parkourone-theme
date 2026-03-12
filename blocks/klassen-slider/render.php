@@ -24,14 +24,14 @@ if ($filterAge) {
 	$tax_query[] = [
 		'taxonomy' => 'event_category',
 		'field' => 'slug',
-		'terms' => $filterAge
+		'terms' => strpos($filterAge, ',') !== false ? array_map('trim', explode(',', $filterAge)) : $filterAge
 	];
 }
 if ($filterLocation) {
 	$tax_query[] = [
 		'taxonomy' => 'event_category',
 		'field' => 'slug',
-		'terms' => $filterLocation
+		'terms' => strpos($filterLocation, ',') !== false ? array_map('trim', explode(',', $filterLocation)) : $filterLocation
 	];
 }
 if ($filterOffer) {

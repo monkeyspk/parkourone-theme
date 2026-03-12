@@ -390,7 +390,8 @@ function parkourone_get_cities_from_locations() {
 	$city_mappings = [
 		'berlin' => ['berlin-mitte', 'berlin-pankow', 'berlin-friedrichshain', 'berlin-kreuzberg', 'berlin-prenzlauer-berg', 'berlin-köpenick', 'berlin-tiergarten'],
 		'zürich' => ['zürich', 'zurich', 'winterthur'],
-		'bern' => ['bern', 'thun', 'köniz'],
+		'bern' => ['bern', 'köniz'],
+		'thun' => ['thun'],
 		'basel' => ['basel'],
 	];
 
