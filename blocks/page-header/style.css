@@ -232,8 +232,8 @@
 
 .po-ph--split {
 	background: #fff;
-	padding: clamp(3rem, 8vw, 6rem) 0;
-	min-height: 80vh;
+	padding: clamp(2rem, 5vw, 4rem) 0;
+	min-height: 60vh;
 	display: flex;
 	align-items: center;
 }
@@ -253,7 +253,7 @@
 .po-ph__container--split {
 	display: grid;
 	grid-template-columns: 1fr 1.4fr;
-	gap: clamp(4rem, 8vw, 7rem);
+	gap: clamp(2.5rem, 5vw, 5rem);
 	align-items: center;
 	max-width: 1600px;
 	margin: 0 auto;
@@ -267,12 +267,12 @@
 }
 
 .po-ph__title--split {
-	font-size: clamp(2.75rem, 5.5vw, 4.5rem);
+	font-size: clamp(2.25rem, 4.5vw, 3.75rem);
 	font-weight: 700;
-	line-height: 1.0;
+	line-height: 1.05;
 	letter-spacing: -0.035em;
 	color: #1d1d1f;
-	margin: 0 0 1.5rem 0;
+	margin: 0 0 1.25rem 0;
 }
 
 .po-ph__title--split .po-ph__title-accent {
@@ -320,7 +320,7 @@
 .po-ph__image-wrapper--split {
 	position: relative;
 	width: 100%;
-	max-width: 700px;
+	max-width: 600px;
 	transform: rotate(var(--rotation, 2deg)) translateZ(0);
 	transition: transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
 	will-change: transform;
