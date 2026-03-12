@@ -277,8 +277,9 @@ if ($group_by === 'weekday') {
 <?php if ($show_booking_panel && class_exists('WooCommerce')): ?>
 <script>
 window.poKlassenBooking = window.poKlassenBooking || {
-	ajaxUrl: '<?php echo esc_url(admin_url('admin-ajax.php')); ?>',
-	nonce: '<?php echo wp_create_nonce('po_booking_nonce'); ?>'
+	restUrl: '<?php echo esc_url(rest_url('parkourone/v1/add-to-cart')); ?>',
+	ajaxUrl: '<?php echo esc_url(rest_url('parkourone/v1/add-to-cart')); ?>',
+	nonce: '<?php echo wp_create_nonce('wp_rest'); ?>'
 };
 </script>
 <?php endif; ?>

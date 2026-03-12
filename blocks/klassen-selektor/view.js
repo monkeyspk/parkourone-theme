@@ -154,19 +154,23 @@ document.addEventListener('DOMContentLoaded', function() {
 			submitBtn.style.display = 'none';
 			loadingEl.style.display = 'block';
 
-			// AJAX request
-			var formData = new FormData();
-			formData.append('action', 'po_add_to_cart');
-			formData.append('nonce', window.poKlassenBooking.nonce);
-			formData.append('product_id', selectedProductId);
-			formData.append('event_id', selectedEvent.id);
-			formData.append('vorname', vorname);
-			formData.append('name', name);
-			formData.append('geburtsdatum', geburtsdatum);
+			// REST API request
+			var bookingUrl = window.poKlassenBooking.restUrl || window.poKlassenBooking.ajaxUrl;
 
-			fetch(window.poKlassenBooking.ajaxUrl, {
+			fetch(bookingUrl, {
 				method: 'POST',
-				body: formData
+				headers: {
+					'Content-Type': 'application/json',
+					'X-WP-Nonce': window.poKlassenBooking.nonce
+				},
+				credentials: 'same-origin',
+				body: JSON.stringify({
+					product_id: selectedProductId,
+					event_id: selectedEvent.id,
+					vorname: vorname,
+					name: name,
+					geburtsdatum: geburtsdatum
+				})
 			})
 			.then(function(response) { return response.json(); })
 			.then(function(data) {

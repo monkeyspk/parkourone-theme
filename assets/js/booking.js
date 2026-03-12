@@ -54,48 +54,57 @@
     
     $(document).on('submit', '.po-steps__form', function(e) {
         e.preventDefault();
-        
+
         var $form = $(this);
         var $btn = $form.find('.po-steps__submit');
         var $modal = $form.closest('.po-overlay');
         var $steps = $form.closest('.po-steps');
-        
+
         var data = {
-            action: 'po_add_to_cart',
-            nonce: poBooking.nonce,
             product_id: $form.find('[name="product_id"]').val(),
             event_id: $form.find('[name="event_id"]').val(),
             vorname: $form.find('[name="vorname"]').val(),
             name: $form.find('[name="name"]').val(),
             geburtsdatum: $form.find('[name="geburtsdatum"]').val()
         };
-        
+
         $btn.prop('disabled', true).text('Wird hinzugefügt...');
-        
-        $.post(poBooking.ajaxUrl, data, function(response) {
+
+        fetch(poBooking.restUrl || poBooking.ajaxUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-WP-Nonce': poBooking.nonce
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify(data)
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(response) {
             if (response.success) {
                 goToStep($steps, 3);
-                
+
                 $form[0].reset();
-                
+
                 setTimeout(function() {
                     $modal.removeClass('is-active');
                     $modal.attr('aria-hidden', 'true');
                     $('body').removeClass('po-no-scroll');
-                    
+
                     $(document.body).trigger('wc_fragment_refresh');
                     $(document.body).trigger('added_to_cart');
-                    
+
                     setTimeout(function() {
                         goToStep($steps, 0);
                     }, 300);
                 }, 1500);
             } else {
-                alert(response.data.message || 'Ein Fehler ist aufgetreten');
+                alert(response.data && response.data.message ? response.data.message : 'Ein Fehler ist aufgetreten');
             }
-            
+
             $btn.prop('disabled', false).text('Zum Warenkorb hinzufügen');
-        }).fail(function() {
+        })
+        .catch(function() {
             alert('Ein Fehler ist aufgetreten. Bitte versuche es erneut.');
             $btn.prop('disabled', false).text('Zum Warenkorb hinzufügen');
         });

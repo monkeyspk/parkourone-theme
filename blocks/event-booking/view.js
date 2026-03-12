@@ -360,8 +360,6 @@
 			submitBtn.textContent = 'Wird hinzugef\u00fcgt\u2026';
 
 			var data = {
-				action: 'po_add_to_cart',
-				nonce: poBooking.nonce,
 				product_id: form.querySelector('[name="product_id"]').value,
 				event_id: form.querySelector('[name="event_id"]').value,
 				vorname: form.querySelector('[name="vorname"]').value,
@@ -369,7 +367,17 @@
 				geburtsdatum: form.querySelector('[name="geburtsdatum"]').value
 			};
 
-			$.post(poBooking.ajaxUrl, data, function(response) {
+			fetch(poBooking.restUrl || poBooking.ajaxUrl, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-WP-Nonce': poBooking.nonce
+				},
+				credentials: 'same-origin',
+				body: JSON.stringify(data)
+			})
+			.then(function(r) { return r.json(); })
+			.then(function(response) {
 				if (response.success) {
 					showBookingSuccess(formEl, dateText);
 
@@ -383,7 +391,8 @@
 					submitBtn.disabled = false;
 					submitBtn.textContent = 'Zum Warenkorb hinzuf\u00fcgen';
 				}
-			}).fail(function() {
+			})
+			.catch(function() {
 				alert('Ein Fehler ist aufgetreten. Bitte versuche es erneut.');
 				submitBtn.disabled = false;
 				submitBtn.textContent = 'Zum Warenkorb hinzuf\u00fcgen';

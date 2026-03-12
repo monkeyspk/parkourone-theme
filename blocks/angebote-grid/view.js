@@ -96,7 +96,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 		if (data.voraussetzungen) details.push({ label: 'Voraussetzungen', value: data.voraussetzungen });
 		if (data.was_mitbringen) details.push({ label: 'Was mitbringen', value: data.was_mitbringen });
-		if (data.preis) details.push({ label: 'Preis', value: data.preis });
 		if (data.ansprechperson) {
 			var coachValue = data.ansprechperson_image
 				? '<img src="' + data.ansprechperson_image + '" alt="" class="po-angebote-modal__coach-img"> ' + escapeHtml(data.ansprechperson)
@@ -108,13 +107,11 @@ document.addEventListener('DOMContentLoaded', function() {
 			html += '<div class="po-angebote-modal__details">';
 			details.forEach(function(d) {
 				var detailClass = 'po-angebote-modal__detail';
-				if (d.label === 'Preis') detailClass += ' po-angebote-modal__detail--price';
 				html += '<div class="' + detailClass + '">';
 				html += '<span class="po-angebote-modal__detail-label">' + d.label + '</span>';
 				html += '<span class="po-angebote-modal__detail-value">' + (d.raw ? d.value : escapeHtml(d.value)) + '</span>';
 				html += '</div>';
 			});
-			html += '<a href="/preise/" class="po-angebote-modal__pricing-link">Alle Preise ansehen <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>';
 			html += '</div>';
 		}
 

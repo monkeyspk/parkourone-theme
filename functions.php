@@ -1705,7 +1705,7 @@ function parkourone_get_available_dates_for_event($event_id) {
 
 function parkourone_booking_scripts() {
     if (!class_exists('WooCommerce')) return;
-    
+
     wp_enqueue_script(
         'parkourone-booking',
         get_template_directory_uri() . '/assets/js/booking.js',
@@ -1713,49 +1713,87 @@ function parkourone_booking_scripts() {
         filemtime(get_template_directory() . '/assets/js/booking.js'),
         true
     );
-    
+
     wp_localize_script('parkourone-booking', 'poBooking', [
-        'ajaxUrl' => admin_url('admin-ajax.php'),
-        'nonce' => wp_create_nonce('po_booking_nonce')
+        'restUrl' => rest_url('parkourone/v1/add-to-cart'),
+        'nonce'   => wp_create_nonce('wp_rest'),
+        // Legacy-Fallback für ältere Aufrufe
+        'ajaxUrl' => rest_url('parkourone/v1/add-to-cart'),
     ]);
 }
 add_action('wp_enqueue_scripts', 'parkourone_booking_scripts');
 
-function parkourone_ajax_add_to_cart() {
-    check_ajax_referer('po_booking_nonce', 'nonce');
-    
-    if (!class_exists('WooCommerce')) {
-        wp_send_json_error(['message' => 'WooCommerce nicht aktiv']);
-    }
-    
-    $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
-    $event_id = isset($_POST['event_id']) ? absint($_POST['event_id']) : 0;
-    $vorname = isset($_POST['vorname']) ? sanitize_text_field($_POST['vorname']) : '';
-    $name = isset($_POST['name']) ? sanitize_text_field($_POST['name']) : '';
-    $geburtsdatum = isset($_POST['geburtsdatum']) ? sanitize_text_field($_POST['geburtsdatum']) : '';
-    
-    if (!$product_id || !$vorname || !$name || !$geburtsdatum) {
-        wp_send_json_error(['message' => 'Bitte alle Felder ausfüllen']);
-    }
-    
-    $_POST['event_id'] = $event_id;
-    $_POST['event_participant_name'] = [$name];
-    $_POST['event_participant_vorname'] = [$vorname];
-    $_POST['event_participant_geburtsdatum'] = [$geburtsdatum];
-    
-    $added = WC()->cart->add_to_cart($product_id, 1);
-    
-    if ($added) {
-        wp_send_json_success([
-            'message' => 'Erfolgreich zum Warenkorb hinzugefügt',
-            'cart_count' => WC()->cart->get_cart_contents_count()
-        ]);
-    } else {
-        wp_send_json_error(['message' => 'Fehler beim Hinzufügen zum Warenkorb']);
-    }
+/**
+ * REST API Endpoint für Probetraining-Buchungen
+ * Umgeht AIOS-Firewall die admin-ajax.php für Nicht-Eingeloggte blockiert
+ */
+function parkourone_register_booking_rest_route() {
+    register_rest_route('parkourone/v1', '/add-to-cart', [
+        'methods'             => 'POST',
+        'callback'            => 'parkourone_rest_add_to_cart',
+        'permission_callback' => '__return_true',
+    ]);
 }
-add_action('wp_ajax_po_add_to_cart', 'parkourone_ajax_add_to_cart');
-add_action('wp_ajax_nopriv_po_add_to_cart', 'parkourone_ajax_add_to_cart');
+add_action('rest_api_init', 'parkourone_register_booking_rest_route');
+
+function parkourone_rest_add_to_cart($request) {
+    if (!class_exists('WooCommerce')) {
+        return new WP_Error('no_woocommerce', 'WooCommerce nicht aktiv', ['status' => 500]);
+    }
+
+    // Nonce aus X-WP-Nonce Header (wird von fetch automatisch gesendet)
+    // oder aus POST-Body als Fallback
+    $params = $request->get_params();
+
+    $product_id   = absint($params['product_id'] ?? 0);
+    $event_id     = absint($params['event_id'] ?? 0);
+    $vorname      = sanitize_text_field($params['vorname'] ?? '');
+    $name         = sanitize_text_field($params['name'] ?? '');
+    $geburtsdatum = sanitize_text_field($params['geburtsdatum'] ?? '');
+
+    if (!$product_id || !$vorname || !$name || !$geburtsdatum) {
+        return new WP_REST_Response([
+            'success' => false,
+            'data'    => ['message' => 'Bitte alle Felder ausfüllen'],
+        ], 400);
+    }
+
+    // WooCommerce Session sicherstellen (für nicht-eingeloggte User)
+    if (!WC()->session) {
+        WC()->session = new WC_Session_Handler();
+        WC()->session->init();
+    }
+    if (!WC()->cart) {
+        WC()->cart = new WC_Cart();
+        WC()->cart->get_cart();
+    }
+    if (!WC()->customer) {
+        WC()->customer = new WC_Customer(get_current_user_id(), true);
+    }
+
+    // Participant-Daten in $_POST setzen (für Event-Plugins die darauf zugreifen)
+    $_POST['event_id']                       = $event_id;
+    $_POST['event_participant_name']          = [$name];
+    $_POST['event_participant_vorname']       = [$vorname];
+    $_POST['event_participant_geburtsdatum']  = [$geburtsdatum];
+
+    $added = WC()->cart->add_to_cart($product_id, 1);
+
+    if ($added) {
+        return new WP_REST_Response([
+            'success' => true,
+            'data'    => [
+                'message'    => 'Erfolgreich zum Warenkorb hinzugefügt',
+                'cart_count' => WC()->cart->get_cart_contents_count(),
+            ],
+        ], 200);
+    }
+
+    return new WP_REST_Response([
+        'success' => false,
+        'data'    => ['message' => 'Fehler beim Hinzufügen zum Warenkorb'],
+    ], 200);
+}
 
 /**
  * AJAX: Produkt-Showcase — Add-to-Cart für Simple + Variable Products.
