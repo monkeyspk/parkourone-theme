@@ -75,7 +75,9 @@ $kategorie_labels = [
 				'buchungsart' => $buchungsart,
 				'teilnehmer_typ' => get_post_meta($id, '_angebot_teilnehmer_typ', true) ?: 'standard',
 				'cta_url' => get_post_meta($id, '_angebot_cta_url', true),
-				'termine' => parkourone_filter_vergangene_termine(get_post_meta($id, '_angebot_termine', true))
+				'termine' => parkourone_enrich_termine_with_stock(
+					parkourone_filter_vergangene_termine(get_post_meta($id, '_angebot_termine', true))
+				)
 			];
 		?>
 		<article class="po-angebote-grid__card" data-kategorie="<?php echo esc_attr($kategorie_slug); ?>" data-modal='<?php echo esc_attr(json_encode($modal_data)); ?>'>

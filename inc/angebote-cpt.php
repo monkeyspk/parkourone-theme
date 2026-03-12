@@ -236,10 +236,18 @@ function parkourone_angebot_termine_metabox($post) {
 					<th><label>Preis</label></th>
 					<td><input type="text" name="_angebot_termine[<?php echo $index; ?>][preis]" value="<?php echo esc_attr($termin['preis'] ?? ''); ?>" class="regular-text" placeholder="z.B. CHF 60.-"></td>
 				</tr>
+				<?php
+				$pid = intval($termin['produkt_id'] ?? 0);
+				$has_wc_product = $pid && class_exists('WooCommerce') && wc_get_product($pid);
+				?>
+				<?php if (!$has_wc_product): ?>
 				<tr>
 					<th><label>Kapazität</label></th>
 					<td><input type="number" name="_angebot_termine[<?php echo $index; ?>][kapazitaet]" value="<?php echo esc_attr($termin['kapazitaet'] ?? ''); ?>" class="small-text" placeholder="z.B. 20"></td>
 				</tr>
+				<?php else: ?>
+				<input type="hidden" name="_angebot_termine[<?php echo $index; ?>][kapazitaet]" value="<?php echo esc_attr($termin['kapazitaet'] ?? ''); ?>">
+				<?php endif; ?>
 				<tr>
 					<th><label>WooCommerce Produkt ID</label></th>
 					<td>
@@ -249,13 +257,11 @@ function parkourone_angebot_termine_metabox($post) {
 				</tr>
 				<?php
 				// Live WC-Buchungsstatus anzeigen
-				$pid = intval($termin['produkt_id'] ?? 0);
-				if ($pid && class_exists('WooCommerce')):
+				if ($has_wc_product):
 					$wc_prod = wc_get_product($pid);
-					if ($wc_prod):
-						$stock_qty = $wc_prod->get_stock_quantity();
-						$total_sold = parkourone_get_product_total_sold($pid);
-						$initial_stock = $stock_qty + $total_sold;
+					$stock_qty = $wc_prod->get_stock_quantity();
+					$total_sold = parkourone_get_product_total_sold($pid);
+					$initial_stock = $stock_qty + $total_sold;
 				?>
 				<tr>
 					<th><label>Buchungsstatus</label></th>
@@ -274,7 +280,7 @@ function parkourone_angebot_termine_metabox($post) {
 						</span>
 					</td>
 				</tr>
-				<?php endif; endif; ?>
+				<?php endif; ?>
 			</table>
 			<hr style="margin: 20px 0;">
 		</div>
@@ -722,6 +728,28 @@ function parkourone_filter_vergangene_termine($termine) {
 	return array_values(array_filter($termine, function($t) use ($heute) {
 		return empty($t['datum']) || $t['datum'] >= $heute;
 	}));
+}
+
+/**
+ * Ergänzt Termine mit dem Live WC-Stock für die Frontend-Anzeige.
+ */
+function parkourone_enrich_termine_with_stock($termine) {
+	if (empty($termine) || !is_array($termine) || !class_exists('WooCommerce')) {
+		return $termine ?: [];
+	}
+
+	foreach ($termine as &$termin) {
+		$pid = intval($termin['produkt_id'] ?? 0);
+		if ($pid) {
+			$product = wc_get_product($pid);
+			if ($product) {
+				$termin['verfuegbar'] = (int) $product->get_stock_quantity();
+			}
+		}
+	}
+	unset($termin);
+
+	return $termine;
 }
 
 function parkourone_get_angebot_by_id($id) {
@@ -1883,17 +1911,22 @@ function parkourone_angebot_admin_column_content($column, $post_id) {
 
 		$total_sold = 0;
 		$total_capacity = 0;
+		$total_remaining = 0;
 		$has_products = false;
 
 		foreach ($termine as $termin) {
 			$pid = intval($termin['produkt_id'] ?? 0);
-			$kap = intval($termin['kapazitaet'] ?? 0);
 			if ($pid && class_exists('WooCommerce')) {
-				$sold = parkourone_get_product_total_sold($pid);
-				$total_sold += $sold;
-				$has_products = true;
+				$wc_prod = wc_get_product($pid);
+				if ($wc_prod) {
+					$sold = parkourone_get_product_total_sold($pid);
+					$stock = (int) $wc_prod->get_stock_quantity();
+					$total_sold += $sold;
+					$total_capacity += $sold + $stock;
+					$total_remaining += $stock;
+					$has_products = true;
+				}
 			}
-			$total_capacity += $kap;
 		}
 
 		if (!$has_products) {

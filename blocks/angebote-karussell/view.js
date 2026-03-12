@@ -137,9 +137,18 @@ document.addEventListener('DOMContentLoaded', function() {
 				if (termin.ort) html += ' | ' + escapeHtml(termin.ort);
 				if (termin.preis) html += ' | ' + escapeHtml(termin.preis);
 				html += '</div>';
+				if (typeof termin.verfuegbar !== 'undefined') {
+					var spotColor = termin.verfuegbar > 3 ? '#00a32a' : (termin.verfuegbar > 0 ? '#dba617' : '#d63638');
+					var spotText = termin.verfuegbar > 0 ? termin.verfuegbar + ' Plätze frei' : 'Ausgebucht';
+					html += '<div class="po-angebote-modal__termin-spots" style="font-size:12px;color:' + spotColor + ';font-weight:600;">' + spotText + '</div>';
+				}
 				html += '</div>';
 				if (termin.produkt_id) {
-					html += '<button class="po-angebote-modal__termin-btn" data-product-id="' + termin.produkt_id + '" data-termin-index="' + index + '">Buchen</button>';
+					if (typeof termin.verfuegbar !== 'undefined' && termin.verfuegbar <= 0) {
+						html += '<button class="po-angebote-modal__termin-btn" disabled style="opacity:0.5;cursor:not-allowed;">Ausgebucht</button>';
+					} else {
+						html += '<button class="po-angebote-modal__termin-btn" data-product-id="' + termin.produkt_id + '" data-termin-index="' + index + '">Buchen</button>';
+					}
 				}
 				html += '</div>';
 			});
