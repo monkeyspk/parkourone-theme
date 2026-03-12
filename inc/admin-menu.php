@@ -75,6 +75,15 @@ function parkourone_register_admin_menu() {
 
 	add_submenu_page(
 		'parkourone',
+		'Link Check',
+		'Link Check',
+		'manage_options',
+		'parkourone-link-check',
+		'parkourone_link_checker_page'
+	);
+
+	add_submenu_page(
+		'parkourone',
 		'Redirects',
 		'Redirects',
 		'manage_options',
