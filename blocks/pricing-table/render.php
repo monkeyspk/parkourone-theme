@@ -45,7 +45,7 @@ $class .= ' po-pricing--' . $style;
 					<span class="po-pricing__price-label">ab</span>
 					<?php endif; ?>
 					<span class="po-pricing__price"><?php echo esc_html($cat['fromPrice'] ?? '0'); ?><?php echo esc_html($currency); ?></span>
-					<span class="po-pricing__period"><?php echo esc_html($period); ?></span>
+					<span class="po-pricing__period"><?php echo esc_html($cat['period'] ?? $period); ?></span>
 				</div>
 
 				<?php if (!empty($cat['classes'])): ?>

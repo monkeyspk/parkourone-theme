@@ -162,6 +162,16 @@
 								value: currentCat.fromPrice || '',
 								onChange: function(v) { updateCategory(activeCategory, 'fromPrice', v); }
 							}),
+							el(SelectControl, {
+								key: 'cat-period',
+								label: 'Abrechnungszeitraum',
+								value: currentCat.period || attributes.period || 'pro Monat',
+								options: [
+									{ label: 'pro Monat', value: 'pro Monat' },
+									{ label: 'pro Quartal', value: 'pro Quartal' }
+								],
+								onChange: function(v) { updateCategory(activeCategory, 'period', v); }
+							}),
 							el(ToggleControl, {
 								key: 'cat-highlight',
 								label: 'Hervorgehoben',
@@ -266,7 +276,7 @@
 								el('div', { key: 'price', className: 'po-pricing-editor__price' },
 									'ab ' + cat.fromPrice + attributes.currency
 								),
-								el('div', { key: 'period', className: 'po-pricing-editor__period' }, attributes.period)
+								el('div', { key: 'period', className: 'po-pricing-editor__period' }, cat.period || attributes.period)
 							]);
 						})
 					)
