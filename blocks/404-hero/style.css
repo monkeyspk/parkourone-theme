@@ -1,0 +1,21 @@
+/* 404 Hero — Reduced height, oversized "404" headline */
+.po-404-hero {
+	min-height: 70vh;
+}
+
+.po-404-hero .po-hero__headline {
+	font-size: clamp(80px, 20vw, 200px);
+	letter-spacing: -0.04em;
+	line-height: 1;
+	margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+	.po-404-hero {
+		min-height: 70svh;
+	}
+
+	.po-404-hero .po-hero__headline {
+		font-size: clamp(64px, 25vw, 120px);
+	}
+}

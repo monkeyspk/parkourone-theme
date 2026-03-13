@@ -1012,7 +1012,8 @@ function parkourone_register_blocks() {
         'video',
         'personal-training',
         'inquiry-form',
-        'member-form'
+        'member-form',
+        '404-hero'
     ];
 
     foreach ($blocks as $block) {

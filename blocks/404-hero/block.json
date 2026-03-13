@@ -1,0 +1,13 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "parkourone/404-hero",
+	"title": "404 Hero",
+	"category": "parkourone-blocks",
+	"icon": "warning",
+	"description": "Parkour-styled 404 hero section with random fallback image.",
+	"supports": {
+		"inserter": false,
+		"html": false
+	}
+}
