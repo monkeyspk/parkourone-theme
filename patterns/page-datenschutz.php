@@ -78,7 +78,7 @@
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>Beim Besuch unserer Website kann Ihr Surf-Verhalten statistisch ausgewertet werden. Das geschieht vor allem mit Cookies und mit sogenannten Analyseprogrammen. Die Analyse Ihres Surf-Verhaltens erfolgt in der Regel anonym; das Surf-Verhalten kann nicht zu Ihnen zurückverfolgt werden. Sie können dieser Analyse widersprechen oder sie durch die Nichtbenutzung bestimmter Tools verhindern. Detaillierte Informationen dazu finden Sie in der folgenden Datenschutzerklärung.</p>
+<p>Beim Besuch unserer Website kann Ihr Surf-Verhalten statistisch ausgewertet werden. Das geschieht mit datenschutzfreundlichen Analyseprogrammen. Analyse-Tools werden erst nach Ihrer ausdrücklichen Einwilligung über unser Cookie-Banner geladen. Ohne Einwilligung werden lediglich anonymisierte, serverseitige Seitenaufrufe gezählt — ohne Cookies, ohne JavaScript und ohne Zugriff auf Ihr Endgerät. Detaillierte Informationen dazu finden Sie in der folgenden Datenschutzerklärung.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":2} -->
@@ -411,7 +411,7 @@
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>Diese Website nutzt Google Ads Conversion Tracking. Anbieter ist die Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland.</p>
+<p>Diese Website nutzt Google Ads Conversion Tracking. Anbieter ist die Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA (europäischer Vertreter: Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland).</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
@@ -423,11 +423,11 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">Meta Pixel (Facebook)</h3>
+<h3 class="wp-block-heading">Facebook Pixel / Meta Pixel</h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>Diese Website nutzt das Meta Pixel (ehemals Facebook Pixel). Anbieter ist die Meta Platforms Ireland Limited, Merrion Road, Dublin 4, D04 X2K5, Irland.</p>
+<p>Diese Website nutzt das Facebook Pixel (Meta Pixel). Anbieter ist die Meta Platforms Inc. (europäischer Vertreter: Meta Platforms Ireland Limited, Merrion Road, Dublin 4, D04 X2K5, Irland).</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
@@ -451,7 +451,23 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>ParkourONE Analytics wird erst nach Ihrer Einwilligung in die Kategorie "Statistik" geladen. Die Nutzung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. a DSGVO.</p>
+<p>ParkourONE Analytics wird erst nach Ihrer Einwilligung in die Kategorie "Statistik" geladen. Die Nutzung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. a DSGVO. Ohne Ihre Einwilligung werden lediglich anonymisierte Seitenaufrufe serverseitig gezählt — ohne JavaScript, ohne Session Storage und ohne Zugriff auf Ihr Endgerät.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Plausible Analytics</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Diese Website kann Plausible Analytics nutzen, einen datenschutzfreundlichen Webanalysedienst. Anbieter ist die Plausible Insights OÜ, Västriku tn 2, 50403 Tartu, Estland (EU).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Plausible Analytics verwendet keine Cookies und speichert keine personenbezogenen Daten. Es werden ausschliesslich anonymisierte Nutzungsdaten erhoben. Alle Daten werden in der EU verarbeitet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Die Nutzung von Plausible Analytics erfolgt auf Grundlage Ihrer Einwilligung gemäss Art. 6 Abs. 1 lit. a DSGVO und wird erst nach Zustimmung in die Kategorie "Statistik" geladen. Weitere Informationen: https://plausible.io/privacy.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":2} -->
@@ -507,23 +523,19 @@
 <!-- /wp:heading -->
 
 <!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading">Google Web Fonts</h3>
+<h3 class="wp-block-heading">Google Fonts</h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>Diese Seite nutzt zur einheitlichen Darstellung von Schriftarten so genannte Web Fonts, die von Google bereitgestellt werden. Beim Aufruf einer Seite lädt Ihr Browser die benötigten Web Fonts in ihren Browsercache, um Texte und Schriftarten korrekt anzuzeigen.</p>
+<p>Diese Seite nutzt zur einheitlichen Darstellung von Schriftarten so genannte Google Fonts (Google Web Fonts), die von Google bereitgestellt werden. Anbieter ist die Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA. Beim Aufruf einer Seite lädt Ihr Browser die benötigten Schriftarten in ihren Browsercache, um Texte und Schriftarten korrekt anzuzeigen.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>Zu diesem Zweck muss der von Ihnen verwendete Browser Verbindung zu den Servern von Google aufnehmen. Hierdurch erlangt Google Kenntnis darüber, dass über Ihre IP-Adresse unsere Website aufgerufen wurde. Die Nutzung von Google Web Fonts erfolgt im Interesse einer einheitlichen und ansprechenden Darstellung unserer Online-Angebote. Dies stellt ein berechtigtes Interesse im Sinne von Art. 6 Abs. 1 lit. f DSGVO dar.</p>
+<p>Zu diesem Zweck muss der von Ihnen verwendete Browser Verbindung zu den Servern von Google aufnehmen. Hierdurch erlangt Google Kenntnis darüber, dass über Ihre IP-Adresse unsere Website aufgerufen wurde.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>Wenn Ihr Browser Web Fonts nicht unterstützt, wird eine Standardschrift von Ihrem Computer genutzt.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p>Weitere Informationen zu Google Web Fonts finden Sie unter https://developers.google.com/fonts/faq und in der Datenschutzerklärung von Google: https://www.google.com/policies/privacy/.</p>
+<p>Google Fonts werden auf dieser Website erst nach Ihrer Einwilligung in die Kategorie "Funktional" geladen. Die Nutzung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. a DSGVO. Sie können Ihre Einwilligung jederzeit über unser Cookie-Banner widerrufen. Weitere Informationen zu Google Fonts finden Sie unter https://developers.google.com/fonts/faq und in der Datenschutzerklärung von Google: https://policies.google.com/privacy.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":3} -->
@@ -547,19 +559,47 @@
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>Diese Seite nutzt über eine API den Kartendienst Google Maps. Anbieter ist die Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland.</p>
+<p>Diese Seite nutzt über eine API den Kartendienst Google Maps. Anbieter ist die Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA (europäischer Vertreter: Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland).</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>Zur Nutzung der Funktionen von Google Maps ist es notwendig, Ihre IP Adresse zu speichern. Diese Informationen werden in der Regel an einen Server von Google in den USA übertragen und dort gespeichert. Der Anbieter dieser Seite hat keinen Einfluss auf diese Datenübertragung.</p>
+<p>Zur Nutzung der Funktionen von Google Maps ist es notwendig, Ihre IP-Adresse zu speichern. Diese Informationen werden in der Regel an einen Server von Google in den USA übertragen und dort gespeichert. Der Anbieter dieser Seite hat keinen Einfluss auf diese Datenübertragung.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>Die Nutzung von Google Maps erfolgt im Interesse einer ansprechenden Darstellung unserer Online-Angebote und an einer leichten Auffindbarkeit der von uns auf der Website angegebenen Orte. Dies stellt ein berechtigtes Interesse im Sinne von Art. 6 Abs. 1 lit. f DSGVO dar.</p>
+<p>Google Maps wird auf dieser Website erst nach Ihrer Einwilligung in die Kategorie "Funktional" geladen. Die Nutzung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. a DSGVO. Sie können Ihre Einwilligung jederzeit über unser Cookie-Banner widerrufen. Mehr Informationen zum Umgang mit Nutzerdaten finden Sie in der Datenschutzerklärung von Google: https://policies.google.com/privacy.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">YouTube Videos</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Unsere Website bindet Videos von YouTube ein. Anbieter ist die Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA (europäischer Vertreter: Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland).</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>Mehr Informationen zum Umgang mit Nutzerdaten finden Sie in der Datenschutzerklärung von Google: https://www.google.de/intl/de/policies/privacy/.</p>
+<p>Wir nutzen YouTube im erweiterten Datenschutzmodus (youtube-nocookie.com). Beim Abspielen eines Videos wird dennoch eine Verbindung zu den Servern von YouTube hergestellt. YouTube kann dabei Cookies setzen (z.B. VISITOR_INFO1_LIVE, YSC, PREF) und erfährt, welche Seite Sie besucht haben. Wenn Sie in Ihrem YouTube-/Google-Konto eingeloggt sind, ermöglichen Sie YouTube, Ihr Surfverhalten direkt Ihrem persönlichen Profil zuzuordnen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>YouTube-Videos werden auf dieser Website erst nach Ihrer Einwilligung in die Kategorie "Funktional" geladen. Die Nutzung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. a DSGVO. Die Datenübermittlung in die USA erfolgt auf Basis von EU-Standardvertragsklauseln (SCCs). Weitere Informationen: https://policies.google.com/privacy.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Vimeo Videos</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Unsere Website bindet Videos von Vimeo ein. Anbieter ist die Vimeo, Inc., 555 West 18th Street, New York, New York 10011, USA.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Beim Abspielen eines Vimeo-Videos wird eine Verbindung zu den Servern von Vimeo hergestellt. Vimeo kann dabei Cookies setzen (z.B. vuid, player) und erfährt, welche Seite Sie besucht haben. Ihre IP-Adresse wird an Vimeo übermittelt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Vimeo-Videos werden auf dieser Website erst nach Ihrer Einwilligung in die Kategorie "Funktional" geladen. Die Nutzung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. a DSGVO. Sie können Ihre Einwilligung jederzeit über unser Cookie-Banner widerrufen. Weitere Informationen: https://vimeo.com/privacy.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":3} -->
@@ -572,6 +612,50 @@
 
 <!-- wp:paragraph -->
 <p>WooCommerce setzt technisch notwendige Cookies, um die Warenkorbfunktion und den Bestellprozess zu ermöglichen. Diese Cookies sind für den Betrieb des Shops erforderlich und werden auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung) bzw. Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einem funktionsfähigen Online-Shop) gespeichert. Alle Bestelldaten werden ausschliesslich auf unserem eigenen Server verarbeitet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">CloudFlare (CDN)</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Wir nutzen das Content Delivery Network (CDN) von CloudFlare, Inc., 101 Townsend St, San Francisco, CA 94107, USA. CloudFlare ist ein Dienst, der als Vermittler zwischen unserer Website und Ihrem Browser fungiert. CloudFlare kann Inhalte unserer Website zwischenspeichern und von einem Server in Ihrer Nähe ausliefern, um die Ladezeiten zu verkürzen und unsere Website vor Angriffen zu schützen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Dabei wird Ihre IP-Adresse an CloudFlare übermittelt und dort verarbeitet. CloudFlare kann Cookies und Web-Speicher (Local Storage) im Browser setzen, die für die technische Funktion des Dienstes erforderlich sind (z.B. Sicherheitstoken zur Bot-Erkennung).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Die Nutzung von CloudFlare erfolgt auf Grundlage unseres berechtigten Interesses an einer sicheren und effizienten Bereitstellung unserer Website gemäß Art. 6 Abs. 1 lit. f DSGVO. CloudFlare ist unter dem EU-U.S. Data Privacy Framework zertifiziert. Weitere Informationen finden Sie in der Datenschutzerklärung von CloudFlare: https://www.cloudflare.com/privacypolicy/.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">jsDelivr (CDN)</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Wir nutzen den Open-Source-CDN-Dienst jsDelivr (betrieben von Prospect One, Kroatien) zur Auslieferung von frei verfügbaren JavaScript-Bibliotheken und CSS-Frameworks. Beim Abruf dieser Dateien wird Ihre IP-Adresse an die Server von jsDelivr übermittelt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Die Nutzung von jsDelivr erfolgt auf Grundlage unseres berechtigten Interesses an einer schnellen und zuverlässigen Bereitstellung unserer Website gemäß Art. 6 Abs. 1 lit. f DSGVO. jsDelivr speichert keine personenbezogenen Daten dauerhaft und setzt keine Cookies. Weitere Informationen: https://www.jsdelivr.com/terms/privacy-policy-jsdelivr-net.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Amazon Web Services / Meta Conversions API</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Wir nutzen die Meta Conversions API (CAPI), um serverseitige Ereignisdaten an Meta Platforms Ireland Limited zu übermitteln. Die technische Umsetzung erfolgt über Amazon Web Services (AWS), Inc., 410 Terry Avenue North, Seattle, WA 98109, USA. Dabei können JavaScript-Dateien von AWS-Servern (amazonaws.com) geladen werden.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Die Meta Conversions API wird ausschließlich nach Ihrer Einwilligung in die Kategorie "Marketing" geladen. Die Nutzung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. a DSGVO. Ohne Ihre Zustimmung werden keine Verbindungen zu AWS- oder Meta-Servern hergestellt und keine Daten übertragen. Sie können Ihre Einwilligung jederzeit über unser Cookie-Banner widerrufen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Weitere Informationen: Meta Datenschutzrichtlinie: https://www.facebook.com/privacy/policy/, AWS Datenschutz: https://aws.amazon.com/de/privacy/.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":2} -->
