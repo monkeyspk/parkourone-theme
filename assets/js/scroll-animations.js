@@ -117,7 +117,7 @@
 		}, 200);
 	});
 
-	// Smooth scroll for anchor links
+	// Smooth scroll for anchor links (also handles links inside modals)
 	document.addEventListener('click', function(e) {
 		var link = e.target.closest('a[href^="#"]');
 		if (!link) return;
@@ -130,7 +130,28 @@
 
 		e.preventDefault();
 
-		// Get header height for offset
+		// If anchor link is inside an active overlay, close it first then scroll
+		var overlay = link.closest('.po-overlay.is-active');
+		if (overlay) {
+			overlay.classList.remove('is-active');
+			overlay.setAttribute('aria-hidden', 'true');
+			var stillActive = document.querySelectorAll('.po-overlay.is-active');
+			if (stillActive.length === 0) {
+				document.body.classList.remove('po-no-scroll');
+			}
+			// Scroll after overlay close transition
+			setTimeout(function() { smoothScrollTo(target); }, 50);
+		} else {
+			smoothScrollTo(target);
+		}
+
+		// Update URL without scrolling
+		if (history.pushState) {
+			history.pushState(null, null, targetId);
+		}
+	});
+
+	function smoothScrollTo(target) {
 		var header = document.querySelector('.site-header, header, .po-header');
 		var headerHeight = header ? header.offsetHeight : 0;
 
@@ -140,10 +161,5 @@
 			top: targetPosition,
 			behavior: 'smooth'
 		});
-
-		// Update URL without scrolling
-		if (history.pushState) {
-			history.pushState(null, null, targetId);
-		}
-	});
+	}
 })();

@@ -41,35 +41,8 @@
 			window.addEventListener('resize', updateNav);
 			updateNav();
 
-			// Cards are fully clickable → open modal via data-modal-target
-			cards.forEach(function(card) {
-				var modalId = card.getAttribute('data-modal-target');
-				if (!modalId) return;
-
-				card.addEventListener('click', function(e) {
-					e.preventDefault();
-					var modal = document.getElementById(modalId);
-					if (!modal) return;
-					modal.classList.add('is-active');
-					modal.setAttribute('aria-hidden', 'false');
-					document.body.classList.add('po-no-scroll');
-				});
-
-				// Close modal on anchor link click inside modal
-				var modal = document.getElementById(modalId);
-				if (modal) {
-					modal.querySelectorAll('a[href^="#"]').forEach(function(link) {
-						link.addEventListener('click', function() {
-							modal.classList.remove('is-active');
-							modal.setAttribute('aria-hidden', 'true');
-							var stillActive = document.querySelectorAll('.po-overlay.is-active');
-							if (stillActive.length === 0) {
-								document.body.classList.remove('po-no-scroll');
-							}
-						});
-					});
-				}
-			});
+			// Card click → modal open is handled by shared overlay-handler.js (data-modal-target)
+			// Anchor links inside modals are handled by scroll-animations.js
 		});
 	}
 

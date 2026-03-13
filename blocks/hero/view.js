@@ -6,17 +6,7 @@
 			if (hero.dataset.poInit) return;
 			hero.dataset.poInit = 'true';
 
-			// Smooth scroll for anchor links
-			hero.querySelectorAll('.po-hero__button[href^="#"]').forEach(function(btn) {
-				btn.addEventListener('click', function(e) {
-					var targetId = this.getAttribute('href').substring(1);
-					var target = document.getElementById(targetId);
-					if (target) {
-						e.preventDefault();
-						target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-					}
-				});
-			});
+			// Smooth scroll for anchor links is handled globally by scroll-animations.js
 
 			// Video Modal (uses .po-video-modal, not .po-overlay)
 			var videoBtn = hero.querySelector('.po-hero__button--video');
