@@ -118,7 +118,56 @@ function parkourone_migrate_hardcoded_redirects() {
 add_action('admin_init', 'parkourone_migrate_hardcoded_redirects');
 
 // =====================================================
-// D) Admin-Seite
+// D) AJAX: Quick-Redirect aus 404-Tab
+// =====================================================
+
+function parkourone_ajax_quick_redirect() {
+	check_ajax_referer('parkourone_quick_redirect_nonce', 'nonce');
+
+	if (!current_user_can('manage_options')) {
+		wp_send_json_error('Keine Berechtigung.');
+	}
+
+	$source = '/' . trim(sanitize_text_field($_POST['source'] ?? ''), '/');
+	$target = sanitize_text_field($_POST['target'] ?? '');
+	$log_index = isset($_POST['log_index']) ? absint($_POST['log_index']) : -1;
+
+	if ($source === '/' || empty($target)) {
+		wp_send_json_error('Quelle oder Ziel fehlt.');
+	}
+
+	// Redirect speichern
+	$redirects = get_option('parkourone_redirects', []);
+
+	// Duplikat-Check
+	foreach ($redirects as $r) {
+		if (trim($r['source'] ?? '', '/') === trim($source, '/')) {
+			wp_send_json_error('Redirect für diesen Pfad existiert bereits.');
+		}
+	}
+
+	$redirects[] = [
+		'source'  => $source,
+		'target'  => $target,
+		'type'    => 301,
+		'hits'    => 0,
+		'created' => time(),
+	];
+	update_option('parkourone_redirects', $redirects);
+
+	// 404-Log-Eintrag entfernen
+	$log = get_option('parkourone_404_log', []);
+	if (isset($log[$log_index])) {
+		array_splice($log, $log_index, 1);
+		update_option('parkourone_404_log', $log, false);
+	}
+
+	wp_send_json_success(['target' => $target]);
+}
+add_action('wp_ajax_parkourone_quick_redirect', 'parkourone_ajax_quick_redirect');
+
+// =====================================================
+// E) Admin-Seite
 // =====================================================
 
 function parkourone_redirects_page() {
@@ -126,6 +175,20 @@ function parkourone_redirects_page() {
 	$log = get_option('parkourone_404_log', []);
 	$active_tab = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : 'redirects';
 	$notice = '';
+
+	// Publizierte Seiten für Quick-Redirect Dropdown
+	$published_pages = get_posts([
+		'post_type'      => ['page', 'post'],
+		'post_status'    => 'publish',
+		'posts_per_page' => -1,
+		'orderby'        => 'title',
+		'order'          => 'ASC',
+	]);
+	$pages_by_type = [];
+	foreach ($published_pages as $p) {
+		$type_label = $p->post_type === 'page' ? 'Seiten' : 'Beiträge';
+		$pages_by_type[$type_label][] = $p;
+	}
 
 	// ── Redirect hinzufügen / bearbeiten ──
 	if (isset($_POST['parkourone_redirect_save']) && check_admin_referer('parkourone_redirects_nonce')) {
@@ -357,21 +420,39 @@ function parkourone_redirects_page() {
 								<th>Aufrufe</th>
 								<th>Zuletzt gesehen</th>
 								<th>Referrer</th>
+								<th>Ziel</th>
 								<th>Aktionen</th>
 							</tr>
 						</thead>
 						<tbody>
 							<?php foreach ($log as $i => $entry): ?>
-								<tr>
+								<tr id="po-404-row-<?php echo $i; ?>">
 									<td><span class="po-path"><?php echo esc_html($entry['url'] ?? ''); ?></span></td>
 									<td class="po-404-count"><?php echo number_format_i18n($entry['count'] ?? 0); ?></td>
 									<td><?php echo !empty($entry['last_seen']) ? date_i18n('j. M Y, H:i', $entry['last_seen']) : '—'; ?></td>
 									<td><span class="po-404-referrer" title="<?php echo esc_attr($entry['referrer'] ?? ''); ?>"><?php echo esc_html($entry['referrer'] ?? '—'); ?></span></td>
+									<td>
+										<select class="po-quick-target" data-index="<?php echo $i; ?>" style="max-width: 220px; font-size: 12px;">
+											<option value="">— Ziel wählen —</option>
+											<?php foreach ($pages_by_type as $type_label => $type_pages): ?>
+												<optgroup label="<?php echo esc_attr($type_label); ?>">
+													<?php foreach ($type_pages as $p):
+														$permalink = wp_make_link_relative(get_permalink($p));
+													?>
+														<option value="<?php echo esc_attr($permalink); ?>">
+															<?php echo esc_html(mb_strimwidth($p->post_title, 0, 35, '…')); ?> (<?php echo esc_html($permalink); ?>)
+														</option>
+													<?php endforeach; ?>
+												</optgroup>
+											<?php endforeach; ?>
+										</select>
+									</td>
 									<td class="po-actions">
+										<button type="button" class="po-quick-redirect" data-index="<?php echo $i; ?>" data-source="<?php echo esc_attr($entry['url'] ?? ''); ?>">Redirect</button>
 										<form method="post" style="display:inline;">
 											<?php wp_nonce_field('parkourone_404_redirect_nonce'); ?>
 											<input type="hidden" name="log_index" value="<?php echo $i; ?>">
-											<button type="submit" name="parkourone_404_to_redirect">Redirect erstellen</button>
+											<button type="submit" name="parkourone_404_to_redirect">Manuell</button>
 										</form>
 										<form method="post" style="display:inline;">
 											<?php wp_nonce_field('parkourone_404_delete_nonce'); ?>
@@ -415,6 +496,57 @@ function parkourone_redirects_page() {
 					document.getElementById('po-redirect-submit').textContent = 'Aktualisieren';
 					document.getElementById('po-redirect-cancel').style.display = '';
 					document.getElementById('po-redirect-form').scrollIntoView({ behavior: 'smooth' });
+				});
+			});
+
+			// Quick-Redirect (AJAX)
+			document.querySelectorAll('.po-quick-redirect').forEach(function(btn) {
+				btn.addEventListener('click', function() {
+					var index = btn.dataset.index;
+					var source = btn.dataset.source;
+					var select = document.querySelector('.po-quick-target[data-index="' + index + '"]');
+					var target = select ? select.value : '';
+
+					if (!target) {
+						alert('Bitte zuerst ein Ziel aus dem Dropdown wählen.');
+						return;
+					}
+
+					btn.disabled = true;
+					btn.textContent = 'Wird erstellt...';
+
+					var formData = new FormData();
+					formData.append('action', 'parkourone_quick_redirect');
+					formData.append('nonce', '<?php echo wp_create_nonce('parkourone_quick_redirect_nonce'); ?>');
+					formData.append('source', source);
+					formData.append('target', target);
+					formData.append('log_index', index);
+
+					fetch(ajaxurl, {
+						method: 'POST',
+						body: formData,
+					})
+					.then(function(r) { return r.json(); })
+					.then(function(data) {
+						var row = document.getElementById('po-404-row-' + index);
+						if (data.success && row) {
+							row.style.background = '#f0fdf4';
+							row.style.transition = 'background 0.3s';
+							var actionsCell = row.querySelector('.po-actions');
+							actionsCell.innerHTML = '<span style="color: #22c55e; font-weight: 600;">Redirect erstellt → ' + data.data.target + '</span>';
+							var targetCell = row.querySelector('.po-quick-target');
+							if (targetCell) targetCell.parentElement.innerHTML = '<span style="color:#22c55e;">' + data.data.target + '</span>';
+						} else {
+							btn.disabled = false;
+							btn.textContent = 'Redirect';
+							alert(data.data || 'Fehler beim Erstellen.');
+						}
+					})
+					.catch(function() {
+						btn.disabled = false;
+						btn.textContent = 'Redirect';
+						alert('Netzwerkfehler.');
+					});
 				});
 			});
 

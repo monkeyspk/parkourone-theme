@@ -103,6 +103,20 @@ class PO_Consent_Services {
 				'country' => 'EU',
 			],
 
+			'parkourone_analytics' => [
+				'id' => 'parkourone_analytics',
+				'name' => 'ParkourONE Analytics',
+				'description' => 'Eigenes, datenschutzfreundliches Analyse-Tool. Alle Daten bleiben auf unserem Server.',
+				'category' => PO_Consent_Manager::CATEGORY_ANALYTICS,
+				'cookies' => [],
+				'cookie_duration' => 'Session Storage (wird beim Schliessen gelöscht)',
+				'legal_basis' => 'Art. 6 Abs. 1 lit. a DSGVO (Einwilligung)',
+				'scripts' => [],
+				'provider' => 'ParkourONE (Eigenbetrieb)',
+				'country' => 'CH',
+				'privacy_policy_url' => '/datenschutz/',
+			],
+
 			// ========================================
 			// Marketing
 			// ========================================
@@ -251,6 +265,12 @@ class PO_Consent_Services {
 			if (isset($services['mailerlite'])) {
 				$consent_manager->register_service($services['mailerlite']);
 			}
+		}
+
+		// ParkourONE Analytics ist immer aktiv im Theme
+		$services = $this->get_available_services();
+		if (isset($services['parkourone_analytics'])) {
+			$consent_manager->register_service($services['parkourone_analytics']);
 		}
 
 		// YouTube in Content?

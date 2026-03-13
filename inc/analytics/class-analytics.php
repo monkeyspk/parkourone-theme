@@ -45,6 +45,9 @@ class PO_Analytics {
 		// Frontend Tracker
 		add_action('wp_enqueue_scripts', [$this, 'enqueue_tracker']);
 
+		// Consent-freier Fallback: serverseitiger Pageview
+		add_action('wp_footer', [$this, 'track_basic_pageview']);
+
 		// REST API
 		add_action('rest_api_init', [$this, 'register_rest_routes']);
 
@@ -175,6 +178,37 @@ class PO_Analytics {
 			'endpoint' => rest_url('parkourone/v1/analytics/track'),
 			'nonce' => wp_create_nonce('wp_rest'),
 		]);
+	}
+
+	/**
+	 * Consent-freier Fallback: Serverseitiger Pageview ohne JS/sessionStorage
+	 * Nur wenn KEIN Analytics-Consent erteilt (sonst macht der JS-Tracker das)
+	 */
+	public function track_basic_pageview() {
+		// Admins nicht tracken
+		if (is_user_logged_in() && current_user_can('manage_options')) {
+			return;
+		}
+
+		// Bot-Check
+		$ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
+		if (empty($ua) || preg_match('/bot|crawl|spider|slurp|facebookexternalhit|Bytespider|GPTBot/i', $ua)) {
+			return;
+		}
+
+		// Wenn Consent erteilt: JS-Tracker übernimmt, kein Server-Tracking
+		if (function_exists('po_has_consent') && po_has_consent('analytics')) {
+			return;
+		}
+
+		// Aktuelle URL ermitteln
+		$page_url = isset($_SERVER['REQUEST_URI']) ? strtok($_SERVER['REQUEST_URI'], '?') : '/';
+		$page_title = is_singular() ? get_the_title() : wp_title('', false);
+
+		$this->insert_server_event('pageview', $page_url, [
+			'page_title'  => $page_title,
+			'event_label' => 'server_fallback',
+		], '', true);
 	}
 
 	/**
@@ -366,9 +400,9 @@ class PO_Analytics {
 	/**
 	 * Server-seitiges Event einfügen (DSGVO-konform)
 	 */
-	private function insert_server_event($event_type, $page_url, $extra = [], $session_id = '') {
-		// DSGVO: Consent prüfen
-		if (function_exists('po_has_consent') && !po_has_consent('analytics')) {
+	private function insert_server_event($event_type, $page_url, $extra = [], $session_id = '', $skip_consent = false) {
+		// DSGVO: Consent prüfen (überspringen für Fallback-Tracking)
+		if (!$skip_consent && function_exists('po_has_consent') && !po_has_consent('analytics')) {
 			return;
 		}
 
@@ -382,6 +416,11 @@ class PO_Analytics {
 		// Visitor-Hash identisch wie Frontend (IP + UA + Datum)
 		$raw = ($_SERVER['REMOTE_ADDR'] ?? '') . ($_SERVER['HTTP_USER_AGENT'] ?? '') . date('Y-m-d');
 		$visitor_hash = hash('sha256', $raw);
+
+		// Fallback Session-ID wenn keine übergeben
+		if (empty($session_id)) {
+			$session_id = uniqid('srv_', true);
+		}
 
 		$data = array_merge([
 			'session_id'   => $session_id,
@@ -438,16 +477,24 @@ class PO_Analytics {
 		$table = "{$wpdb->prefix}po_analytics_events";
 		$since = date('Y-m-d H:i:s', strtotime("-{$days} days"));
 
+		$js_pageviews = (int) $wpdb->get_var($wpdb->prepare(
+			"SELECT COUNT(*) FROM $table WHERE event_type='pageview' AND (event_label != 'server_fallback' OR event_label IS NULL) AND created_at >= %s", $since
+		));
+		$server_pageviews = (int) $wpdb->get_var($wpdb->prepare(
+			"SELECT COUNT(*) FROM $table WHERE event_type='pageview' AND event_label = 'server_fallback' AND created_at >= %s", $since
+		));
+		$total_pageviews = $js_pageviews + $server_pageviews;
+		$consent_rate = $total_pageviews > 0 ? round(($js_pageviews / $total_pageviews) * 100) : 0;
+
 		return [
-			'pageviews' => (int) $wpdb->get_var($wpdb->prepare(
-				"SELECT COUNT(*) FROM $table WHERE event_type='pageview' AND created_at >= %s", $since
-			)),
+			'pageviews' => $total_pageviews,
 			'visitors' => (int) $wpdb->get_var($wpdb->prepare(
 				"SELECT COUNT(DISTINCT visitor_hash) FROM $table WHERE created_at >= %s", $since
 			)),
 			'sessions' => (int) $wpdb->get_var($wpdb->prepare(
-				"SELECT COUNT(DISTINCT session_id) FROM $table WHERE created_at >= %s", $since
+				"SELECT COUNT(DISTINCT session_id) FROM $table WHERE session_id NOT LIKE 'srv_%%' AND created_at >= %s", $since
 			)),
+			'consent_rate' => $consent_rate,
 		];
 	}
 
@@ -511,6 +558,7 @@ class PO_Analytics {
 			'seiten'     => 'Alle Seiten',
 			'kampagnen'  => 'Kampagnen',
 			'conversions' => 'Conversions',
+			'audit'      => 'DSGVO-Audit',
 		];
 		?>
 		<div class="wrap" style="max-width: 1000px;">
@@ -545,6 +593,9 @@ class PO_Analytics {
 				case 'conversions':
 					$this->render_tab_conversions();
 					break;
+				case 'audit':
+					$this->render_tab_audit();
+					break;
 				default:
 					$this->render_tab_uebersicht();
 					break;
@@ -576,7 +627,7 @@ class PO_Analytics {
 				$last_week_start, $last_week_end
 			)),
 			'sessions' => (int) $wpdb->get_var($wpdb->prepare(
-				"SELECT COUNT(DISTINCT session_id) FROM $table WHERE created_at >= %s AND created_at < %s",
+				"SELECT COUNT(DISTINCT session_id) FROM $table WHERE session_id NOT LIKE 'srv_%%' AND created_at >= %s AND created_at < %s",
 				$last_week_start, $last_week_end
 			)),
 		];
@@ -633,6 +684,17 @@ class PO_Analytics {
 				</div>
 			</div>
 			<?php endforeach; ?>
+		</div>
+
+		<!-- Consent-Rate -->
+		<?php $consent_rate = $this_week['consent_rate'] ?? 0; ?>
+		<div style="background: #fff; padding: 12px 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.05); margin-top: 12px; display: flex; align-items: center; gap: 12px; font-size: 13px;">
+			<span style="color: #666;">Consent-Rate:</span>
+			<div style="flex: 1; max-width: 200px; height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden;">
+				<div style="width: <?php echo $consent_rate; ?>%; height: 100%; background: <?php echo $consent_rate >= 60 ? '#22c55e' : ($consent_rate >= 30 ? '#eab308' : '#ef4444'); ?>; border-radius: 3px;"></div>
+			</div>
+			<span style="font-weight: 600;"><?php echo $consent_rate; ?>%</span>
+			<span style="color: #999;">der Pageviews mit Consent (JS-Tracker)</span>
 		</div>
 
 		<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
@@ -1310,6 +1372,304 @@ class PO_Analytics {
 	}
 
 	/**
+	 * Tab: DSGVO Self-Audit
+	 */
+	private function render_tab_audit() {
+		// Manueller Re-Check
+		if (isset($_GET['recheck_audit']) && wp_verify_nonce($_GET['_wpnonce'] ?? '', 'po_recheck_audit')) {
+			delete_transient('po_audit_results');
+		}
+
+		// Cache: 1x täglich
+		$results = get_transient('po_audit_results');
+		if ($results === false) {
+			$results = $this->run_audit_checks();
+			set_transient('po_audit_results', $results, DAY_IN_SECONDS);
+		}
+
+		// Score berechnen
+		$errors = 0;
+		$warnings = 0;
+		foreach ($results as $r) {
+			if ($r['status'] === 'error') $errors++;
+			if ($r['status'] === 'warning') $warnings++;
+		}
+
+		if ($errors === 0 && $warnings === 0) {
+			$grade = 'A';
+			$grade_color = '#22c55e';
+			$grade_bg = '#f0fdf4';
+		} elseif ($errors === 0 && $warnings <= 2) {
+			$grade = 'B';
+			$grade_color = '#84cc16';
+			$grade_bg = '#f7fee7';
+		} elseif ($errors <= 3) {
+			$grade = 'C';
+			$grade_color = '#eab308';
+			$grade_bg = '#fefce8';
+		} else {
+			$grade = 'D';
+			$grade_color = '#ef4444';
+			$grade_bg = '#fef2f2';
+		}
+
+		$last_check = get_option('po_audit_last_check', 0);
+		?>
+		<div style="display: flex; gap: 24px; align-items: flex-start; margin-bottom: 24px;">
+			<!-- Score Badge -->
+			<div style="background: <?php echo $grade_bg; ?>; border: 3px solid <?php echo $grade_color; ?>; border-radius: 16px; padding: 24px 36px; text-align: center; min-width: 120px;">
+				<div style="font-size: 64px; font-weight: 800; color: <?php echo $grade_color; ?>; line-height: 1;"><?php echo $grade; ?></div>
+				<div style="font-size: 13px; color: #666; margin-top: 8px;">DSGVO-Score</div>
+				<div style="font-size: 11px; color: #999; margin-top: 4px;">
+					<?php echo $errors; ?> Fehler, <?php echo $warnings; ?> Warnungen
+				</div>
+			</div>
+
+			<div style="flex: 1;">
+				<p style="color: #666; margin: 0 0 12px;">Automatischer Self-Check deiner DSGVO-Konformität. Prüft Security Headers, Consent-Banner, Datenschutzerklärung und mehr.</p>
+				<div style="display: flex; gap: 12px; align-items: center;">
+					<a href="<?php echo wp_nonce_url(admin_url('admin.php?page=parkourone-analytics&tab=audit&recheck_audit=1'), 'po_recheck_audit'); ?>" class="button button-primary">
+						Erneut prüfen
+					</a>
+					<?php if ($last_check > 0): ?>
+						<span style="color: #999; font-size: 12px;">Letzter Check: <?php echo date_i18n('j. M Y, H:i', $last_check); ?></span>
+					<?php endif; ?>
+				</div>
+			</div>
+		</div>
+
+		<!-- Checkliste -->
+		<div style="background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.1); overflow: hidden;">
+			<?php foreach ($results as $check): ?>
+				<?php
+				$icon_map = ['ok' => '&#9989;', 'warning' => '&#9888;&#65039;', 'error' => '&#10060;'];
+				$bg_map = ['ok' => 'transparent', 'warning' => '#fffbeb', 'error' => '#fef2f2'];
+				$icon = $icon_map[$check['status']] ?? '&#9989;';
+				$bg = $bg_map[$check['status']] ?? 'transparent';
+				?>
+				<div style="padding: 14px 20px; border-bottom: 1px solid #f0f0f1; display: flex; align-items: flex-start; gap: 12px; background: <?php echo $bg; ?>;">
+					<span style="font-size: 16px; flex-shrink: 0; line-height: 1.4;"><?php echo $icon; ?></span>
+					<div style="flex: 1;">
+						<div style="font-weight: 600; font-size: 14px;"><?php echo esc_html($check['title']); ?></div>
+						<div style="font-size: 13px; color: #555; margin-top: 2px;"><?php echo esc_html($check['message']); ?></div>
+					</div>
+					<span style="font-size: 11px; color: #999; white-space: nowrap;"><?php echo esc_html($check['group']); ?></span>
+				</div>
+			<?php endforeach; ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * DSGVO-Audit Checks ausführen
+	 */
+	private function run_audit_checks() {
+		$results = [];
+
+		// ── 1. Security Headers ──
+		$response = wp_remote_get(home_url('/'), [
+			'timeout'   => 10,
+			'sslverify' => false,
+			'headers'   => ['User-Agent' => 'ParkourONE-Audit/1.0'],
+		]);
+
+		if (!is_wp_error($response)) {
+			$headers = wp_remote_retrieve_headers($response);
+
+			$header_checks = [
+				'strict-transport-security' => ['name' => 'HSTS (Strict-Transport-Security)', 'required' => true],
+				'x-content-type-options'    => ['name' => 'X-Content-Type-Options', 'required' => true],
+				'x-frame-options'           => ['name' => 'X-Frame-Options', 'required' => true],
+				'referrer-policy'           => ['name' => 'Referrer-Policy', 'required' => true],
+				'permissions-policy'        => ['name' => 'Permissions-Policy', 'required' => false],
+				'content-security-policy'   => ['name' => 'Content-Security-Policy (CSP)', 'required' => false],
+			];
+
+			foreach ($header_checks as $header => $info) {
+				$value = '';
+				if ($headers instanceof \WpOrg\Requests\Utility\CaseInsensitiveDictionary || $headers instanceof \Requests_Utility_CaseInsensitiveDictionary) {
+					$value = isset($headers[$header]) ? $headers[$header] : '';
+				} elseif (is_array($headers)) {
+					$value = $headers[$header] ?? '';
+				}
+
+				if (!empty($value)) {
+					$results[] = [
+						'group'   => 'Security Headers',
+						'title'   => $info['name'],
+						'message' => 'Vorhanden: ' . (is_string($value) ? $value : 'gesetzt'),
+						'status'  => 'ok',
+					];
+				} else {
+					$results[] = [
+						'group'   => 'Security Headers',
+						'title'   => $info['name'] . ' fehlt',
+						'message' => $info['required']
+							? 'Dieser Security Header sollte gesetzt sein.'
+							: 'Empfohlen, aber nicht zwingend erforderlich.',
+						'status'  => $info['required'] ? 'error' : 'warning',
+					];
+				}
+			}
+		} else {
+			$results[] = [
+				'group'   => 'Security Headers',
+				'title'   => 'Header-Check fehlgeschlagen',
+				'message' => 'Konnte keine Verbindung zu ' . home_url('/') . ' herstellen.',
+				'status'  => 'warning',
+			];
+		}
+
+		// ── 2. SSL/TLS ──
+		$results[] = [
+			'group'   => 'SSL/TLS',
+			'title'   => is_ssl() ? 'SSL aktiv' : 'Kein SSL',
+			'message' => is_ssl()
+				? 'Die Website wird über HTTPS ausgeliefert.'
+				: 'HTTPS ist nicht aktiv. DSGVO erfordert Verschlüsselung bei Datenübertragung.',
+			'status'  => is_ssl() ? 'ok' : 'error',
+		];
+
+		// ── 3. Consent-Banner ──
+		if (class_exists('PO_Consent_Manager')) {
+			$cm = PO_Consent_Manager::get_instance();
+
+			$results[] = [
+				'group'   => 'Consent',
+				'title'   => 'Consent Manager aktiv',
+				'message' => 'PO_Consent_Manager ist geladen (Version ' . PO_Consent_Manager::CONSENT_VERSION . ').',
+				'status'  => 'ok',
+			];
+
+			// Services registriert?
+			$services = $cm->get_services();
+			$service_count = is_array($services) ? count($services) : 0;
+			$results[] = [
+				'group'   => 'Consent',
+				'title'   => $service_count . ' Services registriert',
+				'message' => $service_count > 0
+					? 'Registrierte Services werden im Cookie-Banner angezeigt.'
+					: 'Keine Services registriert – der Banner zeigt keine Auswahl.',
+				'status'  => $service_count > 0 ? 'ok' : 'warning',
+			];
+
+			// Cookie Expiry prüfen
+			$expiry_days = defined('PO_Consent_Manager::CONSENT_EXPIRY_DAYS') ? PO_Consent_Manager::CONSENT_EXPIRY_DAYS : 180;
+			$results[] = [
+				'group'   => 'Consent',
+				'title'   => 'Cookie-Laufzeit: ' . $expiry_days . ' Tage',
+				'message' => $expiry_days <= 180
+					? 'DSGVO-konform (max. 6 Monate empfohlen).'
+					: 'Laufzeit über 180 Tage – EDPB empfiehlt max. 6 Monate.',
+				'status'  => $expiry_days <= 180 ? 'ok' : 'warning',
+			];
+		} else {
+			$results[] = [
+				'group'   => 'Consent',
+				'title'   => 'Kein Consent Manager',
+				'message' => 'PO_Consent_Manager ist nicht geladen. Cookie-Banner fehlt.',
+				'status'  => 'error',
+			];
+		}
+
+		// ── 4. Datenschutzerklärung vs. Services ──
+		$dse_page = get_page_by_path('datenschutz');
+		if ($dse_page) {
+			$dse_content = strtolower($dse_page->post_content);
+			$results[] = [
+				'group'   => 'DSE',
+				'title'   => 'Datenschutzseite vorhanden',
+				'message' => '/datenschutz/ existiert und hat Inhalt.',
+				'status'  => 'ok',
+			];
+
+			// Prüfe ob registrierte Services in der DSE erwähnt werden
+			if (class_exists('PO_Consent_Manager')) {
+				$services = PO_Consent_Manager::get_instance()->get_services();
+				if (is_array($services)) {
+					foreach ($services as $service) {
+						if (!empty($service['required'])) continue; // Notwendige überspringen
+						$name = strtolower($service['name'] ?? '');
+						$provider = strtolower($service['provider'] ?? '');
+						$found = false;
+
+						if ($name && strpos($dse_content, $name) !== false) $found = true;
+						if (!$found && $provider && strpos($dse_content, $provider) !== false) $found = true;
+
+						if (!$found) {
+							$results[] = [
+								'group'   => 'DSE',
+								'title'   => 'Service fehlt in DSE: ' . ($service['name'] ?? $service['id']),
+								'message' => 'Der Service "' . ($service['name'] ?? '') . '" (Anbieter: ' . ($service['provider'] ?? 'unbekannt') . ') wird in der Datenschutzerklärung nicht erwähnt.',
+								'status'  => 'error',
+							];
+						}
+					}
+				}
+			}
+		} else {
+			$results[] = [
+				'group'   => 'DSE',
+				'title'   => 'Keine Datenschutzseite',
+				'message' => 'Keine Seite unter /datenschutz/ gefunden. DSGVO erfordert eine Datenschutzerklärung.',
+				'status'  => 'error',
+			];
+		}
+
+		// ── 5. Blocking-Config vs. Services ──
+		if (class_exists('PO_Consent_Early') && class_exists('PO_Consent_Manager')) {
+			$services = PO_Consent_Manager::get_instance()->get_services();
+			if (is_array($services)) {
+				$services_with_scripts = array_filter($services, function($s) {
+					return !empty($s['scripts']) && empty($s['required']);
+				});
+
+				if (!empty($services_with_scripts)) {
+					// Lese blocked_url_patterns via Reflection (Property ist private)
+					try {
+						$early_ref = new \ReflectionClass('PO_Consent_Early');
+						$blocked_prop = $early_ref->getProperty('blocked_url_patterns');
+						$blocked_prop->setAccessible(true);
+
+						// Nutze existierende globale Instanz
+						global $po_consent_early;
+						if (isset($po_consent_early) && $po_consent_early instanceof PO_Consent_Early) {
+							$blocked_patterns = $blocked_prop->getValue($po_consent_early);
+							$blocked_flat = implode(' ', array_keys($blocked_patterns));
+
+							foreach ($services_with_scripts as $service) {
+								$all_blocked = true;
+								foreach ($service['scripts'] as $script) {
+									$script_escaped = str_replace('.', '\\.', $script);
+									if (strpos($blocked_flat, $script_escaped) === false && strpos($blocked_flat, $script) === false) {
+										$all_blocked = false;
+										break;
+									}
+								}
+								if (!$all_blocked) {
+									$results[] = [
+										'group'   => 'Blocking',
+										'title'   => 'Service nicht geblockt: ' . ($service['name'] ?? $service['id']),
+										'message' => 'Scripts von "' . ($service['name'] ?? '') . '" sind nicht in der Early-Blocking-Config enthalten.',
+										'status'  => 'warning',
+									];
+								}
+							}
+						}
+					} catch (\Throwable $e) {
+						// Reflection fehlgeschlagen, überspringen
+					}
+				}
+			}
+		}
+
+		// Zeitstempel speichern
+		update_option('po_audit_last_check', time());
+
+		return $results;
+	}
+
+	/**
 	 * Rohdaten-Seite rendern
 	 */
 	public function render_raw_data() {
@@ -1444,7 +1804,7 @@ class PO_Analytics {
 					<li><strong>Automatische Löschung</strong> – Daten werden nach 365 Tagen gelöscht</li>
 					<li><strong>Admins werden nicht getrackt</strong></li>
 				</ul>
-				<p style="margin: 15px 0 0;"><strong>Kein Cookie-Banner nötig!</strong></p>
+				<p style="margin: 15px 0 0;"><strong>Erfordert Analytics-Consent</strong> – Volles Tracking nur mit Einwilligung, Basis-Pageviews ohne. Im Cookie-Banner als "ParkourONE Analytics" unter Statistik sichtbar.</p>
 			</div>
 		</div>
 		<?php
