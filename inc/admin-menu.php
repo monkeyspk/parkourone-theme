@@ -462,12 +462,7 @@ function parkourone_menu_footer_page() {
 			'social_instagram' => esc_url_raw($_POST['footer_social_instagram'] ?? ''),
 			'social_youtube' => esc_url_raw($_POST['footer_social_youtube'] ?? ''),
 			'social_podcast' => esc_url_raw($_POST['footer_social_podcast'] ?? ''),
-			'newsletter_headline' => sanitize_text_field($_POST['footer_newsletter_headline'] ?? ''),
-			'newsletter_text' => sanitize_text_field($_POST['footer_newsletter_text'] ?? ''),
-			'newsletter_embed' => current_user_can('unfiltered_html')
-				? wp_unslash($_POST['footer_newsletter_embed'] ?? '')
-				: wp_kses_post(wp_unslash($_POST['footer_newsletter_embed'] ?? '')),
-			'mailerlite_api_key' => sanitize_text_field($_POST['footer_mailerlite_api_key'] ?? ''),
+			'newsletter_url' => esc_url_raw($_POST['footer_newsletter_url'] ?? ''),
 			'location_display_text' => sanitize_text_field($_POST['footer_location_display_text'] ?? ''),
 			// Standorte + Copyright Jahr werden automatisch generiert
 		];
@@ -491,10 +486,7 @@ function parkourone_menu_footer_page() {
 		'social_instagram' => '',
 		'social_youtube' => '',
 		'social_podcast' => '',
-		'newsletter_headline' => '',
-		'newsletter_text' => '',
-		'newsletter_embed' => '',
-		'mailerlite_api_key' => '',
+		'newsletter_url' => '',
 		'location_display_text' => '',
 		// Automatisch: Standorte, Zentrale, Copyright Jahr (siehe footer/render.php)
 	];
@@ -730,34 +722,9 @@ function parkourone_menu_footer_page() {
 				<div class="po-form-section">
 					<h3>Newsletter</h3>
 					<div class="po-form-row">
-						<label>Überschrift</label>
-						<input type="text" name="footer_newsletter_headline" value="<?php echo esc_attr($options['newsletter_headline']); ?>" placeholder="Newsletter abonnieren">
-					</div>
-					<div class="po-form-row">
-						<label>Text</label>
-						<input type="text" name="footer_newsletter_text" value="<?php echo esc_attr($options['newsletter_text']); ?>" placeholder="Bleib auf dem Laufenden!">
-					</div>
-					<div class="po-form-row">
-						<label>MailerLite Embed Code</label>
-						<div>
-							<textarea name="footer_newsletter_embed" rows="8" style="width: 100%; max-width: 600px; font-family: monospace; font-size: 12px;" placeholder="<!-- MailerLite Embed Code hier einfügen -->"><?php echo esc_textarea($options['newsletter_embed']); ?></textarea>
-							<div style="background: #f0f6fc; padding: 15px; border-radius: 4px; border-left: 4px solid #2271b1; margin-top: 12px;">
-								<strong>Anleitung: MailerLite Formular einbinden</strong>
-								<ol style="margin: 10px 0 0; padding-left: 20px; font-size: 13px; line-height: 1.8;">
-									<li>Öffne <a href="https://dashboard.mailerlite.com/forms/embedded" target="_blank">MailerLite</a> und gehe zu <strong>Forms &rarr; Embedded forms</strong></li>
-									<li>Klicke auf <strong>&quot;Create embedded form&quot;</strong></li>
-									<li>Wähle einen Namen (z.B. &quot;Footer Newsletter&quot;) und eine Subscriber-Gruppe</li>
-									<li>Aktiviere unter <strong>Settings</strong> die <strong>&quot;Confirmation checkbox&quot;</strong> (DSGVO-Pflicht)</li>
-									<li>Passe den Checkbox-Text an, z.B.: <em>&quot;Ich möchte den ParkourONE Newsletter erhalten.&quot;</em></li>
-									<li>Klicke auf <strong>&quot;Save &amp; publish&quot;</strong></li>
-									<li>Wähle den Tab <strong>&quot;HTML code&quot;</strong></li>
-									<li>Kopiere <strong>beide Code-Blöcke</strong> (JavaScript Snippet + das div darunter) und füge alles hier ein</li>
-								</ol>
-								<p style="margin: 10px 0 0; font-size: 12px; color: #646970;">
-									Das Design wird automatisch an den Footer angepasst &ndash; in MailerLite muss nichts gestyled werden.
-								</p>
-							</div>
-						</div>
+						<label>Newsletter URL</label>
+						<input type="url" name="footer_newsletter_url" value="<?php echo esc_attr($options['newsletter_url']); ?>" placeholder="https://...">
+						<p style="margin: 5px 0 0; font-size: 12px; color: #646970;">Link zur Newsletter-Anmeldeseite (wird im Kontakt-Bereich angezeigt)</p>
 					</div>
 				</div>
 
@@ -791,7 +758,7 @@ function parkourone_menu_footer_page() {
 			<h2 style="margin-top: 40px;">Footer-Vorschau</h2>
 			<p>So sieht der Footer mit den aktuellen Einstellungen aus:</p>
 			<div class="po-footer-preview">
-				<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px;">
+				<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px;">
 					<div>
 						<strong><?php echo esc_html($options['company_name'] ?: 'Firmenname'); ?></strong>
 						<p style="white-space: pre-line; margin-top: 10px; opacity: 0.8;"><?php echo esc_html($options['company_address'] ?: 'Adresse'); ?></p>
@@ -800,6 +767,7 @@ function parkourone_menu_footer_page() {
 						<strong>Kontakt</strong>
 						<?php if ($options['phone']): ?><p style="margin-top: 10px;"><?php echo esc_html($options['phone']); ?></p><?php endif; ?>
 						<?php if ($options['email']): ?><p><?php echo esc_html($options['email']); ?></p><?php endif; ?>
+						<?php if ($options['newsletter_url']): ?><p><a href="<?php echo esc_url($options['newsletter_url']); ?>" style="color: #ccc;">Newsletter</a></p><?php endif; ?>
 					</div>
 					<div>
 						<strong>Standorte</strong>
@@ -809,10 +777,6 @@ function parkourone_menu_footer_page() {
 						<p style="margin-top: 5px;">Hannover</p>
 						<p style="margin-top: 5px;">...</p>
 						<p style="margin-top: 5px; font-size: 11px; opacity: 0.7;">Aktueller Standort wird ausgeblendet</p>
-					</div>
-					<div>
-						<strong><?php echo esc_html($options['newsletter_headline'] ?: 'Newsletter'); ?></strong>
-						<p style="margin-top: 10px; opacity: 0.8;"><?php echo esc_html($options['newsletter_text']); ?></p>
 					</div>
 				</div>
 				<div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); display: flex; justify-content: space-between; opacity: 0.7; font-size: 14px;">

@@ -27,9 +27,7 @@ $email = po_footer_value('email', $attributes['email'] ?? '', $footer_options);
 $contactFormUrl = po_footer_value('contact_form_url', $attributes['contactFormUrl'] ?? '', $footer_options);
 $phoneHours = po_footer_value('phone_hours', $attributes['phoneHours'] ?? '', $footer_options);
 // Zentrale entfernt - Schweiz ist jetzt Teil der automatischen Standorte-Liste
-$newsletterHeadline = po_footer_value('newsletter_headline', $attributes['newsletterHeadline'] ?? '', $footer_options);
-$newsletterText = po_footer_value('newsletter_text', $attributes['newsletterText'] ?? '', $footer_options);
-$newsletterEmbed = $footer_options['newsletter_embed'] ?? '';
+$newsletterUrl = po_footer_value('newsletter_url', $attributes['newsletterUrl'] ?? '', $footer_options);
 // Copyright Jahr immer automatisch aktuelles Jahr
 $copyrightYear = date('Y');
 
@@ -130,6 +128,9 @@ if (empty($cookiesUrl) || $cookiesUrl === '#') {
 			<?php if ($contactFormUrl && $contactFormUrl !== '#'): ?>
 				<p><a href="<?php echo esc_url($contactFormUrl); ?>">Kontaktformular</a></p>
 			<?php endif; ?>
+			<?php if ($newsletterUrl && $newsletterUrl !== '#'): ?>
+				<p><a href="<?php echo esc_url($newsletterUrl); ?>">Newsletter</a></p>
+			<?php endif; ?>
 			<?php if ($phoneHours): ?>
 				<strong style="margin-top: 1rem;">Telefonzeiten:</strong>
 				<p class="po-footer__hours"><?php echo nl2br(esc_html($phoneHours)); ?></p>
@@ -147,37 +148,6 @@ if (empty($cookiesUrl) || $cookiesUrl === '#') {
 				<strong>Zentrale</strong>
 				<a href="<?php echo esc_url($zentraleUrl); ?>"><?php echo esc_html($zentraleName); ?></a>
 			</div>
-		</div>
-		
-		<div class="po-footer__col po-footer__col--newsletter">
-			<?php if ($newsletterHeadline): ?>
-				<strong><?php echo esc_html($newsletterHeadline); ?></strong>
-			<?php endif; ?>
-			<?php if ($newsletterText): ?>
-				<p><?php echo esc_html($newsletterText); ?></p>
-			<?php endif; ?>
-			<?php if (!empty($newsletterEmbed)): ?>
-				<!-- MailerLite/Newsletter Embed -->
-				<div class="po-footer__newsletter-embed">
-					<?php echo wp_kses($newsletterEmbed, [
-						'form'   => ['action' => [], 'method' => [], 'class' => [], 'id' => [], 'target' => [], 'data-*' => true],
-						'input'  => ['type' => [], 'name' => [], 'value' => [], 'placeholder' => [], 'class' => [], 'id' => [], 'required' => [], 'aria-label' => []],
-						'button' => ['type' => [], 'class' => [], 'id' => [], 'aria-label' => []],
-						'label'  => ['for' => [], 'class' => []],
-						'div'    => ['class' => [], 'id' => [], 'style' => []],
-						'span'   => ['class' => [], 'id' => []],
-						'p'      => ['class' => []],
-						'a'      => ['href' => [], 'target' => [], 'rel' => [], 'class' => []],
-						'img'    => ['src' => [], 'alt' => [], 'class' => [], 'width' => [], 'height' => []],
-						'script' => ['src' => [], 'type' => [], 'async' => [], 'defer' => []],
-					]); ?>
-				</div>
-			<?php else: ?>
-				<!-- Platzhalter wenn kein Newsletter konfiguriert -->
-				<p class="po-footer__newsletter-placeholder" style="opacity: 0.5; font-size: 0.875rem;">
-					Newsletter-Formular nicht konfiguriert
-				</p>
-			<?php endif; ?>
 		</div>
 	</div>
 	

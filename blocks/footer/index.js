@@ -15,11 +15,11 @@
 				arr[i] = { ...arr[i], [key]: val };
 				setAttributes({ standorte: arr });
 			};
-			
+
 			const addStandort = function() {
 				setAttributes({ standorte: [...standorte, {name:'Neuer Standort', url:'#'}] });
 			};
-			
+
 			const removeStandort = function(i) {
 				setAttributes({ standorte: standorte.filter(function(_, idx) { return idx !== i; }) });
 			};
@@ -119,16 +119,10 @@
 					]),
 					el(PanelBody, { title: 'Newsletter', initialOpen: false }, [
 						el(TextControl, {
-							key: 'nlhead',
-							label: 'Überschrift',
-							value: attributes.newsletterHeadline,
-							onChange: function(v) { setAttributes({ newsletterHeadline: v }); }
-						}),
-						el(TextControl, {
-							key: 'nltext',
-							label: 'Text',
-							value: attributes.newsletterText,
-							onChange: function(v) { setAttributes({ newsletterText: v }); }
+							key: 'nlurl',
+							label: 'Newsletter URL',
+							value: attributes.newsletterUrl,
+							onChange: function(v) { setAttributes({ newsletterUrl: v }); }
 						})
 					]),
 					el(PanelBody, { title: 'Links & Copyright', initialOpen: false }, [
@@ -175,10 +169,6 @@
 							standorte.map(function(s, i) {
 								return el('span', { key: i, style: { display: 'block' } }, s.name);
 							})
-						]),
-						el('div', { key: 'col4', className: 'po-footer__col' }, [
-							el('strong', { key: 'title' }, attributes.newsletterHeadline),
-							el('p', { key: 'text' }, attributes.newsletterText)
 						])
 					]),
 					el('div', { key: 'bottom', className: 'po-footer__bottom' }, [

@@ -6,7 +6,7 @@
 	"title": "Footer",
 	"category": "parkourone-layout",
 	"icon": "align-full-width",
-	"description": "Vollständiger Footer mit Kontakt, Standorten und Newsletter.",
+	"description": "Vollständiger Footer mit Kontakt und Standorten.",
 	"keywords": [
 		"footer",
 		"fußzeile",
@@ -65,11 +65,7 @@
 			"type": "string",
 			"default": ""
 		},
-		"newsletterHeadline": {
-			"type": "string",
-			"default": ""
-		},
-		"newsletterText": {
+		"newsletterUrl": {
 			"type": "string",
 			"default": ""
 		},
