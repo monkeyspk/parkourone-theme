@@ -181,8 +181,8 @@ class PO_Analytics {
 	}
 
 	/**
-	 * Consent-freier Fallback: Serverseitiger Pageview ohne JS/sessionStorage
-	 * Nur wenn KEIN Analytics-Consent erteilt (sonst macht der JS-Tracker das)
+	 * Consent-freier Fallback: Daten sammeln in wp_footer (braucht Template-Funktionen)
+	 * DB-INSERT wird in shutdown ausgeführt (nach Response → kein Performance-Impact)
 	 */
 	public function track_basic_pageview() {
 		// Admins nicht tracken
@@ -201,12 +201,31 @@ class PO_Analytics {
 			return;
 		}
 
-		// Aktuelle URL ermitteln
+		// Daten sammeln (Template-Funktionen nur hier verfügbar)
 		$page_url = isset($_SERVER['REQUEST_URI']) ? strtok($_SERVER['REQUEST_URI'], '?') : '/';
 		$page_title = is_singular() ? get_the_title() : wp_title('', false);
 
-		$this->insert_server_event('pageview', $page_url, [
-			'page_title'  => $page_title,
+		// DB-INSERT auf shutdown verschieben (nach Response-Auslieferung)
+		$this->_pending_fallback_pageview = [
+			'page_url'   => $page_url,
+			'page_title' => $page_title,
+		];
+		add_action('shutdown', [$this, 'flush_fallback_pageview']);
+	}
+
+	/**
+	 * Fallback-Pageview in DB schreiben (läuft nach Response)
+	 */
+	public function flush_fallback_pageview() {
+		if (empty($this->_pending_fallback_pageview)) {
+			return;
+		}
+
+		$data = $this->_pending_fallback_pageview;
+		$this->_pending_fallback_pageview = null;
+
+		$this->insert_server_event('pageview', $data['page_url'], [
+			'page_title'  => $data['page_title'],
 			'event_label' => 'server_fallback',
 		], '', true);
 	}

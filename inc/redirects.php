@@ -284,7 +284,7 @@ function parkourone_redirects_page() {
 		<?php echo $notice; ?>
 
 		<style>
-			.po-redirect-admin { max-width: 960px; margin-top: 20px; }
+			.po-redirect-admin { max-width: 1200px; margin-top: 20px; }
 			.po-tabs { display: flex; gap: 0; border-bottom: 1px solid #c3c4c7; margin-bottom: 20px; }
 			.po-tab { padding: 10px 20px; cursor: pointer; border: 1px solid transparent; border-bottom: none; border-radius: 4px 4px 0 0; background: transparent; font-size: 14px; font-weight: 500; color: #646970; position: relative; bottom: -1px; }
 			.po-tab:hover { color: #1d2327; }
@@ -297,11 +297,11 @@ function parkourone_redirects_page() {
 			.po-form-row label { font-weight: 500; }
 			.po-form-row input[type="text"] { width: 100%; max-width: 400px; }
 			.po-form-row select { max-width: 200px; }
-			.po-redirect-table { border-collapse: collapse; width: 100%; }
+			.po-redirect-table { border-collapse: collapse; width: 100%; table-layout: fixed; }
 			.po-redirect-table th { text-align: left; padding: 10px 12px; border-bottom: 2px solid #c3c4c7; font-size: 13px; color: #646970; }
 			.po-redirect-table td { padding: 10px 12px; border-bottom: 1px solid #f0f0f1; font-size: 13px; vertical-align: middle; }
 			.po-redirect-table tr:hover td { background: #f9f9f9; }
-			.po-redirect-table .po-path { font-family: monospace; font-size: 12px; background: #f0f0f1; padding: 2px 8px; border-radius: 4px; word-break: break-all; }
+			.po-redirect-table .po-path { font-family: monospace; font-size: 12px; background: #f0f0f1; padding: 2px 8px; border-radius: 4px; word-break: break-word; overflow-wrap: anywhere; display: inline-block; max-width: 100%; }
 			.po-redirect-table .po-actions { white-space: nowrap; }
 			.po-redirect-table .po-actions button { background: none; border: none; cursor: pointer; color: #2271b1; font-size: 13px; padding: 2px 6px; }
 			.po-redirect-table .po-actions button:hover { color: #135e96; text-decoration: underline; }
@@ -313,7 +313,7 @@ function parkourone_redirects_page() {
 			.po-hits { color: #646970; font-variant-numeric: tabular-nums; }
 			.po-empty { text-align: center; padding: 40px 20px; color: #646970; }
 			.po-404-count { font-weight: 600; font-variant-numeric: tabular-nums; }
-			.po-404-referrer { font-size: 11px; color: #999; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+			.po-404-referrer { font-size: 11px; color: #999; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 			.po-clear-row { text-align: right; margin-bottom: 15px; }
 		</style>
 
@@ -416,12 +416,12 @@ function parkourone_redirects_page() {
 					<table class="po-redirect-table">
 						<thead>
 							<tr>
-								<th>URL</th>
-								<th>Aufrufe</th>
-								<th>Zuletzt gesehen</th>
-								<th>Referrer</th>
-								<th>Ziel</th>
-								<th>Aktionen</th>
+								<th style="width: 28%;">URL</th>
+								<th style="width: 7%;">Aufrufe</th>
+								<th style="width: 12%;">Zuletzt gesehen</th>
+								<th style="width: 10%;">Referrer</th>
+								<th style="width: 25%;">Ziel</th>
+								<th style="width: 18%;">Aktionen</th>
 							</tr>
 						</thead>
 						<tbody>
