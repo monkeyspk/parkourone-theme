@@ -159,7 +159,18 @@ if (empty($cookiesUrl) || $cookiesUrl === '#') {
 			<?php if (!empty($newsletterEmbed)): ?>
 				<!-- MailerLite/Newsletter Embed -->
 				<div class="po-footer__newsletter-embed">
-					<?php echo $newsletterEmbed; ?>
+					<?php echo wp_kses($newsletterEmbed, [
+						'form'   => ['action' => [], 'method' => [], 'class' => [], 'id' => [], 'target' => [], 'data-*' => true],
+						'input'  => ['type' => [], 'name' => [], 'value' => [], 'placeholder' => [], 'class' => [], 'id' => [], 'required' => [], 'aria-label' => []],
+						'button' => ['type' => [], 'class' => [], 'id' => [], 'aria-label' => []],
+						'label'  => ['for' => [], 'class' => []],
+						'div'    => ['class' => [], 'id' => [], 'style' => []],
+						'span'   => ['class' => [], 'id' => []],
+						'p'      => ['class' => []],
+						'a'      => ['href' => [], 'target' => [], 'rel' => [], 'class' => []],
+						'img'    => ['src' => [], 'alt' => [], 'class' => [], 'width' => [], 'height' => []],
+						'script' => ['src' => [], 'type' => [], 'async' => [], 'defer' => []],
+					]); ?>
 				</div>
 			<?php else: ?>
 				<!-- Platzhalter wenn kein Newsletter konfiguriert -->

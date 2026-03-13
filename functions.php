@@ -321,15 +321,19 @@ function parkourone_resource_hints($hints, $relation_type) {
 			'href' => 'https://academyboard.parkourone.com',
 			'crossorigin' => 'anonymous',
 		];
-		$hints[] = [
-			'href' => 'https://use.typekit.net',
-			'crossorigin' => 'anonymous',
-		];
+		if (po_has_consent('functional')) {
+			$hints[] = [
+				'href' => 'https://use.typekit.net',
+				'crossorigin' => 'anonymous',
+			];
+		}
 	}
 
 	if ($relation_type === 'dns-prefetch') {
 		$hints[] = 'https://academyboard.parkourone.com';
-		$hints[] = 'https://www.googletagmanager.com';
+		if (po_has_consent('analytics')) {
+			$hints[] = 'https://www.googletagmanager.com';
+		}
 	}
 
 	return $hints;

@@ -456,7 +456,11 @@
 					this.consent = data.data.consent;
 					window.poConsent = this.consent;
 
-					// Update Google Consent Mode
+					// Google Consent Mode initialisieren (TRUE Basic Mode)
+					// VOR activateConsentedScripts, damit gtag bereit ist wenn GA/GTM laden
+					this.initGoogleConsentMode(categories);
+
+					// Update Google Consent Mode (falls bereits initialisiert)
 					if (data.data.googleConsentUpdate && typeof gtag === 'function') {
 						gtag('consent', 'update', data.data.googleConsentUpdate);
 					}
@@ -536,9 +540,41 @@
 
 			console.log('PO Consent: Fallback cookie set successfully');
 
+			// Google Consent Mode initialisieren (TRUE Basic Mode)
+			this.initGoogleConsentMode(categories);
+
 			// Activate consented scripts and hide banner
 			this.activateConsentedScripts();
 			this.hideBanner();
+		}
+
+		/**
+		 * Google Consent Mode initialisieren (TRUE Basic Mode)
+		 * Wird beim ersten Consent-Grant aufgerufen, VOR activateConsentedScripts()
+		 */
+		initGoogleConsentMode(categories) {
+			if (!this.config.googleConsentModeEnabled) return;
+
+			const hasAnalytics = categories.includes('analytics');
+			const hasMarketing = categories.includes('marketing');
+
+			// Nur initialisieren wenn analytics oder marketing erteilt
+			if (!hasAnalytics && !hasMarketing) return;
+
+			// dataLayer + gtag Funktion erstellen
+			window.dataLayer = window.dataLayer || [];
+			window.gtag = function() { window.dataLayer.push(arguments); };
+
+			// Consent Default mit erteilten Werten setzen
+			window.gtag('consent', 'default', {
+				'ad_storage': hasMarketing ? 'granted' : 'denied',
+				'ad_user_data': hasMarketing ? 'granted' : 'denied',
+				'ad_personalization': hasMarketing ? 'granted' : 'denied',
+				'analytics_storage': hasAnalytics ? 'granted' : 'denied',
+				'functionality_storage': 'granted',
+				'personalization_storage': hasMarketing ? 'granted' : 'denied',
+				'security_storage': 'granted'
+			});
 		}
 
 		/**

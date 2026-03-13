@@ -167,6 +167,14 @@ class PO_Consent_Early {
 			header('Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=()');
 			header('X-Content-Type-Options: nosniff');
 			header('X-Frame-Options: SAMEORIGIN');
+
+			// HSTS: Nur bei SSL-Verbindungen (DSGVO-Audit Empfehlung)
+			if (is_ssl()) {
+				header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+			}
+
+			// CSP: Report-Only zuerst, enforce nach Testphase
+			header("Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.parkourone.com *.google-analytics.com *.googletagmanager.com *.facebook.net *.typekit.net *.mlcdn.com; style-src 'self' 'unsafe-inline' *.typekit.net fonts.googleapis.com; img-src 'self' data: *.parkourone.com *.google-analytics.com *.googletagmanager.com *.facebook.com *.doubleclick.net; font-src 'self' use.typekit.net fonts.gstatic.com; connect-src 'self' *.parkourone.com *.google-analytics.com *.googletagmanager.com *.facebook.com *.mlcdn.com; frame-src 'self' *.youtube.com *.youtube-nocookie.com *.google.com *.facebook.com; report-uri /csp-report-endpoint");
 		}
 	}
 

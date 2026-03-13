@@ -114,10 +114,11 @@ class PO_Consent_Manager {
 	 * Init
 	 */
 	public function init() {
-		// Google Consent Mode v2 – Basic Mode
+		// Google Consent Mode v2 – TRUE Basic Mode
 		// Kein Code an Google OHNE Einwilligung (DSGVO-konform)
-		// Nur initialisieren wenn User bereits Consent erteilt hat
-		if ($this->is_google_consent_mode_enabled() && $this->current_consent !== null) {
+		// Nur initialisieren wenn User analytics ODER marketing explizit erteilt hat
+		if ($this->is_google_consent_mode_enabled() &&
+			($this->has_consent(self::CATEGORY_ANALYTICS) || $this->has_consent(self::CATEGORY_MARKETING))) {
 			add_action('wp_head', [$this, 'output_google_consent_mode'], 0);
 		}
 	}
@@ -354,6 +355,7 @@ class PO_Consent_Manager {
 			'showBanner' => $this->should_show_banner(),
 			'version' => self::CONSENT_VERSION,
 			'cookieDomain' => $this->get_cross_domain_cookie_domain(),
+			'googleConsentModeEnabled' => $this->is_google_consent_mode_enabled(),
 			'categories' => $this->get_category_info(),
 			'services' => $this->get_services_by_category(),
 			'i18n' => [
@@ -484,8 +486,15 @@ class PO_Consent_Manager {
 	 */
 	private function block_script_tag($tag, $category) {
 		$tag = str_replace(' src=', ' data-consent-category="' . esc_attr($category) . '" data-consent-src=', $tag);
+		$original = $tag;
 		$tag = str_replace("type='text/javascript'", "type='text/plain'", $tag);
 		$tag = str_replace('type="text/javascript"', 'type="text/plain"', $tag);
+
+		// WP 6.x: Scripts ohne type-Attribut → type="text/plain" einfügen
+		if ($tag === $original) {
+			$tag = preg_replace('/<script\b/', '<script type="text/plain"', $tag, 1);
+		}
+
 		return $tag;
 	}
 
