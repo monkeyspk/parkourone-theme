@@ -10,7 +10,7 @@ class ParkourONE_GitHub_Updater {
     
     private $github_repo = 'monkeyspk/parkourone-theme';
     private $theme_slug = 'parkourone-theme';
-    private $check_interval = 43200; // 12 Stunden in Sekunden
+    private $check_interval = 21600; // 6 Stunden in Sekunden (Fallback, primär via Webhook)
     private $transient_key = 'parkourone_github_update_check';
     private $last_error = null;
     
@@ -222,7 +222,7 @@ class ParkourONE_GitHub_Updater {
                 </a>
 
                 <p style="margin-top: 15px; color: #666; font-size: 13px;">
-                    Das Theme prüft automatisch alle 12 Stunden auf Updates und aktualisiert sich selbst.
+                    Das Theme wird primär via GitHub Webhook aktualisiert. Zusätzlich prüft es alle 6 Stunden automatisch als Fallback.
                 </p>
 
                 <hr style="margin: 20px 0;">
