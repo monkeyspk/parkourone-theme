@@ -212,6 +212,7 @@ function parkourone_install_mu_plugins() {
 	$mu_plugins = [
 		'parkourone-consent-early.php',
 		'parkourone-performance.php',
+		'parkourone-github-webhook.php',
 	];
 
 	$source_dir = get_template_directory() . '/mu-plugins/';
