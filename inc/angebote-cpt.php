@@ -1574,7 +1574,7 @@ function parkourone_sync_event_to_angebot($post_id) {
 	];
 	$angebot_kategorie = $kategorie_map[$angebot_typ];
 
-	// Bestehendes Angebot suchen
+	// Bestehendes Angebot suchen: zuerst per Event-Post-ID
 	$existing = get_posts([
 		'post_type'      => 'angebot',
 		'posts_per_page' => 1,
@@ -1584,6 +1584,49 @@ function parkourone_sync_event_to_angebot($post_id) {
 		],
 		'fields' => 'ids',
 	]);
+
+	// Fallback: per course_id suchen (Event kann neue Post-ID haben nach Reimport)
+	if (empty($existing)) {
+		$event_course_id = get_post_meta($post_id, '_event_course_id', true);
+		if (!empty($event_course_id)) {
+			// Alle Events mit dieser course_id finden (inkl. alter, gelöschter IDs)
+			$events_with_course_id = get_posts([
+				'post_type'      => 'event',
+				'posts_per_page' => -1,
+				'post_status'    => 'any',
+				'meta_query'     => [
+					['key' => '_event_course_id', 'value' => $event_course_id]
+				],
+				'fields' => 'ids',
+			]);
+			if (!empty($events_with_course_id)) {
+				$existing = get_posts([
+					'post_type'      => 'angebot',
+					'posts_per_page' => 1,
+					'post_status'    => 'any',
+					'meta_query'     => [
+						[
+							'key'     => '_angebot_academyboard_event_id',
+							'value'   => $events_with_course_id,
+							'compare' => 'IN',
+						]
+					],
+					'fields' => 'ids',
+				]);
+			}
+		}
+	}
+
+	// Fallback 2: per Event-Titel suchen (letzter Versuch)
+	if (empty($existing)) {
+		$event_title_check = get_the_title($post_id);
+		if (!empty($event_title_check)) {
+			$title_match = get_page_by_title($event_title_check, OBJECT, 'angebot');
+			if ($title_match && get_post_meta($title_match->ID, '_angebot_quelle', true) === 'academyboard') {
+				$existing = [$title_match->ID];
+			}
+		}
+	}
 
 	$event_title = get_the_title($post_id);
 
@@ -1632,6 +1675,9 @@ function parkourone_sync_event_to_angebot($post_id) {
 			'post_title' => $event_title,
 		]);
 
+		// Event-ID Verknüpfung aktualisieren (Event kann neue Post-ID haben nach Reimport)
+		update_post_meta($angebot_id, '_angebot_academyboard_event_id', $post_id);
+
 		// Termine: bestehende Kapazität beibehalten wenn manuell korrigiert
 		$existing_termine = get_post_meta($angebot_id, '_angebot_termine', true);
 		if (is_array($existing_termine) && !empty($existing_termine)) {
@@ -1652,28 +1698,33 @@ function parkourone_sync_event_to_angebot($post_id) {
 			unset($termin);
 		}
 		update_post_meta($angebot_id, '_angebot_termine', $termine);
+
+		// Ort + Coach immer aus AB aktualisieren (strukturelle Daten)
 		update_post_meta($angebot_id, '_angebot_wo', $event_venue);
 		update_post_meta($angebot_id, '_angebot_ansprechperson', $event_headcoach);
 
-		// Beschreibung, Preis, Zeiten, Coach-E-Mail nur aktualisieren wenn vorhanden
-		if (!empty($event_description)) {
+		// Folgende Felder nur setzen wenn auf dem Angebot noch LEER
+		// → manuelle Einstellungen werden nicht überschrieben
+		if (!empty($event_description) && empty(get_post_meta($angebot_id, '_angebot_kurzbeschreibung', true))) {
 			update_post_meta($angebot_id, '_angebot_kurzbeschreibung', $event_description);
 		}
-		if (!empty($preis_display)) {
+		if (!empty($preis_display) && empty(get_post_meta($angebot_id, '_angebot_preis', true))) {
 			update_post_meta($angebot_id, '_angebot_preis', $preis_display);
 		}
-		if (!empty($wann_text)) {
+		if (!empty($wann_text) && empty(get_post_meta($angebot_id, '_angebot_wann', true))) {
 			update_post_meta($angebot_id, '_angebot_wann', $wann_text);
 		}
-		if (!empty($event_coach_email)) {
+		if (!empty($event_coach_email) && empty(get_post_meta($angebot_id, '_angebot_kontakt_email', true))) {
 			update_post_meta($angebot_id, '_angebot_kontakt_email', $event_coach_email);
 		}
-		if (!empty($maps_link)) {
+		if (!empty($maps_link) && empty(get_post_meta($angebot_id, '_angebot_maps_link', true))) {
 			update_post_meta($angebot_id, '_angebot_maps_link', $maps_link);
 		}
 
-		// Featured + Buchungsart sicherstellen für AB-Events
-		update_post_meta($angebot_id, '_angebot_featured', '1');
+		// Buchungsart + Featured: NUR setzen wenn noch leer (manuelle Werte schützen)
+		if (empty(get_post_meta($angebot_id, '_angebot_featured', true))) {
+			update_post_meta($angebot_id, '_angebot_featured', '1');
+		}
 		if (empty(get_post_meta($angebot_id, '_angebot_buchungsart', true))) {
 			update_post_meta($angebot_id, '_angebot_buchungsart', 'woocommerce');
 		}
