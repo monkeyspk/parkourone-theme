@@ -414,6 +414,18 @@ function parkourone_angebot_settings_metabox($post) {
 		<br><span class="description">Wird im Karussell auf der Startseite angezeigt.</span>
 	</p>
 
+	<?php
+	$stock_override = get_post_meta($post->ID, '_angebot_stock_override', true);
+	$is_ab = $quelle === 'academyboard';
+	?>
+	<p id="stock-override-field" style="<?php echo ($buchungsart === 'woocommerce' && $is_ab) ? '' : 'display:none;'; ?>">
+		<label>
+			<input type="checkbox" name="_angebot_stock_override" value="1" <?php checked($stock_override, '1'); ?>>
+			<strong>Stock manuell verwalten</strong>
+		</label>
+		<br><span class="description">API-Import überschreibt den Stock nicht mehr. Du verwaltest die Plätze selbst über den Stock-Editor oben.</span>
+	</p>
+
 	<hr>
 
 	<p>
@@ -422,11 +434,13 @@ function parkourone_angebot_settings_metabox($post) {
 
 	<script>
 	jQuery(document).ready(function($) {
+		var isAB = <?php echo $is_ab ? 'true' : 'false'; ?>;
 		$('#_angebot_buchungsart').on('change', function() {
 			var val = $(this).val();
 			$('#cta-url-field').toggle(val === 'extern');
 			$('#teilnehmer-typ-field').toggle(val === 'woocommerce');
 			$('#kontakt-email-field').toggle(val === 'kontakt');
+			$('#stock-override-field').toggle(val === 'woocommerce' && isAB);
 		});
 	});
 	</script>
@@ -479,8 +493,10 @@ function parkourone_angebot_save_meta($post_id) {
 		update_post_meta($post_id, '_angebot_cta_url', esc_url_raw($_POST['_angebot_cta_url']));
 	}
 
-	// Checkbox
+	// Checkboxes
 	update_post_meta($post_id, '_angebot_featured', isset($_POST['_angebot_featured']) ? '1' : '0');
+	$stock_override = isset($_POST['_angebot_stock_override']) ? '1' : '0';
+	update_post_meta($post_id, '_angebot_stock_override', $stock_override);
 
 	// Termine (array)
 	if (isset($_POST['_angebot_termine']) && is_array($_POST['_angebot_termine'])) {
@@ -505,6 +521,17 @@ function parkourone_angebot_save_meta($post_id) {
 	// Quelle setzen wenn nicht vorhanden
 	if (!get_post_meta($post_id, '_angebot_quelle', true)) {
 		update_post_meta($post_id, '_angebot_quelle', 'manual');
+	}
+
+	// Stock-Override-Flag auf verknüpfte WC-Produkte propagieren
+	$termine_saved = get_post_meta($post_id, '_angebot_termine', true);
+	if (is_array($termine_saved)) {
+		foreach ($termine_saved as $termin) {
+			$pid = intval($termin['produkt_id'] ?? 0);
+			if ($pid && get_post($pid)) {
+				update_post_meta($pid, '_po_stock_protected', $stock_override);
+			}
+		}
 	}
 }
 add_action('save_post_angebot', 'parkourone_angebot_save_meta');
