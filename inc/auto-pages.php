@@ -1108,6 +1108,67 @@ function parkourone_auto_pages_admin_page() {
 			</div>
 		</div>
 
+		<!-- Zusätzliche Seiten -->
+		<?php $extra_pages = parkourone_get_extra_template_pages(); ?>
+		<div class="po-auto-pages-section" style="background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-top: 2rem;">
+			<h2 style="margin-top: 0;">🎯 Zusätzliche Seiten</h2>
+			<p>Optionale Seiten-Vorlagen für Ferienkurse, Community, Events, Kindergeburtstag und weitere Angebote.</p>
+
+			<form method="post" action="">
+				<?php wp_nonce_field('po_generate_extra_pages', 'po_extra_nonce'); ?>
+
+				<!-- Überschreiben Option -->
+				<div style="background: #f6f7f7; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+					<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+						<input type="checkbox" name="overwrite_extras" id="overwrite-extras" value="1">
+						<span><strong>Bestehende Seiten überschreiben</strong></span>
+					</label>
+					<p style="margin: 0.5rem 0 0 26px; font-size: 12px; color: #666;">
+						Aktivieren, um bereits existierende Seiten mit der neuesten Version zu ersetzen. Die alten Inhalte werden überschrieben!
+					</p>
+				</div>
+
+				<table class="widefat" style="margin: 1rem 0;">
+					<thead>
+						<tr>
+							<th style="width: 30px;"><input type="checkbox" id="select-all-extras"></th>
+							<th>Seite</th>
+							<th>Beschreibung</th>
+							<th>Enthaltene Blöcke</th>
+							<th>Status</th>
+							<th>Links</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach ($extra_pages as $template): ?>
+							<tr>
+								<td><input type="checkbox" name="extras[]" value="<?php echo esc_attr($template['slug']); ?>" class="extra-checkbox" data-exists="<?php echo $template['exists'] ? '1' : '0'; ?>" <?php echo $template['exists'] ? 'disabled' : ''; ?>></td>
+								<td><strong><?php echo esc_html($template['title']); ?></strong></td>
+								<td><?php echo esc_html($template['description']); ?></td>
+								<td><small style="color: #666;"><?php echo esc_html($template['blocks']); ?></small></td>
+								<td>
+									<?php if ($template['exists']): ?>
+										<span style="color: green;">✓ Existiert</span>
+									<?php else: ?>
+										<span style="color: #999;">Nicht erstellt</span>
+									<?php endif; ?>
+								</td>
+								<td>
+									<?php if ($template['exists'] && $template['page_id']): ?>
+										<a href="<?php echo get_permalink($template['page_id']); ?>" target="_blank" style="text-decoration: none; margin-right: 8px;" title="Seite ansehen">👁️</a>
+										<a href="<?php echo get_edit_post_link($template['page_id']); ?>" style="text-decoration: none;" title="Seite bearbeiten">✏️</a>
+									<?php else: ?>
+										<span style="color: #ccc;">—</span>
+									<?php endif; ?>
+								</td>
+							</tr>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
+				<button type="submit" name="generate_extra_pages" class="button button-primary button-hero">Zusätzliche Seiten erstellen</button>
+			</form>
+		</div>
+
 		<script>
 		jQuery(document).ready(function($) {
 			// Header-Variante Sync zu Hidden Fields
@@ -1166,6 +1227,22 @@ function parkourone_auto_pages_admin_page() {
 			$('#overwrite-categories').on('change', function() {
 				var overwrite = this.checked;
 				$('.category-checkbox').each(function() {
+					if ($(this).data('exists') === 1) {
+						$(this).prop('disabled', !overwrite);
+						if (!overwrite) $(this).prop('checked', false);
+					}
+				});
+			});
+
+			// Select All - Extras
+			$('#select-all-extras').on('change', function() {
+				$('.extra-checkbox:not(:disabled)').prop('checked', this.checked);
+			});
+
+			// Überschreiben Toggle - Extras
+			$('#overwrite-extras').on('change', function() {
+				var overwrite = this.checked;
+				$('.extra-checkbox').each(function() {
 					if ($(this).data('exists') === 1) {
 						$(this).prop('disabled', !overwrite);
 						if (!overwrite) $(this).prop('checked', false);
@@ -1367,11 +1444,109 @@ function parkourone_get_template_pages() {
 }
 
 // =====================================================
+// Zusätzliche Template-Seiten Konfiguration
+// =====================================================
+
+function parkourone_get_extra_template_pages() {
+	$templates = [
+		[
+			'slug' => 'ferienkurse',
+			'title' => 'Ferienkurse',
+			'description' => 'Parkour Ferienkurse für Kinder mit Buchung, Tagesablauf und FAQ',
+			'blocks' => 'Page-Header, Feature-Cards, Intro-Section, About-Section, TRUST, Testimonials, FAQ',
+			'pattern_file' => 'page-ferienkurse.php',
+			'page_slug' => 'ferienkurse',
+		],
+		[
+			'slug' => 'community-event',
+			'title' => 'Community Event',
+			'description' => 'Event-Seite für Parkour Jams, Meetings und Community-Treffen',
+			'blocks' => 'Page-Header, Feature-Cards, About-Section, Intro-Section, FAQ',
+			'pattern_file' => 'page-community-event.php',
+			'page_slug' => 'community-event',
+		],
+		[
+			'slug' => 'events-kalender',
+			'title' => 'Events-Kalender',
+			'description' => 'Übersicht aller Events und Veranstaltungen',
+			'blocks' => 'Page-Header, Feature-Cards, About-Section',
+			'pattern_file' => 'page-events-kalender.php',
+			'page_slug' => 'events-kalender',
+		],
+		[
+			'slug' => 'community',
+			'title' => 'Community',
+			'description' => 'Parkour Community-Seite mit freiem Training, Spotmap und Partner',
+			'blocks' => 'Page-Header, About-Section, Feature-Cards, FAQ',
+			'pattern_file' => 'page-community.php',
+			'page_slug' => 'community',
+		],
+		[
+			'slug' => 'kindergeburtstag',
+			'title' => 'Kindergeburtstag',
+			'description' => 'Parkour Kindergeburtstag-Angebot mit Buchung und FAQ',
+			'blocks' => 'Page-Header, Intro-Section, FAQ, TRUST-Education, About-Section',
+			'pattern_file' => 'page-kindergeburtstag.php',
+			'page_slug' => 'kindergeburtstag',
+		],
+		[
+			'slug' => 'klassenreise',
+			'title' => 'Klassenreise',
+			'description' => 'Mehrtägige Parkour-Klassenreise mit Anmeldung und FAQ',
+			'blocks' => 'Page-Header, Intro-Section, FAQ, TRUST-Education, Inquiry-Form',
+			'pattern_file' => 'page-klassenreise.php',
+			'page_slug' => 'klassenreise',
+		],
+		[
+			'slug' => 'was-ist-parkour',
+			'title' => 'Was ist Parkour',
+			'description' => 'Geschichte und Philosophie von Parkour',
+			'blocks' => 'Page-Header, Intro-Section, About-Section, Text-Reveal',
+			'pattern_file' => 'page-was-ist-parkour.php',
+			'page_slug' => 'was-ist-parkour',
+		],
+		[
+			'slug' => 'bewegte-bildung',
+			'title' => 'Bewegte Bildung',
+			'description' => 'Bildungsangebote mit Parkour – Projektwochen, Workshops, GTA',
+			'blocks' => 'Page-Header, Feature-Cards, USP-Slider, TRUST, Inquiry-Form, Testimonials, FAQ',
+			'pattern_file' => 'page-bewegte-bildung.php',
+			'page_slug' => 'bewegte-bildung',
+		],
+		[
+			'slug' => 'firmen-teamevent',
+			'title' => 'Firmen-Teamevent',
+			'description' => 'Erweitertes Teamevent mit Bonuspaketen und Coach-Profil',
+			'blocks' => 'Page-Header, Feature-Cards, USP-Slider, About-Section, Inquiry-Form, Testimonials, FAQ',
+			'pattern_file' => 'page-firmen-teamevent.php',
+			'page_slug' => 'firmen-teamevent',
+		],
+		[
+			'slug' => 'coach-werden',
+			'title' => 'Coach werden',
+			'description' => 'Alternative Jobs-Seite mit Benefits-Grid und Ausbildungsinfos',
+			'blocks' => 'Page-Header, Feature-Cards, About-Section, Steps-Carousel, TRUST, Testimonials, FAQ',
+			'pattern_file' => 'page-coach-werden.php',
+			'page_slug' => 'coach-werden',
+		],
+	];
+
+	// Prüfen ob Seiten bereits existieren
+	foreach ($templates as &$template) {
+		$page = get_page_by_path($template['page_slug']);
+		$template['exists'] = !empty($page);
+		$template['page_id'] = $page ? $page->ID : null;
+	}
+
+	return $templates;
+}
+
+// =====================================================
 // Template-Seite aus Pattern erstellen
 // =====================================================
 
 function parkourone_create_template_page($template_slug, $overwrite = false) {
-	$templates = parkourone_get_template_pages();
+	$templates = array_merge(parkourone_get_template_pages(), parkourone_get_extra_template_pages());
 	$template = null;
 
 	foreach ($templates as $t) {
@@ -1584,6 +1759,40 @@ function parkourone_handle_page_generation() {
 			if ($updated > 0) $parts[] = "{$updated} aktualisiert";
 			if (!empty($parts)) {
 				add_settings_error('po_auto_pages', 'categories_created', "Zielgruppen-Seiten: " . implode(', ', $parts), 'success');
+			}
+		}
+	}
+
+	// Zusätzliche Seiten generieren
+	if (isset($_POST['generate_extra_pages']) && wp_verify_nonce($_POST['po_extra_nonce'], 'po_generate_extra_pages')) {
+		$extras = $_POST['extras'] ?? [];
+		$overwrite = isset($_POST['overwrite_extras']) && $_POST['overwrite_extras'] === '1';
+		$created = 0;
+		$updated = 0;
+		$created_pages = [];
+
+		if (empty($extras)) {
+			add_settings_error('po_auto_pages', 'no_extras_selected', 'Bitte wähle mindestens eine Seite aus. Falls alle bereits existieren, aktiviere "Bestehende überschreiben".', 'error');
+		} else {
+			foreach ($extras as $template_slug) {
+				$existing = get_page_by_path($template_slug);
+				$page_id = parkourone_create_template_page($template_slug, $overwrite);
+				if ($page_id) {
+					if ($existing && $overwrite) {
+						$updated++;
+					} else {
+						$created++;
+					}
+					$created_pages[] = '<a href="' . get_edit_post_link($page_id) . '">' . get_the_title($page_id) . '</a>';
+				}
+			}
+
+			if ($created > 0 || $updated > 0) {
+				$parts = [];
+				if ($created > 0) $parts[] = "{$created} erstellt";
+				if ($updated > 0) $parts[] = "{$updated} aktualisiert";
+				$message = "Zusätzliche Seiten " . implode(', ', $parts) . ": " . implode(', ', $created_pages);
+				add_settings_error('po_auto_pages', 'extras_created', $message, 'success');
 			}
 		}
 	}
