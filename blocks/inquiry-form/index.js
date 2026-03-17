@@ -7,15 +7,25 @@
 	var TextareaControl = wp.components.TextareaControl;
 	var ToggleControl = wp.components.ToggleControl;
 	var SelectControl = wp.components.SelectControl;
+	var Button = wp.components.Button;
 	var el = wp.element.createElement;
+
+	function parseGroups(str) {
+		try { return JSON.parse(str || '[]'); } catch(e) { return []; }
+	}
 
 	registerBlockType('parkourone/inquiry-form', {
 		edit: function(props) {
 			var attributes = props.attributes;
 			var setAttributes = props.setAttributes;
+			var checkboxGroups = parseGroups(attributes.checkboxGroups);
 			var blockProps = useBlockProps({
 				className: 'po-inquiry po-inquiry--' + attributes.backgroundColor
 			});
+
+			function updateGroups(groups) {
+				setAttributes({ checkboxGroups: JSON.stringify(groups) });
+			}
 
 			return el('div', null, [
 				el(InspectorControls, { key: 'controls' },
@@ -98,7 +108,54 @@
 							checked: attributes.showClassCount,
 							onChange: function(v) { setAttributes({ showClassCount: v }); }
 						})
+					]),
+				el(PanelBody, { title: 'Checkbox-Gruppen', initialOpen: false },
+					checkboxGroups.map(function(group, gi) {
+						return el('div', { key: 'grp-' + gi, style: { marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #ddd' } }, [
+							el(TextControl, {
+								key: 'title-' + gi,
+								label: 'Gruppentitel',
+								value: group.title,
+								onChange: function(v) {
+									var g = parseGroups(attributes.checkboxGroups);
+									g[gi].title = v;
+									updateGroups(g);
+								}
+							}),
+							el(TextareaControl, {
+								key: 'opts-' + gi,
+								label: 'Optionen (eine pro Zeile)',
+								value: (group.options || []).join('\n'),
+								onChange: function(v) {
+									var g = parseGroups(attributes.checkboxGroups);
+									g[gi].options = v.split('\n').filter(function(o) { return o.trim() !== ''; });
+									updateGroups(g);
+								}
+							}),
+							el(Button, {
+								key: 'rm-' + gi,
+								variant: 'secondary',
+								isDestructive: true,
+								size: 'small',
+								onClick: function() {
+									var g = parseGroups(attributes.checkboxGroups);
+									g.splice(gi, 1);
+									updateGroups(g);
+								}
+							}, 'Gruppe entfernen')
+						]);
+					}).concat([
+						el(Button, {
+							key: 'add-group',
+							variant: 'primary',
+							onClick: function() {
+								var g = parseGroups(attributes.checkboxGroups);
+								g.push({ title: '', options: [] });
+								updateGroups(g);
+							}
+						}, 'Gruppe hinzufügen')
 					])
+				)
 				),
 				el('div', blockProps, [
 					el('div', { key: 'inner', className: 'po-inquiry__inner' }, [
@@ -115,7 +172,17 @@
 								(attributes.showClassCount ? ', Klassen' : '') +
 								', Nachricht, AGB'
 							)
-						])
+						]),
+						checkboxGroups.length > 0 && el('div', { key: 'cb-preview', style: { marginTop: '1rem', textAlign: 'left' } },
+							checkboxGroups.map(function(group, gi) {
+								return el('div', { key: 'cbg-' + gi, style: { marginBottom: '0.75rem' } }, [
+									el('p', { key: 'cbt-' + gi, style: { fontWeight: 'bold', margin: '0 0 0.25rem 0', fontSize: '0.875rem' } }, group.title),
+									el('p', { key: 'cbo-' + gi, style: { margin: 0, fontSize: '0.8125rem', opacity: 0.7 } },
+										(group.options || []).map(function(o) { return '☐ ' + o; }).join('  ')
+									)
+								]);
+							})
+						)
 					])
 				])
 			]);

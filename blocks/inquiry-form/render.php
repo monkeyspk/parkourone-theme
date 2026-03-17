@@ -12,6 +12,8 @@ $submitText      = $attributes['submitText'] ?? 'Anfrage senden';
 $bgVariant = $attributes['backgroundColor'] ?? 'dark';
 $bgClasses = ['dark' => 'po-inquiry--dark', 'light' => 'po-inquiry--light', 'white' => 'po-inquiry--white'];
 $bgClass   = $bgClasses[$bgVariant] ?? 'po-inquiry--dark';
+$checkboxGroups = json_decode($attributes['checkboxGroups'] ?? '[]', true);
+if (!is_array($checkboxGroups)) $checkboxGroups = [];
 
 // Math captcha
 $captcha_a = wp_rand(1, 15);
@@ -42,6 +44,22 @@ $nonce = wp_create_nonce('po_inquiry_nonce');
 				<label for="po_website">Website</label>
 				<input type="text" name="po_website" id="po_website" autocomplete="off" tabindex="-1">
 			</div>
+
+			<?php foreach ($checkboxGroups as $group):
+				$groupTitle = $group['title'] ?? '';
+				$groupOptions = $group['options'] ?? [];
+				if (empty($groupTitle) || empty($groupOptions)) continue;
+			?>
+			<div class="po-inquiry__checkbox-group">
+				<p><?php echo esc_html($groupTitle); ?></p>
+				<?php foreach ($groupOptions as $option): ?>
+				<label>
+					<input type="checkbox" name="checkbox_group[<?php echo esc_attr($groupTitle); ?>][]" value="<?php echo esc_attr($option); ?>">
+					<span><?php echo esc_html($option); ?></span>
+				</label>
+				<?php endforeach; ?>
+			</div>
+			<?php endforeach; ?>
 
 			<div class="po-inquiry__grid">
 				<!-- Feste Felder -->

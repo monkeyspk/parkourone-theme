@@ -2969,6 +2969,18 @@ function parkourone_inquiry_submit() {
 	$nachricht   = sanitize_textarea_field($_POST['nachricht'] ?? '');
 	$agb         = isset($_POST['agb']) && $_POST['agb'] === '1';
 
+	// Checkbox groups
+	$checkbox_groups = [];
+	if (!empty($_POST['checkbox_group']) && is_array($_POST['checkbox_group'])) {
+		foreach ($_POST['checkbox_group'] as $group_name => $options) {
+			$safe_name = sanitize_text_field($group_name);
+			if (is_array($options)) {
+				$safe_options = array_map('sanitize_text_field', $options);
+				$checkbox_groups[$safe_name] = $safe_options;
+			}
+		}
+	}
+
 	// Validation
 	if (empty($nachname) || empty($vorname) || empty($adresse) || empty($plz_ort) || empty($telefon) || empty($email)) {
 		wp_send_json_error(['message' => 'Bitte alle Pflichtfelder ausfüllen.']);
@@ -3007,6 +3019,9 @@ function parkourone_inquiry_submit() {
 
 	$message = "Neue Anfrage über das Kontaktformular\n\n";
 	$message .= "Typ: " . $type_label . "\n";
+	foreach ($checkbox_groups as $group_name => $options) {
+		$message .= $group_name . ": " . implode(', ', $options) . "\n";
+	}
 	$message .= "Name: " . $nachname . " " . $vorname . "\n";
 	$message .= "Adresse: " . $adresse . "\n";
 	$message .= "PLZ/Ort: " . $plz_ort . "\n";
@@ -3033,6 +3048,9 @@ function parkourone_inquiry_submit() {
 	$confirm_message .= "vielen Dank für deine Anfrage zu \"" . $type_label . "\".\n\n";
 	$confirm_message .= "Wir haben deine Nachricht erhalten und werden uns schnellstmöglich bei dir melden.\n\n";
 	$confirm_message .= "Deine Angaben:\n";
+	foreach ($checkbox_groups as $group_name => $options) {
+		$confirm_message .= $group_name . ": " . implode(', ', $options) . "\n";
+	}
 	$confirm_message .= "Name: " . $nachname . " " . $vorname . "\n";
 	if ($ort) $confirm_message .= "Gewünschter Ort: " . $ort . "\n";
 	if ($teilnehmer) $confirm_message .= "Anzahl Personen: " . $teilnehmer . "\n";

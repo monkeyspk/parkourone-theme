@@ -63,6 +63,10 @@
 		"backgroundColor": {
 			"type": "string",
 			"default": "dark"
+		},
+		"checkboxGroups": {
+			"type": "string",
+			"default": "[]"
 		}
 	},
 	"supports": {
