@@ -7,14 +7,14 @@ $woo_currency = function_exists('get_woocommerce_currency_symbol') ? get_woocomm
 $currency = $attributes['currency'] ?? $woo_currency;
 $period = $attributes['period'] ?? 'pro Monat';
 $footnote = $attributes['footnote'] ?? '';
-$unique_id = 'pricing-table-' . uniqid();
+$anchor = $attributes['anchor'] ?? '';$unique_id = 'pricing-table-' . uniqid();
 
 $class = 'po-pricing';
 $class .= ' po-pricing--' . $style;
 ?>
 
 <?php if (!empty($categories)): ?>
-<section class="<?php echo esc_attr($class); ?>" id="<?php echo esc_attr($unique_id); ?>">
+<section class="<?php echo esc_attr($class); ?>" id="<?php echo esc_attr($anchor ?: $unique_id); ?>">
 	<div class="po-pricing__inner">
 		<?php if ($headline || $subtext): ?>
 		<div class="po-pricing__header">

@@ -29,7 +29,7 @@ $kategorie_labels = [
 ];
 ?>
 
-<section class="po-angebote-grid alignfull" data-columns="<?php echo esc_attr($columns); ?>">
+<section<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="po-angebote-grid alignfull" data-columns="<?php echo esc_attr($columns); ?>">
 	<?php if ($show_filter && !empty($kategorien)): ?>
 	<div class="po-angebote-grid__filter">
 		<button class="po-angebote-grid__filter-btn active" data-filter="alle">Alle</button>

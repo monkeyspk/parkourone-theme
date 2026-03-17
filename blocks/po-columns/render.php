@@ -18,7 +18,7 @@ $classes = [
 
 $style = $bg_color ? 'background-color: ' . esc_attr($bg_color) . ';' : '';
 ?>
-<div class="<?php echo esc_attr(implode(' ', $classes)); ?>" <?php echo $style ? 'style="' . $style . '"' : ''; ?>>
+<div<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="<?php echo esc_attr(implode(' ', $classes)); ?>" <?php echo $style ? 'style="' . $style . '"' : ''; ?>>
 	<?php for ($i = 0; $i < $columns; $i++): ?>
 		<?php
 		$col_data = $column_content[$i] ?? ['content' => '', 'backgroundColor' => ''];

@@ -29,6 +29,6 @@ if ($text_color) {
 
 $style_attr = !empty($styles) ? 'style="' . implode('; ', $styles) . '"' : '';
 ?>
-<p class="<?php echo esc_attr(implode(' ', $classes)); ?>" <?php echo $style_attr; ?>>
+<p<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="<?php echo esc_attr(implode(' ', $classes)); ?>" <?php echo $style_attr; ?>>
 	<?php echo wp_kses_post($content); ?>
 </p>

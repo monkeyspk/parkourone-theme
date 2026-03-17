@@ -149,7 +149,7 @@ if ($group_by === 'weekday') {
 }
 ?>
 
-<section class="po-klassen-selektor alignfull" data-show-booking="<?php echo $show_booking_panel ? 'true' : 'false'; ?>">
+<section<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="po-klassen-selektor alignfull" data-show-booking="<?php echo $show_booking_panel ? 'true' : 'false'; ?>">
 	<?php if ($headline): ?>
 		<h2 class="po-klassen-selektor__headline"><?php echo esc_html($headline); ?></h2>
 	<?php endif; ?>

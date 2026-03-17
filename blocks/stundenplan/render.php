@@ -40,6 +40,18 @@ if ($ortschaft_parent && !is_wp_error($ortschaft_parent)) {
 	]);
 }
 
+$angebot_parent = get_term_by('slug', 'angebot', 'event_category');
+$angebot_terms = [];
+
+if ($angebot_parent && !is_wp_error($angebot_parent)) {
+	$angebot_terms = get_terms([
+		'taxonomy' => 'event_category',
+		'parent' => $angebot_parent->term_id,
+		'hide_empty' => false
+	]);
+	if (is_wp_error($angebot_terms)) $angebot_terms = [];
+}
+
 // Auto-detect: nur Ortschaften dieses Standorts anzeigen
 $site_location = function_exists('parkourone_get_site_location')
 	? parkourone_get_site_location()
@@ -74,8 +86,13 @@ $auto_filter_active = !empty($local_ortschaft_slugs);
 $age_colors = [
 	'minis' => '#ff9500',
 	'kids' => '#34c759',
+	'juniors' => '#0066cc',
+	'adults' => '#0066cc',
 	'juniors-adults' => '#0066cc',
-	'seniors-masters' => '#af52de'
+	'seniors' => '#af52de',
+	'masters' => '#af52de',
+	'seniors-masters' => '#af52de',
+	'women' => '#ff375f'
 ];
 
 if ($query->have_posts()) {
@@ -99,8 +116,8 @@ if ($query->have_posts()) {
 		$end_time = get_post_meta($event_id, '_event_end_time', true);
 		
 		$terms = wp_get_post_terms($event_id, 'event_category', ['fields' => 'all']);
-		$age_term_slug = '';
-		$age_term_name = '';
+		$age_term_slugs = [];
+		$age_term_names = [];
 		$location_term_slug = '';
 		$offer_term_slug = '';
 
@@ -109,8 +126,8 @@ if ($query->have_posts()) {
 				$parent = get_term($term->parent, 'event_category');
 				if ($parent && !is_wp_error($parent)) {
 					if ($parent->slug === 'alter') {
-						$age_term_slug = $term->slug;
-						$age_term_name = $term->name;
+						$age_term_slugs[] = $term->slug;
+						$age_term_names[] = $term->name;
 					}
 					if ($parent->slug === 'ortschaft') {
 						$location_term_slug = $term->slug;
@@ -122,8 +139,17 @@ if ($query->have_posts()) {
 			}
 		}
 
-		// Skip Ferienkurse – they don't belong in the weekly Stundenplan
-		if ($offer_term_slug === 'ferienkurs') {
+		$age_slug_str = implode(' ', $age_term_slugs);
+		$age_name_str = implode(' / ', $age_term_names);
+
+		// Color: first matching slug
+		$age_color = '#0066cc';
+		foreach ($age_term_slugs as $s) {
+			if (isset($age_colors[$s])) { $age_color = $age_colors[$s]; break; }
+		}
+
+		// Nur Probetrainings (oder Events ohne Angebots-Term) im wöchentlichen Stundenplan
+		if ($offer_term_slug && $offer_term_slug !== 'probetraining') {
 			continue;
 		}
 
@@ -150,10 +176,11 @@ if ($query->have_posts()) {
 			'end_time' => $end_time,
 			'venue' => get_post_meta($event_id, '_event_venue', true),
 			'weekday' => $weekday_name,
-			'age_slug' => $age_term_slug,
-			'age_name' => $age_term_name,
+			'age_slug' => $age_slug_str,
+			'age_name' => $age_name_str,
 			'location_slug' => $location_term_slug,
-			'color' => $age_colors[$age_term_slug] ?? '#0066cc',
+			'offer_slug' => $offer_term_slug,
+			'color' => $age_color,
 			'dropdown_info' => get_post_meta($event_id, '_event_dropdown_info', true),
 			'coach_id' => null,
 			'coach_has_profile' => false
@@ -236,7 +263,13 @@ if (empty($time_slots)) {
 	$time_slots = range(9, 20);
 }
 
-$used_age_slugs = array_unique(array_filter(array_column($klassen, 'age_slug')));
+$used_age_slugs = [];
+foreach ($klassen as $k) {
+	foreach (explode(' ', $k['age_slug']) as $s) {
+		if ($s) $used_age_slugs[] = $s;
+	}
+}
+$used_age_slugs = array_unique($used_age_slugs);
 ?>
 
 <?php if (!empty($klassen)): ?>
@@ -246,7 +279,7 @@ $used_age_slugs = array_unique(array_filter(array_column($klassen, 'age_slug')))
 	<?php endif; ?>
 
 	<?php // Inline Filter (Custom Dropdowns nebeneinander) ?>
-	<?php if ($filterLayout === 'inline' && (!empty($alter_terms) || !empty($ortschaft_terms))): ?>
+	<?php if ($filterLayout === 'inline' && (!empty($alter_terms) || !empty($ortschaft_terms) || !empty($angebot_terms))): ?>
 	<div class="po-sp__inline-filters">
 		<?php if (!empty($alter_terms)): ?>
 		<div class="po-sp__custom-dropdown" data-filter-type="age">
@@ -282,6 +315,21 @@ $used_age_slugs = array_unique(array_filter(array_column($klassen, 'age_slug')))
 				<button type="button" class="po-sp__dropdown-option" data-value="<?php echo esc_attr($term->slug); ?>">
 					<?php echo esc_html($term->name); ?>
 				</button>
+				<?php endforeach; ?>
+			</div>
+		</div>
+		<?php endif; ?>
+
+		<?php if (!empty($angebot_terms)): ?>
+		<div class="po-sp__custom-dropdown" data-filter-type="offer">
+			<button type="button" class="po-sp__dropdown-trigger" aria-expanded="false">
+				<span class="po-sp__dropdown-value">Alle Angebote</span>
+				<svg class="po-sp__dropdown-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+			</button>
+			<div class="po-sp__dropdown-panel" aria-hidden="true">
+				<button type="button" class="po-sp__dropdown-option is-selected" data-value="all">Alle Angebote</button>
+				<?php foreach ($angebot_terms as $term): ?>
+				<button type="button" class="po-sp__dropdown-option" data-value="<?php echo esc_attr($term->slug); ?>"><?php echo esc_html($term->name); ?></button>
 				<?php endforeach; ?>
 			</div>
 		</div>
@@ -331,7 +379,7 @@ $used_age_slugs = array_unique(array_filter(array_column($klassen, 'age_slug')))
 								foreach ($klassen_by_day[$day] as $klasse):
 									$klasse_hour = (int) substr($klasse['start_time'], 0, 2);
 									if ($klasse_hour === $hour):
-										$filter_data = trim($klasse['age_slug'] . ' ' . $klasse['location_slug']);
+										$filter_data = trim($klasse['age_slug'] . ' ' . $klasse['location_slug'] . ' ' . $klasse['offer_slug']);
 								?>
 									<button type="button" class="po-sp__event" data-modal-target="<?php echo esc_attr($unique_id . '-modal-' . $klasse['id']); ?>" data-filters="<?php echo esc_attr($filter_data); ?>">
 										<?php if (!empty($klasse['headcoach_image'])): ?>
@@ -368,7 +416,7 @@ $used_age_slugs = array_unique(array_filter(array_column($klassen, 'age_slug')))
 					</div>
 					<div class="po-sp__day-card-list">
 						<?php foreach ($klassen_by_day[$day] as $klasse): 
-							$filter_data = trim($klasse['age_slug'] . ' ' . $klasse['location_slug']);
+							$filter_data = trim($klasse['age_slug'] . ' ' . $klasse['location_slug'] . ' ' . $klasse['offer_slug']);
 						?>
 						<button type="button" class="po-sp__card-item" data-modal-target="<?php echo esc_attr($unique_id . '-modal-' . $klasse['id']); ?>" data-filters="<?php echo esc_attr($filter_data); ?>">
 							<?php if (!empty($klasse['headcoach_image'])): ?>
@@ -394,7 +442,7 @@ $used_age_slugs = array_unique(array_filter(array_column($klassen, 'age_slug')))
 	</div>
 	
 	<?php // FAB Filter (nur wenn filterLayout !== 'inline') ?>
-	<?php if ($filterLayout !== 'inline' && (!empty($alter_terms) || !empty($ortschaft_terms))): ?>
+	<?php if ($filterLayout !== 'inline' && (!empty($alter_terms) || !empty($ortschaft_terms) || !empty($angebot_terms))): ?>
 	<div class="po-sp__filter-fab">
 		<button type="button" class="po-sp__filter-trigger">
 			<span class="po-sp__filter-text">Filtern</span>
@@ -426,6 +474,14 @@ $used_age_slugs = array_unique(array_filter(array_column($klassen, 'age_slug')))
 				<?php endforeach; ?>
 			</div>
 			<?php endif; ?>
+			<?php if (!empty($angebot_terms)): ?>
+			<div class="po-sp__filter-group">
+				<span class="po-sp__filter-group-label">Nach Angebot</span>
+				<?php foreach ($angebot_terms as $term): ?>
+				<button type="button" class="po-sp__filter-option" data-filter="<?php echo esc_attr($term->slug); ?>"><?php echo esc_html($term->name); ?></button>
+				<?php endforeach; ?>
+			</div>
+			<?php endif; ?>
 		</div>
 	</div>
 	<?php endif; ?>
@@ -446,7 +502,18 @@ $mood_texts = [
 	'juniors-adults' => 'Den eigenen Körper kennenlernen, Grenzen austesten und fortgeschrittene Techniken meistern - intensives Training mit der Möglichkeit, an den eigenen Grenzen zu wachsen.',
 	'seniors-masters' => 'Koordination erhalten, Fitness aufbauen und mit Gleichgesinnten trainieren - beweglich bleiben und den Körper langfristig fit halten.'
 ];
-$category = $klasse['age_slug'] ?? '';
+// Mood-Text: kombinierter Slug (z.B. juniors-adults) hat Vorrang
+$category = '';
+$age_parts = array_filter(explode(' ', $klasse['age_slug'] ?? ''));
+if (count($age_parts) > 1) {
+	sort($age_parts);
+	$combined = implode('-', $age_parts);
+	if (isset($mood_texts[$combined])) $category = $combined;
+	if (!$category) { $rev = implode('-', array_reverse($age_parts)); if (isset($mood_texts[$rev])) $category = $rev; }
+}
+if (!$category) {
+	foreach ($age_parts as $s) { if (isset($mood_texts[$s])) { $category = $s; break; } }
+}
 // Coach-Text mit Link wenn Profil vorhanden
 if (!empty($klasse['headcoach'])) {
 	if ($klasse['coach_has_profile']) {

@@ -92,7 +92,7 @@ if (empty($cookiesUrl) || $cookiesUrl === '#') {
 	$cookiesUrl = $datenschutzUrl . '#cookies';
 }
 ?>
-<footer class="po-footer alignfull">
+<footer class="po-footer alignfull"<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?>>
 	<div class="po-footer__main">
 		<div class="po-footer__col">
 			<strong><?php echo esc_html($companyName); ?></strong>

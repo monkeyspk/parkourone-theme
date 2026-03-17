@@ -11,7 +11,7 @@ $clean_text = wp_strip_all_tags($text);
 $words = preg_split('/\s+/', $clean_text);
 
 static $po_text_reveal_instance = 0; $po_text_reveal_instance++;
-$unique_id = 'text-reveal-' . $po_text_reveal_instance;
+$anchor = $attributes['anchor'] ?? '';$unique_id = 'text-reveal-' . $po_text_reveal_instance;
 
 $align_class = '';
 if ($align === 'wide') $align_class = 'alignwide';
@@ -52,7 +52,7 @@ if ($align === 'full') $align_class = 'alignfull';
 }
 </style>
 
-<section class="po-text-reveal po-text-reveal--<?php echo esc_attr($text_size); ?> po-text-reveal--align-<?php echo esc_attr($text_align); ?> <?php echo esc_attr($align_class); ?>" id="<?php echo esc_attr($unique_id); ?>">
+<section class="po-text-reveal po-text-reveal--<?php echo esc_attr($text_size); ?> po-text-reveal--align-<?php echo esc_attr($text_align); ?> <?php echo esc_attr($align_class); ?>" id="<?php echo esc_attr($anchor ?: $unique_id); ?>">
 	<div class="po-text-reveal__container">
 		<p class="po-text-reveal__text">
 			<?php foreach ($words as $index => $word): ?>

@@ -5,7 +5,7 @@ $filterLocation = $attributes['filterLocation'] ?? '';
 $filterOffer    = $attributes['filterOffer'] ?? '';
 $filterWeekday  = $attributes['filterWeekday'] ?? '';
 $buttonText     = $attributes['buttonText'] ?? 'Jetzt buchen';
-$unique_id      = 'event-booking-' . uniqid();
+$anchor = $attributes['anchor'] ?? '';$unique_id      = 'event-booking-' . uniqid();
 
 // Filter-Optionen laden
 $filters = function_exists('parkourone_get_event_filters') ? parkourone_get_event_filters() : [];
@@ -27,7 +27,7 @@ $age_colors = [
 $has_filters = !empty($age_terms) || !empty($location_terms) || !empty($offer_terms) || !empty($weekday_terms);
 ?>
 
-<section class="po-eb" id="<?php echo esc_attr($unique_id); ?>"
+<section class="po-eb" id="<?php echo esc_attr($anchor ?: $unique_id); ?>"
 	data-filter-age="<?php echo esc_attr($filterAge); ?>"
 	data-filter-location="<?php echo esc_attr($filterLocation); ?>"
 	data-filter-offer="<?php echo esc_attr($filterOffer); ?>"

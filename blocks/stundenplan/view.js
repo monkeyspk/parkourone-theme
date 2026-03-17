@@ -11,13 +11,14 @@
 			var dayCards = section.querySelectorAll('.po-sp__day-card');
 
 			// Shared filter function
-			function applyFilters(ageFilter, locationFilter) {
+			function applyFilters(ageFilter, locationFilter, offerFilter) {
 				events.forEach(function(event) {
 					var filters = event.getAttribute('data-filters') || '';
 					var matchAge = ageFilter === 'all' || filters.indexOf(ageFilter) !== -1;
 					var matchLocation = locationFilter === 'all' || filters.indexOf(locationFilter) !== -1;
+					var matchOffer = !offerFilter || offerFilter === 'all' || filters.indexOf(offerFilter) !== -1;
 
-					if (matchAge && matchLocation) {
+					if (matchAge && matchLocation && matchOffer) {
 						event.style.display = '';
 					} else {
 						event.style.display = 'none';
@@ -55,6 +56,7 @@
 				var customDropdowns = section.querySelectorAll('.po-sp__custom-dropdown');
 				var currentAgeFilter = 'all';
 				var currentLocationFilter = 'all';
+				var currentOfferFilter = 'all';
 
 				customDropdowns.forEach(function(dropdown) {
 					var trigger = dropdown.querySelector('.po-sp__dropdown-trigger');
@@ -93,9 +95,11 @@
 								currentAgeFilter = filterValue;
 							} else if (filterType === 'location') {
 								currentLocationFilter = filterValue;
+							} else if (filterType === 'offer') {
+								currentOfferFilter = filterValue;
 							}
 
-							applyFilters(currentAgeFilter, currentLocationFilter);
+							applyFilters(currentAgeFilter, currentLocationFilter, currentOfferFilter);
 
 							dropdown.classList.remove('is-open');
 							trigger.setAttribute('aria-expanded', 'false');
@@ -163,7 +167,7 @@
 						}
 
 						// FAB uses simple filter (not combined)
-						applyFilters(filterValue, filterValue);
+						applyFilters(filterValue, filterValue, filterValue);
 
 						fab.classList.remove('is-open');
 					});

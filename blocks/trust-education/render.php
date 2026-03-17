@@ -21,7 +21,7 @@ if (!empty($attributes['align'])) {
 }
 
 static $po_trust_instance = 0; $po_trust_instance++;
-$unique_id = 'po-trust-' . $po_trust_instance;
+$anchor = $attributes['anchor'] ?? '';$unique_id = 'po-trust-' . $po_trust_instance;
 $theme_uri = get_template_directory_uri();
 
 // Icon paths
@@ -32,7 +32,7 @@ $icon_images = [
 ];
 ?>
 
-<section class="<?php echo esc_attr(implode(' ', $section_classes)); ?>" id="<?php echo esc_attr($unique_id); ?>">
+<section class="<?php echo esc_attr(implode(' ', $section_classes)); ?>" id="<?php echo esc_attr($anchor ?: $unique_id); ?>">
 	<div class="po-trust__container">
 		<div class="po-trust__header">
 			<?php if ($headline): ?>

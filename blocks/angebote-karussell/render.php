@@ -52,7 +52,7 @@ if (empty($angebote)) {
 }
 ?>
 
-<section class="po-angebote-karussell alignfull">
+<section class="po-angebote-karussell alignfull"<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?>>
 	<div class="po-angebote-karussell__header">
 		<?php if ($headline): ?>
 			<h2 class="po-angebote-karussell__headline"><?php echo wp_kses_post($headline); ?></h2>

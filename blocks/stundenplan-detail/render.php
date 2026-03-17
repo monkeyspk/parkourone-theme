@@ -145,7 +145,7 @@ foreach ($weekdays as &$day) {
 unset($day);
 ?>
 
-<section class="po-stundenplan-detail alignfull <?php echo $compact_view ? 'is-compact' : ''; ?>"
+<section<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="po-stundenplan-detail alignfull <?php echo $compact_view ? 'is-compact' : ''; ?>"
 	data-filter-age="<?php echo esc_attr($filter_age); ?>"
 	data-filter-location="<?php echo esc_attr($filter_location); ?>">
 

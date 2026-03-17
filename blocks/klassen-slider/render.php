@@ -204,7 +204,7 @@ usort($klassen, function($a, $b) {
 });
 
 static $po_klassen_instance = 0; $po_klassen_instance++;
-$unique_id = 'klassen-slider-' . $po_klassen_instance;
+$anchor = $attributes['anchor'] ?? '';$unique_id = 'klassen-slider-' . $po_klassen_instance;
 
 // Hole Taxonomie-Terms für Filter
 $alter_parent = get_term_by('slug', 'alter', 'event_category');
@@ -260,7 +260,7 @@ $hasFilters = $showAgeFilter || $showLocationFilter;
 ?>
 
 <?php if (!empty($klassen)): ?>
-<section class="po-klassen-slider <?php echo $hasFilters ? 'po-klassen-slider--has-filter' : ''; ?>" id="<?php echo esc_attr($unique_id); ?>">
+<section class="po-klassen-slider <?php echo $hasFilters ? 'po-klassen-slider--has-filter' : ''; ?>" id="<?php echo esc_attr($anchor ?: $unique_id); ?>">
 	<?php if ($headline): ?>
 		<h2 class="po-klassen-slider__headline"><?php echo wp_kses_post($headline); ?></h2>
 	<?php endif; ?>

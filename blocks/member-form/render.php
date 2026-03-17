@@ -33,7 +33,7 @@ $captcha_answer = $captcha_a + $captcha_b;
 $captcha_hash = wp_hash($captcha_answer . 'po_member_captcha_salt');
 
 $nonce = wp_create_nonce('po_member_form_nonce');
-$unique_id = 'po-memberform-' . uniqid();
+$anchor = $attributes['anchor'] ?? '';$unique_id = 'po-memberform-' . uniqid();
 
 $section_classes = ['po-memberform', 'po-memberform--bg-' . $bgVariant];
 if (!empty($attributes['align'])) {
@@ -49,7 +49,7 @@ $hash_map = [
 ];
 $form_hash = $hash_map[$formType] ?? $formType;
 ?>
-<section class="<?php echo esc_attr(implode(' ', $section_classes)); ?>" id="<?php echo esc_attr($unique_id); ?>" data-form-hash="<?php echo esc_attr($form_hash); ?>">
+<section class="<?php echo esc_attr(implode(' ', $section_classes)); ?>" id="<?php echo esc_attr($anchor ?: $unique_id); ?>" data-form-hash="<?php echo esc_attr($form_hash); ?>">
 	<!-- Karte -->
 	<div class="po-memberform__card">
 		<div class="po-memberform__card-icon" aria-hidden="true">

@@ -61,6 +61,6 @@ if (!empty($link_url)) {
 	);
 }
 ?>
-<div class="po-icon" style="text-align: <?php echo esc_attr($align); ?>">
+<div<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="po-icon" style="text-align: <?php echo esc_attr($align); ?>">
 	<?php echo $svg; ?>
 </div>

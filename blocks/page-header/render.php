@@ -55,7 +55,7 @@ $arrow_svg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke
 
 <?php if ($variant === 'centered'): ?>
 <!-- ========== VARIANTE A: CENTERED ========== -->
-<section class="po-ph po-ph--centered alignfull" style="--accent-color: <?php echo esc_attr($accent_color); ?>">
+<section<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="po-ph po-ph--centered alignfull" style="--accent-color: <?php echo esc_attr($accent_color); ?>">
 	<div class="po-ph__container po-ph__container--centered">
 		<div class="po-ph__content po-ph__content--centered">
 			<h1 class="po-ph__title po-ph__title--centered">
@@ -102,7 +102,7 @@ $arrow_svg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke
 
 <?php elseif ($variant === 'split'): ?>
 <!-- ========== VARIANTE B: SPLIT ========== -->
-<section class="po-ph po-ph--split alignfull" style="--accent-color: <?php echo esc_attr($accent_color); ?>">
+<section<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="po-ph po-ph--split alignfull" style="--accent-color: <?php echo esc_attr($accent_color); ?>">
 	<div class="po-ph__container po-ph__container--split">
 		<div class="po-ph__content po-ph__content--split">
 			<h1 class="po-ph__title po-ph__title--split">
@@ -149,7 +149,7 @@ $arrow_svg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke
 
 <?php elseif ($variant === 'banner'): ?>
 <!-- ========== VARIANTE D: BANNER ========== -->
-<section class="po-ph po-ph--banner alignfull" style="--accent-color: <?php echo esc_attr($accent_color); ?>; --overlay-opacity: <?php echo esc_attr($overlay_opacity / 100); ?>">
+<section<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="po-ph po-ph--banner alignfull" style="--accent-color: <?php echo esc_attr($accent_color); ?>; --overlay-opacity: <?php echo esc_attr($overlay_opacity / 100); ?>">
 	<div class="po-ph__banner-bg">
 		<img
 			src="<?php echo esc_url($image); ?>"
@@ -195,7 +195,7 @@ $arrow_svg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke
 
 <?php else: ?>
 <!-- ========== VARIANTE C: FULLSCREEN ========== -->
-<section class="po-ph po-ph--fullscreen alignfull" style="--overlay-opacity: <?php echo esc_attr($overlay_opacity / 100); ?>; --accent-color: <?php echo esc_attr($accent_color); ?>">
+<section<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="po-ph po-ph--fullscreen alignfull" style="--overlay-opacity: <?php echo esc_attr($overlay_opacity / 100); ?>; --accent-color: <?php echo esc_attr($accent_color); ?>">
 	<div class="po-ph__background">
 		<img
 			src="<?php echo esc_url($image); ?>"

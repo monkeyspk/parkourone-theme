@@ -15,7 +15,7 @@ $fallback_images = [
 ?>
 
 <?php if (!empty($quotes)): ?>
-<section class="<?php echo esc_attr($class); ?>">
+<section<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="<?php echo esc_attr($class); ?>">
 	<div class="po-quote-highlight__inner">
 		<div class="po-quote-highlight__grid">
 			<?php foreach (array_slice($quotes, 0, 2) as $index => $quote): ?>

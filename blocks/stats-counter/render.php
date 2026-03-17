@@ -3,14 +3,14 @@ $headline = $attributes['headline'] ?? '';
 $stats = $attributes['stats'] ?? [];
 $style = $attributes['style'] ?? 'light';
 static $po_stats_instance = 0; $po_stats_instance++;
-$unique_id = 'stats-counter-' . $po_stats_instance;
+$anchor = $attributes['anchor'] ?? '';$unique_id = 'stats-counter-' . $po_stats_instance;
 
 $class = 'po-stats po-stats--no-js';
 $class .= ' po-stats--' . $style;
 ?>
 
 <?php if (!empty($stats)): ?>
-<section class="<?php echo esc_attr($class); ?>" id="<?php echo esc_attr($unique_id); ?>">
+<section class="<?php echo esc_attr($class); ?>" id="<?php echo esc_attr($anchor ?: $unique_id); ?>">
 	<div class="po-stats__inner">
 		<?php if ($headline): ?>
 		<h2 class="po-stats__headline"><?php echo wp_kses_post($headline); ?></h2>

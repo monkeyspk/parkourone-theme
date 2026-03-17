@@ -55,7 +55,7 @@ if (!empty($imageUrl)) {
 	$mobileImage = $portrait_fallback ?: (get_template_directory_uri() . '/assets/images/hero/mobile-startbild.jpg');
 }
 static $po_hero_instance = 0; $po_hero_instance++;
-$unique_id = 'hero-' . $po_hero_instance;
+$anchor = $attributes['anchor'] ?? '';$unique_id = 'hero-' . $po_hero_instance;
 
 // YouTube Video ID extrahieren
 $youtube_id = '';
@@ -72,7 +72,7 @@ if (!empty($videoBackgroundUrl)) {
 }
 ?>
 
-<section class="<?php echo esc_attr(implode(' ', $classes)); ?>" id="<?php echo esc_attr($unique_id); ?>">
+<section class="<?php echo esc_attr(implode(' ', $classes)); ?>" id="<?php echo esc_attr($anchor ?: $unique_id); ?>">
 	<?php if (!empty($videoBackgroundUrl)): ?>
 	<video class="po-hero__video-bg" autoplay muted loop playsinline>
 		<source src="<?php echo esc_url($videoBackgroundUrl); ?>" type="video/mp4">

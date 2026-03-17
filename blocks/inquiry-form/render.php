@@ -23,7 +23,7 @@ $captcha_hash = wp_hash($captcha_answer . 'po_captcha_salt');
 
 $nonce = wp_create_nonce('po_inquiry_nonce');
 ?>
-<section class="po-inquiry alignfull <?php echo esc_attr($bgClass); ?>" id="anfrage">
+<section class="po-inquiry alignfull <?php echo esc_attr($bgClass); ?>" id="<?php echo esc_attr($attributes['anchor'] ?? 'anfrage'); ?>">
 	<div class="po-inquiry__inner">
 		<?php if ($headline): ?>
 			<h2 class="po-inquiry__headline"><?php echo wp_kses_post($headline); ?></h2>

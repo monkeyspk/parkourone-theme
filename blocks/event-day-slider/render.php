@@ -1,7 +1,7 @@
 <?php
 $headline   = $attributes['headline'] ?? 'Nächste Probetrainings';
 $buttonText = $attributes['buttonText'] ?? 'Jetzt buchen';
-$unique_id  = 'eds-' . uniqid();
+$anchor = $attributes['anchor'] ?? '';$unique_id  = 'eds-' . uniqid();
 
 // Farben für Altersgruppen
 $age_colors = [
@@ -224,7 +224,7 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 }
 ?>
 
-<section class="po-eds" id="<?php echo esc_attr($unique_id); ?>">
+<section class="po-eds" id="<?php echo esc_attr($anchor ?: $unique_id); ?>">
 
 	<?php if ($headline): ?>
 		<h2 class="po-eds__headline"><?php echo wp_kses_post($headline); ?></h2>

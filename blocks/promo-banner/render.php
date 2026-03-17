@@ -9,7 +9,7 @@ $imageUrl = $attributes['imageUrl'] ?? '';
 $imageAlt = $attributes['imageAlt'] ?? '';
 ?>
 
-<section class="po-pb">
+<section class="po-pb"<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?>>
 	<div class="po-pb__inner">
 		<div class="po-pb__content">
 			<?php if ($badgeUrl): ?>

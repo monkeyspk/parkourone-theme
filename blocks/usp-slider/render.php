@@ -2,7 +2,7 @@
 $headline = $attributes['headline'] ?? 'Warum ParkourONE?';
 $slides = $attributes['slides'] ?? [];
 static $po_usp_instance = 0; $po_usp_instance++;
-$unique_id = 'usp-slider-' . $po_usp_instance;
+$anchor = $attributes['anchor'] ?? '';$unique_id = 'usp-slider-' . $po_usp_instance;
 
 // Standard-Bilder für USP-Slides - Landscape-Bilder aus verschiedenen Kategorien
 $categories = ['adults', 'juniors', 'kids', 'adults', 'juniors'];
@@ -21,7 +21,7 @@ unset($slide);
 ?>
 
 <?php if (!empty($slides)): ?>
-<section class="po-usp" id="<?php echo esc_attr($unique_id); ?>">
+<section class="po-usp" id="<?php echo esc_attr($anchor ?: $unique_id); ?>">
 	<?php if ($headline): ?>
 	<h2 class="po-usp__headline"><?php echo wp_kses_post($headline); ?></h2>
 	<?php endif; ?>

@@ -18,7 +18,7 @@ if (!empty($attributes['align'])) {
 }
 ?>
 
-<section class="<?php echo esc_attr(implode(' ', $section_classes)); ?>">
+<section<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="<?php echo esc_attr(implode(' ', $section_classes)); ?>">
 	<div class="po-intro-section__container">
 		<div class="po-intro-section__content">
 			<?php if ($headline): ?>

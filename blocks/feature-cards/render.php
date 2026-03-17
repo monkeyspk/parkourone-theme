@@ -4,7 +4,7 @@ $showHeadline = $attributes['showHeadline'] ?? true;
 $cards = $attributes['cards'] ?? [];
 $bgColor = $attributes['backgroundColor'] ?? '#f5f5f7';
 ?>
-<section class="po-feature-cards alignfull" style="background-color: <?php echo esc_attr($bgColor); ?>">
+<section<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="po-feature-cards alignfull" style="background-color: <?php echo esc_attr($bgColor); ?>">
 	<?php if ($showHeadline && $headline): ?>
 		<h2 class="po-feature-cards__headline"><?php echo wp_kses_post($headline); ?></h2>
 	<?php endif; ?>

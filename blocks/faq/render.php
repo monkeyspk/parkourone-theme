@@ -43,10 +43,10 @@ if (!empty($attributes['align'])) {
 	$section_classes[] = 'align' . $attributes['align'];
 }
 
-$unique_id = 'po-faqone-' . uniqid();
+$anchor = $attributes['anchor'] ?? '';$unique_id = 'po-faqone-' . uniqid();
 ?>
 
-<section class="<?php echo esc_attr(implode(' ', $section_classes)); ?>" id="<?php echo esc_attr($unique_id); ?>">
+<section class="<?php echo esc_attr(implode(' ', $section_classes)); ?>" id="<?php echo esc_attr($anchor ?: $unique_id); ?>">
 	<?php if ($headline): ?>
 		<h2 class="po-faqone__headline"><?php echo esc_html($headline); ?></h2>
 	<?php endif; ?>

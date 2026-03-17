@@ -13,7 +13,7 @@ if (empty($steps) && function_exists('parkourone_get_global_steps')) {
 
 if (empty($steps)) return;
 
-$unique_id = 'steps-timeline-' . uniqid();
+$anchor = $attributes['anchor'] ?? '';$unique_id = 'steps-timeline-' . uniqid();
 $theme_uri = get_template_directory_uri();
 
 $align_class = '';
@@ -43,7 +43,7 @@ if (empty($images)) {
 }
 ?>
 
-<section class="po-steps-timeline po-steps-timeline--<?php echo esc_attr($background_color); ?> <?php echo esc_attr($align_class); ?>" id="<?php echo esc_attr($unique_id); ?>">
+<section class="po-steps-timeline po-steps-timeline--<?php echo esc_attr($background_color); ?> <?php echo esc_attr($align_class); ?>" id="<?php echo esc_attr($anchor ?: $unique_id); ?>">
 	<div class="po-steps-timeline__container">
 		<?php if ($headline || $subheadline): ?>
 		<header class="po-steps-timeline__header">

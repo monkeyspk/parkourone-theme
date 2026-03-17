@@ -14,7 +14,7 @@ if ($imageRight) {
 	$class .= ' po-split--image-right';
 }
 ?>
-<section class="<?php echo esc_attr($class); ?> alignfull" style="background-color: <?php echo esc_attr($bgColor); ?>">
+<section<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="<?php echo esc_attr($class); ?> alignfull" style="background-color: <?php echo esc_attr($bgColor); ?>">
 	<div class="po-split__text">
 		<?php if ($headline): ?>
 			<h2 class="po-split__headline"><?php echo wp_kses_post($headline); ?></h2>

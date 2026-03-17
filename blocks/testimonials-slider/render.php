@@ -77,7 +77,7 @@ if (empty($testimonials)) {
 }
 ?>
 
-<section class="po-testimonials alignfull">
+<section class="po-testimonials alignfull"<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?>>
 	<div class="po-testimonials__header">
 		<?php if ($headline): ?>
 			<h2 class="po-testimonials__headline"><?php echo wp_kses_post($headline); ?></h2>

@@ -42,7 +42,7 @@ if (!empty($link_url)) {
 	);
 }
 ?>
-<figure class="po-image">
+<figure<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="po-image">
 	<?php echo $img_html; ?>
 	<?php if (!empty($caption)): ?>
 		<figcaption class="po-image__caption"><?php echo wp_kses_post($caption); ?></figcaption>

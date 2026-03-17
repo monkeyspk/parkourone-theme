@@ -68,7 +68,7 @@ if (empty($filtered_schulen)) {
 	return;
 }
 ?>
-<section class="po-schulen alignfull" style="background-color: <?php echo esc_attr($bgColor); ?>">
+<section<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="po-schulen alignfull" style="background-color: <?php echo esc_attr($bgColor); ?>">
 	<h2 class="po-schulen__headline"><?php echo wp_kses_post($headline); ?></h2>
 	<?php if ($intro): ?>
 		<p class="po-schulen__intro"><?php echo wp_kses_post($intro); ?></p>

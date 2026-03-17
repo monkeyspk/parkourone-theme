@@ -35,7 +35,7 @@ if (!function_exists('parkourone_get_embed_url')) {
 	}
 }
 ?>
-<section class="<?php echo esc_attr($class); ?> alignfull" style="background-color: <?php echo esc_attr($bgColor); ?>">
+<section<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="<?php echo esc_attr($class); ?> alignfull" style="background-color: <?php echo esc_attr($bgColor); ?>">
 	<div class="po-about__inner">
 	<div class="po-about__text">
 		<?php if ($subheadline): ?>
