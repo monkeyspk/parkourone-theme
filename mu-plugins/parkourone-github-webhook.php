@@ -199,14 +199,25 @@ function parkourone_webhook_do_update($repo_full_name, $repo_name, $target_dir, 
     $log = array_slice($log, -50);
     update_option('parkourone_webhook_updates', $log);
 
-    // Auch parkourone_last_update aktualisieren (für Theme-Updater Admin-Seite)
+    // Last-Update Option und Transient zurücksetzen damit Poller nicht nochmal prüft
     if ($repo_full_name === 'monkeyspk/parkourone-theme') {
         update_option('parkourone_last_update', [
             'time'    => current_time('mysql'),
             'version' => $version,
         ]);
-        // Transient zurücksetzen damit Updater nicht sofort nochmal prüft
         delete_transient('parkourone_github_update_check');
+    } elseif ($repo_full_name === 'monkeyspk/custom-events-plugin') {
+        update_option('custom-events-plugin_last_update', [
+            'time'    => current_time('mysql'),
+            'version' => $version,
+        ]);
+        delete_transient('custom_events_github_update_check');
+    } elseif ($repo_full_name === 'monkeyspk/ab-webhook-endpoint') {
+        update_option('ab-webhook-endpoint_last_update', [
+            'time'    => current_time('mysql'),
+            'version' => $version,
+        ]);
+        delete_transient('ab_webhook_github_update_check');
     }
 
     return true;

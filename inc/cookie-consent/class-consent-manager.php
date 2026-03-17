@@ -383,7 +383,7 @@ class PO_Consent_Manager {
 	public function output_consent_config() {
 		$consent_json = wp_json_encode($this->current_consent ?: new stdClass());
 		?>
-		<script>
+		<script data-consent-manager>
 		window.poConsent = <?php echo $consent_json; ?>;
 		window.poConsentVersion = '<?php echo esc_js(self::CONSENT_VERSION); ?>';
 		</script>
@@ -397,7 +397,7 @@ class PO_Consent_Manager {
 		$analytics = $this->has_consent(self::CATEGORY_ANALYTICS) ? 'granted' : 'denied';
 		$marketing = $this->has_consent(self::CATEGORY_MARKETING) ? 'granted' : 'denied';
 		?>
-		<script>
+		<script data-consent-manager>
 		window.dataLayer = window.dataLayer || [];
 		function gtag(){dataLayer.push(arguments);}
 		gtag('consent', 'default', {
@@ -555,9 +555,36 @@ class PO_Consent_Manager {
 	}
 
 	/**
+	 * Prüfe ob aktuelle Seite eine rechtliche Seite ist (Datenschutz, Impressum)
+	 * Auf diesen Seiten wird das Banner ausgeblendet, damit User die Texte
+	 * lesen können bevor sie sich entscheiden (DSGVO Best Practice).
+	 */
+	public function is_legal_page() {
+		// Slugs der rechtlichen Seiten
+		$legal_slugs = ['datenschutz', 'impressum', 'datenschutzerklaerung', 'privacy-policy', 'imprint'];
+
+		if (is_page($legal_slugs)) {
+			return true;
+		}
+
+		// Fallback: WordPress Privacy Policy Page (Einstellungen → Datenschutz)
+		$privacy_page_id = (int) get_option('wp_page_for_privacy_policy');
+		if ($privacy_page_id && is_page($privacy_page_id)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Prüfe ob Banner angezeigt werden soll (erweitert)
 	 */
 	public function should_show_banner() {
+		// Auf rechtlichen Seiten Banner ausblenden
+		if ($this->is_legal_page()) {
+			return false;
+		}
+
 		// Kein Consent vorhanden
 		if ($this->current_consent === null) {
 			return true;
