@@ -364,9 +364,14 @@ function parkourone_get_seo_content($type, $term_slug = '', $city = '') {
 		$content[$type]['meta_description'] = str_replace('Probetraining', "Probetraining in {$city_name}", $content[$type]['meta_description']);
 	}
 
-	// Slug-Normalisierung: minis_5-8 / minis-5-8 → minis
-	if (!isset($content[$type]) && strpos($type, 'minis') === 0) {
-		$type = 'minis';
+	// Slug-Normalisierung: minis_5-8 → minis, kids-6-12 → kids, juniors_12-18 → juniors, etc.
+	if (!isset($content[$type])) {
+		foreach (array_keys($content) as $base_slug) {
+			if (strpos($type, $base_slug) === 0) {
+				$type = $base_slug;
+				break;
+			}
+		}
 	}
 
 	return $content[$type] ?? null;
@@ -1073,11 +1078,24 @@ function parkourone_auto_pages_admin_page() {
 							<tbody>
 								<?php foreach ($target_groups as $group):
 									$page_exists = get_page_by_path($group['slug']);
+									// Fallback: Seite über Meta-Daten suchen (falls Slug geändert wurde)
+									if (!$page_exists) {
+										$meta_pages = get_posts([
+											'post_type' => 'page',
+											'post_status' => 'any',
+											'meta_key' => '_parkourone_category_slug',
+											'meta_value' => $group['slug'],
+											'posts_per_page' => 1,
+										]);
+										if (!empty($meta_pages)) {
+											$page_exists = $meta_pages[0];
+										}
+									}
 									$is_outdated = isset($outdated_pages['pages']['categories']) && in_array($group['slug'], $outdated_pages['pages']['categories']);
 								?>
 									<tr>
 										<td><input type="checkbox" name="categories[]" value="<?php echo esc_attr($group['slug']); ?>" class="category-checkbox" data-exists="<?php echo $page_exists ? '1' : '0'; ?>" <?php echo $page_exists ? 'disabled' : ''; ?>></td>
-										<td><strong><?php echo esc_html($group['name']); ?></strong></td>
+										<td><strong><?php echo esc_html($group['name']); ?></strong> <code style="font-size: 0.8em; color: #888;">/<?php echo esc_html($group['slug']); ?>/</code></td>
 										<td><?php echo $group['seo'] ? '<span style="color: green;">✓</span>' : '<span style="color: orange;">⚠</span>'; ?></td>
 										<td>
 											<?php if ($page_exists): ?>
@@ -1738,27 +1756,37 @@ function parkourone_handle_page_generation() {
 		$header_variant = sanitize_text_field($_POST['header_variant'] ?? 'split');
 		$created = 0;
 		$updated = 0;
+		$failed = 0;
+		$created_pages = [];
 
 		if (empty($categories)) {
 			add_settings_error('po_auto_pages', 'no_categories_selected', 'Bitte wähle mindestens eine Zielgruppe aus. Falls alle bereits existieren, aktiviere "Bestehende überschreiben".', 'error');
 		} else {
 			foreach ($categories as $cat_slug) {
 				$existing = get_page_by_path($cat_slug);
-				$result = parkourone_create_category_page($cat_slug, $overwrite, $header_variant, $force);
-				if ($result) {
+				$page_id = parkourone_create_category_page($cat_slug, $overwrite, $header_variant, $force);
+				if ($page_id) {
 					if ($existing && $overwrite) {
 						$updated++;
 					} else {
 						$created++;
 					}
+					$created_pages[] = '<a href="' . get_edit_post_link($page_id) . '">' . get_the_title($page_id) . '</a>';
+				} else if (!$existing || $overwrite) {
+					$failed++;
 				}
 			}
 
 			$parts = [];
 			if ($created > 0) $parts[] = "{$created} erstellt";
 			if ($updated > 0) $parts[] = "{$updated} aktualisiert";
+			if ($failed > 0) $parts[] = "{$failed} fehlgeschlagen";
 			if (!empty($parts)) {
-				add_settings_error('po_auto_pages', 'categories_created', "Zielgruppen-Seiten: " . implode(', ', $parts), 'success');
+				$message = "Zielgruppen-Seiten: " . implode(', ', $parts);
+				if (!empty($created_pages)) {
+					$message .= ": " . implode(', ', $created_pages);
+				}
+				add_settings_error('po_auto_pages', 'categories_created', $message, $failed > 0 ? 'error' : 'success');
 			}
 		}
 	}
@@ -2161,10 +2189,26 @@ function parkourone_create_category_page($cat_slug, $overwrite = false, $header_
 				'_parkourone_auto_generated' => true,
 				'_parkourone_site_location' => $site_name
 			]
-		]);
+		], true);
 	}
 
-	return $page_id && !is_wp_error($page_id);
+	if (is_wp_error($page_id)) {
+		error_log("[ParkourONE] Category page creation failed for '{$cat_slug}': " . $page_id->get_error_message());
+		return false;
+	}
+
+	if (!$page_id) {
+		error_log("[ParkourONE] Category page creation returned 0 for '{$cat_slug}'");
+		return false;
+	}
+
+	// Verify the actual slug WordPress assigned (may differ if there was a conflict)
+	$actual_page = get_post($page_id);
+	if ($actual_page && $actual_page->post_name !== $cat_slug) {
+		error_log("[ParkourONE] Category page '{$cat_slug}' created with different slug: '{$actual_page->post_name}' (ID: {$page_id})");
+	}
+
+	return $page_id;
 }
 
 function parkourone_generate_category_page_content($cat_slug, $seo, $header_variant = 'split') {
