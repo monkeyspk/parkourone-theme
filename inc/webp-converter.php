@@ -36,97 +36,9 @@ function parkourone_webp_engine() {
 	return false;
 }
 
-// Komplett deaktivieren wenn kein WebP-Support
-if (!parkourone_webp_supported()) {
-	return;
-}
-
-// =====================================================
-// Kern: JPG/PNG → WebP konvertieren
-// =====================================================
-
-function parkourone_webp_convert($source_path, $quality = null) {
-	if ($quality === null) {
-		$quality = (int) get_option('parkourone_webp_quality', 80);
-	}
-
-	if (!file_exists($source_path)) return false;
-
-	$ext = strtolower(pathinfo($source_path, PATHINFO_EXTENSION));
-	if (!in_array($ext, ['jpg', 'jpeg', 'png'])) return false;
-
-	$webp_path = preg_replace('/\.(jpe?g|png)$/i', '.webp', $source_path);
-
-	// Skip wenn WebP neuer als Quelle
-	if (file_exists($webp_path) && filemtime($webp_path) >= filemtime($source_path)) {
-		return $webp_path;
-	}
-
-	$engine = parkourone_webp_engine();
-
-	if ($engine === 'gd') {
-		return parkourone_webp_convert_gd($source_path, $webp_path, $ext, $quality);
-	} elseif ($engine === 'imagick') {
-		return parkourone_webp_convert_imagick($source_path, $webp_path, $quality);
-	}
-
-	return false;
-}
-
-function parkourone_webp_convert_gd($source_path, $webp_path, $ext, $quality) {
-	if ($ext === 'png') {
-		$image = @imagecreatefrompng($source_path);
-		if (!$image) return false;
-		// PNG-Transparenz beibehalten
-		imagepalettetotruecolor($image);
-		imagealphablending($image, true);
-		imagesavealpha($image, true);
-	} else {
-		$image = @imagecreatefromjpeg($source_path);
-		if (!$image) return false;
-	}
-
-	$result = @imagewebp($image, $webp_path, $quality);
-	imagedestroy($image);
-
-	if ($result && file_exists($webp_path)) {
-		// Sanity-Check: WebP sollte nicht größer als Original sein
-		if (filesize($webp_path) >= filesize($source_path)) {
-			@unlink($webp_path);
-			return false;
-		}
-		return $webp_path;
-	}
-
-	return false;
-}
-
-function parkourone_webp_convert_imagick($source_path, $webp_path, $quality) {
-	try {
-		$imagick = new \Imagick($source_path);
-		$imagick->setImageFormat('webp');
-		$imagick->setImageCompressionQuality($quality);
-		$imagick->setOption('webp:method', '4');
-		$result = $imagick->writeImage($webp_path);
-		$imagick->clear();
-		$imagick->destroy();
-
-		if ($result && file_exists($webp_path)) {
-			if (filesize($webp_path) >= filesize($source_path)) {
-				@unlink($webp_path);
-				return false;
-			}
-			return $webp_path;
-		}
-	} catch (\Exception $e) {
-		// Fehler still ignorieren
-	}
-
-	return false;
-}
-
 // =====================================================
 // URL-Resolver: Gibt WebP-URL zurück oder false
+// Braucht kein GD/Imagick — prüft nur ob .webp auf Disk liegt
 // =====================================================
 
 function parkourone_webp_get_url($image_url) {
@@ -167,67 +79,8 @@ function parkourone_webp_get_url($image_url) {
 }
 
 // =====================================================
-// Upload-Hook: WebP bei Upload erzeugen
-// =====================================================
-
-function parkourone_webp_on_upload($metadata, $attachment_id) {
-	$file = get_attached_file($attachment_id);
-	if (!$file) return $metadata;
-
-	$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-	if (!in_array($ext, ['jpg', 'jpeg', 'png'])) return $metadata;
-
-	// Original konvertieren
-	parkourone_webp_convert($file);
-
-	// Alle Größen konvertieren
-	if (!empty($metadata['sizes'])) {
-		$dir = dirname($file);
-		foreach ($metadata['sizes'] as $size) {
-			$size_file = $dir . '/' . $size['file'];
-			if (file_exists($size_file)) {
-				parkourone_webp_convert($size_file);
-			}
-		}
-	}
-
-	return $metadata;
-}
-add_filter('wp_generate_attachment_metadata', 'parkourone_webp_on_upload', 10, 2);
-
-// =====================================================
-// Delete-Hook: WebP-Dateien aufräumen
-// =====================================================
-
-function parkourone_webp_on_delete($attachment_id) {
-	$file = get_attached_file($attachment_id);
-	if (!$file) return;
-
-	$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-	if (!in_array($ext, ['jpg', 'jpeg', 'png'])) return;
-
-	// Original-WebP löschen
-	$webp_path = preg_replace('/\.(jpe?g|png)$/i', '.webp', $file);
-	if (file_exists($webp_path)) {
-		@unlink($webp_path);
-	}
-
-	// Alle Größen-WebPs löschen
-	$metadata = wp_get_attachment_metadata($attachment_id);
-	if (!empty($metadata['sizes'])) {
-		$dir = dirname($file);
-		foreach ($metadata['sizes'] as $size) {
-			$size_webp = preg_replace('/\.(jpe?g|png)$/i', '.webp', $dir . '/' . $size['file']);
-			if (file_exists($size_webp)) {
-				@unlink($size_webp);
-			}
-		}
-	}
-}
-add_action('delete_attachment', 'parkourone_webp_on_delete');
-
-// =====================================================
 // Output-Filter: <img> in <picture> wrappen
+// Braucht kein GD/Imagick — nutzt parkourone_webp_get_url() (file_exists)
 // =====================================================
 
 function parkourone_webp_wrap_img_tag($content) {
@@ -335,6 +188,158 @@ function parkourone_webp_end_ob() {
 }
 add_action('template_redirect', 'parkourone_webp_start_ob', 1);
 add_action('shutdown', 'parkourone_webp_end_ob', 999);
+
+// =====================================================
+// Ab hier: Konvertierungs-Funktionen (brauchen GD/Imagick)
+// =====================================================
+
+if (!parkourone_webp_supported()) {
+	return;
+}
+
+// =====================================================
+// Kern: JPG/PNG → WebP konvertieren
+// =====================================================
+
+function parkourone_webp_convert($source_path, $quality = null) {
+	if ($quality === null) {
+		$quality = (int) get_option('parkourone_webp_quality', 80);
+	}
+
+	if (!file_exists($source_path)) return false;
+
+	$ext = strtolower(pathinfo($source_path, PATHINFO_EXTENSION));
+	if (!in_array($ext, ['jpg', 'jpeg', 'png'])) return false;
+
+	$webp_path = preg_replace('/\.(jpe?g|png)$/i', '.webp', $source_path);
+
+	// Skip wenn WebP neuer als Quelle
+	if (file_exists($webp_path) && filemtime($webp_path) >= filemtime($source_path)) {
+		return $webp_path;
+	}
+
+	$engine = parkourone_webp_engine();
+
+	if ($engine === 'gd') {
+		return parkourone_webp_convert_gd($source_path, $webp_path, $ext, $quality);
+	} elseif ($engine === 'imagick') {
+		return parkourone_webp_convert_imagick($source_path, $webp_path, $quality);
+	}
+
+	return false;
+}
+
+function parkourone_webp_convert_gd($source_path, $webp_path, $ext, $quality) {
+	if ($ext === 'png') {
+		$image = @imagecreatefrompng($source_path);
+		if (!$image) return false;
+		// PNG-Transparenz beibehalten
+		imagepalettetotruecolor($image);
+		imagealphablending($image, true);
+		imagesavealpha($image, true);
+	} else {
+		$image = @imagecreatefromjpeg($source_path);
+		if (!$image) return false;
+	}
+
+	$result = @imagewebp($image, $webp_path, $quality);
+	imagedestroy($image);
+
+	if ($result && file_exists($webp_path)) {
+		// Sanity-Check: WebP sollte nicht größer als Original sein
+		if (filesize($webp_path) >= filesize($source_path)) {
+			@unlink($webp_path);
+			return false;
+		}
+		return $webp_path;
+	}
+
+	return false;
+}
+
+function parkourone_webp_convert_imagick($source_path, $webp_path, $quality) {
+	try {
+		$imagick = new \Imagick($source_path);
+		$imagick->setImageFormat('webp');
+		$imagick->setImageCompressionQuality($quality);
+		$imagick->setOption('webp:method', '4');
+		$result = $imagick->writeImage($webp_path);
+		$imagick->clear();
+		$imagick->destroy();
+
+		if ($result && file_exists($webp_path)) {
+			if (filesize($webp_path) >= filesize($source_path)) {
+				@unlink($webp_path);
+				return false;
+			}
+			return $webp_path;
+		}
+	} catch (\Exception $e) {
+		// Fehler still ignorieren
+	}
+
+	return false;
+}
+
+// =====================================================
+// Upload-Hook: WebP bei Upload erzeugen
+// =====================================================
+
+function parkourone_webp_on_upload($metadata, $attachment_id) {
+	$file = get_attached_file($attachment_id);
+	if (!$file) return $metadata;
+
+	$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+	if (!in_array($ext, ['jpg', 'jpeg', 'png'])) return $metadata;
+
+	// Original konvertieren
+	parkourone_webp_convert($file);
+
+	// Alle Größen konvertieren
+	if (!empty($metadata['sizes'])) {
+		$dir = dirname($file);
+		foreach ($metadata['sizes'] as $size) {
+			$size_file = $dir . '/' . $size['file'];
+			if (file_exists($size_file)) {
+				parkourone_webp_convert($size_file);
+			}
+		}
+	}
+
+	return $metadata;
+}
+add_filter('wp_generate_attachment_metadata', 'parkourone_webp_on_upload', 10, 2);
+
+// =====================================================
+// Delete-Hook: WebP-Dateien aufräumen
+// =====================================================
+
+function parkourone_webp_on_delete($attachment_id) {
+	$file = get_attached_file($attachment_id);
+	if (!$file) return;
+
+	$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+	if (!in_array($ext, ['jpg', 'jpeg', 'png'])) return;
+
+	// Original-WebP löschen
+	$webp_path = preg_replace('/\.(jpe?g|png)$/i', '.webp', $file);
+	if (file_exists($webp_path)) {
+		@unlink($webp_path);
+	}
+
+	// Alle Größen-WebPs löschen
+	$metadata = wp_get_attachment_metadata($attachment_id);
+	if (!empty($metadata['sizes'])) {
+		$dir = dirname($file);
+		foreach ($metadata['sizes'] as $size) {
+			$size_webp = preg_replace('/\.(jpe?g|png)$/i', '.webp', $dir . '/' . $size['file']);
+			if (file_exists($size_webp)) {
+				@unlink($size_webp);
+			}
+		}
+	}
+}
+add_action('delete_attachment', 'parkourone_webp_on_delete');
 
 // =====================================================
 // Bulk-Konvertierung: AJAX-Handler

@@ -10,6 +10,24 @@
 defined('ABSPATH') || exit;
 
 /**
+ * Gibt die WebP-URL zurück, wenn eine .webp-Datei neben dem Original existiert.
+ * Andernfalls die Original-URL.
+ *
+ * @param string $file_path Absoluter Pfad zur Bilddatei
+ * @param string $file_url  URL zur Bilddatei
+ * @return string WebP-URL oder Original-URL
+ */
+function parkourone_prefer_webp_url($file_path, $file_url) {
+	if (preg_match('/\.(jpe?g|png)$/i', $file_path)) {
+		$webp_path = preg_replace('/\.(jpe?g|png)$/i', '.webp', $file_path);
+		if (file_exists($webp_path)) {
+			return preg_replace('/\.(jpe?g|png)$/i', '.webp', $file_url);
+		}
+	}
+	return $file_url;
+}
+
+/**
  * Mapping von Altersgruppen-Slugs zu Ordnernamen
  */
 function parkourone_get_age_folder_map() {
@@ -80,10 +98,11 @@ function parkourone_get_fallback_image($age_category = 'adults', $orientation = 
 
 			if (!is_dir($base_dir)) continue;
 
-			$images = glob($base_dir . '/*.{jpg,jpeg,png,webp}', GLOB_BRACE);
+			$images = glob($base_dir . '/*.{jpg,jpeg,png}', GLOB_BRACE);
 			if (!empty($images)) {
 				$random_image = $images[array_rand($images)];
-				return $template_uri . '/assets/images/fallback/' . $try_orientation . '/' . $try_folder . '/' . basename($random_image);
+				$url = $template_uri . '/assets/images/fallback/' . $try_orientation . '/' . $try_folder . '/' . basename($random_image);
+				return parkourone_prefer_webp_url($random_image, $url);
 			}
 		}
 	}
@@ -113,13 +132,14 @@ function parkourone_get_theme_images($age_category = 'adults', $orientation = 'a
 			continue;
 		}
 
-		$files = glob($base_dir . '/*.{jpg,jpeg,png,webp}', GLOB_BRACE);
+		$files = glob($base_dir . '/*.{jpg,jpeg,png}', GLOB_BRACE);
 
 		foreach ($files as $file) {
 			$filename = basename($file);
+			$url = parkourone_prefer_webp_url($file, $base_url . '/' . $filename);
 			$images[] = [
-				'url'         => $base_url . '/' . $filename,
-				'filename'    => $filename,
+				'url'         => $url,
+				'filename'    => basename($url),
 				'orientation' => $orient,
 				'category'    => $folder,
 			];

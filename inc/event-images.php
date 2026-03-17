@@ -156,14 +156,16 @@ function parkourone_get_theme_fallback_images($category_slug, $orientation = 'po
 	}
 
 	$files = scandir($fallback_dir);
-	$allowed_extensions = ['jpg', 'jpeg', 'png', 'webp'];
+	$allowed_extensions = ['jpg', 'jpeg', 'png'];
 
 	foreach ($files as $file) {
 		if ($file === '.' || $file === '..') continue;
 
 		$extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 		if (in_array($extension, $allowed_extensions)) {
-			$images[] = $fallback_url . '/' . $file;
+			$file_path = $fallback_dir . '/' . $file;
+			$file_url = $fallback_url . '/' . $file;
+			$images[] = parkourone_prefer_webp_url($file_path, $file_url);
 		}
 	}
 
