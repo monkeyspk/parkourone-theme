@@ -47,11 +47,6 @@ function parkourone_maintenance_mode() {
 		return;
 	}
 
-	// Probetraining-Buchungsseite durchlassen
-	if (is_page('probetraining-buchen')) {
-		return;
-	}
-
 	// WooCommerce Checkout + Thank-You durchlassen
 	if (function_exists('is_checkout') && is_checkout()) {
 		return;
