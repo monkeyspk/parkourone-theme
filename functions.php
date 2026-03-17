@@ -47,6 +47,31 @@ function parkourone_maintenance_mode() {
 		return;
 	}
 
+	// Probetraining-Buchungsseite durchlassen
+	if (is_page('probetraining-buchen')) {
+		return;
+	}
+
+	// WooCommerce Checkout + Thank-You durchlassen
+	if (function_exists('is_checkout') && is_checkout()) {
+		return;
+	}
+
+	// WooCommerce Warenkorb durchlassen
+	if (function_exists('is_cart') && is_cart()) {
+		return;
+	}
+
+	// WooCommerce AJAX (Fragments, Coupons etc.) durchlassen
+	if (isset($_GET['wc-ajax'])) {
+		return;
+	}
+
+	// REST API durchlassen
+	if (defined('REST_REQUEST') && REST_REQUEST) {
+		return;
+	}
+
 	// Maintenance-Seite laden
 	$maintenance_file = get_template_directory() . '/maintenance.php';
 	if (file_exists($maintenance_file)) {

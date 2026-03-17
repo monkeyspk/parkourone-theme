@@ -181,7 +181,37 @@
 			font-size: 18px;
 			line-height: 1.6;
 			color: rgba(255, 255, 255, 0.7);
+			margin-bottom: 32px;
+		}
+
+		/* CTA Section */
+		.cta-section {
 			margin-bottom: 48px;
+			text-align: center;
+		}
+
+		.cta-text {
+			font-size: 15px;
+			color: rgba(255, 255, 255, 0.6);
+			margin-bottom: 16px;
+		}
+
+		.cta-btn {
+			display: inline-block;
+			padding: 14px 32px;
+			background: #2997ff;
+			color: #fff;
+			font-size: 16px;
+			font-weight: 600;
+			text-decoration: none;
+			border-radius: 12px;
+			transition: all 0.3s ease;
+		}
+
+		.cta-btn:hover {
+			background: #0a84ff;
+			transform: translateY(-2px);
+			box-shadow: 0 8px 30px rgba(41, 151, 255, 0.4);
 		}
 
 		/* Progress Bar */
@@ -308,6 +338,12 @@
 			Wir arbeiten gerade an etwas Grossartigem.
 			Unsere neue Website ist bald bereit für den nächsten Sprung.
 		</p>
+
+		<!-- CTA Probetraining -->
+		<div class="cta-section">
+			<p class="cta-text">Du möchtest ein Probetraining buchen? Das geht auch jetzt!</p>
+			<a href="/probetraining-buchen/" class="cta-btn">Probetraining buchen</a>
+		</div>
 
 		<!-- Progress -->
 		<div class="progress-container">
