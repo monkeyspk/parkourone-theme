@@ -143,7 +143,7 @@ class ParkourONE_GitHub_Updater {
         ?>
         <?php if (!$embedded): ?>
         <div class="wrap">
-            <h1>ParkourONE Theme Updates</h1>
+            <h1>ParkourONE Updates</h1>
         <?php endif; ?>
 
             <?php
@@ -259,6 +259,36 @@ class ParkourONE_GitHub_Updater {
                 </details>
                 <?php endif; ?>
             </div>
+
+            <?php
+            // Plugin-Updater Sektionen einbetten (falls Plugins aktiv)
+            if (class_exists('Custom_Events_GitHub_Updater')) {
+                (new Custom_Events_GitHub_Updater())->render_admin_section();
+            }
+
+            if (class_exists('AB_Webhook_GitHub_Updater')) {
+                (new AB_Webhook_GitHub_Updater())->render_admin_section();
+            }
+
+            // Webhook-Log anzeigen
+            $webhook_log = get_option('parkourone_webhook_updates', []);
+            if (!empty($webhook_log)):
+                $recent = array_reverse(array_slice($webhook_log, -10));
+            ?>
+            <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); max-width: 600px; margin-top: 20px;">
+                <h2 style="margin-top: 0;">Webhook-Log (letzte 10)</h2>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <?php foreach ($recent as $entry): ?>
+                    <tr>
+                        <td style="padding: 4px 8px;"><code><?php echo esc_html($entry['version']); ?></code></td>
+                        <td style="padding: 4px 8px;"><?php echo esc_html($entry['repo']); ?></td>
+                        <td style="padding: 4px 8px; color: #666;"><?php echo esc_html($entry['time']); ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </table>
+            </div>
+            <?php endif; ?>
+
         <?php if (!$embedded): ?>
         </div>
         <?php endif; ?>
