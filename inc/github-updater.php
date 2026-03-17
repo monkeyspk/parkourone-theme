@@ -31,11 +31,44 @@ class ParkourONE_GitHub_Updater {
         // Manueller Update-Check Handler
         add_action('admin_init', [$this, 'handle_manual_check']);
 
+        // GitHub Token Handler
+        add_action('admin_init', [$this, 'handle_token_save']);
+
         // Cache-Löschen Handler
         add_action('admin_init', [$this, 'handle_cache_clear']);
 
         // Info im Admin anzeigen
         add_action('admin_notices', [$this, 'show_update_notice']);
+    }
+
+    /**
+     * GitHub Token speichern
+     */
+    public function handle_token_save() {
+        if (!isset($_POST['parkourone_save_token'])) {
+            return;
+        }
+
+        if (!wp_verify_nonce($_POST['parkourone_token_nonce'] ?? '', 'parkourone_save_token')) {
+            return;
+        }
+
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+
+        $token = sanitize_text_field($_POST['parkourone_github_token'] ?? '');
+        update_option('parkourone_github_token', $token);
+
+        // Transients löschen damit sofort mit Token geprüft wird
+        delete_transient('custom_events_github_update_check');
+        delete_transient('ab_webhook_github_update_check');
+
+        wp_redirect(add_query_arg([
+            'page' => 'parkourone-updates',
+            'token_saved' => '1'
+        ], admin_url('admin.php')));
+        exit;
     }
 
     /**
@@ -288,6 +321,45 @@ class ParkourONE_GitHub_Updater {
                 </table>
             </div>
             <?php endif; ?>
+
+            <?php
+            // Token-Konfiguration
+            $github_token = get_option('parkourone_github_token', '');
+            ?>
+            <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); max-width: 600px; margin-top: 20px;">
+                <h2 style="margin-top: 0;">GitHub Token</h2>
+
+                <?php if (isset($_GET['token_saved']) && $_GET['token_saved'] === '1'): ?>
+                    <div class="notice notice-success"><p>Token gespeichert.</p></div>
+                <?php endif; ?>
+
+                <p style="color: #666; font-size: 13px;">
+                    Für private Repos wird ein GitHub Personal Access Token benötigt.
+                    Erstelle einen unter <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a>
+                    mit dem Scope <code>repo</code> (oder <code>contents:read</code> bei Fine-grained Tokens).
+                </p>
+
+                <form method="post">
+                    <?php wp_nonce_field('parkourone_save_token', 'parkourone_token_nonce'); ?>
+                    <table class="form-table" style="margin: 0;">
+                        <tr>
+                            <th><label for="parkourone_github_token">Token:</label></th>
+                            <td>
+                                <input type="password" id="parkourone_github_token" name="parkourone_github_token"
+                                       value="<?php echo esc_attr($github_token); ?>"
+                                       style="width: 100%; max-width: 400px; font-family: monospace;"
+                                       placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+                                <?php if ($github_token): ?>
+                                    <br><small style="color: #46b450;">Token ist gesetzt (<?php echo esc_html(substr($github_token, 0, 4) . '...' . substr($github_token, -4)); ?>)</small>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    </table>
+                    <button type="submit" name="parkourone_save_token" class="button button-primary" style="margin-top: 10px;">
+                        Token speichern
+                    </button>
+                </form>
+            </div>
 
         <?php if (!$embedded): ?>
         </div>
