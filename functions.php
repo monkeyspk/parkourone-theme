@@ -940,6 +940,8 @@ function parkourone_allowed_block_types($allowed_blocks, $editor_context) {
         'core/list-item',
         'core/buttons',
         'core/button',
+        'core/html',
+        'core/shortcode',
 
         // WooCommerce Blöcke
         'woocommerce/cart',
