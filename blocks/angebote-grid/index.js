@@ -56,22 +56,23 @@
 							onChange: function(val) { setAttributes({ columns: val }); },
 							min: 2,
 							max: 4
-						})
-					]),
-					el(PanelBody, { title: 'Kategorien filtern', initialOpen: false }, [
-						el('p', { key: 'hint', style: { fontSize: '12px', color: '#666', margin: '0 0 0.75rem 0' } },
-							'Keine Auswahl = alle Kategorien anzeigen'
-						),
-						kategorien.length === 0
-							? el('p', { key: 'loading', style: { color: '#999', fontSize: '13px' } }, 'Lade Kategorien...')
-							: kategorien.map(function(kat) {
-								return el(CheckboxControl, {
-									key: kat.slug,
-									label: kat.name,
-									checked: filterCats.indexOf(kat.slug) !== -1,
-									onChange: function() { toggleCategory(kat.slug); }
-								});
-							})
+						}),
+						el('div', { key: 'cat-filter', style: { borderTop: '1px solid #e0e0e0', paddingTop: '1rem', marginTop: '0.5rem' } },
+							el('p', { style: { fontWeight: '600', fontSize: '13px', margin: '0 0 0.25rem 0' } }, 'Kategorien filtern'),
+							el('p', { style: { fontSize: '12px', color: '#666', margin: '0 0 0.75rem 0' } },
+								filterCats.length === 0 ? 'Alle Kategorien werden angezeigt' : filterCats.length + ' Kategorie(n) ausgewählt'
+							),
+							kategorien.length === 0
+								? el('p', { style: { color: '#999', fontSize: '13px' } }, 'Lade Kategorien...')
+								: el('div', null, kategorien.map(function(kat) {
+									return el(CheckboxControl, {
+										key: kat.slug,
+										label: kat.name,
+										checked: filterCats.indexOf(kat.slug) !== -1,
+										onChange: function() { toggleCategory(kat.slug); }
+									});
+								}))
+						)
 					])
 				),
 				el('div', blockProps, [
