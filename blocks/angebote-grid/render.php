@@ -1,24 +1,47 @@
 <?php
 $show_filter = $attributes['showFilter'] ?? true;
 $columns = $attributes['columns'] ?? 3;
+$filterCategories = $attributes['filterCategories'] ?? [];
 
-$alle_angebote = get_posts([
+$query_args = [
 	'post_type' => 'angebot',
 	'posts_per_page' => -1,
 	'post_status' => 'publish',
 	'orderby' => 'menu_order',
 	'order' => 'ASC'
-]);
+];
+
+// Kategorie-Filter aus Block-Einstellungen
+if (!empty($filterCategories)) {
+	$query_args['tax_query'] = [
+		[
+			'taxonomy' => 'angebot_kategorie',
+			'field'    => 'slug',
+			'terms'    => $filterCategories,
+		]
+	];
+}
+
+$alle_angebote = get_posts($query_args);
 
 // Vergangene einmalige Events ausfiltern
 $angebote = array_filter($alle_angebote, function($angebot) {
 	return parkourone_angebot_is_visible($angebot->ID);
 });
 
-$kategorien = get_terms([
-	'taxonomy' => 'angebot_kategorie',
-	'hide_empty' => true
-]);
+// Kategorien: nur gewählte oder alle
+if (!empty($filterCategories)) {
+	$kategorien = get_terms([
+		'taxonomy' => 'angebot_kategorie',
+		'hide_empty' => true,
+		'slug' => $filterCategories,
+	]);
+} else {
+	$kategorien = get_terms([
+		'taxonomy' => 'angebot_kategorie',
+		'hide_empty' => true
+	]);
+}
 
 $kategorie_labels = [
 	'kostenlos'        => 'Kostenlos',
@@ -26,6 +49,7 @@ $kategorie_labels = [
 	'camp'             => 'Camp',
 	'privatunterricht' => 'Privatunterricht',
 	'kurs'             => 'Kurs',
+	'ferienkurs'       => 'Ferienkurs',
 ];
 ?>
 
@@ -53,6 +77,38 @@ $kategorie_labels = [
 			$ansprechperson = get_post_meta($id, '_angebot_ansprechperson', true);
 			$bild = parkourone_get_angebot_image($id, 'medium_large');
 
+			// Ferienkurs-Daten
+			$is_ferienkurs = get_post_meta($id, '_angebot_is_ferienkurs', true) === '1';
+			$ferienkurs_produkt_id = $is_ferienkurs ? (int) get_post_meta($id, '_angebot_ferienkurs_produkt_id', true) : 0;
+
+			// Datum-Range für Ferienkurse berechnen
+			$datum_range = '';
+			$alle_termine = get_post_meta($id, '_angebot_termine', true);
+			if ($is_ferienkurs && is_array($alle_termine) && !empty($alle_termine)) {
+				$daten = array_filter(array_column($alle_termine, 'datum'));
+				sort($daten);
+				if (count($daten) >= 2) {
+					$first = strtotime(reset($daten));
+					$last = strtotime(end($daten));
+					if (date('n.Y', $first) === date('n.Y', $last)) {
+						$datum_range = date_i18n('j.', $first) . '–' . date_i18n('j. F Y', $last);
+					} else {
+						$datum_range = date_i18n('j. F', $first) . ' – ' . date_i18n('j. F Y', $last);
+					}
+				} elseif (count($daten) === 1) {
+					$datum_range = date_i18n('j. F Y', strtotime(reset($daten)));
+				}
+			}
+
+			// Ferienkurs-Verfügbarkeit
+			$ferienkurs_verfuegbar = null;
+			if ($is_ferienkurs && $ferienkurs_produkt_id && function_exists('wc_get_product')) {
+				$fk_product = wc_get_product($ferienkurs_produkt_id);
+				if ($fk_product && $fk_product->managing_stock()) {
+					$ferienkurs_verfuegbar = $fk_product->get_stock_quantity();
+				}
+			}
+
 			// Daten für Modal
 			$modal_data = [
 				'id' => $id,
@@ -76,8 +132,12 @@ $kategorie_labels = [
 				'teilnehmer_typ' => get_post_meta($id, '_angebot_teilnehmer_typ', true) ?: 'standard',
 				'cta_url' => get_post_meta($id, '_angebot_cta_url', true),
 				'termine' => parkourone_enrich_termine_with_stock(
-					parkourone_filter_vergangene_termine(get_post_meta($id, '_angebot_termine', true))
-				)
+					parkourone_filter_vergangene_termine($alle_termine)
+				),
+				'is_ferienkurs' => $is_ferienkurs,
+				'ferienkurs_produkt_id' => $ferienkurs_produkt_id,
+				'datum_range' => $datum_range,
+				'ferienkurs_verfuegbar' => $ferienkurs_verfuegbar,
 			];
 		?>
 		<article class="po-angebote-grid__card" data-kategorie="<?php echo esc_attr($kategorie_slug); ?>" data-modal='<?php echo esc_attr(json_encode($modal_data)); ?>'>

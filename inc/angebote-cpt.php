@@ -70,6 +70,7 @@ function parkourone_create_default_angebot_kategorien() {
 		'camp'             => 'Camp',
 		'privatunterricht' => 'Privatunterricht',
 		'kurs'             => 'Kurs',
+		'ferienkurs'       => 'Ferienkurs',
 	];
 
 	foreach ($kategorien as $slug => $name) {
@@ -828,6 +829,9 @@ function parkourone_angebot_create_woo_products($post_id) {
 
 	// AB-Angebote: Produkte kommen vom Event-System, keine neuen erstellen
 	if (get_post_meta($post_id, '_angebot_quelle', true) === 'academyboard') return;
+
+	// Ferienkurse: haben ein Gesamtpaket-Produkt, keine Einzeltermin-Produkte
+	if (get_post_meta($post_id, '_angebot_is_ferienkurs', true) === '1') return;
 
 	$buchungsart = get_post_meta($post_id, '_angebot_buchungsart', true);
 	if ($buchungsart !== 'woocommerce') return;
@@ -1593,13 +1597,16 @@ function parkourone_sync_event_to_angebot($post_id) {
 	$sync_typen = ['ferienkurs', 'workshop', 'kurs'];
 	if (!in_array($angebot_typ, $sync_typen, true)) return;
 
-	// Event-Kategorie → Angebot-Kategorie mappen (ferienkurs → kurs)
+	// Ferienkurs-Erkennung (Typ oder Titelsuche)
+	$is_ferienkurs = ($angebot_typ === 'ferienkurs') || (stripos(get_the_title($post_id), 'ferienkurs') !== false);
+
+	// Event-Kategorie → Angebot-Kategorie mappen
 	$kategorie_map = [
-		'ferienkurs' => 'kurs',
+		'ferienkurs' => 'ferienkurs',
 		'workshop'   => 'workshop',
 		'kurs'       => 'kurs',
 	];
-	$angebot_kategorie = $kategorie_map[$angebot_typ];
+	$angebot_kategorie = $kategorie_map[$angebot_typ] ?? $angebot_typ;
 
 	// Bestehendes Angebot suchen: zuerst per Event-Post-ID
 	$existing = get_posts([
@@ -1755,6 +1762,12 @@ function parkourone_sync_event_to_angebot($post_id) {
 		if (empty(get_post_meta($angebot_id, '_angebot_buchungsart', true))) {
 			update_post_meta($angebot_id, '_angebot_buchungsart', 'woocommerce');
 		}
+
+		// Ferienkurs-Meta immer aktualisieren
+		if ($is_ferienkurs) {
+			update_post_meta($angebot_id, '_angebot_is_ferienkurs', '1');
+			parkourone_sync_ferienkurs_wc_product($angebot_id, $post_id, $event_title, $termine);
+		}
 	} else {
 		// NEU: Draft-Angebot erstellen
 		$angebot_id = wp_insert_post([
@@ -1797,9 +1810,96 @@ function parkourone_sync_event_to_angebot($post_id) {
 
 		// Kategorie setzen
 		wp_set_object_terms($angebot_id, $angebot_kategorie, 'angebot_kategorie');
+
+		// Ferienkurs-Meta + WC-Produkt
+		if ($is_ferienkurs) {
+			update_post_meta($angebot_id, '_angebot_is_ferienkurs', '1');
+			parkourone_sync_ferienkurs_wc_product($angebot_id, $post_id, $event_title, $termine);
+		}
 	}
 }
 add_action('save_post_event', 'parkourone_sync_event_to_angebot', 30);
+
+/**
+ * Erstellt/aktualisiert ein einzelnes WC-Produkt für ein Ferienkurs-Paket.
+ */
+function parkourone_sync_ferienkurs_wc_product($angebot_id, $event_post_id, $event_title, $termine) {
+	if (!class_exists('WooCommerce')) return;
+
+	$event_price = get_post_meta($event_post_id, '_event_price', true);
+	$preis = floatval(preg_replace('/[^0-9.,]/', '', str_replace(',', '.', $event_price)));
+
+	// Kapazität aus erstem Termin (alle Tage gleich)
+	$kapazitaet = 20;
+	if (is_array($termine) && !empty($termine)) {
+		$kapazitaet = absint($termine[0]['kapazitaet'] ?? 20) ?: 20;
+	}
+
+	$existing_product_id = (int) get_post_meta($angebot_id, '_angebot_ferienkurs_produkt_id', true);
+
+	if ($existing_product_id && get_post($existing_product_id)) {
+		// Update bestehendes Produkt
+		$product = wc_get_product($existing_product_id);
+		if ($product) {
+			$product->set_name($event_title);
+			$product->set_price($preis);
+			$product->set_regular_price($preis);
+			if (!get_post_meta($existing_product_id, '_po_stock_protected', true)) {
+				$product->set_stock_quantity($kapazitaet);
+			}
+			$product->save();
+		}
+	} else {
+		// Neues Produkt erstellen
+		$product = new WC_Product_Simple();
+		$product->set_name($event_title);
+		$product->set_status('publish');
+		$product->set_catalog_visibility('hidden');
+		$product->set_price($preis);
+		$product->set_regular_price($preis);
+		$product->set_manage_stock(true);
+		$product->set_stock_quantity($kapazitaet);
+		$product->set_stock_status('instock');
+		$product->set_sold_individually(false);
+		$product->set_virtual(true);
+
+		$desc = get_post_meta($angebot_id, '_angebot_kurzbeschreibung', true) ?: $event_title;
+		$product->set_short_description($desc);
+
+		$product_id = $product->save();
+
+		$featured_image_id = get_post_thumbnail_id($angebot_id);
+		if ($featured_image_id) {
+			$product->set_image_id($featured_image_id);
+			$product->save();
+		}
+
+		update_post_meta($product_id, '_angebot_id', $angebot_id);
+		update_post_meta($product_id, '_is_ferienkurs_product', '1');
+		update_post_meta($angebot_id, '_angebot_ferienkurs_produkt_id', $product_id);
+	}
+}
+
+/**
+ * Auto-detect Ferienkurs bei manuellem Speichern eines Angebots.
+ */
+function parkourone_angebot_detect_ferienkurs($post_id) {
+	if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+	if (wp_is_post_revision($post_id)) return;
+	if (get_post_type($post_id) !== 'angebot') return;
+
+	$title = get_the_title($post_id);
+	$is_ferienkurs = stripos($title, 'ferienkurs') !== false;
+	$was_ferienkurs = get_post_meta($post_id, '_angebot_is_ferienkurs', true) === '1';
+
+	if ($is_ferienkurs && !$was_ferienkurs) {
+		update_post_meta($post_id, '_angebot_is_ferienkurs', '1');
+		wp_set_object_terms($post_id, 'ferienkurs', 'angebot_kategorie');
+	} elseif (!$is_ferienkurs && $was_ferienkurs) {
+		update_post_meta($post_id, '_angebot_is_ferienkurs', '0');
+	}
+}
+add_action('save_post_angebot', 'parkourone_angebot_detect_ferienkurs', 5);
 
 /**
  * Ermittelt den Angebotstyp eines Events aus der event_category Taxonomie.

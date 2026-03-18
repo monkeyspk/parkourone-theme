@@ -1,7 +1,7 @@
 (function(wp) {
 	const { registerBlockType } = wp.blocks;
 	const { useBlockProps, InspectorControls } = wp.blockEditor;
-	const { PanelBody, ToggleControl, RangeControl, Spinner } = wp.components;
+	const { PanelBody, ToggleControl, RangeControl, CheckboxControl, Spinner } = wp.components;
 	const { createElement: el, useState, useEffect } = wp.element;
 	const { apiFetch } = wp;
 
@@ -11,6 +11,7 @@
 			const blockProps = useBlockProps({ className: 'po-angebote-grid-editor' });
 			const [angebote, setAngebote] = useState([]);
 			const [loading, setLoading] = useState(true);
+			const [kategorien, setKategorien] = useState([]);
 
 			useEffect(function() {
 				apiFetch({ path: '/parkourone/v1/angebote' })
@@ -21,7 +22,23 @@
 					.catch(function() {
 						setLoading(false);
 					});
+				apiFetch({ path: '/wp/v2/angebot_kategorie?per_page=100' })
+					.then(function(terms) {
+						setKategorien(terms);
+					})
+					.catch(function() {});
 			}, []);
+
+			var filterCats = attributes.filterCategories || [];
+
+			function toggleCategory(slug) {
+				var idx = filterCats.indexOf(slug);
+				if (idx === -1) {
+					setAttributes({ filterCategories: filterCats.concat([slug]) });
+				} else {
+					setAttributes({ filterCategories: filterCats.filter(function(s) { return s !== slug; }) });
+				}
+			}
 
 			return el('div', null, [
 				el(InspectorControls, { key: 'controls' },
@@ -40,6 +57,21 @@
 							min: 2,
 							max: 4
 						})
+					]),
+					el(PanelBody, { title: 'Kategorien filtern', initialOpen: false }, [
+						el('p', { key: 'hint', style: { fontSize: '12px', color: '#666', margin: '0 0 0.75rem 0' } },
+							'Keine Auswahl = alle Kategorien anzeigen'
+						),
+						kategorien.length === 0
+							? el('p', { key: 'loading', style: { color: '#999', fontSize: '13px' } }, 'Lade Kategorien...')
+							: kategorien.map(function(kat) {
+								return el(CheckboxControl, {
+									key: kat.slug,
+									label: kat.name,
+									checked: filterCats.indexOf(kat.slug) !== -1,
+									onChange: function() { toggleCategory(kat.slug); }
+								});
+							})
 					])
 				),
 				el('div', blockProps, [

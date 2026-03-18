@@ -27,6 +27,10 @@
 		"columns": {
 			"type": "number",
 			"default": 3
+		},
+		"filterCategories": {
+			"type": "array",
+			"default": []
 		}
 	},
 	"supports": {

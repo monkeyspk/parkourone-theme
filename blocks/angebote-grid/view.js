@@ -115,8 +115,59 @@ document.addEventListener('DOMContentLoaded', function() {
 			html += '</div>';
 		}
 
-		// Termine (für buchbare Workshops)
-		if (data.termine && data.termine.length > 0 && data.buchungsart === 'woocommerce') {
+		// Ferienkurs: Datum-Range, Tages-Liste, Gesamtpreis, ein Buchungsbutton
+		if (data.is_ferienkurs) {
+			// Datum-Range
+			if (data.datum_range) {
+				html += '<div class="po-angebote-modal__date-range">';
+				html += '<span class="po-angebote-modal__date-range-label">Zeitraum</span>';
+				html += '<span class="po-angebote-modal__date-range-value">' + escapeHtml(data.datum_range) + '</span>';
+				html += '</div>';
+			}
+
+			// Tages-Liste
+			if (data.termine && data.termine.length > 0) {
+				html += '<div class="po-angebote-modal__days-list">';
+				html += '<h3 class="po-angebote-modal__days-list-title">Kurstage</h3>';
+				data.termine.forEach(function(termin) {
+					var datumFormatiert = termin.datum ? formatDate(termin.datum) : '';
+					html += '<div class="po-angebote-modal__days-list-item">';
+					html += '<span class="po-angebote-modal__days-list-date">' + datumFormatiert + '</span>';
+					html += '<span class="po-angebote-modal__days-list-details">';
+					if (termin.uhrzeit) html += termin.uhrzeit;
+					if (termin.ort) html += ' | ' + escapeHtml(termin.ort);
+					html += '</span>';
+					html += '</div>';
+				});
+				html += '</div>';
+			}
+
+			// Gesamtpreis
+			if (data.preis) {
+				html += '<div class="po-angebote-modal__ferienkurs-preis">';
+				html += '<span class="po-angebote-modal__ferienkurs-preis-label">Gesamtpreis</span>';
+				html += '<span class="po-angebote-modal__ferienkurs-preis-value">' + escapeHtml(data.preis) + '</span>';
+				html += '</div>';
+			}
+
+			// Verfügbarkeit
+			if (typeof data.ferienkurs_verfuegbar !== 'undefined' && data.ferienkurs_verfuegbar !== null) {
+				var spotColor = data.ferienkurs_verfuegbar > 3 ? '#00a32a' : (data.ferienkurs_verfuegbar > 0 ? '#dba617' : '#d63638');
+				var spotText = data.ferienkurs_verfuegbar > 0 ? data.ferienkurs_verfuegbar + ' Plätze frei' : 'Ausgebucht';
+				html += '<div style="font-size:0.875rem;color:' + spotColor + ';font-weight:600;margin-bottom:1rem;">' + spotText + '</div>';
+			}
+
+			// Ein Buchungsbutton
+			if (data.ferienkurs_produkt_id && data.buchungsart === 'woocommerce') {
+				if (typeof data.ferienkurs_verfuegbar !== 'undefined' && data.ferienkurs_verfuegbar !== null && data.ferienkurs_verfuegbar <= 0) {
+					html += '<button class="po-angebote-modal__cta" disabled style="opacity:0.5;cursor:not-allowed;">Ausgebucht</button>';
+				} else {
+					html += '<button class="po-angebote-modal__cta po-angebote-modal__ferienkurs-book" data-product-id="' + data.ferienkurs_produkt_id + '">Ferienkurs buchen</button>';
+				}
+			}
+		}
+		// Normale Termine (für buchbare Workshops)
+		else if (data.termine && data.termine.length > 0 && data.buchungsart === 'woocommerce') {
 			html += '<div class="po-angebote-modal__termine">';
 			html += '<h3 class="po-angebote-modal__termine-title">Verfügbare Termine</h3>';
 			data.termine.forEach(function(termin, index) {
@@ -147,11 +198,13 @@ document.addEventListener('DOMContentLoaded', function() {
 			html += '</div>';
 		}
 
-		// CTA je nach Buchungsart
-		if (data.buchungsart === 'kontakt') {
-			html += renderKontaktForm(data);
-		} else if (data.buchungsart === 'extern' && data.cta_url) {
-			html += '<a href="' + data.cta_url + '" target="_blank" rel="noopener" class="po-angebote-modal__cta">Zur Anmeldung</a>';
+		// CTA je nach Buchungsart (nicht-Ferienkurs)
+		if (!data.is_ferienkurs) {
+			if (data.buchungsart === 'kontakt') {
+				html += renderKontaktForm(data);
+			} else if (data.buchungsart === 'extern' && data.cta_url) {
+				html += '<a href="' + data.cta_url + '" target="_blank" rel="noopener" class="po-angebote-modal__cta">Zur Anmeldung</a>';
+			}
 		}
 
 		html += '</div>'; // .po-angebote-modal__body
@@ -175,6 +228,14 @@ document.addEventListener('DOMContentLoaded', function() {
 				showBookingForm(data, terminIndex, productId);
 			});
 		});
+
+		// Ferienkurs Buchung Handler
+		const ferienkursBtn = modal.querySelector('.po-angebote-modal__ferienkurs-book');
+		if (ferienkursBtn) {
+			ferienkursBtn.addEventListener('click', function() {
+				showBookingForm(data, null, this.dataset.productId);
+			});
+		}
 	}
 
 	function renderKontaktForm(data) {
@@ -224,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 
 	function showBookingForm(data, terminIndex, productId) {
-		const termin = data.termine[terminIndex];
+		const termin = terminIndex !== null && data.termine ? data.termine[terminIndex] : null;
 		const isPaerchen = data.teilnehmer_typ === 'paerchen';
 		const anzahlTeilnehmer = isPaerchen ? 2 : 1;
 
@@ -232,7 +293,12 @@ document.addEventListener('DOMContentLoaded', function() {
 		html += '<button class="po-angebote-modal__booking-back" type="button">&larr; Zurück</button>';
 		html += '<h3 class="po-angebote-modal__booking-title">Buchung: ' + escapeHtml(data.titel) + '</h3>';
 
-		if (termin) {
+		if (data.is_ferienkurs) {
+			html += '<div class="po-angebote-modal__booking-info">';
+			if (data.datum_range) html += '<div><strong>Zeitraum:</strong> ' + escapeHtml(data.datum_range) + '</div>';
+			if (data.preis) html += '<div><strong>Gesamtpreis:</strong> ' + escapeHtml(data.preis) + '</div>';
+			html += '</div>';
+		} else if (termin) {
 			html += '<div class="po-angebote-modal__booking-info">';
 			if (termin.datum) html += '<div><strong>Datum:</strong> ' + formatDate(termin.datum) + '</div>';
 			if (termin.uhrzeit) html += '<div><strong>Uhrzeit:</strong> ' + escapeHtml(termin.uhrzeit) + '</div>';
