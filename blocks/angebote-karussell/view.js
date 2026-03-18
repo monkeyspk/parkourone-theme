@@ -126,32 +126,34 @@ document.addEventListener('DOMContentLoaded', function() {
 		// Ferienkurs: Datum-Range, Tages-Liste, Gesamtpreis, ein Buchungsbutton
 		if (data.is_ferienkurs) {
 			if (data.datum_range) {
-				html += '<div class="po-angebote-modal__date-range">';
-				html += '<span class="po-angebote-modal__date-range-label">Zeitraum</span>';
-				html += '<span class="po-angebote-modal__date-range-value">' + escapeHtml(data.datum_range) + '</span>';
+				html += '<div class="po-angebote-modal__date-range" style="display:flex;align-items:center;gap:1rem;background:#fff3e6;border:1px solid #ff6b00;border-radius:12px;padding:1rem 1.5rem;margin-bottom:1.5rem;">';
+				html += '<div style="font-weight:600;font-size:0.875rem;color:#ff6b00;text-transform:uppercase;letter-spacing:0.02em;">Zeitraum</div>';
+				html += '<div style="font-size:1.125rem;font-weight:600;">' + escapeHtml(data.datum_range) + '</div>';
 				html += '</div>';
 			}
 
 			if (data.termine && data.termine.length > 0) {
-				html += '<div class="po-angebote-modal__days-list">';
-				html += '<h3 class="po-angebote-modal__days-list-title">Kurstage</h3>';
+				html += '<div style="margin-bottom:1.5rem;">';
+				html += '<h3 style="font-size:1rem;font-weight:600;margin:0 0 0.75rem 0;">Kurstage</h3>';
 				data.termine.forEach(function(termin) {
 					var datumFormatiert = termin.datum ? formatDate(termin.datum) : '';
-					html += '<div class="po-angebote-modal__days-list-item">';
-					html += '<span class="po-angebote-modal__days-list-date">' + datumFormatiert + '</span>';
-					html += '<span class="po-angebote-modal__days-list-details">';
-					if (termin.uhrzeit) html += termin.uhrzeit;
-					if (termin.ort) html += ' | ' + escapeHtml(termin.ort);
-					html += '</span>';
+					html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 1rem;background:#f5f5f7;border-radius:8px;margin-bottom:0.375rem;font-size:0.875rem;">';
+					html += '<div style="font-weight:600;">' + datumFormatiert + '</div>';
+					var details = '';
+					if (termin.uhrzeit) details += termin.uhrzeit;
+					if (termin.ort) details += ' · ' + escapeHtml(termin.ort);
+					if (details) {
+						html += '<div style="color:#666;">' + details + '</div>';
+					}
 					html += '</div>';
 				});
 				html += '</div>';
 			}
 
 			if (data.preis) {
-				html += '<div class="po-angebote-modal__ferienkurs-preis">';
-				html += '<span class="po-angebote-modal__ferienkurs-preis-label">Gesamtpreis</span>';
-				html += '<span class="po-angebote-modal__ferienkurs-preis-value">' + escapeHtml(data.preis) + '</span>';
+				html += '<div style="display:flex;align-items:center;gap:1rem;background:#f5f5f7;border-radius:12px;padding:1rem 1.5rem;margin-bottom:1.5rem;">';
+				html += '<div style="font-weight:600;font-size:0.875rem;color:#666;">Gesamtpreis</div>';
+				html += '<div style="font-size:1.5rem;font-weight:700;color:#0066cc;">' + escapeHtml(data.preis) + '</div>';
 				html += '</div>';
 			}
 

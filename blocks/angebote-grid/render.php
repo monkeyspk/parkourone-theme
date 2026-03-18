@@ -91,7 +91,7 @@ $kategorie_labels = [
 					$first = strtotime(reset($daten));
 					$last = strtotime(end($daten));
 					if (date('n.Y', $first) === date('n.Y', $last)) {
-						$datum_range = date_i18n('j.', $first) . '–' . date_i18n('j. F Y', $last);
+						$datum_range = date_i18n('j.', $first) . ' – ' . date_i18n('j. F Y', $last);
 					} else {
 						$datum_range = date_i18n('j. F', $first) . ' – ' . date_i18n('j. F Y', $last);
 					}
