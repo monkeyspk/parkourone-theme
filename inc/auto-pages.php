@@ -1756,38 +1756,53 @@ function parkourone_handle_page_generation() {
 		$header_variant = sanitize_text_field($_POST['header_variant'] ?? 'split');
 		$created = 0;
 		$updated = 0;
-		$failed = 0;
-		$created_pages = [];
+		$debug_lines = [];
 
 		if (empty($categories)) {
 			add_settings_error('po_auto_pages', 'no_categories_selected', 'Bitte wähle mindestens eine Zielgruppe aus. Falls alle bereits existieren, aktiviere "Bestehende überschreiben".', 'error');
 		} else {
 			foreach ($categories as $cat_slug) {
+				$cat_slug = sanitize_text_field($cat_slug);
 				$existing = get_page_by_path($cat_slug);
+				$debug_lines[] = "<br><strong>/{$cat_slug}/</strong>:";
+
+				if ($existing && !$overwrite) {
+					$debug_lines[] = " Seite existiert bereits (ID: {$existing->ID}, Slug: {$existing->post_name}, Status: {$existing->post_status}) → übersprungen";
+					continue;
+				}
+
 				$page_id = parkourone_create_category_page($cat_slug, $overwrite, $header_variant, $force);
-				if ($page_id) {
+
+				if ($page_id && !is_wp_error($page_id)) {
+					$page = get_post($page_id);
+					$actual_slug = $page ? $page->post_name : '?';
+					$actual_status = $page ? $page->post_status : '?';
+					$permalink = get_permalink($page_id);
+
 					if ($existing && $overwrite) {
 						$updated++;
+						$debug_lines[] = " ✓ Aktualisiert (ID: {$page_id})";
 					} else {
 						$created++;
+						$debug_lines[] = " ✓ Erstellt (ID: {$page_id}, Slug: {$actual_slug}, Status: {$actual_status})";
 					}
-					$created_pages[] = '<a href="' . get_edit_post_link($page_id) . '">' . get_the_title($page_id) . '</a>';
-				} else if (!$existing || $overwrite) {
-					$failed++;
+					$debug_lines[] = " <a href=\"" . get_edit_post_link($page_id) . "\">Bearbeiten</a> | <a href=\"{$permalink}\" target=\"_blank\">Ansehen</a>";
+
+					if ($actual_slug !== $cat_slug) {
+						$debug_lines[] = " ⚠ WordPress hat den Slug geändert: <code>{$cat_slug}</code> → <code>{$actual_slug}</code>";
+					}
+				} else {
+					$error_msg = is_wp_error($page_id) ? $page_id->get_error_message() : 'wp_insert_post returned 0';
+					$debug_lines[] = " ✗ Fehlgeschlagen: {$error_msg}";
 				}
 			}
 
 			$parts = [];
 			if ($created > 0) $parts[] = "{$created} erstellt";
 			if ($updated > 0) $parts[] = "{$updated} aktualisiert";
-			if ($failed > 0) $parts[] = "{$failed} fehlgeschlagen";
-			if (!empty($parts)) {
-				$message = "Zielgruppen-Seiten: " . implode(', ', $parts);
-				if (!empty($created_pages)) {
-					$message .= ": " . implode(', ', $created_pages);
-				}
-				add_settings_error('po_auto_pages', 'categories_created', $message, $failed > 0 ? 'error' : 'success');
-			}
+			$summary = !empty($parts) ? implode(', ', $parts) : "Keine Seiten erstellt";
+			$message = "Zielgruppen-Seiten: {$summary}" . implode('', $debug_lines);
+			add_settings_error('po_auto_pages', 'categories_created', $message, ($created > 0 || $updated > 0) ? 'success' : 'error');
 		}
 	}
 
