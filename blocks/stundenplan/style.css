@@ -76,6 +76,7 @@
 .po-sp__body {
 	display: flex;
 	flex-direction: column;
+	min-height: 400px;
 }
 
 .po-sp__row {
@@ -83,6 +84,7 @@
 	grid-template-columns: 60px repeat(7, 1fr);
 	border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 	min-height: 48px;
+	flex: 1;
 }
 
 .po-sp__row--empty {
