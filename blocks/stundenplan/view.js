@@ -137,7 +137,7 @@
 							fab.classList.remove('is-open');
 						}
 					});
-				}, { threshold: 0.15, rootMargin: '-10% 0px -10% 0px' });
+				}, { threshold: 0.05, rootMargin: '-20% 0px -20% 0px' });
 
 				observer.observe(section);
 
