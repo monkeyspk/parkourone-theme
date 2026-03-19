@@ -49,6 +49,11 @@
 		"imageAlt": {
 			"type": "string",
 			"default": ""
+		},
+		"colorScheme": {
+			"type": "string",
+			"default": "dark",
+			"enum": ["dark", "light", "accent"]
 		}
 	},
 	"supports": {

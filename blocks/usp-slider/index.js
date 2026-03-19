@@ -16,6 +16,27 @@
 				setAttributes({ slides: newSlides });
 			}
 
+			function addSlide() {
+				var newSlides = [...attributes.slides, {
+					eyebrow: 'Neuer USP',
+					headline: 'Überschrift eingeben',
+					text: 'Beschreibung...',
+					modalText: '',
+					buttonText: 'Probetraining buchen',
+					buttonUrl: '/probetraining-buchen/',
+					imageUrl: ''
+				}];
+				setAttributes({ slides: newSlides });
+				setActiveSlide(newSlides.length - 1);
+			}
+
+			function removeSlide(index) {
+				if (attributes.slides.length <= 1) return;
+				var newSlides = attributes.slides.filter(function(_, i) { return i !== index; });
+				setAttributes({ slides: newSlides });
+				if (activeSlide >= newSlides.length) setActiveSlide(newSlides.length - 1);
+			}
+
 			const slide = attributes.slides[activeSlide];
 
 			return el('div', null, [
@@ -28,8 +49,8 @@
 							help: 'z.B. "Warum ParkourONE?" oder "Warum Parkour in Berlin?"'
 						})
 					),
-					el(PanelBody, { key: 'slides', title: 'Slides bearbeiten', initialOpen: true }, [
-						el('div', { key: 'tabs', style: { display: 'flex', gap: '4px', marginBottom: '16px', flexWrap: 'wrap' } },
+					el(PanelBody, { key: 'slides', title: 'Slides (' + attributes.slides.length + ')', initialOpen: true }, [
+						el('div', { key: 'tabs', style: { display: 'flex', gap: '4px', marginBottom: '16px', flexWrap: 'wrap', alignItems: 'center' } }, [
 							attributes.slides.map(function(s, i) {
 								return el(Button, {
 									key: i,
@@ -37,8 +58,15 @@
 									isSmall: true,
 									onClick: function() { setActiveSlide(i); }
 								}, (i + 1));
-							})
-						),
+							}),
+							el(Button, {
+								key: 'add-slide',
+								variant: 'secondary',
+								isSmall: true,
+								onClick: addSlide,
+								style: { marginLeft: '4px' }
+							}, '+')
+						]),
 						slide && el('div', { key: 'form' }, [
 							el(TextControl, {
 								key: 'eyebrow',
@@ -96,7 +124,16 @@
 										}
 									})
 								)
-							])
+							]),
+							el('div', { key: 'remove-slide', style: { marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #ddd' } },
+								el(Button, {
+									isDestructive: true,
+									variant: 'link',
+									isSmall: true,
+									onClick: function() { removeSlide(activeSlide); },
+									disabled: attributes.slides.length <= 1
+								}, 'Slide entfernen')
+							)
 						])
 					])
 				]),

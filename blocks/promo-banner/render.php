@@ -7,9 +7,10 @@ $buttonUrl = $attributes['buttonUrl'] ?? '#';
 $buttonIcon = $attributes['buttonIcon'] ?? 'play';
 $imageUrl = $attributes['imageUrl'] ?? '';
 $imageAlt = $attributes['imageAlt'] ?? '';
+$colorScheme = $attributes['colorScheme'] ?? 'dark';
 ?>
 
-<section class="po-pb"<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?>>
+<section class="po-pb po-pb--<?php echo esc_attr($colorScheme); ?>"<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?>>
 	<div class="po-pb__inner">
 		<div class="po-pb__content">
 			<?php if ($badgeUrl): ?>
@@ -24,7 +25,7 @@ $imageAlt = $attributes['imageAlt'] ?? '';
 				<?php endif; ?>
 			</div>
 		</div>
-		
+
 		<div class="po-pb__action">
 			<?php if ($buttonText): ?>
 				<a href="<?php echo esc_url($buttonUrl); ?>" class="po-pb__button">

@@ -13,6 +13,59 @@
 	gap: 40px;
 }
 
+/* Color Schemes */
+.po-pb--light .po-pb__inner {
+	background: #f5f5f7;
+}
+
+.po-pb--light .po-pb__headline {
+	color: #1d1d1f;
+}
+
+.po-pb--light .po-pb__subtext {
+	color: #6e6e73;
+}
+
+.po-pb--light .po-pb__button {
+	border-color: rgba(0, 0, 0, 0.2);
+}
+
+.po-pb--light .po-pb__button:hover {
+	border-color: rgba(0, 0, 0, 0.4);
+}
+
+.po-pb--light .po-pb__button-text {
+	color: #1d1d1f;
+}
+
+.po-pb--light .po-pb__button-icon svg {
+	color: #fff;
+}
+
+.po-pb--accent .po-pb__inner {
+	background: #0066cc;
+}
+
+.po-pb--accent .po-pb__subtext {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.po-pb--accent .po-pb__button {
+	border-color: rgba(255, 255, 255, 0.4);
+}
+
+.po-pb--accent .po-pb__button:hover {
+	border-color: rgba(255, 255, 255, 0.7);
+}
+
+.po-pb--accent .po-pb__button-icon {
+	background: #fff;
+}
+
+.po-pb--accent .po-pb__button-icon svg {
+	color: #0066cc;
+}
+
 .po-pb__content {
 	display: flex;
 	align-items: center;

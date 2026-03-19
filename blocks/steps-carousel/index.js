@@ -1,6 +1,6 @@
 (function(wp) {
 	const { registerBlockType } = wp.blocks;
-	const { useBlockProps, InspectorControls, RichText } = wp.blockEditor;
+	const { useBlockProps, InspectorControls, RichText, MediaUpload, MediaUploadCheck } = wp.blockEditor;
 	const { PanelBody, SelectControl, TextControl, TextareaControl, Button } = wp.components;
 	const { createElement: el, Fragment } = wp.element;
 
@@ -27,19 +27,19 @@
 			];
 
 			function updateStep(index, field, value) {
-				const newSteps = steps.slice();
+				var newSteps = steps.slice();
 				newSteps[index] = Object.assign({}, newSteps[index], { [field]: value });
 				setAttributes({ steps: newSteps });
 			}
 
 			function addStep() {
 				setAttributes({
-					steps: steps.concat([{ title: 'Neuer Schritt', description: 'Beschreibung...', icon: 'check' }])
+					steps: steps.concat([{ title: 'Neuer Schritt', description: 'Beschreibung...', icon: 'check', imageUrl: '' }])
 				});
 			}
 
 			function removeStep(index) {
-				const newSteps = steps.filter(function(_, i) { return i !== index; });
+				var newSteps = steps.filter(function(_, i) { return i !== index; });
 				setAttributes({ steps: newSteps });
 			}
 
@@ -62,11 +62,33 @@
 						value: step.description,
 						onChange: function(value) { updateStep(index, 'description', value); }
 					}),
+					el('div', { key: 'image', style: { marginTop: '8px' } }, [
+						el('label', { key: 'lbl', style: { display: 'block', marginBottom: '4px', fontWeight: '500', fontSize: '11px', textTransform: 'uppercase' } }, 'Custom Bild (optional)'),
+						el(MediaUploadCheck, { key: 'check' },
+							el(MediaUpload, {
+								onSelect: function(media) { updateStep(index, 'imageUrl', media.url); },
+								allowedTypes: ['image'],
+								render: function(obj) {
+									return el('div', null,
+										step.imageUrl
+											? el('div', null, [
+												el('img', { key: 'img', src: step.imageUrl, style: { maxWidth: '100%', borderRadius: '8px', marginBottom: '4px' } }),
+												el(Button, { key: 'change', onClick: obj.open, variant: 'secondary', isSmall: true, style: { marginRight: '8px' } }, 'Ändern'),
+												el(Button, { key: 'remove', onClick: function() { updateStep(index, 'imageUrl', ''); }, variant: 'link', isDestructive: true, isSmall: true }, 'Entfernen')
+											])
+											: el(Button, { onClick: obj.open, variant: 'secondary', isSmall: true }, 'Bild wählen')
+									);
+								}
+							})
+						),
+						!step.imageUrl && el('p', { key: 'help', style: { fontSize: '11px', color: '#757575', margin: '4px 0 0' } }, 'Ohne Custom Bild wird ein Fallback-Bild der Altersgruppe verwendet.')
+					]),
 					el(Button, {
 						key: 'remove',
 						isDestructive: true,
 						isSmall: true,
-						onClick: function() { removeStep(index); }
+						onClick: function() { removeStep(index); },
+						style: { marginTop: '8px' }
 					}, 'Entfernen')
 				]);
 			});
@@ -83,8 +105,13 @@
 					el('div', {
 						key: 'img',
 						className: 'po-steps-timeline__image-wrap',
-						style: { background: '#e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'center' }
-					}, el('span', { style: { color: '#999', fontSize: '12px' } }, 'Bild ' + (index + 1))),
+						style: step.imageUrl
+							? {}
+							: { background: '#e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'center' }
+					}, step.imageUrl
+						? el('img', { src: step.imageUrl, className: 'po-steps-timeline__image' })
+						: el('span', { style: { color: '#999', fontSize: '12px' } }, 'Fallback')
+					),
 					el('h3', { key: 'title', className: 'po-steps-timeline__title' }, step.title),
 					el('p', { key: 'desc', className: 'po-steps-timeline__desc' }, step.description)
 				]);
@@ -102,14 +129,14 @@
 						}),
 						el(SelectControl, {
 							key: 'cat',
-							label: 'Altersgruppe (für Bilder)',
+							label: 'Altersgruppe (Fallback-Bilder)',
 							value: ageCategory || 'default',
 							options: categoryOptions,
 							onChange: function(value) { setAttributes({ ageCategory: value }); },
-							help: 'Bestimmt welche Bilder für die Schritte angezeigt werden'
+							help: 'Wird nur für Schritte ohne Custom Bild verwendet'
 						})
 					]),
-					el(PanelBody, { key: 'steps', title: 'Schritte', initialOpen: true }, [
+					el(PanelBody, { key: 'steps', title: 'Schritte (' + steps.length + ')', initialOpen: true }, [
 						stepEditors,
 						el(Button, {
 							key: 'add',
