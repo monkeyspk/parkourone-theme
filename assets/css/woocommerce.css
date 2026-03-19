@@ -1714,108 +1714,91 @@ p[id*="how_did"],
 	display: none !important;
 }
 
-/* ---------- Error Toast (slides in from right) ---------- */
+/* ---------- Fixed Error Bar (top of page) ---------- */
 
-.po-error-toast {
+.po-error-bar {
 	position: fixed;
-	top: 24px;
-	right: 24px;
+	top: 0;
+	left: 0;
+	right: 0;
 	z-index: 100000;
-	max-width: 420px;
-	width: calc(100% - 48px);
-	transform: translateX(calc(100% + 40px));
-	opacity: 0;
-	transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
-	pointer-events: none;
+	transform: translateY(-100%);
+	transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.po-error-toast.is-visible {
-	transform: translateX(0);
-	opacity: 1;
-	pointer-events: auto;
+.po-error-bar.is-visible {
+	transform: translateY(0);
 }
 
-.po-error-toast__inner {
-	background: #fff;
-	border-radius: 16px;
-	box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
-	overflow: hidden;
-}
-
-.po-error-toast__header {
+.po-error-bar__inner {
 	display: flex;
 	align-items: center;
 	gap: 10px;
-	padding: 16px 16px 0;
-	color: var(--wc-danger, #ff3b30);
+	padding: 14px 20px;
+	background: #991b1b;
+	color: #fff;
+	font-size: 14px;
+	line-height: 1.5;
 }
 
-.po-error-toast__title {
-	font-size: 15px;
-	font-weight: 600;
-	color: #1d1d1f;
+.po-error-bar__inner svg {
+	flex-shrink: 0;
+	opacity: 0.8;
+}
+
+.po-error-bar__text {
 	flex: 1;
 }
 
-.po-error-toast__close {
-	width: 32px;
-	height: 32px;
+.po-error-bar__close {
+	width: 28px;
+	height: 28px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: #f5f5f7;
+	background: rgba(255, 255, 255, 0.15);
 	border: none;
 	border-radius: 50%;
 	cursor: pointer;
-	color: #6e6e73;
+	color: #fff;
 	flex-shrink: 0;
 	transition: background 0.15s ease;
 }
 
-.po-error-toast__close:hover {
-	background: #e8e8ed;
-	color: #1d1d1f;
+.po-error-bar__close:hover {
+	background: rgba(255, 255, 255, 0.3);
 }
 
-.po-error-toast__body {
-	padding: 12px 16px 16px;
+/* ---------- Inline Field Errors ---------- */
+
+.po-field--has-error input,
+.po-field--has-error select,
+.po-field--has-error textarea,
+.po-field--has-error .select2-selection {
+	border-color: var(--wc-danger, #ff3b30) !important;
 }
 
-.po-error-toast__body .woocommerce-error {
-	background: #fef2f2;
-	border: 1px solid #fecaca;
-	border-radius: 12px;
-	padding: 12px 16px;
-	color: #991b1b;
+.po-field--has-error > label {
+	color: var(--wc-danger, #ff3b30) !important;
+}
+
+.po-field-error {
+	display: block;
+	margin-top: 6px;
 	font-size: 13px;
-	line-height: 1.6;
-	list-style: none;
-	margin: 0;
+	color: #991b1b;
+	line-height: 1.4;
 }
 
-.po-error-toast__body .woocommerce-error li {
-	margin: 4px 0;
-	padding-left: 14px;
-	position: relative;
-}
-
-.po-error-toast__body .woocommerce-error li::before {
-	content: '';
-	position: absolute;
-	left: 0;
-	top: 9px;
-	width: 5px;
-	height: 5px;
-	border-radius: 50%;
-	background: #dc2626;
+/* Inline-Notices verstecken — Error Bar + Inline Errors übernehmen */
+.woocommerce-checkout .woocommerce-NoticeGroup-checkout {
+	display: none !important;
 }
 
 @media (max-width: 480px) {
-	.po-error-toast {
-		top: 12px;
-		right: 12px;
-		max-width: none;
-		width: calc(100% - 24px);
+	.po-error-bar__inner {
+		padding: 12px 16px;
+		font-size: 13px;
 	}
 }
 
