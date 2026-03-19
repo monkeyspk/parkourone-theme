@@ -1017,7 +1017,7 @@ function parkourone_angebot_add_to_cart() {
 	if ($added) {
 		wp_send_json_success([
 			'message' => 'Erfolgreich zum Warenkorb hinzugefügt',
-			'cart_url' => wc_get_checkout_url(),
+			'cart_url' => function_exists('parkourone_get_checkout_url') ? parkourone_get_checkout_url() : home_url('/kasse/'),
 			'cart_count' => WC()->cart->get_cart_contents_count()
 		]);
 	} else {

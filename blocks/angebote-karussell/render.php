@@ -177,6 +177,6 @@ if (empty($angebote)) {
 window.poAngebotBooking = window.poAngebotBooking || {
 	ajaxUrl: '<?php echo esc_url(admin_url('admin-ajax.php')); ?>',
 	nonce: '<?php echo wp_create_nonce('po_angebot_booking_nonce'); ?>',
-	cartUrl: '<?php echo class_exists('WooCommerce') ? esc_url(wc_get_checkout_url()) : ''; ?>'
+	cartUrl: '<?php echo esc_url(function_exists('parkourone_get_checkout_url') ? parkourone_get_checkout_url() : home_url('/kasse/')); ?>'
 };
 </script>

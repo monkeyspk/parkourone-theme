@@ -48,7 +48,8 @@ add_action('admin_init', function() {
 });
 
 // =====================================================
-// Saubere Checkout-URL (immer /kasse/ statt ?page_id=X)
+// Saubere WooCommerce-URLs (immer /kasse/ statt ?page_id=X)
+// Mehrere Hooks um sicherzustellen dass es ÜBERALL greift.
 // =====================================================
 
 function parkourone_get_checkout_url() {
@@ -59,14 +60,13 @@ function parkourone_get_cart_url() {
 	return home_url('/warenkorb/');
 }
 
-// WooCommerce URLs überschreiben
-add_filter('woocommerce_get_checkout_url', function() {
-	return parkourone_get_checkout_url();
-});
+// Hook 1: wc_get_checkout_url() Filter
+add_filter('woocommerce_get_checkout_url', 'parkourone_get_checkout_url', 9999);
+add_filter('woocommerce_get_cart_url', 'parkourone_get_cart_url', 9999);
 
-add_filter('woocommerce_get_cart_url', function() {
-	return parkourone_get_cart_url();
-});
+// Hook 2: wc_get_page_permalink() Filter — greift noch tiefer
+add_filter('woocommerce_get_checkout_page_permalink', 'parkourone_get_checkout_url', 9999);
+add_filter('woocommerce_get_cart_page_permalink', 'parkourone_get_cart_url', 9999);
 
 // =====================================================
 // Classic Checkout Customizations
@@ -91,7 +91,7 @@ add_filter('woocommerce_order_button_text', function() {
 
 add_action('template_redirect', function() {
 	if (is_cart()) {
-		wp_safe_redirect(wc_get_checkout_url());
+		wp_safe_redirect(parkourone_get_checkout_url());
 		exit;
 	}
 });
@@ -596,7 +596,7 @@ function parkourone_wc_enqueue_assets() {
 		'ajaxUrl' => admin_url('admin-ajax.php'),
 		'nonce' => wp_create_nonce('po_side_cart_nonce'),
 		'cartUrl' => wc_get_cart_url(),
-		'checkoutUrl' => wc_get_checkout_url(),
+		'checkoutUrl' => parkourone_get_checkout_url(),
 	]);
 
 	// Checkout scripts (referrer field, coupon, mobile summary)
@@ -668,7 +668,7 @@ function parkourone_render_side_cart() {
 					<span>Gesamt</span>
 					<span data-side-cart-total><?php echo $cart_total; ?></span>
 				</div>
-				<a href="<?php echo esc_url(wc_get_checkout_url()); ?>" class="po-side-cart__checkout">
+				<a href="<?php echo esc_url(parkourone_get_checkout_url()); ?>" class="po-side-cart__checkout">
 					Zur Kasse
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 						<line x1="5" y1="12" x2="19" y2="12"></line>
