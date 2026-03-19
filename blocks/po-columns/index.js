@@ -18,10 +18,15 @@
 
 	const colors = [
 		{ name: 'Transparent', color: '' },
-		{ name: 'Weiss', color: '#ffffff' },
+		{ name: 'Weiß', color: '#ffffff' },
 		{ name: 'Hellgrau', color: '#f5f5f7' },
-		{ name: 'ParkourONE Lila (hell)', color: 'rgba(102, 126, 234, 0.1)' },
-		{ name: 'ParkourONE Violett (hell)', color: 'rgba(118, 75, 162, 0.1)' }
+		{ name: 'Dunkelgrau', color: '#1d1d1f' },
+		{ name: 'Schwarz', color: '#000000' },
+		{ name: 'Blau', color: '#0066cc' },
+		{ name: 'Blau hell', color: '#e8f4fd' },
+		{ name: 'Rot', color: '#ff3b30' },
+		{ name: 'Grün', color: '#34c759' },
+		{ name: 'Lila hell', color: 'rgba(102, 126, 234, 0.1)' }
 	];
 
 	registerBlockType('parkourone/po-columns', {

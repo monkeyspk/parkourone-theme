@@ -32,6 +32,7 @@ $videoBackgroundUrl = $attributes['videoBackgroundUrl'] ?? '';
 $overlayOpacity = $attributes['overlayOpacity'] ?? 50;
 $stats = $attributes['stats'] ?? [];
 $ageCategory = $attributes['ageCategory'] ?? '';
+$accentColor = $attributes['accentColor'] ?? '#2997ff';
 
 // Bild-Logik: Gewähltes Bild → zufälliges Fallback → statisches Fallback
 if (!empty($imageUrl)) {
@@ -72,7 +73,7 @@ if (!empty($videoBackgroundUrl)) {
 }
 ?>
 
-<section class="<?php echo esc_attr(implode(' ', $classes)); ?>" id="<?php echo esc_attr($anchor ?: $unique_id); ?>">
+<section class="<?php echo esc_attr(implode(' ', $classes)); ?>" id="<?php echo esc_attr($anchor ?: $unique_id); ?>" style="--po-hero-accent: <?php echo esc_attr($accentColor); ?>">
 	<?php if (!empty($videoBackgroundUrl)): ?>
 	<video class="po-hero__video-bg" autoplay muted loop playsinline>
 		<source src="<?php echo esc_url($videoBackgroundUrl); ?>" type="video/mp4">

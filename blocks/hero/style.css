@@ -112,8 +112,8 @@
 
 /* Highlight mit pulsierendem Glow (GPU-composited via opacity) */
 .po-hero__highlight {
-	color: #2997ff;
-	text-shadow: 0 0 30px rgba(41, 151, 255, 0.7), 0 0 50px rgba(41, 151, 255, 0.3);
+	color: var(--po-hero-accent, #2997ff);
+	text-shadow: 0 0 30px color-mix(in srgb, var(--po-hero-accent, #2997ff) 70%, transparent), 0 0 50px color-mix(in srgb, var(--po-hero-accent, #2997ff) 30%, transparent);
 	animation: heroGlow 3s ease-in-out infinite;
 	will-change: opacity;
 }
@@ -154,14 +154,14 @@
 }
 
 .po-hero__button--primary {
-	background: #2997ff;
+	background: var(--po-hero-accent, #2997ff);
 	color: #fff;
 }
 
 .po-hero__button--primary:hover {
 	transform: translateY(-2px);
-	box-shadow: 0 12px 40px rgba(41, 151, 255, 0.4);
-	background: #40a9ff;
+	box-shadow: 0 12px 40px color-mix(in srgb, var(--po-hero-accent, #2997ff) 40%, transparent);
+	background: color-mix(in srgb, var(--po-hero-accent, #2997ff) 85%, white);
 	color: #fff;
 }
 
@@ -224,7 +224,7 @@
 
 .po-hero__stat-suffix {
 	font-size: 0.6em;
-	color: #2997ff;
+	color: var(--po-hero-accent, #2997ff);
 	margin-left: 2px;
 }
 

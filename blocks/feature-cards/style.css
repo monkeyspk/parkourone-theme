@@ -56,17 +56,12 @@
 	line-height: 1.6;
 }
 
-.po-feature-cards[style*="background-color: rgb(0, 0, 0)"] .po-feature-cards__headline,
-.po-feature-cards[style*="background-color:#000000"] .po-feature-cards__headline,
-.po-feature-cards[style*="background-color: #000000"] .po-feature-cards__headline,
-.po-feature-cards[style*="background-color: rgb(0, 0, 0)"] .po-feature-card__title,
-.po-feature-cards[style*="background-color:#000000"] .po-feature-card__title,
-.po-feature-cards[style*="background-color: #000000"] .po-feature-card__title {
+/* Dark backgrounds: auto white text */
+.po-feature-cards--dark .po-feature-cards__headline,
+.po-feature-cards--dark .po-feature-card__title {
 	color: #fff;
 }
 
-.po-feature-cards[style*="background-color: rgb(0, 0, 0)"] .po-feature-card__desc,
-.po-feature-cards[style*="background-color:#000000"] .po-feature-card__desc,
-.po-feature-cards[style*="background-color: #000000"] .po-feature-card__desc {
-	color: #999;
+.po-feature-cards--dark .po-feature-card__desc {
+	color: rgba(255, 255, 255, 0.7);
 }

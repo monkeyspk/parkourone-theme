@@ -16,7 +16,7 @@
 			}
 
 			function addCategory() {
-				if (attributes.categories.length < 4) {
+				if (attributes.categories.length < 6) {
 					setAttributes({
 						categories: [...attributes.categories, { label: 'Neue Zielgruppe', imageUrl: '', linkUrl: '#' }]
 					});
@@ -24,7 +24,7 @@
 			}
 
 			function removeCategory(index) {
-				if (attributes.categories.length > 3) {
+				if (attributes.categories.length > 2) {
 					const newCategories = attributes.categories.filter((_, i) => i !== index);
 					setAttributes({ categories: newCategories });
 				}
@@ -42,7 +42,7 @@
 
 			return el('div', null, [
 				el(InspectorControls, { key: 'controls' },
-					el(PanelBody, { title: 'Zielgruppen', initialOpen: true },
+					el(PanelBody, { title: 'Zielgruppen (' + attributes.categories.length + ')', initialOpen: true },
 						attributes.categories.map(function(cat, index) {
 							return el(Card, { key: index, style: { marginBottom: '16px' } },
 								el(CardBody, null,
@@ -63,7 +63,7 @@
 												disabled: index === attributes.categories.length - 1,
 												onClick: function() { moveCategory(index, 1); }
 											}),
-											attributes.categories.length > 3 && el(Button, {
+											attributes.categories.length > 2 && el(Button, {
 												isDestructive: true,
 												isSmall: true,
 												onClick: function() { removeCategory(index); }
@@ -99,11 +99,11 @@
 								)
 							);
 						}),
-						attributes.categories.length < 4 && el(Button, {
+						attributes.categories.length < 6 && el(Button, {
 							variant: 'secondary',
 							onClick: addCategory,
 							style: { width: '100%' }
-						}, '+ Zielgruppe hinzufügen (max. 4)')
+						}, '+ Zielgruppe hinzufügen')
 					)
 				),
 				el('div', blockProps,
@@ -123,8 +123,8 @@
 					}),
 					el('div', { className: 'po-cg-editor__grid po-cg-editor__grid--' + attributes.categories.length },
 						attributes.categories.map(function(cat, index) {
-							return el('div', { 
-								key: index, 
+							return el('div', {
+								key: index,
 								className: 'po-cg-editor__card',
 								style: { backgroundImage: cat.imageUrl ? 'url(' + cat.imageUrl + ')' : 'none' }
 							},

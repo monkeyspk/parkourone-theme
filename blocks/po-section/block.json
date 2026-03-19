@@ -1,0 +1,44 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "parkourone/po-section",
+  "version": "1.0.0",
+  "title": "PO Section",
+  "category": "parkourone-basis",
+  "icon": "layout",
+  "description": "Flexibler Container-Block für eigene Inhalte mit Theme-Styling.",
+  "keywords": ["section", "container", "sektion", "wrapper", "layout", "custom", "frei"],
+  "textdomain": "parkourone",
+  "editorScript": "file:./index.js",
+  "style": "file:./style.css",
+  "render": "file:./render.php",
+  "attributes": {
+    "backgroundColor": {
+      "type": "string",
+      "default": ""
+    },
+    "paddingSize": {
+      "type": "string",
+      "default": "medium",
+      "enum": ["none", "small", "medium", "large"]
+    },
+    "maxWidth": {
+      "type": "string",
+      "default": "default",
+      "enum": ["narrow", "default", "wide", "full"]
+    },
+    "showHeadline": {
+      "type": "boolean",
+      "default": false
+    },
+    "headline": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "supports": {
+    "align": ["full", "wide"],
+    "html": false,
+    "anchor": true
+  }
+}

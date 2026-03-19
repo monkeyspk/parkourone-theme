@@ -926,6 +926,7 @@ function parkourone_allowed_block_types($allowed_blocks, $editor_context) {
         'parkourone/po-image',
         'parkourone/po-icon',
         'parkourone/po-columns',
+        'parkourone/po-section',
 
         // Minimale Core-Blöcke für Kompatibilität
         'core/paragraph',
@@ -993,6 +994,49 @@ function parkourone_register_pattern_categories() {
 }
 add_action('init', 'parkourone_register_pattern_categories');
 
+function parkourone_register_block_patterns() {
+    // Pattern 1: Text + Bild nebeneinander
+    register_block_pattern('parkourone/text-bild-sektion', [
+        'title' => 'Text + Bild Sektion',
+        'description' => 'Text links, Bild rechts in einer Section',
+        'categories' => ['parkourone-sektionen'],
+        'content' => '<!-- wp:parkourone/po-section {"paddingSize":"medium","maxWidth":"default"} --><!-- wp:columns --><!-- wp:column --><!-- wp:heading {"level":2} --><h2>Überschrift hier</h2><!-- /wp:heading --><!-- wp:paragraph --><p>Beschreibungstext hier einfügen. Dieser Text kann beliebig lang sein und beschreibt den Inhalt der Sektion.</p><!-- /wp:paragraph --><!-- wp:buttons --><!-- wp:button --><div class="wp-block-button"><a class="wp-block-button__link">Mehr erfahren</a></div><!-- /wp:button --><!-- /wp:buttons --><!-- /wp:column --><!-- wp:column --><!-- wp:image --><figure class="wp-block-image"><img alt=""/></figure><!-- /wp:image --><!-- /wp:column --><!-- /wp:columns --><!-- /wp:parkourone/po-section -->'
+    ]);
+
+    // Pattern 2: 3-Spalten mit Icons
+    register_block_pattern('parkourone/drei-spalten-icons', [
+        'title' => '3 Spalten mit Icons',
+        'description' => 'Drei Spalten mit zentriertem Icon und Text',
+        'categories' => ['parkourone-sektionen'],
+        'content' => '<!-- wp:parkourone/po-section {"paddingSize":"large","maxWidth":"default","showHeadline":true,"headline":"Unsere Vorteile"} --><!-- wp:columns --><!-- wp:column --><!-- wp:heading {"textAlign":"center","level":3} --><h3 class="has-text-align-center">Vorteil 1</h3><!-- /wp:heading --><!-- wp:paragraph {"align":"center"} --><p class="has-text-align-center">Beschreibung des ersten Vorteils.</p><!-- /wp:paragraph --><!-- /wp:column --><!-- wp:column --><!-- wp:heading {"textAlign":"center","level":3} --><h3 class="has-text-align-center">Vorteil 2</h3><!-- /wp:heading --><!-- wp:paragraph {"align":"center"} --><p class="has-text-align-center">Beschreibung des zweiten Vorteils.</p><!-- /wp:paragraph --><!-- /wp:column --><!-- wp:column --><!-- wp:heading {"textAlign":"center","level":3} --><h3 class="has-text-align-center">Vorteil 3</h3><!-- /wp:heading --><!-- wp:paragraph {"align":"center"} --><p class="has-text-align-center">Beschreibung des dritten Vorteils.</p><!-- /wp:paragraph --><!-- /wp:column --><!-- /wp:columns --><!-- /wp:parkourone/po-section -->'
+    ]);
+
+    // Pattern 3: CTA Banner
+    register_block_pattern('parkourone/cta-banner', [
+        'title' => 'Call-to-Action Banner',
+        'description' => 'Auffälliger CTA-Bereich mit Hintergrundfarbe',
+        'categories' => ['parkourone-sektionen'],
+        'content' => '<!-- wp:parkourone/po-section {"paddingSize":"large","maxWidth":"narrow","backgroundColor":"#0066cc"} --><!-- wp:heading {"textAlign":"center","level":2,"style":{"color":{"text":"#ffffff"}}} --><h2 class="has-text-align-center has-text-color" style="color:#ffffff">Bereit für dein erstes Training?</h2><!-- /wp:heading --><!-- wp:paragraph {"align":"center","style":{"color":{"text":"#ffffffcc"}}} --><p class="has-text-align-center has-text-color" style="color:#ffffffcc">Starte jetzt und entdecke, was Parkour für dich tun kann.</p><!-- /wp:paragraph --><!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} --><!-- wp:button {"style":{"color":{"background":"#ffffff","text":"#0066cc"}}} --><div class="wp-block-button"><a class="wp-block-button__link has-text-color has-background" style="color:#0066cc;background-color:#ffffff">Probetraining buchen</a></div><!-- /wp:button --><!-- /wp:buttons --><!-- /wp:parkourone/po-section -->'
+    ]);
+
+    // Pattern 4: Textsektion mit Überschrift
+    register_block_pattern('parkourone/text-sektion', [
+        'title' => 'Textsektion mit Überschrift',
+        'description' => 'Einfache Textsektion mit zentrierter Überschrift',
+        'categories' => ['parkourone-sektionen'],
+        'content' => '<!-- wp:parkourone/po-section {"paddingSize":"medium","maxWidth":"narrow","showHeadline":true,"headline":"Über uns"} --><!-- wp:paragraph --><p>Hier kommt der Inhalt. Dieser Block eignet sich perfekt für Fliesstext, Beschreibungen oder andere Textinhalte die eine eigene Sektion brauchen.</p><!-- /wp:paragraph --><!-- wp:paragraph --><p>Füge beliebig viele Absätze, Bilder, Listen oder andere Blöcke hinzu.</p><!-- /wp:paragraph --><!-- /wp:parkourone/po-section -->'
+    ]);
+
+    // Pattern 5: Bild-Galerie Sektion
+    register_block_pattern('parkourone/bild-galerie-sektion', [
+        'title' => 'Bild-Galerie Sektion',
+        'description' => 'Sektion mit Überschrift und Bildergalerie',
+        'categories' => ['parkourone-sektionen'],
+        'content' => '<!-- wp:parkourone/po-section {"paddingSize":"large","maxWidth":"wide","backgroundColor":"#f5f5f7","showHeadline":true,"headline":"Impressionen"} --><!-- wp:gallery {"columns":3,"linkTo":"none"} --><!-- wp:image --><figure class="wp-block-image"><img alt=""/></figure><!-- /wp:image --><!-- wp:image --><figure class="wp-block-image"><img alt=""/></figure><!-- /wp:image --><!-- wp:image --><figure class="wp-block-image"><img alt=""/></figure><!-- /wp:image --><!-- /wp:gallery --><!-- /wp:parkourone/po-section -->'
+    ]);
+}
+add_action('init', 'parkourone_register_block_patterns');
+
 function parkourone_register_blocks() {
     $blocks_dir = get_template_directory() . '/blocks/';
 
@@ -1032,6 +1076,7 @@ function parkourone_register_blocks() {
         'po-image',
         'po-icon',
         'po-columns',
+        'po-section',
         'video',
         'personal-training',
         'inquiry-form',
@@ -1602,6 +1647,7 @@ function parkourone_enqueue_block_assets() {
         'po-image',
         'po-icon',
         'po-columns',
+        'po-section',
         'video',
         'personal-training',
         'inquiry-form',

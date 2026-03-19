@@ -90,6 +90,10 @@
 		"useRandomFallback": {
 			"type": "boolean",
 			"default": false
+		},
+		"accentColor": {
+			"type": "string",
+			"default": "#2997ff"
 		}
 	},
 	"supports": {

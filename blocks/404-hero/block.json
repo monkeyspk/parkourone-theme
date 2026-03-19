@@ -6,6 +6,43 @@
 	"category": "parkourone-blocks",
 	"icon": "warning",
 	"description": "Parkour-styled 404 hero section with random fallback image.",
+	"textdomain": "parkourone",
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php",
+	"attributes": {
+		"eyebrow": {
+			"type": "string",
+			"default": "Seite nicht gefunden"
+		},
+		"headline": {
+			"type": "string",
+			"default": "404"
+		},
+		"subtext": {
+			"type": "string",
+			"default": "Diese Seite existiert nicht mehr — aber dein nächstes Training wartet!"
+		},
+		"primaryButtonText": {
+			"type": "string",
+			"default": "Zur Startseite"
+		},
+		"primaryButtonUrl": {
+			"type": "string",
+			"default": "/"
+		},
+		"secondaryButtonText": {
+			"type": "string",
+			"default": "Stundenplan ansehen"
+		},
+		"secondaryButtonUrl": {
+			"type": "string",
+			"default": "#stundenplan"
+		},
+		"overlayOpacity": {
+			"type": "number",
+			"default": 55
+		}
+	},
 	"supports": {
 		"inserter": false,
 		"html": false

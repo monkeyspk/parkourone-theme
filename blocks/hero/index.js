@@ -1,13 +1,23 @@
 (function(wp) {
 	const { registerBlockType } = wp.blocks;
 	const { useBlockProps, InspectorControls, MediaUpload, MediaUploadCheck, RichText } = wp.blockEditor;
-	const { PanelBody, Button, TextControl, SelectControl, RangeControl, BaseControl } = wp.components;
+	const { PanelBody, Button, TextControl, SelectControl, RangeControl, BaseControl, ColorPalette } = wp.components;
 	const { createElement: el, useState } = wp.element;
+
+	var accentColors = [
+		{ name: 'Blau', color: '#2997ff' },
+		{ name: 'ParkourONE Blau', color: '#0066cc' },
+		{ name: 'Rot', color: '#ff3b30' },
+		{ name: 'Grün', color: '#34c759' },
+		{ name: 'Orange', color: '#ff9500' },
+		{ name: 'Lila', color: '#af52de' }
+	];
 
 	registerBlockType('parkourone/hero', {
 		edit: function(props) {
 			const { attributes, setAttributes } = props;
 			const blockProps = useBlockProps({ className: 'po-hero-editor' });
+			var accent = attributes.accentColor || '#2997ff';
 
 			// Stats Management
 			const stats = attributes.stats || [];
@@ -26,8 +36,9 @@
 			return el('div', null, [
 				el(InspectorControls, { key: 'controls' },
 					// Layout Panel
-					el(PanelBody, { title: 'Layout', initialOpen: true },
+					el(PanelBody, { title: 'Layout', initialOpen: true }, [
 						el(SelectControl, {
+							key: 'layout',
 							label: 'Ausrichtung',
 							value: attributes.layout || 'centered',
 							options: [
@@ -37,14 +48,22 @@
 							onChange: function(v) { setAttributes({ layout: v }); }
 						}),
 						el(RangeControl, {
+							key: 'overlay',
 							label: 'Overlay Deckkraft',
 							value: attributes.overlayOpacity || 50,
 							onChange: function(v) { setAttributes({ overlayOpacity: v }); },
 							min: 0,
 							max: 90,
 							step: 5
+						}),
+						el('p', { key: 'accentlabel', style: { marginTop: '16px', marginBottom: '8px', fontWeight: 500 } }, 'Akzentfarbe (Buttons & Highlights)'),
+						el(ColorPalette, {
+							key: 'accent',
+							colors: accentColors,
+							value: accent,
+							onChange: function(v) { setAttributes({ accentColor: v || '#2997ff' }); }
 						})
-					),
+					]),
 
 					// Media Panel
 					el(PanelBody, { title: 'Hintergrundbild', initialOpen: false },
@@ -191,7 +210,7 @@
 								placeholder: 'Subtext...'
 							}),
 							el('div', { className: 'po-hero-editor__buttons' },
-								el('span', { className: 'po-hero-editor__button po-hero-editor__button--primary' },
+								el('span', { className: 'po-hero-editor__button po-hero-editor__button--primary', style: { background: accent } },
 									attributes.buttonText || 'Jetzt starten'
 								),
 								(attributes.videoUrl || attributes.secondButtonText) &&

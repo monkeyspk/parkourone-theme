@@ -4,8 +4,18 @@ $showHeadline = $attributes['showHeadline'] ?? true;
 $cards = $attributes['cards'] ?? [];
 $bgColor = $attributes['backgroundColor'] ?? '#f5f5f7';
 $iconSize = intval($attributes['iconSize'] ?? 160);
+
+$dark_bgs = ['#1d1d1f', '#000000', '#0066cc', '#ff3b30'];
+$classes = ['po-feature-cards', 'alignfull'];
+if (in_array($bgColor, $dark_bgs)) {
+	$classes[] = 'po-feature-cards--dark';
+}
+
+$style = '';
+if ($bgColor) $style .= 'background-color: ' . esc_attr($bgColor) . '; ';
+$style .= '--po-icon-size: ' . $iconSize . 'px';
 ?>
-<section<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="po-feature-cards alignfull" style="background-color: <?php echo esc_attr($bgColor); ?>; --po-icon-size: <?php echo $iconSize; ?>px">
+<section<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="<?php echo esc_attr(implode(' ', $classes)); ?>" style="<?php echo $style; ?>">
 	<?php if ($showHeadline && $headline): ?>
 		<h2 class="po-feature-cards__headline"><?php echo wp_kses_post($headline); ?></h2>
 	<?php endif; ?>
