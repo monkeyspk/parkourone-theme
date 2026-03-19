@@ -829,6 +829,18 @@ p#referrer_field {
 	display: none;
 }
 
+/* Plugin "Wie haben Sie von uns erfahren" Feld komplett ausblenden */
+.jetrack-field,
+.wc-how-did-you-hear,
+p[id*="wie_haben"],
+p[id*="how_did"],
+#billing_wie_haben_sie_von_uns_erfahren_field,
+#wie_haben_sie_von_uns_erfahren_field,
+.woocommerce-checkout [class*="jetrack"],
+.woocommerce-checkout [class*="how-hear"] {
+	display: none !important;
+}
+
 /* Show once moved into section placeholder */
 #po-referrer-placeholder #referrer_field,
 #po-referrer-placeholder p#referrer_field {

@@ -10,6 +10,7 @@
 	'use strict';
 
 	document.addEventListener('DOMContentLoaded', function () {
+		hidePluginReferralField();
 		initReferrerField();
 		initCouponForm();
 		initMobileOrderSummary();
@@ -20,6 +21,56 @@
 	jQuery(document.body).on('updated_checkout', function () {
 		initMobileOrderSummary();
 	});
+
+	/**
+	 * Hide plugin "Wie haben Sie von uns erfahren" field and remove required
+	 */
+	function hidePluginReferralField() {
+		// Find all fields that contain "Wie haben Sie" or similar plugin fields
+		var allLabels = document.querySelectorAll('label, legend, .form-row label');
+		allLabels.forEach(function(label) {
+			var text = label.textContent || '';
+			if (text.indexOf('Wie haben Sie') !== -1 || text.indexOf('How did you') !== -1) {
+				// Find the parent wrapper (p.form-row or div)
+				var wrapper = label.closest('p, div.form-row, .form-row');
+				if (wrapper) {
+					wrapper.style.display = 'none';
+					// Remove required from all inputs/selects inside
+					var inputs = wrapper.querySelectorAll('input, select, textarea');
+					inputs.forEach(function(input) {
+						input.removeAttribute('required');
+						input.removeAttribute('aria-required');
+						input.classList.remove('validate-required');
+					});
+					// Also remove validate-required from wrapper
+					wrapper.classList.remove('validate-required');
+				}
+			}
+		});
+
+		// Also check for select2/chosen containers (tag-style fields like "Andere")
+		var selects = document.querySelectorAll('select');
+		selects.forEach(function(sel) {
+			var options = sel.querySelectorAll('option');
+			var isReferral = false;
+			options.forEach(function(opt) {
+				if (opt.textContent.indexOf('Andere') !== -1 || opt.textContent.indexOf('Google') !== -1) {
+					// Check if this is the plugin field (not our po_referral_source)
+					if (sel.name && sel.name !== 'po_referral_source' && sel.name.indexOf('referr') !== -1) {
+						isReferral = true;
+					}
+				}
+			});
+			if (isReferral) {
+				var wrapper = sel.closest('p, div.form-row, .form-row');
+				if (wrapper) {
+					wrapper.style.display = 'none';
+					sel.removeAttribute('required');
+					sel.removeAttribute('aria-required');
+				}
+			}
+		});
+	}
 
 	/**
 	 * Move plugin-rendered #referrer_field into Sonstiges section
@@ -187,18 +238,30 @@
 		});
 
 		jQuery(document.body).on('checkout_error', function () {
+			// Suche alle Error-Quellen
 			var noticeGroup = document.querySelector('.woocommerce-NoticeGroup-checkout');
-			if (!noticeGroup) return;
+			var errorList = noticeGroup ? noticeGroup.querySelector('.woocommerce-error') : null;
 
-			var errorList = noticeGroup.querySelector('.woocommerce-error');
+			// Fallback: Fehler können auch direkt als .woocommerce-error erscheinen
+			if (!errorList) {
+				errorList = document.querySelector('.woocommerce-checkout .woocommerce-error');
+			}
+
+			// Fallback: Inline-Notices ohne NoticeGroup
+			if (!errorList) {
+				errorList = document.querySelector('.woocommerce-checkout .woocommerce-NoticeGroup .woocommerce-error');
+			}
+
 			if (!errorList) return;
 
 			// Clone the error list into our modal
 			body.innerHTML = '';
 			body.appendChild(errorList.cloneNode(true));
 
-			// Remove inline notices entirely (CSS also hides them, but be safe)
-			noticeGroup.remove();
+			// Remove inline notices entirely
+			if (noticeGroup) noticeGroup.remove();
+			// Auch direkte Error-Lists entfernen
+			document.querySelectorAll('.woocommerce-checkout > .woocommerce-error').forEach(function(el) { el.remove(); });
 
 			// Restore scroll position that WooCommerce's scrollToNotices() hijacked
 			window.scrollTo(0, scrollPosBeforeError);
@@ -207,6 +270,18 @@
 			modal.setAttribute('aria-hidden', 'false');
 			document.body.style.overflow = 'hidden';
 			closeBtn.focus();
+		});
+
+		// Auch WC-Notices abfangen die als woocommerce-info oder -message kommen
+		jQuery(document.body).on('applied_coupon removed_coupon', function() {
+			var notices = document.querySelectorAll('.woocommerce-checkout > .woocommerce-message, .woocommerce-checkout > .woocommerce-info');
+			notices.forEach(function(n) {
+				// Diese in die Coupon-Sektion verschieben statt oben anzuzeigen
+				var couponSection = document.querySelector('.po-checkout-summary__coupon');
+				if (couponSection) {
+					couponSection.prepend(n);
+				}
+			});
 		});
 	}
 
