@@ -48,6 +48,27 @@ add_action('admin_init', function() {
 });
 
 // =====================================================
+// Saubere Checkout-URL (immer /kasse/ statt ?page_id=X)
+// =====================================================
+
+function parkourone_get_checkout_url() {
+	return home_url('/kasse/');
+}
+
+function parkourone_get_cart_url() {
+	return home_url('/warenkorb/');
+}
+
+// WooCommerce URLs überschreiben
+add_filter('woocommerce_get_checkout_url', function() {
+	return parkourone_get_checkout_url();
+});
+
+add_filter('woocommerce_get_cart_url', function() {
+	return parkourone_get_cart_url();
+});
+
+// =====================================================
 // Classic Checkout Customizations
 // =====================================================
 
