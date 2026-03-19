@@ -226,21 +226,12 @@
 
 		closeBtn.addEventListener('click', closeToast);
 
-		// Capture scroll position before WooCommerce hijacks it
-		var scrollPosBeforeError = 0;
-		jQuery(document).ajaxComplete(function (event, xhr, settings) {
-			if (settings && settings.url && settings.url.indexOf('wc-ajax=checkout') !== -1) {
-				scrollPosBeforeError = window.scrollY || window.pageYOffset;
-			}
-		});
-
-		jQuery(document.body).on('checkout_error', function () {
-			var noticeGroup = document.querySelector('.woocommerce-NoticeGroup-checkout');
-			var errorList = noticeGroup ? noticeGroup.querySelector('.woocommerce-error') : null;
-
-			if (!errorList) {
-				errorList = document.querySelector('.woocommerce-checkout .woocommerce-error');
-			}
+		function grabErrors() {
+			// Alle Error-Quellen durchsuchen
+			var errorList =
+				document.querySelector('.woocommerce-NoticeGroup-checkout .woocommerce-error') ||
+				document.querySelector('.woocommerce-checkout .woocommerce-error') ||
+				document.querySelector('form.checkout .woocommerce-error');
 
 			if (!errorList) return;
 
@@ -249,14 +240,62 @@
 			body.appendChild(errorList.cloneNode(true));
 
 			// Inline-Notices entfernen
+			var noticeGroup = document.querySelector('.woocommerce-NoticeGroup-checkout');
 			if (noticeGroup) noticeGroup.remove();
-			document.querySelectorAll('.woocommerce-checkout > .woocommerce-error').forEach(function(el) { el.remove(); });
+			document.querySelectorAll('.woocommerce-error').forEach(function(el) {
+				if (!toast.contains(el)) el.remove();
+			});
 
-			// Scroll-Position wiederherstellen
-			window.scrollTo(0, scrollPosBeforeError);
-
-			// Toast anzeigen
 			showToast();
+		}
+
+		// Methode 1: WooCommerce checkout_error Event
+		jQuery(document.body).on('checkout_error', function () {
+			// Kurz warten damit WC die Notices ins DOM geschrieben hat
+			setTimeout(grabErrors, 50);
+		});
+
+		// Methode 2: MutationObserver als Fallback
+		// Beobachtet das Formular auf neue .woocommerce-error Elemente
+		var checkoutForm = document.querySelector('form.checkout, .woocommerce-checkout .woocommerce');
+		if (checkoutForm) {
+			var observer = new MutationObserver(function(mutations) {
+				for (var i = 0; i < mutations.length; i++) {
+					var added = mutations[i].addedNodes;
+					for (var j = 0; j < added.length; j++) {
+						var node = added[j];
+						if (node.nodeType !== 1) continue;
+						// NoticeGroup oder direkte Error-Liste hinzugefügt
+						if (node.classList && (
+							node.classList.contains('woocommerce-NoticeGroup-checkout') ||
+							node.classList.contains('woocommerce-error')
+						)) {
+							setTimeout(grabErrors, 50);
+							return;
+						}
+						// Oder ein Kind-Element enthält Fehler
+						if (node.querySelector && node.querySelector('.woocommerce-error')) {
+							setTimeout(grabErrors, 50);
+							return;
+						}
+					}
+				}
+			});
+			observer.observe(checkoutForm, { childList: true, subtree: true });
+		}
+
+		// Methode 3: AJAX-Response direkt abfangen
+		jQuery(document).ajaxComplete(function(event, xhr, settings) {
+			if (!settings || !settings.url) return;
+			if (settings.url.indexOf('wc-ajax=checkout') === -1) return;
+
+			try {
+				var response = JSON.parse(xhr.responseText);
+				if (response.result === 'failure' && response.messages) {
+					// WC liefert HTML in messages — ins DOM parsen
+					setTimeout(grabErrors, 100);
+				}
+			} catch(e) {}
 		});
 	}
 
