@@ -181,56 +181,53 @@
 	}
 
 	/**
-	 * Validation error modal — intercepts WooCommerce checkout errors
-	 * and shows them in a centered modal instead of inline at the top of the form.
+	 * Error Toast — slides in from right with close button.
+	 * Replaces the old modal approach.
 	 */
 	function initErrorModal() {
-		// Create modal shell
-		var modal = document.createElement('div');
-		modal.className = 'po-error-modal';
-		modal.setAttribute('aria-hidden', 'true');
-		modal.innerHTML =
-			'<div class="po-error-modal__backdrop"></div>' +
-			'<div class="po-error-modal__dialog" role="alertdialog" aria-label="Fehler">' +
-				'<div class="po-error-modal__header">' +
-					'<svg class="po-error-modal__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+		// Create toast container (fixed, top-right)
+		var toast = document.createElement('div');
+		toast.className = 'po-error-toast';
+		toast.innerHTML =
+			'<div class="po-error-toast__inner">' +
+				'<div class="po-error-toast__header">' +
+					'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
 						'<circle cx="12" cy="12" r="10"></circle>' +
 						'<line x1="12" y1="8" x2="12" y2="12"></line>' +
 						'<line x1="12" y1="16" x2="12.01" y2="16"></line>' +
 					'</svg>' +
-					'<span class="po-error-modal__title">Bitte prüfe deine Eingaben</span>' +
+					'<span class="po-error-toast__title">Bitte prüfe deine Eingaben</span>' +
+					'<button type="button" class="po-error-toast__close" aria-label="Schließen">' +
+						'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+							'<line x1="18" y1="6" x2="6" y2="18"></line>' +
+							'<line x1="6" y1="6" x2="18" y2="18"></line>' +
+						'</svg>' +
+					'</button>' +
 				'</div>' +
-				'<div class="po-error-modal__body"></div>' +
-				'<button type="button" class="po-error-modal__close">Verstanden</button>' +
+				'<div class="po-error-toast__body"></div>' +
 			'</div>';
-		document.body.appendChild(modal);
+		document.body.appendChild(toast);
 
-		var backdrop = modal.querySelector('.po-error-modal__backdrop');
-		var closeBtn = modal.querySelector('.po-error-modal__close');
-		var body = modal.querySelector('.po-error-modal__body');
+		var closeBtn = toast.querySelector('.po-error-toast__close');
+		var body = toast.querySelector('.po-error-toast__body');
+		var autoCloseTimer = null;
 
-		function closeModal() {
-			modal.setAttribute('aria-hidden', 'true');
-			document.body.style.overflow = '';
+		function showToast() {
+			toast.classList.add('is-visible');
+			// Auto-close nach 15 Sekunden
+			clearTimeout(autoCloseTimer);
+			autoCloseTimer = setTimeout(closeToast, 15000);
 		}
 
-		backdrop.addEventListener('click', closeModal);
-		closeBtn.addEventListener('click', closeModal);
-		document.addEventListener('keydown', function (e) {
-			if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') {
-				closeModal();
-			}
-		});
+		function closeToast() {
+			toast.classList.remove('is-visible');
+			clearTimeout(autoCloseTimer);
+		}
 
-		// Intercept WooCommerce checkout errors.
-		// WooCommerce calls scrollToNotices() BEFORE firing checkout_error,
-		// which scrolls to the inline notice hidden behind the sticky sidebar.
-		// We save the scroll position, show errors in a modal instead,
-		// and restore the scroll position to undo the unwanted jump.
+		closeBtn.addEventListener('click', closeToast);
+
+		// Capture scroll position before WooCommerce hijacks it
 		var scrollPosBeforeError = 0;
-
-		// Capture scroll position just before WooCommerce processes the error.
-		// The 'checkout_error' event fires after WooCommerce has already scrolled.
 		jQuery(document).ajaxComplete(function (event, xhr, settings) {
 			if (settings && settings.url && settings.url.indexOf('wc-ajax=checkout') !== -1) {
 				scrollPosBeforeError = window.scrollY || window.pageYOffset;
@@ -238,50 +235,28 @@
 		});
 
 		jQuery(document.body).on('checkout_error', function () {
-			// Suche alle Error-Quellen
 			var noticeGroup = document.querySelector('.woocommerce-NoticeGroup-checkout');
 			var errorList = noticeGroup ? noticeGroup.querySelector('.woocommerce-error') : null;
 
-			// Fallback: Fehler können auch direkt als .woocommerce-error erscheinen
 			if (!errorList) {
 				errorList = document.querySelector('.woocommerce-checkout .woocommerce-error');
 			}
 
-			// Fallback: Inline-Notices ohne NoticeGroup
-			if (!errorList) {
-				errorList = document.querySelector('.woocommerce-checkout .woocommerce-NoticeGroup .woocommerce-error');
-			}
-
 			if (!errorList) return;
 
-			// Clone the error list into our modal
+			// Fehler in den Toast klonen
 			body.innerHTML = '';
 			body.appendChild(errorList.cloneNode(true));
 
-			// Remove inline notices entirely
+			// Inline-Notices entfernen
 			if (noticeGroup) noticeGroup.remove();
-			// Auch direkte Error-Lists entfernen
 			document.querySelectorAll('.woocommerce-checkout > .woocommerce-error').forEach(function(el) { el.remove(); });
 
-			// Restore scroll position that WooCommerce's scrollToNotices() hijacked
+			// Scroll-Position wiederherstellen
 			window.scrollTo(0, scrollPosBeforeError);
 
-			// Show modal
-			modal.setAttribute('aria-hidden', 'false');
-			document.body.style.overflow = 'hidden';
-			closeBtn.focus();
-		});
-
-		// Auch WC-Notices abfangen die als woocommerce-info oder -message kommen
-		jQuery(document.body).on('applied_coupon removed_coupon', function() {
-			var notices = document.querySelectorAll('.woocommerce-checkout > .woocommerce-message, .woocommerce-checkout > .woocommerce-info');
-			notices.forEach(function(n) {
-				// Diese in die Coupon-Sektion verschieben statt oben anzuzeigen
-				var couponSection = document.querySelector('.po-checkout-summary__coupon');
-				if (couponSection) {
-					couponSection.prepend(n);
-				}
-			});
+			// Toast anzeigen
+			showToast();
 		});
 	}
 
