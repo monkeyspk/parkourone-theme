@@ -97,15 +97,13 @@ add_action('wp_footer', function() {
 	?>
 	<script>
 	(function(){
-		// Alle Elemente die Divi-Shortcode-Text enthalten ausblenden
-		var all = document.querySelectorAll('p, h1, h2, h3, div');
-		for (var i = 0; i < all.length; i++) {
-			var el = all[i];
-			// Nur direkte Textinhalte prüfen, keine verschachtelten WC-Elemente
-			if (el.closest('.woocommerce, .po-checkout-section, .po-checkout-summary, .po-side-cart')) continue;
-			var text = el.textContent || '';
-			if (text.indexOf('[et_pb_') !== -1 || text.indexOf('[/et_pb_') !== -1) {
-				el.style.display = 'none';
+		// TreeWalker: Nur TEXT-Nodes finden die Divi-Shortcodes enthalten
+		var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+		var node;
+		while (node = walker.nextNode()) {
+			if (node.nodeValue.indexOf('[et_pb_') !== -1 || node.nodeValue.indexOf('[/et_pb_') !== -1) {
+				// Nur den Textnode selbst entfernen, nicht das Parent-Element
+				node.nodeValue = '';
 			}
 		}
 	})();
