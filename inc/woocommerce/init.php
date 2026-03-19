@@ -91,6 +91,28 @@ add_filter('the_content', function($content) {
 	return $content;
 });
 
+// Inline JS: Divi-Reste im DOM ausblenden (Fallback wenn PHP-Filter nicht greift)
+add_action('wp_footer', function() {
+	if (!is_checkout() && !is_cart() && !is_account_page()) return;
+	?>
+	<script>
+	(function(){
+		// Alle Elemente die Divi-Shortcode-Text enthalten ausblenden
+		var all = document.querySelectorAll('p, h1, h2, h3, div');
+		for (var i = 0; i < all.length; i++) {
+			var el = all[i];
+			// Nur direkte Textinhalte prüfen, keine verschachtelten WC-Elemente
+			if (el.closest('.woocommerce, .po-checkout-section, .po-checkout-summary, .po-side-cart')) continue;
+			var text = el.textContent || '';
+			if (text.indexOf('[et_pb_') !== -1 || text.indexOf('[/et_pb_') !== -1) {
+				el.style.display = 'none';
+			}
+		}
+	})();
+	</script>
+	<?php
+});
+
 // =====================================================
 // Classic Checkout Customizations
 // =====================================================
