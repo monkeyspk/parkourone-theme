@@ -112,6 +112,28 @@ add_action('wp_footer', function() {
 });
 
 // =====================================================
+// Plugin "Wie haben Sie von uns erfahren" Validierung unterdrücken
+// Falls ein Plugin das Feld required macht, entfernen wir den
+// Validierungsfehler serverseitig bevor WooCommerce ihn ausgibt.
+// =====================================================
+
+add_action('woocommerce_after_checkout_validation', function($data, $errors) {
+	$error_codes = $errors->get_error_codes();
+	foreach ($error_codes as $code) {
+		$messages = $errors->get_error_messages($code);
+		foreach ($messages as $message) {
+			$lower = strtolower($message);
+			if (strpos($lower, 'wie haben sie') !== false
+				|| strpos($lower, 'how did you') !== false
+				|| strpos($lower, 'wie_haben') !== false) {
+				$errors->remove($code);
+				break 2;
+			}
+		}
+	}
+}, 1, 2);
+
+// =====================================================
 // Classic Checkout Customizations
 // =====================================================
 
@@ -192,6 +214,31 @@ add_filter('woocommerce_checkout_fields', function($fields) {
 	unset($fields['order']['referrer']);
 	if (isset($fields['account'])) {
 		unset($fields['account']['referrer']);
+	}
+
+	// Plugin "Wie haben Sie von uns erfahren" Feld komplett entfernen
+	// Verschiedene Plugins nutzen verschiedene Feldnamen
+	$plugin_referral_fields = [
+		'wie_haben_sie_von_uns_erfahren',
+		'billing_wie_haben_sie_von_uns_erfahren',
+		'how_did_you_hear',
+		'billing_how_did_you_hear',
+		'referral_source',
+		'billing_referral_source',
+	];
+	foreach ($plugin_referral_fields as $field_name) {
+		unset($fields['billing'][$field_name]);
+		unset($fields['order'][$field_name]);
+	}
+
+	// Auch alle unbekannten Felder mit "wie_haben" oder "how_did" im Namen entfernen
+	foreach (['billing', 'order', 'shipping'] as $section) {
+		if (!isset($fields[$section])) continue;
+		foreach ($fields[$section] as $key => $field) {
+			if (stripos($key, 'wie_haben') !== false || stripos($key, 'how_did') !== false) {
+				unset($fields[$section][$key]);
+			}
+		}
 	}
 
 	return $fields;
