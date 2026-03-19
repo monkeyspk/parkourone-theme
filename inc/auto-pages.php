@@ -1643,6 +1643,18 @@ function parkourone_create_template_page($template_slug, $overwrite = false) {
 		update_post_meta($page_id, '_parkourone_is_homepage', true);
 	}
 
+	// WooCommerce-Seiten automatisch verknüpfen
+	if (class_exists('WooCommerce')) {
+		$wc_page_map = [
+			'checkout' => 'woocommerce_checkout_page_id',
+			'warenkorb' => 'woocommerce_cart_page_id',
+			'mein-konto' => 'woocommerce_myaccount_page_id',
+		];
+		if (isset($wc_page_map[$template_slug])) {
+			update_option($wc_page_map[$template_slug], $page_id);
+		}
+	}
+
 	return $page_id;
 }
 

@@ -17,6 +17,37 @@ if (!class_exists('WooCommerce')) {
 }
 
 // =====================================================
+// WooCommerce Seiten Auto-Verknüpfung
+// Stellt sicher dass Kasse, Warenkorb und Mein Konto
+// korrekt mit WooCommerce verknüpft sind.
+// =====================================================
+
+add_action('admin_init', function() {
+	if (get_transient('parkourone_wc_pages_checked')) return;
+	set_transient('parkourone_wc_pages_checked', true, DAY_IN_SECONDS);
+
+	$page_map = [
+		'woocommerce_checkout_page_id'  => 'kasse',
+		'woocommerce_cart_page_id'      => 'warenkorb',
+		'woocommerce_myaccount_page_id' => 'mein-konto',
+	];
+
+	foreach ($page_map as $option_key => $page_slug) {
+		$current_id = get_option($option_key);
+		// Prüfen ob die verknüpfte Seite noch existiert
+		if ($current_id && get_post_status($current_id) === 'publish') {
+			continue; // Alles OK
+		}
+		// Seite über Slug suchen und verknüpfen
+		$page = get_page_by_path($page_slug);
+		if ($page && $page->post_status === 'publish') {
+			update_option($option_key, $page->ID);
+			error_log('ParkourONE WC: ' . $option_key . ' neu verknüpft mit Seite "' . $page->post_title . '" (ID ' . $page->ID . ')');
+		}
+	}
+});
+
+// =====================================================
 // Classic Checkout Customizations
 // =====================================================
 
