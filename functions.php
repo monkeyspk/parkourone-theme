@@ -57,6 +57,11 @@ function parkourone_maintenance_mode() {
 		return;
 	}
 
+	// WooCommerce Mein Konto durchlassen (Verträge, Bestellungen etc.)
+	if (function_exists('is_account_page') && is_account_page()) {
+		return;
+	}
+
 	// WooCommerce AJAX (Fragments, Coupons etc.) durchlassen
 	if (isset($_GET['wc-ajax'])) {
 		return;
