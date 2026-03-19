@@ -1709,8 +1709,21 @@ p[id*="how_did"],
  * Inline-Notices werden vom Error-Modal übernommen.
  * Aber: sichtbar lassen als Fallback — das JS entfernt sie wenn das Modal zeigt.
  */
+/* Fehler-Notices über sticky Sidebar anzeigen, nicht dahinter */
 .woocommerce-checkout .woocommerce-NoticeGroup-checkout {
-	/* Nicht mehr display:none — JS-Modal entfernt sie nach dem Klonen */
+	position: relative;
+	z-index: 50;
+	width: 100%;
+	clear: both;
+}
+
+/* Auch direkte Fehler-Listen sichtbar machen */
+.woocommerce-checkout > .woocommerce > .woocommerce-error,
+.woocommerce-checkout > .woocommerce > .woocommerce-message,
+.woocommerce-checkout > .woocommerce > .woocommerce-info,
+.woocommerce-checkout form.checkout > .woocommerce-error {
+	position: relative;
+	z-index: 50;
 }
 
 /* ---------- Validation error modal ---------- */
