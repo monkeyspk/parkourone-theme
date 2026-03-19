@@ -427,6 +427,9 @@ class ParkourONE_GitHub_Updater {
      * Prüft und führt Auto-Update durch
      */
     public function maybe_auto_update() {
+        // Bei jedem Check alte Temp-Ordner aufräumen
+        $this->cleanup_old_temp_dirs();
+
         // Nur prüfen wenn Interval abgelaufen
         $last_check = get_transient($this->transient_key);
         
@@ -544,9 +547,32 @@ class ParkourONE_GitHub_Updater {
     }
     
     /**
+     * Räumt alte Temp-Ordner auf die von fehlgeschlagenen Updates übrig geblieben sind
+     */
+    private function cleanup_old_temp_dirs() {
+        $themes_dir = dirname(get_template_directory());
+        $pattern = $themes_dir . '/parkourone-theme-temp-*';
+        $temp_dirs = glob($pattern, GLOB_ONLYDIR);
+
+        if (!is_array($temp_dirs)) return;
+
+        foreach ($temp_dirs as $dir) {
+            // Nur Ordner löschen die älter als 1 Stunde sind (Sicherheit für laufende Updates)
+            $dir_time = filemtime($dir);
+            if ($dir_time && (time() - $dir_time) > 3600) {
+                $this->remove_directory($dir);
+                error_log('ParkourONE Updater: Alten Temp-Ordner gelöscht: ' . basename($dir));
+            }
+        }
+    }
+
+    /**
      * Führt das Update durch
      */
     private function do_update() {
+        // Alte Temp-Ordner aufräumen bevor neues Update startet
+        $this->cleanup_old_temp_dirs();
+
         // WP_Filesystem initialisieren
         global $wp_filesystem;
 
