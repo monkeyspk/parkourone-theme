@@ -86,7 +86,7 @@ if ($query->have_posts()) {
 
 		// Taxonomien ermitteln
 		$terms = wp_get_post_terms($event_id, 'event_category', ['fields' => 'all']);
-		$age_slug = '';
+		$age_slugs = [];
 		$location_slug = '';
 		$offer_slug = '';
 
@@ -94,12 +94,13 @@ if ($query->have_posts()) {
 			if ($term->parent) {
 				$parent = get_term($term->parent, 'event_category');
 				if ($parent && !is_wp_error($parent)) {
-					if ($parent->slug === 'alter') $age_slug = $term->slug;
+					if ($parent->slug === 'alter') $age_slugs[] = $term->slug;
 					if ($parent->slug === 'ortschaft') $location_slug = $term->slug;
 					if ($parent->slug === 'angebot') $offer_slug = $term->slug;
 				}
 			}
 		}
+		$age_slug = !empty($age_slugs) ? $age_slugs[0] : '';
 
 		// Ferienkurse überspringen
 		if ($offer_slug === 'ferienkurs') continue;
@@ -175,7 +176,7 @@ if ($query->have_posts()) {
 				'location_slug'   => $location_slug,
 				'color'           => $color,
 				'stock'           => $stock,
-				'filter_data'     => trim($age_slug . ' ' . $location_slug),
+				'filter_data'     => trim(implode(' ', $age_slugs) . ' ' . $location_slug),
 				'date_key'        => $date_key,
 				'timestamp'       => $timestamp,
 			];

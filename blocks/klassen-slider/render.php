@@ -84,7 +84,7 @@ if ($query->have_posts()) {
 		}
 
 		$terms = wp_get_post_terms($event_id, 'event_category', ['fields' => 'all']);
-		$age_term = '';
+		$age_terms = [];
 		$offer_term = '';
 		$location_term = '';
 
@@ -93,7 +93,7 @@ if ($query->have_posts()) {
 				$parent = get_term($term->parent, 'event_category');
 				if ($parent && !is_wp_error($parent)) {
 					if ($parent->slug === 'alter') {
-						$age_term = $term->slug;
+						$age_terms[] = $term->slug;
 						$used_age_slugs[] = $term->slug;
 					}
 					if ($parent->slug === 'angebot') $offer_term = $term->slug;
@@ -104,6 +104,7 @@ if ($query->have_posts()) {
 				}
 			}
 		}
+		$age_term = !empty($age_terms) ? $age_terms[0] : '';
 
 		// Zentrale Bildlogik mit automatischem Fallback (Event-spezifisch > Featured > Kategorie-Fallback)
 		$event_image = function_exists('parkourone_get_event_image')
@@ -132,7 +133,7 @@ if ($query->have_posts()) {
 			'description' => get_post_meta($event_id, '_event_description', true),
 			'weekday' => $weekday_name,
 			'image' => $event_image,
-			'category' => $age_term,
+			'category' => implode(' ', $age_terms),
 			'location' => $location_term,
 			'offer' => $offer_term,
 			'dropdown_info' => get_post_meta($event_id, '_event_dropdown_info', true),
