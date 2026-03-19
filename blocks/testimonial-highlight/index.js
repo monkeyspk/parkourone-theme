@@ -17,7 +17,7 @@
 			}
 
 			function addQuote() {
-				if (attributes.quotes.length >= 2) return;
+				if (attributes.quotes.length >= 6) return;
 				const newQuotes = [...attributes.quotes, {
 					text: 'Neues Zitat hier eingeben...',
 					author: 'Name',
@@ -73,7 +73,7 @@
 									onClick: function() { setActiveQuote(i); }
 								}, 'Zitat ' + (i + 1));
 							}).concat(
-								attributes.quotes.length < 2 ? [
+								attributes.quotes.length < 6 ? [
 									el(Button, {
 										key: 'add',
 										variant: 'secondary',

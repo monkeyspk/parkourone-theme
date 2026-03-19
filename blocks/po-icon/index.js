@@ -34,14 +34,16 @@
 	];
 
 	const colors = [
-		{ name: 'ParkourONE Lila', color: '#667eea' },
-		{ name: 'ParkourONE Violett', color: '#764ba2' },
-		{ name: 'Schwarz', color: '#1d1d1f' },
-		{ name: 'Grau', color: '#86868b' },
-		{ name: 'Weiss', color: '#ffffff' },
-		{ name: 'Grün', color: '#34C759' },
-		{ name: 'Rot', color: '#FF3B30' },
-		{ name: 'Orange', color: '#FF9500' }
+		{ name: 'Lila', color: '#667eea' },
+		{ name: 'Violett', color: '#764ba2' },
+		{ name: 'Dunkelgrau', color: '#1d1d1f' },
+		{ name: 'Schwarz', color: '#000000' },
+		{ name: 'Weiß', color: '#ffffff' },
+		{ name: 'Blau', color: '#0066cc' },
+		{ name: 'Grün', color: '#34c759' },
+		{ name: 'Rot', color: '#ff3b30' },
+		{ name: 'Orange', color: '#ff9500' },
+		{ name: 'Grau', color: '#86868b' }
 	];
 
 	// SVG Paths für Icons (Lucide-style)

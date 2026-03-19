@@ -133,7 +133,7 @@
 							options: [
 								{ label: 'Weiss', value: 'white' },
 								{ label: 'Hellgrau', value: 'light' },
-								{ label: 'Gradient', value: 'gradient' }
+								{ label: 'Dunkel', value: 'dark' },\n\t\t\t\t\t\t\t\t{ label: 'Schwarz', value: 'black' },\n\t\t\t\t\t\t\t\t{ label: 'Gradient', value: 'gradient' },\n\t\t\t\t\t\t\t\t{ label: 'Blau', value: 'blue' }
 							],
 							onChange: function(value) {
 								setAttributes({ backgroundColor: value });

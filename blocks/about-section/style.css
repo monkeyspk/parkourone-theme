@@ -118,19 +118,18 @@
 }
 
 /* Dark Background */
-.po-about[style*="background-color: rgb(0, 0, 0)"] .po-about__subheadline,
-.po-about[style*="background-color:#000000"] .po-about__subheadline,
-.po-about[style*="background-color: #000000"] .po-about__subheadline,
-.po-about[style*="background-color: rgb(0, 0, 0)"] .po-about__headline,
-.po-about[style*="background-color:#000000"] .po-about__headline,
-.po-about[style*="background-color: #000000"] .po-about__headline {
+.po-about--dark .po-about__subheadline,
+.po-about--dark .po-about__headline {
 	color: #fff;
 }
 
-.po-about[style*="background-color: rgb(0, 0, 0)"] .po-about__content,
-.po-about[style*="background-color:#000000"] .po-about__content,
-.po-about[style*="background-color: #000000"] .po-about__content {
-	color: #ccc;
+.po-about--dark .po-about__content {
+	color: rgba(255, 255, 255, 0.7);
+}
+
+.po-about--dark .po-about__cta {
+	background: #fff;
+	color: #000;
 }
 
 /* Scroll Animation */

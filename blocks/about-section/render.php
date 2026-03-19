@@ -15,9 +15,13 @@ $bgColor = $attributes['backgroundColor'] ?? '#f5f5f7';
 // Fallback-Bild wenn kein Media gesetzt (Portrait für About-Section)
 $fallback_image = parkourone_get_fallback_image('juniors', 'portrait');
 
+$dark_bgs = ['#1d1d1f', '#000000', '#0066cc', '#ff3b30'];
 $class = 'po-about';
 if ($mediaRight) {
 	$class .= ' po-about--media-right';
+}
+if (in_array($bgColor, $dark_bgs)) {
+	$class .= ' po-about--dark';
 }
 
 // Parse video embed URL for YouTube/Vimeo
@@ -68,12 +72,10 @@ if (!function_exists('parkourone_get_embed_url')) {
 				</video>
 			<?php endif; ?>
 		<?php elseif ($mediaType === 'video' && !$videoUrl): ?>
-			<!-- Video ohne URL: Fallback-Bild anzeigen -->
 			<img src="<?php echo esc_url($fallback_image); ?>" alt="ParkourONE Training" loading="lazy" class="po-about__image">
 		<?php elseif ($mediaType === 'image' && $imageUrl): ?>
 			<img src="<?php echo esc_url($imageUrl); ?>" alt="<?php echo esc_attr($imageAlt); ?>" loading="lazy" class="po-about__image">
 		<?php elseif ($mediaType === 'image' && !$imageUrl): ?>
-			<!-- Bild ohne URL: Fallback-Bild anzeigen -->
 			<img src="<?php echo esc_url($fallback_image); ?>" alt="ParkourONE Training" loading="lazy" class="po-about__image">
 		<?php endif; ?>
 	</div>

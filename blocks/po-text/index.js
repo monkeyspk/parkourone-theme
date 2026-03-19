@@ -12,12 +12,17 @@
 	];
 
 	const colors = [
-		{ name: 'Weiss', color: '#ffffff' },
+		{ name: 'Transparent', color: '' },
+		{ name: 'Weiß', color: '#ffffff' },
 		{ name: 'Hellgrau', color: '#f5f5f7' },
-		{ name: 'Grau', color: '#86868b' },
-		{ name: 'Dunkel', color: '#1d1d1f' },
-		{ name: 'ParkourONE Lila', color: '#667eea' },
-		{ name: 'ParkourONE Violett', color: '#764ba2' }
+		{ name: 'Dunkelgrau', color: '#1d1d1f' },
+		{ name: 'Schwarz', color: '#000000' },
+		{ name: 'Blau', color: '#0066cc' },
+		{ name: 'Blau hell', color: '#e8f4fd' },
+		{ name: 'Rot', color: '#ff3b30' },
+		{ name: 'Grün', color: '#34c759' },
+		{ name: 'Lila', color: '#667eea' },
+		{ name: 'Lila hell', color: 'rgba(102, 126, 234, 0.1)' }
 	];
 
 	registerBlockType('parkourone/po-text', {

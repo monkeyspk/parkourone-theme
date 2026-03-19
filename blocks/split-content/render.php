@@ -9,9 +9,13 @@ $ctaText = $attributes['ctaText'] ?? 'Mehr erfahren';
 $ctaUrl = $attributes['ctaUrl'] ?? '#';
 $bgColor = $attributes['backgroundColor'] ?? '#ffffff';
 
+$dark_bgs = ['#1d1d1f', '#000000', '#0066cc', '#ff3b30'];
 $class = 'po-split';
 if ($imageRight) {
 	$class .= ' po-split--image-right';
+}
+if (in_array($bgColor, $dark_bgs)) {
+	$class .= ' po-split--dark';
 }
 ?>
 <section<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="<?php echo esc_attr($class); ?> alignfull" style="background-color: <?php echo esc_attr($bgColor); ?>">

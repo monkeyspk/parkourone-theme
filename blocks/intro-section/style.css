@@ -16,6 +16,46 @@
 	background: #fff;
 }
 
+.po-intro-section--bg-dark {
+	background: #1d1d1f;
+	color: #fff;
+}
+
+.po-intro-section--bg-black {
+	background: #000;
+	color: #fff;
+}
+
+.po-intro-section--bg-blue {
+	background: #0066cc;
+	color: #fff;
+}
+
+.po-intro-section--bg-dark .po-intro-section__headline,
+.po-intro-section--bg-black .po-intro-section__headline,
+.po-intro-section--bg-blue .po-intro-section__headline {
+	color: #fff;
+}
+
+.po-intro-section--bg-dark .po-intro-section__text,
+.po-intro-section--bg-black .po-intro-section__text,
+.po-intro-section--bg-blue .po-intro-section__text {
+	color: rgba(255, 255, 255, 0.7);
+}
+
+.po-intro-section--bg-dark .po-intro-section__benefit,
+.po-intro-section--bg-black .po-intro-section__benefit,
+.po-intro-section--bg-blue .po-intro-section__benefit {
+	color: #fff;
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.po-intro-section--bg-dark .po-intro-section__benefit:hover,
+.po-intro-section--bg-black .po-intro-section__benefit:hover,
+.po-intro-section--bg-blue .po-intro-section__benefit:hover {
+	background: rgba(255, 255, 255, 0.2);
+}
+
 /* Container */
 .po-intro-section__container {
 	max-width: 980px;
