@@ -7,6 +7,15 @@
  */
 
 /* ==========================================================================
+   Checkout: Nav + Divi-Reste ausblenden
+   ========================================================================== */
+
+/* Doppelte Navigation auf Kassenseite verstecken */
+.woocommerce-checkout nav.wp-block-navigation {
+	display: none !important;
+}
+
+/* ==========================================================================
    CSS Custom Properties
    ========================================================================== */
 

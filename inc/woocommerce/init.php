@@ -69,6 +69,29 @@ add_filter('woocommerce_get_checkout_page_permalink', 'parkourone_get_checkout_u
 add_filter('woocommerce_get_cart_page_permalink', 'parkourone_get_cart_url', 9999);
 
 // =====================================================
+// Divi-Reste aus Checkout/Cart Content filtern
+// =====================================================
+
+add_filter('the_content', function($content) {
+	if (!is_checkout() && !is_cart() && !is_account_page()) return $content;
+
+	// Divi Shortcodes entfernen
+	$content = preg_replace('/\[\/?(et_pb_[^\]]*)\]/', '', $content);
+	// Übrig gebliebene Divi-Attribute
+	$content = preg_replace('/\s*fb_built="[^"]*"/', '', $content);
+	$content = preg_replace('/\s*_builder_version="[^"]*"/', '', $content);
+	$content = preg_replace('/\s*global_colors_info="[^"]*"/', '', $content);
+	$content = preg_replace('/\s*admin_label="[^"]*"/', '', $content);
+	$content = preg_replace('/\s*background_[a-z_]+="[^"]*"/', '', $content);
+	$content = preg_replace('/\s*custom_padding[a-z_]*="[^"]*"/', '', $content);
+	$content = preg_replace('/\s*type="[0-9_]+"/', '', $content);
+	// Leere Absätze aufräumen
+	$content = preg_replace('/<p>\s*<\/p>/', '', $content);
+
+	return $content;
+});
+
+// =====================================================
 // Classic Checkout Customizations
 // =====================================================
 
