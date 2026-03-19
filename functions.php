@@ -3,6 +3,77 @@ defined('ABSPATH') || exit;
 
 /**
  * ============================================
+ * DIVI SHORTCODE CLEANUP (einmalig)
+ * Entfernt alte Divi Builder Shortcodes aus allen Seiten.
+ * Läuft einmal und deaktiviert sich dann selbst via Option.
+ * ============================================
+ */
+add_action('admin_init', function() {
+	if (get_option('parkourone_divi_cleanup_done')) return;
+	if (!current_user_can('manage_options')) return;
+
+	// Alle Seiten mit Divi-Shortcodes finden
+	global $wpdb;
+	$pages = $wpdb->get_results(
+		"SELECT ID, post_content FROM {$wpdb->posts}
+		 WHERE post_content LIKE '%[et_pb_%'
+		 AND post_status IN ('publish', 'draft', 'private')
+		 AND post_type IN ('page', 'post', 'product')"
+	);
+
+	if (empty($pages)) {
+		update_option('parkourone_divi_cleanup_done', true);
+		return;
+	}
+
+	$cleaned = 0;
+	foreach ($pages as $page) {
+		$content = $page->post_content;
+
+		// Alle Divi-Shortcodes entfernen (öffnende + schließende)
+		$clean = preg_replace('/\[\/?(et_pb_[^\]]*)\]/', '', $content);
+
+		// Divi-Metadaten-Attribute entfernen die manchmal als Text übrig bleiben
+		$clean = preg_replace('/\s*fb_built="[^"]*"/', '', $clean);
+		$clean = preg_replace('/\s*_builder_version="[^"]*"/', '', $clean);
+		$clean = preg_replace('/\s*global_colors_info="[^"]*"/', '', $clean);
+		$clean = preg_replace('/\s*admin_label="[^"]*"/', '', $clean);
+		$clean = preg_replace('/\s*background_[a-z_]+="[^"]*"/', '', $clean);
+		$clean = preg_replace('/\s*custom_padding[a-z_]*="[^"]*"/', '', $clean);
+		$clean = preg_replace('/\s*type="[0-9_]+"/', '', $clean);
+
+		// Mehrfache Leerzeilen reduzieren
+		$clean = preg_replace('/\n{3,}/', "\n\n", $clean);
+		$clean = trim($clean);
+
+		if ($clean !== $content) {
+			$wpdb->update($wpdb->posts, ['post_content' => $clean], ['ID' => $page->ID]);
+			$cleaned++;
+			error_log('ParkourONE Divi Cleanup: Seite "' . get_the_title($page->ID) . '" (ID ' . $page->ID . ') bereinigt');
+		}
+	}
+
+	update_option('parkourone_divi_cleanup_done', true);
+
+	if ($cleaned > 0) {
+		error_log('ParkourONE Divi Cleanup: ' . $cleaned . ' Seiten bereinigt');
+		set_transient('parkourone_divi_cleanup_notice', $cleaned, 120);
+	}
+});
+
+// Admin-Notice nach Cleanup
+add_action('admin_notices', function() {
+	$cleaned = get_transient('parkourone_divi_cleanup_notice');
+	if ($cleaned) {
+		delete_transient('parkourone_divi_cleanup_notice');
+		echo '<div class="notice notice-success is-dismissible"><p>';
+		echo '<strong>Divi Cleanup abgeschlossen!</strong> ' . intval($cleaned) . ' Seite(n) von alten Divi-Shortcodes bereinigt.';
+		echo '</p></div>';
+	}
+});
+
+/**
+ * ============================================
  * MAINTENANCE MODE (mit Admin-Toggle)
  * ============================================
  */
