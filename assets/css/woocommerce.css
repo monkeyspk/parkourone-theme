@@ -1670,10 +1670,26 @@ p[id*="how_did"],
 
 /* ---------- Validation errors ---------- */
 
-.woocommerce-checkout .woocommerce-invalid input.input-text {
-	border-color: var(--wc-danger);
+/* Rote Border für ungültige Felder */
+.woocommerce-checkout .woocommerce-invalid input.input-text,
+.woocommerce-checkout .woocommerce-invalid select,
+.woocommerce-checkout .woocommerce-invalid textarea,
+.woocommerce-checkout .woocommerce-invalid .select2-container .select2-selection {
+	border-color: var(--wc-danger) !important;
 }
 
+/* Rotes Label für ungültige Felder */
+.woocommerce-checkout .woocommerce-invalid label {
+	color: var(--wc-danger) !important;
+}
+
+/* Rote Markierung für Checkbox-Fehler */
+.woocommerce-checkout .woocommerce-invalid-required-field input[type="checkbox"] {
+	outline: 2px solid var(--wc-danger);
+	outline-offset: 2px;
+}
+
+/* Inline Error-Liste (sichtbar als Fallback wenn Modal nicht triggert) */
 .woocommerce-checkout .woocommerce-error {
 	background: #fef2f2;
 	border: 1px solid var(--wc-danger);
@@ -1690,11 +1706,11 @@ p[id*="how_did"],
 }
 
 /*
- * Hide inline checkout error notices — the error modal displays them instead.
- * Without this, notices render behind the sticky order_review sidebar.
+ * Inline-Notices werden vom Error-Modal übernommen.
+ * Aber: sichtbar lassen als Fallback — das JS entfernt sie wenn das Modal zeigt.
  */
 .woocommerce-checkout .woocommerce-NoticeGroup-checkout {
-	display: none !important;
+	/* Nicht mehr display:none — JS-Modal entfernt sie nach dem Klonen */
 }
 
 /* ---------- Validation error modal ---------- */
