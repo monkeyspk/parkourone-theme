@@ -49,6 +49,10 @@
 		"backgroundColor": {
 			"type": "string",
 			"default": "#ffffff"
+		},
+		"iconSize": {
+			"type": "number",
+			"default": 160
 		}
 	},
 	"supports": {

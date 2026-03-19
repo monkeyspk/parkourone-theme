@@ -1,14 +1,15 @@
 (function(wp) {
 	const { registerBlockType } = wp.blocks;
 	const { useBlockProps, InspectorControls, RichText, MediaUpload, MediaUploadCheck } = wp.blockEditor;
-	const { PanelBody, TextControl, TextareaControl, ToggleControl, Button, ColorPalette } = wp.components;
+	const { PanelBody, TextControl, TextareaControl, ToggleControl, Button, ColorPalette, RangeControl } = wp.components;
 	const { createElement: el } = wp.element;
 
 	registerBlockType('parkourone/feature-cards', {
 		edit: function(props) {
 			const { attributes, setAttributes } = props;
 			const cards = attributes.cards || [];
-			const blockProps = useBlockProps({ 
+			const iconSize = attributes.iconSize || 160;
+			const blockProps = useBlockProps({
 				className: 'po-feature-cards',
 				style: { backgroundColor: attributes.backgroundColor }
 			});
@@ -24,11 +25,11 @@
 				newCards[i] = { ...newCards[i], [key]: val };
 				setAttributes({ cards: newCards });
 			};
-			const addCard = function() { 
-				setAttributes({ cards: [...cards, {iconUrl:'', title:'Neu', desc:'Beschreibung'}] }); 
+			const addCard = function() {
+				setAttributes({ cards: [...cards, {iconUrl:'', title:'Neu', desc:'Beschreibung'}] });
 			};
-			const removeCard = function(i) { 
-				setAttributes({ cards: cards.filter(function(_, idx) { return idx !== i; }) }); 
+			const removeCard = function(i) {
+				setAttributes({ cards: cards.filter(function(_, idx) { return idx !== i; }) });
 			};
 
 			return el('div', null, [
@@ -39,6 +40,15 @@
 							label: 'Überschrift anzeigen',
 							checked: attributes.showHeadline,
 							onChange: function(val) { setAttributes({ showHeadline: val }); }
+						}),
+						el(RangeControl, {
+							key: 'iconsize',
+							label: 'Icon-/Bildgröße (px)',
+							value: iconSize,
+							onChange: function(val) { setAttributes({ iconSize: val }); },
+							min: 48,
+							max: 320,
+							step: 8
 						}),
 						el('p', { key: 'colorlabel', style: { marginBottom: '8px' } }, 'Hintergrundfarbe'),
 						el(ColorPalette, {
@@ -58,45 +68,45 @@
 										allowedTypes: ['image'],
 										render: function(obj) {
 											return el('div', { style: { marginTop: '8px' } }, [
-												c.iconUrl && el('img', { 
+												c.iconUrl && el('img', {
 													key: 'preview',
-													src: c.iconUrl, 
-													style: { width: '50px', height: '50px', objectFit: 'contain', marginBottom: '8px', display: 'block' } 
+													src: c.iconUrl,
+													style: { width: '50px', height: '50px', objectFit: 'contain', marginBottom: '8px', display: 'block' }
 												}),
 												el(Button, {
 													key: 'btn',
 													onClick: obj.open,
 													variant: 'secondary',
 													isSmall: true
-												}, c.iconUrl ? 'Icon ändern' : 'Icon wählen')
+												}, c.iconUrl ? 'Bild ändern' : 'Bild wählen')
 											]);
 										}
 									})
 								),
-								el(TextControl, { 
+								el(TextControl, {
 									key: 'title' + i,
-									label: 'Titel', 
-									value: c.title, 
-									onChange: function(v) { updateCard(i, 'title', v); } 
+									label: 'Titel',
+									value: c.title,
+									onChange: function(v) { updateCard(i, 'title', v); }
 								}),
-								el(TextareaControl, { 
+								el(TextareaControl, {
 									key: 'desc' + i,
-									label: 'Beschreibung', 
-									value: c.desc, 
-									onChange: function(v) { updateCard(i, 'desc', v); } 
+									label: 'Beschreibung',
+									value: c.desc,
+									onChange: function(v) { updateCard(i, 'desc', v); }
 								}),
-								el(Button, { 
+								el(Button, {
 									key: 'remove' + i,
-									isDestructive: true, 
-									variant: 'link', 
-									onClick: function() { removeCard(i); } 
+									isDestructive: true,
+									variant: 'link',
+									onClick: function() { removeCard(i); }
 								}, 'Entfernen')
 							]);
 						}),
-						el(Button, { 
+						el(Button, {
 							key: 'add',
-							variant: 'secondary', 
-							onClick: addCard 
+							variant: 'secondary',
+							onClick: addCard
 						}, '+ Karte hinzufügen')
 					])
 				),
@@ -112,9 +122,9 @@
 					el('div', { key: 'grid', className: 'po-feature-cards__grid' },
 						cards.map(function(c, i) {
 							return el('div', { key: i, className: 'po-feature-card' }, [
-								c.iconUrl 
-									? el('img', { key: 'icon', className: 'po-feature-card__icon', src: c.iconUrl, alt: '' })
-									: el('div', { key: 'placeholder', className: 'po-feature-card__icon-placeholder' }, 'Icon'),
+								c.iconUrl
+									? el('img', { key: 'icon', className: 'po-feature-card__icon', src: c.iconUrl, alt: '', style: { width: iconSize + 'px', height: iconSize + 'px' } })
+									: el('div', { key: 'placeholder', className: 'po-feature-card__icon-placeholder', style: { width: iconSize + 'px', height: iconSize + 'px' } }, 'Icon'),
 								el('h3', { key: 'title', className: 'po-feature-card__title' }, c.title),
 								el('p', { key: 'desc', className: 'po-feature-card__desc' }, c.desc)
 							]);

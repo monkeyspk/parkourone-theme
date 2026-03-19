@@ -23,16 +23,16 @@
 }
 
 .po-feature-card__icon {
-	width: 160px;
-	height: 160px;
+	width: var(--po-icon-size, 160px);
+	height: var(--po-icon-size, 160px);
 	object-fit: contain;
 	display: block;
 	margin: 0 auto 1.5rem;
 }
 
 .po-feature-card__icon-placeholder {
-	width: 160px;
-	height: 160px;
+	width: var(--po-icon-size, 160px);
+	height: var(--po-icon-size, 160px);
 	background: #e5e5e5;
 	border-radius: 8px;
 	display: flex;
