@@ -674,6 +674,30 @@ $coach = $token ? parkourone_verify_coach_token($token) : null;
 			</div>
 			
 			<div class="coach-profile-section">
+				<h2 class="coach-profile-section-title">Profilbild</h2>
+				<p class="hint" style="margin: -12px 0 16px; font-size: 13px; color: #86868b;">Dein Hauptbild im Team-Grid – ein Porträt oder Foto von dir.</p>
+
+				<div class="coach-image-upload" data-field="profile_image" data-ratio="1">
+					<label>Profilbild (Quadratisch 1:1)</label>
+					<div class="coach-image-preview <?php echo $profile_image ? 'has-image' : ''; ?>" style="border-radius: 50%; aspect-ratio: 1; max-width: 200px; margin: 0 auto;">
+						<?php if ($profile_image): ?>
+							<img src="<?php echo esc_url($profile_image); ?>" alt="" style="border-radius: 50%;">
+						<?php endif; ?>
+						<div class="placeholder">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+							<span>Profilbild hochladen</span>
+						</div>
+					</div>
+					<div class="coach-image-actions" style="<?php echo $profile_image ? '' : 'display:none;'; ?>">
+						<button type="button" class="btn-change">Ändern</button>
+						<button type="button" class="btn-delete">Löschen</button>
+					</div>
+					<p class="coach-image-hint">Min. 400 × 400 Pixel, max. 10 MB</p>
+					<input type="file" accept="image/jpeg,image/png,image/webp" style="display:none;">
+				</div>
+			</div>
+
+			<div class="coach-profile-section">
 				<h2 class="coach-profile-section-title">Hero-Bild</h2>
 				<p class="hint" style="margin: -12px 0 16px; font-size: 13px; color: #86868b;">Ein Action-Foto von dir beim Training – das erste was Besucher sehen.</p>
 				

@@ -2979,7 +2979,7 @@ function parkourone_coach_image_upload_ajax() {
 		wp_send_json_error(['message' => 'Token ungültig oder abgelaufen.']);
 	}
 	
-	$allowed_fields = ['hero_bild', 'philosophie_bild', 'moment_bild'];
+	$allowed_fields = ['hero_bild', 'philosophie_bild', 'moment_bild', 'profile_image'];
 	$field = sanitize_text_field($_POST['field']);
 	if (!in_array($field, $allowed_fields)) {
 		wp_send_json_error(['message' => 'Ungültiges Feld.']);
@@ -3051,7 +3051,7 @@ function parkourone_coach_image_delete_ajax() {
 		wp_send_json_error(['message' => 'Token ungültig oder abgelaufen.']);
 	}
 	
-	$allowed_fields = ['hero_bild', 'philosophie_bild', 'moment_bild'];
+	$allowed_fields = ['hero_bild', 'philosophie_bild', 'moment_bild', 'profile_image'];
 	$field = sanitize_text_field($_POST['field']);
 	if (!in_array($field, $allowed_fields)) {
 		wp_send_json_error(['message' => 'Ungültiges Feld.']);

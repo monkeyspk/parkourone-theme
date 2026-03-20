@@ -69,9 +69,9 @@ function parkourone_cache_coach_avatar($url, $coach_id) {
 
 	// Größen erzeugen
 	$sizes = [
-		'300x300' => 300,
-		'80x80' => 80,
-		'full' => 600
+		'300x300' => 500,
+		'80x80' => 160,
+		'full' => 1200
 	];
 
 	$cached_sizes = [];
@@ -141,7 +141,7 @@ function parkourone_resize_and_convert_avatar($source, $dir, $base_name, $label,
 	// Zuerst als JPG speichern
 	$jpg_name = $base_name . '-' . $label . '.jpg';
 	$jpg_path = $dir . '/' . $jpg_name;
-	$editor->set_quality(85);
+	$editor->set_quality(92);
 	$saved = $editor->save($jpg_path, 'image/jpeg');
 
 	if (is_wp_error($saved)) {
