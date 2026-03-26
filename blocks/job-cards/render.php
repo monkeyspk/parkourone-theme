@@ -71,6 +71,12 @@ $unique_id = $anchor ?: ('po-jobs-' . $po_jobs_instance);
 				<path d="M8 8l8 8M16 8l-8 8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
 			</svg>
 		</button>
+		<?php echo parkourone_share_button(
+			add_query_arg('job', $j['id'] ?? $index, get_permalink()),
+			$j['title'] . ' – ParkourONE Jobs',
+			'',
+			true
+		); ?>
 
 		<div class="po-job-modal">
 			<header class="po-job-modal__header">

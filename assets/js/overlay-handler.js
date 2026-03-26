@@ -86,6 +86,14 @@
 			openOverlay(document.querySelector('[id$="-modal-' + coachId + '"].po-overlay'));
 		}
 
+		// ?job={index} — open job detail modal
+		var jobId = params.get('job');
+		if (jobId) {
+			openOverlay(document.querySelector('[id$="-modal-' + jobId + '"].po-overlay .po-job-modal')
+				? document.querySelector('[id$="-modal-' + jobId + '"].po-overlay')
+				: null);
+		}
+
 		// ?training={event_id} — open training/probetraining modal
 		var trainingId = params.get('training');
 		if (trainingId) {
