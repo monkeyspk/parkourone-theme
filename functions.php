@@ -3136,7 +3136,10 @@ function parkourone_inquiry_submit() {
 	}
 
 	// Validation
-	if (empty($nachname) || empty($vorname) || empty($adresse) || empty($plz_ort) || empty($telefon) || empty($email)) {
+	if (empty($nachname) || empty($vorname) || empty($email)) {
+		wp_send_json_error(['message' => 'Bitte alle Pflichtfelder ausfüllen.']);
+	}
+	if ($form_type !== 'kontakt' && (empty($adresse) || empty($plz_ort) || empty($telefon))) {
 		wp_send_json_error(['message' => 'Bitte alle Pflichtfelder ausfüllen.']);
 	}
 

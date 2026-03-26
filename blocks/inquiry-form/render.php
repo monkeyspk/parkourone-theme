@@ -61,6 +61,7 @@ $nonce = wp_create_nonce('po_inquiry_nonce');
 			</div>
 			<?php endforeach; ?>
 
+			<?php $isKontakt = ($formType === 'kontakt'); ?>
 			<div class="po-inquiry__grid">
 				<!-- Feste Felder -->
 				<div class="po-inquiry__field">
@@ -72,16 +73,16 @@ $nonce = wp_create_nonce('po_inquiry_nonce');
 					<input type="text" name="vorname" id="po_vorname" required>
 				</div>
 				<div class="po-inquiry__field">
-					<label for="po_adresse">Adresse <span class="required">*</span></label>
-					<input type="text" name="adresse" id="po_adresse" required>
+					<label for="po_adresse">Adresse<?php if (!$isKontakt): ?> <span class="required">*</span><?php endif; ?></label>
+					<input type="text" name="adresse" id="po_adresse"<?php echo $isKontakt ? '' : ' required'; ?>>
 				</div>
 				<div class="po-inquiry__field">
-					<label for="po_plz_ort">PLZ / Ort <span class="required">*</span></label>
-					<input type="text" name="plz_ort" id="po_plz_ort" required>
+					<label for="po_plz_ort">PLZ / Ort<?php if (!$isKontakt): ?> <span class="required">*</span><?php endif; ?></label>
+					<input type="text" name="plz_ort" id="po_plz_ort"<?php echo $isKontakt ? '' : ' required'; ?>>
 				</div>
 				<div class="po-inquiry__field">
-					<label for="po_telefon">Telefon <span class="required">*</span></label>
-					<input type="tel" name="telefon" id="po_telefon" required>
+					<label for="po_telefon">Telefon<?php if (!$isKontakt): ?> <span class="required">*</span><?php endif; ?></label>
+					<input type="tel" name="telefon" id="po_telefon"<?php echo $isKontakt ? '' : ' required'; ?>>
 				</div>
 				<div class="po-inquiry__field">
 					<label for="po_email">E-Mail <span class="required">*</span></label>
@@ -133,7 +134,7 @@ $nonce = wp_create_nonce('po_inquiry_nonce');
 
 				<!-- Textarea über volle Breite -->
 				<div class="po-inquiry__field po-inquiry__field--full">
-					<label for="po_nachricht">Weitere Infos</label>
+					<label for="po_nachricht"><?php echo $isKontakt ? 'Deine Nachricht' : 'Weitere Infos'; ?></label>
 					<textarea name="nachricht" id="po_nachricht" rows="4"></textarea>
 				</div>
 
