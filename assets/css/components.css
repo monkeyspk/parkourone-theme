@@ -658,6 +658,11 @@ body.po-no-scroll {
 	color: var(--po-color-text);
 }
 
+/* Hide share button when booking steps are past overview (step > 0) */
+.po-overlay__panel:has(.po-steps:not([data-step="0"])) > .po-share-btn--sm {
+	display: none;
+}
+
 /* Share in angebote modal body */
 .po-angebote-modal__body .po-share-btn--sm {
 	position: absolute;

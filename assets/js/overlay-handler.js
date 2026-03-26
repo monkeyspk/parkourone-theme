@@ -70,53 +70,67 @@
 	// DEEP-LINK: Auto-open modals via URL params
 	// ========================================
 
+	function openOverlay(modal) {
+		if (!modal) return;
+		modal.classList.add('is-active');
+		modal.setAttribute('aria-hidden', 'false');
+		document.body.classList.add('po-no-scroll');
+	}
+
 	function handleDeepLinks() {
 		var params = new URLSearchParams(window.location.search);
 
 		// ?coach={post_id} — open coach/team modal
 		var coachId = params.get('coach');
 		if (coachId) {
-			var coachModal = document.querySelector('[id$="-modal-' + coachId + '"].po-overlay');
-			if (coachModal) {
-				coachModal.classList.add('is-active');
-				coachModal.setAttribute('aria-hidden', 'false');
-				document.body.classList.add('po-no-scroll');
-			}
+			openOverlay(document.querySelector('[id$="-modal-' + coachId + '"].po-overlay'));
 		}
 
 		// ?training={event_id} — open training/probetraining modal
 		var trainingId = params.get('training');
 		if (trainingId) {
+			// Try po-overlay modals (event-day-slider, stundenplan, team-grid booking)
 			var trainingModal = document.querySelector('[id$="-modal-' + trainingId + '"].po-overlay');
 			if (trainingModal) {
-				trainingModal.classList.add('is-active');
-				trainingModal.setAttribute('aria-hidden', 'false');
-				document.body.classList.add('po-no-scroll');
+				openOverlay(trainingModal);
+			} else {
+				// Fallback: try event-booking accordion (?klasse= style)
+				var bookingBtns = document.querySelectorAll('.po-eds__card[data-modal-target$="-modal-' + trainingId + '"]');
+				if (bookingBtns.length) bookingBtns[0].click();
 			}
 		}
 
 		// ?angebot={post_id} — open angebot modal (grid or karussell)
 		var angebotId = params.get('angebot');
 		if (angebotId) {
-			var cards = document.querySelectorAll('[data-modal]');
-			for (var i = 0; i < cards.length; i++) {
-				try {
-					var data = JSON.parse(cards[i].dataset.modal);
-					if (String(data.id) === String(angebotId)) {
-						cards[i].click();
-						break;
-					}
-				} catch(e) {}
-			}
+			tryOpenAngebot(angebotId, 0);
+		}
+	}
+
+	// Retry mechanism for angebot deep links (cards may initialize async)
+	function tryOpenAngebot(angebotId, attempt) {
+		var cards = document.querySelectorAll('[data-modal]');
+		for (var i = 0; i < cards.length; i++) {
+			try {
+				var data = JSON.parse(cards[i].dataset.modal);
+				if (String(data.id) === String(angebotId)) {
+					cards[i].click();
+					return;
+				}
+			} catch(e) {}
+		}
+		// Retry up to 5 times with increasing delay (cards may not have click handlers yet)
+		if (attempt < 5) {
+			setTimeout(function() { tryOpenAngebot(angebotId, attempt + 1); }, 300);
 		}
 	}
 
 	// Run after DOM is ready and blocks have initialized
 	if (document.readyState === 'loading') {
 		document.addEventListener('DOMContentLoaded', function() {
-			setTimeout(handleDeepLinks, 200);
+			setTimeout(handleDeepLinks, 500);
 		});
 	} else {
-		setTimeout(handleDeepLinks, 200);
+		setTimeout(handleDeepLinks, 500);
 	}
 })();
