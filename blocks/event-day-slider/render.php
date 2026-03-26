@@ -292,7 +292,7 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 	<?php // ======== Flache Event-Liste ======== ?>
 	<div class="po-eds__list" data-initial="<?php echo esc_attr($initial_items); ?>" data-total="<?php echo esc_attr($total_events); ?>">
 		<?php foreach ($all_events as $idx => $ev):
-			$filter_data = trim($ev['age_slug'] . ' ' . $ev['location_slug']);
+			$filter_data = $ev['filter_data'];
 			$time_text = $ev['start_time'];
 			if ($ev['end_time']) $time_text .= ' – ' . $ev['end_time'];
 			$modal_id = $unique_id . '-modal-' . $ev['event_id'];
