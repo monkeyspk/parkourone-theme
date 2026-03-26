@@ -405,6 +405,12 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 				<path d="M8 8l8 8M16 8l-8 8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
 			</svg>
 		</button>
+		<?php echo parkourone_share_button(
+			add_query_arg('training', $klasse['id'], get_permalink()),
+			$klasse['title'] . ' – ParkourONE',
+			'',
+			true
+		); ?>
 
 		<div class="po-steps" data-step="0" data-class-title="<?php echo esc_attr($klasse['title']); ?>">
 			<div class="po-steps__track">
@@ -413,10 +419,6 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 					<header class="po-steps__header">
 						<span class="po-steps__eyebrow"><?php echo (($klasse['offer'] ?? '') === 'ferienkurs') ? 'Ferienkurs' : esc_html($klasse['weekday']); ?></span>
 						<h2 class="po-steps__heading"><?php echo esc_html($klasse['title']); ?></h2>
-						<?php echo parkourone_share_button(
-							add_query_arg('training', $klasse['id'], get_permalink()),
-							$klasse['title'] . ' – ParkourONE'
-						); ?>
 					</header>
 
 					<dl class="po-steps__meta">

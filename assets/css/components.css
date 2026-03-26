@@ -645,34 +645,32 @@ body.po-no-scroll {
 	z-index: 2;
 }
 
-/* Share in overlay panels (white bg context) */
+/* Share button top-left in overlay panels (iOS pattern) */
 .po-overlay__panel .po-share-btn--sm {
+	position: absolute;
+	top: 16px;
+	left: 16px;
 	color: #86868b;
+	z-index: 1;
 }
 
 .po-overlay__panel .po-share-btn--sm:hover {
 	color: var(--po-color-text);
 }
 
-/* Share in coach modal header */
-.po-tg-coach__header .po-share-btn {
-	margin-top: 0.75rem;
-}
-
-/* Share in angebote modal */
-.po-angebote-modal__body .po-share-btn {
-	margin: 0.75rem 0;
+/* Share in angebote modal body */
+.po-angebote-modal__body .po-share-btn--sm {
+	position: absolute;
+	top: 16px;
+	left: 16px;
+	color: #86868b;
+	z-index: 1;
 }
 
 /* Share in event booking accordion header */
 .po-eb__klasse-header .po-share-btn--sm {
 	color: #86868b;
 	margin-left: auto;
-}
-
-/* Share in steps/booking modal header */
-.po-steps__header .po-share-btn {
-	margin-top: 0.75rem;
 }
 
 /* Reduced motion */

@@ -256,7 +256,13 @@ $trainings = parkourone_get_coach_trainings_with_dates($m['name']);
 				<path d="M8 8l8 8M16 8l-8 8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
 			</svg>
 		</button>
-		
+		<?php echo parkourone_share_button(
+			add_query_arg('coach', $m['id'], get_permalink()),
+			$m['name'] . ' – ParkourONE',
+			'',
+			true
+		); ?>
+
 		<div class="po-tg-coach">
 			<div class="po-tg-coach__header">
 				<?php
@@ -279,11 +285,6 @@ $trainings = parkourone_get_coach_trainings_with_dates($m['name']);
 						?>
 					</p>
 				<?php endif; ?>
-				<?php echo parkourone_share_button(
-					add_query_arg('coach', $m['id'], get_permalink()),
-					$m['name'] . ' – ParkourONE',
-					'Schau dir das Profil von ' . $m['name'] . ' bei ParkourONE an!'
-				); ?>
 			</div>
 
 			<?php if (!empty($m['hero_bild'])): ?>
@@ -418,6 +419,12 @@ $mood_texts = [
 				<path d="M8 8l8 8M16 8l-8 8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
 			</svg>
 		</button>
+		<?php echo parkourone_share_button(
+			add_query_arg('training', $training['id'], get_permalink()),
+			$training['title'] . ' – ParkourONE',
+			'',
+			true
+		); ?>
 
 		<div class="po-steps" data-step="0" data-class-title="<?php echo esc_attr($training['title']); ?>">
 			<div class="po-steps__track">
@@ -426,10 +433,6 @@ $mood_texts = [
 					<header class="po-steps__header">
 						<span class="po-steps__eyebrow"><?php echo esc_html($training['weekday']); ?></span>
 						<h2 class="po-steps__heading"><?php echo esc_html($training['title']); ?></h2>
-						<?php echo parkourone_share_button(
-							add_query_arg('training', $training['id'], get_permalink()),
-							$training['title'] . ' – ParkourONE'
-						); ?>
 					</header>
 
 					<dl class="po-steps__meta">

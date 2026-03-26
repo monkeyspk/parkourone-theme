@@ -370,6 +370,12 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 					<path d="M8 8l8 8M16 8l-8 8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
 				</svg>
 			</button>
+			<?php echo parkourone_share_button(
+				add_query_arg('training', $event_id, get_permalink()),
+				$ev['title'] . ' – ParkourONE',
+				'',
+				true
+			); ?>
 
 			<div class="po-steps" data-step="0" data-class-title="<?php echo esc_attr($ev['title']); ?>">
 				<div class="po-steps__track">
@@ -379,10 +385,6 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 						<header class="po-steps__header">
 							<span class="po-steps__eyebrow">Probetraining</span>
 							<h2 class="po-steps__heading"><?php echo esc_html($ev['title']); ?></h2>
-							<?php echo parkourone_share_button(
-								add_query_arg('training', $event_id, get_permalink()),
-								$ev['title'] . ' – ParkourONE'
-							); ?>
 						</header>
 
 						<dl class="po-steps__meta">
