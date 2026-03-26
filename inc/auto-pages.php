@@ -1547,6 +1547,14 @@ function parkourone_get_extra_template_pages() {
 			'pattern_file' => 'page-coach-werden.php',
 			'page_slug' => 'coach-werden',
 		],
+		[
+			'slug' => 'kontakt',
+			'title' => 'Kontakt',
+			'description' => 'Kontaktseite mit Kontaktformular und FAQ',
+			'blocks' => 'Page-Header, Inquiry-Form, FAQ',
+			'pattern_file' => 'page-kontakt.php',
+			'page_slug' => 'kontakt',
+		],
 	];
 
 	// Prüfen ob Seiten bereits existieren

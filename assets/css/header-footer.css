@@ -403,6 +403,24 @@ body:not(.wp-admin):not(.block-editor-page) {
     padding-top: 80px;
 }
 
+/* WordPress Admin Bar Offset */
+body.admin-bar .po-header {
+    top: 32px;
+}
+
+body.admin-bar:not(.wp-admin):not(.block-editor-page) {
+    padding-top: 112px; /* 80px header + 32px admin bar */
+}
+
+body.admin-bar .po-hero:first-child,
+body.admin-bar main > .po-hero:first-child,
+body.admin-bar .wp-site-blocks > .po-hero:first-child,
+body.admin-bar .wp-block-post-content > .po-hero:first-child,
+body.admin-bar .wp-block-post-content > style:first-child + .po-hero {
+    margin-top: -112px;
+    padding-top: 112px;
+}
+
 /* WordPress Block-Editor fügt automatisch margin-block-start hinzu - entfernen */
 body:not(.wp-admin) .wp-site-blocks > *:first-child {
     margin-block-start: 0 !important;
@@ -453,6 +471,14 @@ body:not(.wp-admin) .wp-block-post-content > style:first-child + .po-hero {
 @media (max-width: 768px) {
     body:not(.wp-admin):not(.block-editor-page) {
         padding-top: 72px;
+    }
+
+    body.admin-bar:not(.wp-admin):not(.block-editor-page) {
+        padding-top: 118px; /* 72px header + 46px admin bar mobile */
+    }
+
+    body.admin-bar .po-header {
+        top: 46px; /* Mobile admin bar is 46px */
     }
 
     /* Hero Block Mobile - angepasstes negatives Margin */

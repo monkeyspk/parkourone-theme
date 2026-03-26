@@ -3160,6 +3160,7 @@ function parkourone_inquiry_submit() {
 		'workshop'  => 'Impulsworkshop',
 		'schulen'   => 'Parkour für Schulen',
 		'teamevent' => 'Teamevent',
+		'kontakt'   => 'Kontaktanfrage',
 	];
 	$type_label = $type_labels[$form_type] ?? $form_type;
 

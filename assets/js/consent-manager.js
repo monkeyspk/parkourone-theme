@@ -51,6 +51,17 @@
 		constructor() {
 			this.config = window.poConsentConfig || {};
 			this.consent = window.poConsent || null;
+
+			// Fallback: If PHP didn't pass consent, try reading cookie directly from browser
+			if (!this.consent) {
+				this.consent = this.readConsentFromBrowserCookie();
+				if (this.consent) {
+					window.poConsent = this.consent;
+					// Consent exists in cookie but PHP missed it — hide banner
+					if (this.config) this.config.showBanner = false;
+				}
+			}
+
 			this.banner = null;
 			this.mainView = null;
 			this.settingsView = null;
@@ -81,6 +92,12 @@
 			if (!this.banner) {
 				console.warn('PO Consent: Banner element not found');
 				return;
+			}
+
+			// Hide banner immediately if consent exists (covers PHP miss)
+			if (this.consent && this.banner) {
+				this.banner.style.display = 'none';
+				this.banner.setAttribute('aria-hidden', 'true');
 			}
 
 			this.bindEvents();
@@ -546,6 +563,31 @@
 			// Activate consented scripts and hide banner
 			this.activateConsentedScripts();
 			this.hideBanner();
+		}
+
+		/**
+		 * Read consent directly from browser cookie (fallback if PHP missed it)
+		 */
+		readConsentFromBrowserCookie() {
+			try {
+				const match = document.cookie.match(new RegExp('(?:^|;\\s*)' + COOKIE_NAME + '=([^;]+)'));
+				if (!match) return null;
+
+				const decoded = JSON.parse(atob(decodeURIComponent(match[1])));
+				if (!decoded || !decoded.c) return null;
+
+				return {
+					version: decoded.v || '1.0',
+					categories: {
+						necessary: true,
+						functional: decoded.c.f === 1,
+						analytics: decoded.c.a === 1,
+						marketing: decoded.c.m === 1
+					}
+				};
+			} catch (e) {
+				return null;
+			}
 		}
 
 		/**
