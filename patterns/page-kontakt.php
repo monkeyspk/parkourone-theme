@@ -11,6 +11,6 @@
  */
 ?>
 
-<!-- wp:parkourone/page-header {"variant":"centered","title":"Kontakt","titleAccent":"none","description":"Wir freuen uns auf deine Nachricht.","ctaText":"","ctaUrl":"","align":"full"} /-->
+<!-- wp:parkourone/page-header {"variant":"banner","title":"Kontakt","titleAccent":"none","description":"","ctaText":"","ctaUrl":"","overlayOpacity":40,"align":"full"} /-->
 
 <!-- wp:parkourone/inquiry-form {"headline":"","subtext":"","formType":"kontakt","showLocation":false,"showParticipants":false,"showDates":false,"showProjectLength":false,"showClassCount":false,"submitText":"Nachricht senden","backgroundColor":"white","align":"full"} /-->
