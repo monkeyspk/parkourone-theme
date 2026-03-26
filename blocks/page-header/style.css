@@ -509,6 +509,25 @@
 	min-height: clamp(220px, 30vw, 380px);
 }
 
+/* Banner centered: title-only, centered vertically and horizontally */
+.po-ph--banner-centered {
+	align-items: center;
+	justify-content: center;
+}
+
+.po-ph--banner-centered .po-ph__container--banner {
+	text-align: center;
+}
+
+.po-ph--banner-centered .po-ph__content--banner {
+	max-width: none;
+	margin: 0 auto;
+}
+
+.po-ph--banner-centered .po-ph__banner-overlay {
+	background: rgba(0, 0, 0, var(--overlay-opacity, 0.4));
+}
+
 /* Background Image */
 .po-ph__banner-bg {
 	position: absolute;

@@ -151,8 +151,9 @@ $arrow_svg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke
 </section>
 
 <?php elseif ($variant === 'banner'): ?>
+<?php $banner_title_only = empty($description) && empty($cta_text) && empty($cta_secondary_text); ?>
 <!-- ========== VARIANTE D: BANNER ========== -->
-<section<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="po-ph po-ph--banner alignfull" style="--accent-color: <?php echo esc_attr($accent_color); ?>; --overlay-opacity: <?php echo esc_attr($overlay_opacity / 100); ?>">
+<section<?php if (!empty($attributes['anchor'])) echo ' id="' . esc_attr($attributes['anchor']) . '"'; ?> class="po-ph po-ph--banner<?php echo $banner_title_only ? ' po-ph--banner-centered' : ''; ?> alignfull" style="--accent-color: <?php echo esc_attr($accent_color); ?>; --overlay-opacity: <?php echo esc_attr($overlay_opacity / 100); ?>">
 	<div class="po-ph__banner-bg">
 		<img
 			src="<?php echo esc_url($image); ?>"
