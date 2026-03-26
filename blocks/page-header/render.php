@@ -9,8 +9,11 @@ $title = $attributes['title'] ?? 'Parkour Training';
 $title_accent = $attributes['titleAccent'] ?? '';
 
 // Dynamic titleAccent: Wenn leer oder gleich dem rohen Standort-Namen → location_text verwenden
+// Wenn titleAccent explizit auf "none" gesetzt ist, wird kein Accent angezeigt
 $site_location = function_exists('parkourone_get_site_location') ? parkourone_get_site_location() : null;
-if ($site_location) {
+if ($title_accent === 'none') {
+	$title_accent = '';
+} elseif ($site_location) {
 	if (empty($title_accent) || $title_accent === $site_location['name']) {
 		$title_accent = $site_location['location_text'];
 	}
