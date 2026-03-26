@@ -222,6 +222,12 @@
 						'</div>' +
 						badgeHtml +
 						'<span class="po-eb__klasse-count">' + totalCount + (totalCount === 1 ? ' Termin' : ' Termine') + '</span>' +
+						(typeof poShare !== 'undefined' ? poShare.buttonHtml(
+							window.location.origin + window.location.pathname + '?klasse=' + encodeURIComponent(klasse.permalink || klasse.title),
+							klasse.title + ' \u2013 ParkourONE',
+							'Schau dir dieses Training an: ' + klasse.title,
+							true
+						) : '') +
 						'<svg class="po-eb__klasse-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
 					'</div>' +
 					'<div class="po-eb__klasse-body">' +

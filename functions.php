@@ -292,6 +292,7 @@ require_once get_template_directory() . '/inc/woocommerce/init.php';
 require_once get_template_directory() . '/inc/health-data-consent.php';
 require_once get_template_directory() . '/inc/promo-popup.php';
 require_once get_template_directory() . '/inc/link-checker.php';
+require_once get_template_directory() . '/inc/share.php';
 require_once get_template_directory() . '/inc/redirects.php';
 require_once get_template_directory() . '/inc/probetraining-links.php';
 require_once get_template_directory() . '/inc/webp-converter.php';
@@ -1302,6 +1303,15 @@ function parkourone_enqueue_theme_styles() {
         get_template_directory_uri() . '/assets/js/overlay-handler.js',
         [],
         filemtime(get_template_directory() . '/assets/js/overlay-handler.js'),
+        true
+    );
+
+    // Share Button Module (Web Share API + clipboard fallback)
+    wp_enqueue_script(
+        'parkourone-share',
+        get_template_directory_uri() . '/assets/js/po-share.js',
+        [],
+        filemtime(get_template_directory() . '/assets/js/po-share.js'),
         true
     );
 }

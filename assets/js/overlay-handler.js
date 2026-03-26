@@ -65,4 +65,47 @@
 			document.body.classList.remove('po-no-scroll');
 		}
 	}
+
+	// ========================================
+	// DEEP-LINK: Auto-open modals via URL params
+	// ========================================
+
+	function handleDeepLinks() {
+		var params = new URLSearchParams(window.location.search);
+
+		// ?coach={post_id} — open coach/team modal
+		var coachId = params.get('coach');
+		if (coachId) {
+			var coachModal = document.querySelector('[id$="-modal-' + coachId + '"].po-overlay');
+			if (coachModal) {
+				coachModal.classList.add('is-active');
+				coachModal.setAttribute('aria-hidden', 'false');
+				document.body.classList.add('po-no-scroll');
+			}
+		}
+
+		// ?angebot={post_id} — open angebot modal (grid or karussell)
+		var angebotId = params.get('angebot');
+		if (angebotId) {
+			var cards = document.querySelectorAll('[data-modal]');
+			for (var i = 0; i < cards.length; i++) {
+				try {
+					var data = JSON.parse(cards[i].dataset.modal);
+					if (String(data.id) === String(angebotId)) {
+						cards[i].click();
+						break;
+					}
+				} catch(e) {}
+			}
+		}
+	}
+
+	// Run after DOM is ready and blocks have initialized
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', function() {
+			setTimeout(handleDeepLinks, 200);
+		});
+	} else {
+		setTimeout(handleDeepLinks, 200);
+	}
 })();

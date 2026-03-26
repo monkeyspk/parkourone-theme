@@ -85,6 +85,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		html += '<h2 class="po-angebote-modal__title">' + escapeHtml(data.titel) + '</h2>';
 
+		// Share Button
+		if (typeof poShare !== 'undefined') {
+			html += poShare.buttonHtml(
+				window.location.origin + window.location.pathname + '?angebot=' + data.id,
+				data.titel + ' \u2013 ParkourONE',
+				'Schau dir dieses Angebot an: ' + data.titel
+			);
+		}
+
 		if (data.beschreibung) {
 			html += '<div class="po-angebote-modal__description">' + data.beschreibung + '</div>';
 		}

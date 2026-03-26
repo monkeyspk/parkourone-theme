@@ -209,6 +209,14 @@ if (!function_exists('parkourone_get_coach_trainings_with_dates')) {
 				</div>
 			<?php if ($m['has_profile']): ?>
 			</button>
+			<div class="po-tg__card-share">
+			<?php echo parkourone_share_button(
+				add_query_arg('coach', $m['id'], get_permalink()),
+				$m['name'] . ' – ParkourONE',
+				'Schau dir das Profil von ' . $m['name'] . ' bei ParkourONE an!',
+				true
+			); ?>
+			</div>
 			<?php else: ?>
 			</div>
 			<?php endif; ?>
@@ -271,8 +279,13 @@ $trainings = parkourone_get_coach_trainings_with_dates($m['name']);
 						?>
 					</p>
 				<?php endif; ?>
+				<?php echo parkourone_share_button(
+					add_query_arg('coach', $m['id'], get_permalink()),
+					$m['name'] . ' – ParkourONE',
+					'Schau dir das Profil von ' . $m['name'] . ' bei ParkourONE an!'
+				); ?>
 			</div>
-			
+
 			<?php if (!empty($m['hero_bild'])): ?>
 			<div class="po-tg-coach__hero-image">
 				<img src="<?php echo esc_url($m['hero_bild']); ?>" alt="<?php echo esc_attr($m['name']); ?>" width="800" height="450" loading="lazy">
