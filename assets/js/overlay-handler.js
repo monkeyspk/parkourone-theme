@@ -84,6 +84,17 @@
 			}
 		}
 
+		// ?training={event_id} — open training/probetraining modal
+		var trainingId = params.get('training');
+		if (trainingId) {
+			var trainingModal = document.querySelector('[id$="-modal-' + trainingId + '"].po-overlay');
+			if (trainingModal) {
+				trainingModal.classList.add('is-active');
+				trainingModal.setAttribute('aria-hidden', 'false');
+				document.body.classList.add('po-no-scroll');
+			}
+		}
+
 		// ?angebot={post_id} — open angebot modal (grid or karussell)
 		var angebotId = params.get('angebot');
 		if (angebotId) {

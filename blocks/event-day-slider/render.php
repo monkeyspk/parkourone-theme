@@ -379,6 +379,10 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 						<header class="po-steps__header">
 							<span class="po-steps__eyebrow">Probetraining</span>
 							<h2 class="po-steps__heading"><?php echo esc_html($ev['title']); ?></h2>
+							<?php echo parkourone_share_button(
+								add_query_arg('training', $event_id, get_permalink()),
+								$ev['title'] . ' – ParkourONE'
+							); ?>
 						</header>
 
 						<dl class="po-steps__meta">

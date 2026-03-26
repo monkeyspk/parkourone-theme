@@ -670,6 +670,11 @@ body.po-no-scroll {
 	margin-left: auto;
 }
 
+/* Share in steps/booking modal header */
+.po-steps__header .po-share-btn {
+	margin-top: 0.75rem;
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
 	.po-reveal,
