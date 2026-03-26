@@ -20,7 +20,7 @@
 		var text = btn.dataset.shareText || '';
 
 		if (navigator.share) {
-			navigator.share({ title: title, text: text, url: url }).catch(function() {});
+			navigator.share({ title: title, url: url }).catch(function() {});
 		} else {
 			copyToClipboard(url, btn);
 		}
