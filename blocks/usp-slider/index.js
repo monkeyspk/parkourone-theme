@@ -31,13 +31,14 @@
 			}
 
 			function removeSlide(index) {
-				if (attributes.slides.length <= 1) return;
+				if (!attributes.slides || attributes.slides.length <= 1) return;
 				var newSlides = attributes.slides.filter(function(_, i) { return i !== index; });
 				setAttributes({ slides: newSlides });
 				if (activeSlide >= newSlides.length) setActiveSlide(newSlides.length - 1);
 			}
 
-			const slide = attributes.slides[activeSlide];
+			const slides = attributes.slides || [];
+			const slide = slides[activeSlide] || {};
 
 			return el('div', null, [
 				el(InspectorControls, { key: 'controls' }, [

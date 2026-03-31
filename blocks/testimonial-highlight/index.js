@@ -29,7 +29,7 @@
 			}
 
 			function removeQuote(index) {
-				if (attributes.quotes.length <= 1) return;
+				if (!attributes.quotes || attributes.quotes.length <= 1) return;
 				const newQuotes = attributes.quotes.filter(function(_, i) { return i !== index; });
 				setAttributes({ quotes: newQuotes });
 				if (activeQuote >= newQuotes.length) {
@@ -37,7 +37,8 @@
 				}
 			}
 
-			var quote = attributes.quotes[activeQuote];
+			var quotes = attributes.quotes || [];
+			var quote = quotes[activeQuote] || {};
 
 			return el('div', null, [
 				el(InspectorControls, { key: 'controls' }, [
