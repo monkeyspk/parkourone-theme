@@ -329,6 +329,9 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 				<span class="po-eds__card-date"><?php echo esc_html($date_label); ?></span>
 				<span class="po-eds__card-time"><?php echo esc_html($time_text); ?> Uhr</span>
 				<span class="po-eds__card-title" style="color: <?php echo esc_attr($ev['color']); ?>"><?php echo esc_html($ev['title']); ?></span>
+				<?php if (!empty($ev['min_participants']) && intval($ev['min_participants']) > 0): ?>
+				<span class="po-eds__card-badge-min">min. <?php echo intval($ev['min_participants']); ?> Teilnehmende</span>
+				<?php endif; ?>
 				<div class="po-eds__card-meta">
 					<?php if ($ev['headcoach']): ?>
 					<span class="po-eds__card-coach"><?php echo esc_html($ev['headcoach']); ?></span>
@@ -410,12 +413,6 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 						<?php if (!empty($ev['dropdown_info'])): ?>
 						<div class="po-steps__info-notice">
 							<?php echo wp_kses_post($ev['dropdown_info']); ?>
-						</div>
-						<?php endif; ?>
-
-						<?php if (!empty($ev['min_participants']) && intval($ev['min_participants']) > 0): ?>
-						<div class="po-steps__min-participants">
-							min. <?php echo intval($ev['min_participants']); ?> Teilnehmende
 						</div>
 						<?php endif; ?>
 

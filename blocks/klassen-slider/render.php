@@ -342,6 +342,9 @@ $hasFilters = $showAgeFilter || $showLocationFilter;
 					<?php if ($klasse['offer'] === 'ferienkurs'): ?>
 						<span class="po-card__badge po-card__badge--ferienkurs">Ferienkurs</span>
 					<?php endif; ?>
+					<?php if (!empty($klasse['min_participants']) && intval($klasse['min_participants']) > 0): ?>
+						<span class="po-card__badge po-card__badge--min-participants">min. <?php echo intval($klasse['min_participants']); ?> Teilnehmende</span>
+					<?php endif; ?>
 					<span class="po-card__eyebrow"><?php echo esc_html($klasse['weekday']); ?></span>
 					<h3 class="po-card__title"><?php echo esc_html($klasse['title']); ?></h3>
 				</div>
@@ -456,12 +459,6 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 					<?php if (!empty($klasse['dropdown_info'])): ?>
 					<div class="po-steps__info-notice">
 						<?php echo wp_kses_post($klasse['dropdown_info']); ?>
-					</div>
-					<?php endif; ?>
-
-					<?php if (!empty($klasse['min_participants']) && intval($klasse['min_participants']) > 0): ?>
-					<div class="po-steps__min-participants">
-						min. <?php echo intval($klasse['min_participants']); ?> Teilnehmende
 					</div>
 					<?php endif; ?>
 

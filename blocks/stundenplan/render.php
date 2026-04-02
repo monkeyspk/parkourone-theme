@@ -389,6 +389,9 @@ $used_age_slugs = array_unique($used_age_slugs);
 										<div class="po-sp__event-content">
 											<span class="po-sp__event-time"><?php echo esc_html($klasse['start_time']); ?></span>
 											<span class="po-sp__event-title" style="color: <?php echo esc_attr($klasse['color']); ?>"><?php echo esc_html($klasse['title']); ?></span>
+											<?php if (!empty($klasse['min_participants']) && intval($klasse['min_participants']) > 0): ?>
+											<span class="po-sp__event-badge-min">min. <?php echo intval($klasse['min_participants']); ?></span>
+											<?php endif; ?>
 											<?php if (!empty($klasse['headcoach'])): ?>
 											<span class="po-sp__event-coach"><?php echo esc_html($klasse['headcoach']); ?></span>
 											<?php endif; ?>
@@ -426,6 +429,9 @@ $used_age_slugs = array_unique($used_age_slugs);
 							<div class="po-sp__card-content">
 								<span class="po-sp__card-time"><?php echo esc_html($klasse['start_time']); ?><?php if ($klasse['end_time']): ?> – <?php echo esc_html($klasse['end_time']); ?><?php endif; ?></span>
 								<span class="po-sp__card-title" style="color: <?php echo esc_attr($klasse['color']); ?>"><?php echo esc_html($klasse['title']); ?></span>
+								<?php if (!empty($klasse['min_participants']) && intval($klasse['min_participants']) > 0): ?>
+								<span class="po-sp__event-badge-min">min. <?php echo intval($klasse['min_participants']); ?></span>
+								<?php endif; ?>
 								<?php if ($klasse['headcoach']): ?>
 								<span class="po-sp__card-coach"><?php echo esc_html($klasse['headcoach']); ?></span>
 								<?php endif; ?>
@@ -576,12 +582,6 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 					<?php if (!empty($klasse['dropdown_info'])): ?>
 					<div class="po-steps__info-notice">
 						<?php echo wp_kses_post($klasse['dropdown_info']); ?>
-					</div>
-					<?php endif; ?>
-
-					<?php if (!empty($klasse['min_participants']) && intval($klasse['min_participants']) > 0): ?>
-					<div class="po-steps__min-participants">
-						min. <?php echo intval($klasse['min_participants']); ?> Teilnehmende
 					</div>
 					<?php endif; ?>
 

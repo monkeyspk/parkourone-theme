@@ -144,6 +144,10 @@ body.po-no-scroll {
 	background: #ff9500;
 	color: #fff;
 }
+.po-card__badge--min-participants {
+	background: #ffc107;
+	color: #614a00;
+}
 .po-card__eyebrow {
 	display: block;
 	font-size: 12px;

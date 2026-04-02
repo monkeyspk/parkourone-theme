@@ -173,6 +173,17 @@
 	overflow: hidden;
 }
 
+.po-sp__event-badge-min {
+	display: inline-block;
+	background: #ffc107;
+	color: #614a00;
+	font-size: 8px;
+	font-weight: 600;
+	padding: 1px 5px;
+	border-radius: 3px;
+	margin-top: 2px;
+}
+
 .po-sp__event-coach {
 	font-size: 9px;
 	color: rgba(255, 255, 255, 0.5);
