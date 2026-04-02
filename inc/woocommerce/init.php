@@ -17,6 +17,19 @@ if (!class_exists('WooCommerce')) {
 }
 
 // =====================================================
+// Kundenkonto-Erstellung im Checkout deaktivieren
+// Verhindert das "Konto erstellen"-Häkchen und die
+// automatische Kundenkonto-Mail die nirgendwo hinführt
+// =====================================================
+add_filter('woocommerce_checkout_fields', function($fields) {
+	unset($fields['account']);
+	return $fields;
+});
+add_filter('pre_option_woocommerce_enable_checkout_login_reminder', function() { return 'no'; });
+add_filter('pre_option_woocommerce_enable_signup_and_login_from_checkout', function() { return 'no'; });
+add_filter('pre_option_woocommerce_enable_myaccount_registration', function() { return 'no'; });
+
+// =====================================================
 // WooCommerce Seiten Auto-Verknüpfung
 // Stellt sicher dass Kasse, Warenkorb und Mein Konto
 // korrekt mit WooCommerce verknüpft sind.
