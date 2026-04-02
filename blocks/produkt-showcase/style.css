@@ -408,8 +408,10 @@
     }
 
     .po-produkt-showcase__cta {
+        min-width: 0;
         width: 100%;
         padding: 16px 24px;
+        box-sizing: border-box;
     }
 
     .po-produkt-showcase__price {
