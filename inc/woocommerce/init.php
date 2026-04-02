@@ -339,6 +339,79 @@ add_action('woocommerce_admin_order_data_after_billing_address', function($order
 });
 
 // =====================================================
+// E-Mail-Adresse direkt ändern (Workaround für WooCommerce-Bug)
+// =====================================================
+add_action('woocommerce_admin_order_data_after_billing_address', function($order) {
+	$order_id = $order->get_id();
+	$current_email = $order->get_billing_email();
+	$nonce = wp_create_nonce('po_change_email_' . $order_id);
+	?>
+	<div class="po-email-change" style="margin-top:12px; padding:10px; background:#f8f9fa; border:1px solid #ddd; border-radius:4px;">
+		<label style="font-weight:bold; font-size:12px; display:block; margin-bottom:4px;">E-Mail ändern:</label>
+		<div style="display:flex; gap:6px; align-items:center;">
+			<input type="email" id="po-new-email-<?php echo $order_id; ?>" value="<?php echo esc_attr($current_email); ?>" style="flex:1; padding:4px 8px; font-size:13px;" />
+			<button type="button" class="button button-small" onclick="poChangeEmail(<?php echo $order_id; ?>, '<?php echo $nonce; ?>')">Speichern</button>
+		</div>
+		<span id="po-email-status-<?php echo $order_id; ?>" style="font-size:11px; margin-top:4px; display:none;"></span>
+	</div>
+	<script>
+	function poChangeEmail(orderId, nonce) {
+		var input = document.getElementById('po-new-email-' + orderId);
+		var status = document.getElementById('po-email-status-' + orderId);
+		var email = input.value.trim();
+		if (!email || email.indexOf('@') === -1) { status.style.display='block'; status.style.color='#dc3232'; status.textContent='Ungültige E-Mail'; return; }
+		status.style.display='block'; status.style.color='#666'; status.textContent='Wird gespeichert...';
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', ajaxurl);
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.onload = function() {
+			try { var r = JSON.parse(xhr.responseText); } catch(e) { var r = null; }
+			if (r && r.success) { status.style.color='#46b450'; status.textContent='✓ Gespeichert'; }
+			else { status.style.color='#dc3232'; status.textContent=(r && r.data && r.data.message) ? r.data.message : 'Fehler'; }
+		};
+		xhr.send('action=po_change_billing_email&order_id=' + orderId + '&email=' + encodeURIComponent(email) + '&nonce=' + nonce);
+	}
+	</script>
+	<?php
+}, 20);
+
+add_action('wp_ajax_po_change_billing_email', function() {
+	$order_id = isset($_POST['order_id']) ? intval($_POST['order_id']) : 0;
+	$email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+	$nonce = isset($_POST['nonce']) ? $_POST['nonce'] : '';
+
+	if (!wp_verify_nonce($nonce, 'po_change_email_' . $order_id)) {
+		wp_send_json_error(['message' => 'Sicherheitscheck fehlgeschlagen']);
+		return;
+	}
+	if (!current_user_can('edit_shop_orders')) {
+		wp_send_json_error(['message' => 'Keine Berechtigung']);
+		return;
+	}
+	if (empty($email) || !is_email($email)) {
+		wp_send_json_error(['message' => 'Ungültige E-Mail-Adresse']);
+		return;
+	}
+
+	$order = wc_get_order($order_id);
+	if (!$order) {
+		wp_send_json_error(['message' => 'Bestellung nicht gefunden']);
+		return;
+	}
+
+	$old_email = $order->get_billing_email();
+	$order->set_billing_email($email);
+	$order->save();
+
+	// Auch direkt in post_meta schreiben als Fallback
+	update_post_meta($order_id, '_billing_email', $email);
+
+	$order->add_order_note(sprintf('E-Mail-Adresse geändert: %s → %s', $old_email, $email));
+
+	wp_send_json_success(['message' => 'E-Mail gespeichert']);
+});
+
+// =====================================================
 // Newsletter Opt-in Checkbox (MailerLite)
 // =====================================================
 
