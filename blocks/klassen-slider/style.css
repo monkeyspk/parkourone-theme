@@ -472,6 +472,20 @@ body.po-no-scroll {
 	text-align: left;
 }
 
+.po-steps__min-participants {
+	display: inline-block;
+	background: #fff3cd;
+	color: #856404;
+	border: 1px solid #ffc107;
+	padding: 6px 14px;
+	margin: 0 0 24px;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.4;
+	border-radius: 20px;
+	text-align: center;
+}
+
 .po-steps__cta {
 	display: block;
 	width: 100%;

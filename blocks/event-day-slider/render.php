@@ -119,6 +119,7 @@ if ($query->have_posts()) {
 				'age_slug'        => $age_slug,
 				'color'           => $color,
 			'dropdown_info'   => get_post_meta($event_id, '_event_dropdown_info', true),
+			'min_participants' => get_post_meta($event_id, '_event_min_participants', true),
 			];
 		}
 
@@ -409,6 +410,12 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 						<?php if (!empty($ev['dropdown_info'])): ?>
 						<div class="po-steps__info-notice">
 							<?php echo wp_kses_post($ev['dropdown_info']); ?>
+						</div>
+						<?php endif; ?>
+
+						<?php if (!empty($ev['min_participants']) && intval($ev['min_participants']) > 0): ?>
+						<div class="po-steps__min-participants">
+							min. <?php echo intval($ev['min_participants']); ?> Teilnehmende
 						</div>
 						<?php endif; ?>
 
