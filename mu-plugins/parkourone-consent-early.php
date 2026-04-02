@@ -488,7 +488,7 @@ class PO_Consent_Early {
 	 */
 	private function get_blocked_category_for_url($url) {
 		foreach ($this->blocked_url_patterns as $pattern => $category) {
-			if (preg_match('/' . $pattern . '/i', $url)) {
+			if (preg_match('#' . $pattern . '#i', $url)) {
 				return $category;
 			}
 		}
@@ -502,7 +502,7 @@ class PO_Consent_Early {
 	 */
 	private function get_blocked_category_for_inline($content) {
 		foreach ($this->blocked_inline_patterns as $pattern => $category) {
-			if (preg_match('/' . $pattern . '/i', $content)) {
+			if (preg_match('#' . $pattern . '#i', $content)) {
 				return $category;
 			}
 		}
