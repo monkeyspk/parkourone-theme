@@ -1949,6 +1949,22 @@ function parkourone_rest_add_to_cart($request) {
     $added = WC()->cart->add_to_cart($product_id, 1);
 
     if ($added) {
+        // Teilnehmerdaten in Session speichern für Checkout-Prefill (nur 18+)
+        $is_adult = false;
+        if ($geburtsdatum) {
+            try {
+                $birth = new DateTime($geburtsdatum);
+                $age = (new DateTime())->diff($birth)->y;
+                $is_adult = ($age >= 18);
+            } catch (Exception $e) {}
+        }
+        if ($is_adult) {
+            WC()->session->set('po_prefill_billing', [
+                'first_name' => $vorname,
+                'last_name'  => $name,
+            ]);
+        }
+
         return new WP_REST_Response([
             'success' => true,
             'data'    => [

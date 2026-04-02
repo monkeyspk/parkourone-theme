@@ -27,6 +27,21 @@ add_filter('woocommerce_checkout_fields', function($fields) {
 });
 add_filter('pre_option_woocommerce_enable_checkout_login_reminder', function() { return 'no'; });
 add_filter('pre_option_woocommerce_enable_signup_and_login_from_checkout', function() { return 'no'; });
+
+// =====================================================
+// Checkout Prefill: Teilnehmerdaten aus Buchungsmodal
+// übernehmen wenn Teilnehmer 18+ ist
+// =====================================================
+add_filter('woocommerce_checkout_get_value', function($value, $input) {
+	if (!WC()->session) return $value;
+	$prefill = WC()->session->get('po_prefill_billing');
+	if (empty($prefill)) return $value;
+
+	if ($input === 'billing_first_name' && empty($value)) return $prefill['first_name'];
+	if ($input === 'billing_last_name' && empty($value))  return $prefill['last_name'];
+
+	return $value;
+}, 10, 2);
 add_filter('pre_option_woocommerce_enable_myaccount_registration', function() { return 'no'; });
 
 // =====================================================
