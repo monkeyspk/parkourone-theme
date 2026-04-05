@@ -383,6 +383,39 @@
 	color: #1d1d1f;
 }
 
+.po-tg-coach__links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-bottom: 28px;
+}
+
+.po-tg-coach__link {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 14px;
+	font-weight: 500;
+	color: #1d1d1f;
+	text-decoration: none;
+	padding: 8px 14px;
+	background: rgba(0, 0, 0, 0.04);
+	border-radius: 980px;
+	transition: background 0.2s;
+}
+
+.po-tg-coach__link:hover {
+	background: rgba(0, 0, 0, 0.08);
+}
+
+.po-tg-coach__link--instagram {
+	color: #E1306C;
+}
+
+.po-tg-coach__link--website {
+	color: #0073aa;
+}
+
 .po-tg-coach__trainings {
 	margin-top: 48px;
 }

@@ -2260,7 +2260,10 @@ function parkourone_coach_profile_metabox($post) {
 		'_coach_philosophie_bild' => ['label' => 'Bild zur Geschichte', 'type' => 'image'],
 		'_coach_video_url' => ['label' => 'Video (YouTube/Vimeo URL)', 'type' => 'url', 'placeholder' => 'https://www.youtube.com/watch?v=...'],
 		'_coach_moment' => ['label' => 'Ein Parkour Moment, der mich geprägt hat', 'type' => 'textarea', 'placeholder' => 'Ein besonderer Moment...'],
-		'_coach_moment_bild' => ['label' => 'Bild zum Moment', 'type' => 'image']
+		'_coach_moment_bild' => ['label' => 'Bild zum Moment', 'type' => 'image'],
+		'_coach_ausbildungen' => ['label' => 'Ausbildungen', 'type' => 'textarea', 'placeholder' => 'z.B. TRUST Level 1, Sportlehrer, Physiotherapeut...'],
+		'_coach_instagram' => ['label' => 'Instagram', 'type' => 'text', 'placeholder' => 'z.B. @deinname oder https://instagram.com/deinname'],
+		'_coach_website' => ['label' => 'Webseite', 'type' => 'url', 'placeholder' => 'https://www.deine-webseite.ch']
 	];
 	
 	echo '<table class="form-table"><tbody>';
@@ -2355,7 +2358,10 @@ function parkourone_coach_save_meta($post_id) {
 		'_coach_philosophie_bild',
 		'_coach_video_url',
 		'_coach_moment',
-		'_coach_moment_bild'
+		'_coach_moment_bild',
+		'_coach_ausbildungen',
+		'_coach_instagram',
+		'_coach_website'
 	];
 	
 	foreach ($fields as $field) {
@@ -2977,8 +2983,9 @@ function parkourone_coach_profile_save_ajax() {
 	}
 	
 	$fields = [
-		'rolle', 'standort', 'parkour_seit', 'po_seit', 
-		'leitsatz', 'kurzvorstellung', 'moment'
+		'rolle', 'standort', 'parkour_seit', 'po_seit',
+		'leitsatz', 'kurzvorstellung', 'moment',
+		'ausbildungen', 'instagram', 'website'
 	];
 	
 	foreach ($fields as $field) {

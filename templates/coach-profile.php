@@ -626,6 +626,9 @@ $coach = $token ? parkourone_verify_coach_token($token) : null;
 		$hero_bild = get_post_meta($coach->ID, '_coach_hero_bild', true);
 		$philosophie_bild = get_post_meta($coach->ID, '_coach_philosophie_bild', true);
 		$moment_bild = get_post_meta($coach->ID, '_coach_moment_bild', true);
+		$ausbildungen = get_post_meta($coach->ID, '_coach_ausbildungen', true);
+		$instagram = get_post_meta($coach->ID, '_coach_instagram', true);
+		$website = get_post_meta($coach->ID, '_coach_website', true);
 		$coach_name = $coach->post_title;
 		?>
 		
@@ -779,6 +782,32 @@ $coach = $token ? parkourone_verify_coach_token($token) : null;
 				</div>
 			</div>
 			
+			<div class="coach-profile-section">
+				<h3>Zusätzliche Infos</h3>
+
+				<div class="coach-profile-field">
+					<label for="ausbildungen">Ausbildungen</label>
+					<textarea id="ausbildungen" name="ausbildungen" placeholder="z.B. TRUST Level 1, Sportlehrer, Physiotherapeut..."><?php echo esc_textarea($ausbildungen); ?></textarea>
+				</div>
+
+				<div class="coach-profile-field">
+					<label for="instagram">Instagram</label>
+					<input type="text" id="instagram" name="instagram" value="<?php echo esc_attr($instagram); ?>" placeholder="z.B. @deinname">
+				</div>
+
+				<div class="coach-profile-field">
+					<label for="website">Webseite</label>
+					<input type="url" id="website" name="website" value="<?php echo esc_attr($website); ?>" placeholder="https://www.deine-webseite.ch">
+				</div>
+			</div>
+
+			<div class="coach-profile-dsgvo" style="margin-top:24px; padding:16px; background:#f8f9fa; border:1px solid #ddd; border-radius:12px;">
+				<label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; font-size:14px; line-height:1.5; color:#333;">
+					<input type="checkbox" name="dsgvo_consent" id="dsgvo_consent" required style="margin-top:3px; flex-shrink:0;">
+					<span>Ich bestätige, dass ich die Rechte an allen hochgeladenen Bildern besitze und ParkourONE das Recht einräume, diese auf der Webseite und in Marketingmaterialien zu verwenden. Ich kann diese Einwilligung jederzeit widerrufen.</span>
+				</label>
+			</div>
+
 			<div class="coach-profile-actions">
 				<button type="button" class="coach-profile-preview-btn" id="preview-btn">Vorschau</button>
 				<button type="submit" class="coach-profile-submit">Profil speichern</button>
