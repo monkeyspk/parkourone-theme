@@ -16,9 +16,32 @@ if (empty($jobs)) {
 $headline = $attributes['headline'] ?? 'Werde Teil unseres Teams';
 $intro = $attributes['intro'] ?? '';
 $bgColor = $attributes['backgroundColor'] ?? '#f5f5f7';
+$show_filter = !empty($attributes['showFilter']);
 $anchor = $attributes['anchor'] ?? '';
 static $po_jobs_instance = 0; $po_jobs_instance++;
 $unique_id = $anchor ?: ('po-jobs-' . $po_jobs_instance);
+
+// Filter-Achsen: Label + Taxonomie-Slug + Darstellung.
+// Jede Achse wird nur angezeigt, wenn mindestens ein Term existiert.
+$filter_axes = [];
+if ($show_filter) {
+	$axes_config = [
+		['slug' => 'job_location', 'key' => 'location', 'label' => 'Wo?'],
+		['slug' => 'job_bereich',  'key' => 'bereich',  'label' => 'Was?'],
+		['slug' => 'job_stelle',   'key' => 'stelle',   'label' => 'Stelle'],
+		['slug' => 'job_wochentag','key' => 'wochentag','label' => 'Wochentag'],
+	];
+	foreach ($axes_config as $axis) {
+		$terms = get_terms([
+			'taxonomy'   => $axis['slug'],
+			'hide_empty' => true,
+		]);
+		if (!is_wp_error($terms) && !empty($terms)) {
+			$axis['terms'] = $terms;
+			$filter_axes[] = $axis;
+		}
+	}
+}
 ?>
 <section class="po-jobs alignfull" id="<?php echo esc_attr($unique_id); ?>" style="background-color: <?php echo esc_attr($bgColor); ?>">
 	<div class="po-jobs__header">
@@ -28,9 +51,51 @@ $unique_id = $anchor ?: ('po-jobs-' . $po_jobs_instance);
 		<?php endif; ?>
 	</div>
 
+	<?php if (!empty($filter_axes)): ?>
+	<div class="po-jobs__filter" role="region" aria-label="Jobs filtern">
+		<?php foreach ($filter_axes as $axis): ?>
+			<div class="po-jobs__filter-group" data-filter-key="<?php echo esc_attr($axis['key']); ?>">
+				<button type="button" class="po-jobs__filter-toggle" aria-expanded="false">
+					<span class="po-jobs__filter-label"><?php echo esc_html($axis['label']); ?></span>
+					<span class="po-jobs__filter-count" aria-hidden="true">Alle</span>
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+				</button>
+				<div class="po-jobs__filter-options" hidden>
+					<?php foreach ($axis['terms'] as $term): ?>
+						<label class="po-jobs__filter-option">
+							<input type="checkbox" value="<?php echo esc_attr($term->slug); ?>">
+							<span><?php echo esc_html($term->name); ?></span>
+						</label>
+					<?php endforeach; ?>
+				</div>
+			</div>
+		<?php endforeach; ?>
+		<div class="po-jobs__filter-group po-jobs__filter-group--date" data-filter-key="abWann">
+			<label class="po-jobs__filter-toggle po-jobs__filter-toggle--date">
+				<span class="po-jobs__filter-label">Ab wann</span>
+				<input type="date" class="po-jobs__filter-date" aria-label="Frühestes Startdatum">
+			</label>
+		</div>
+		<button type="button" class="po-jobs__filter-reset" hidden>Filter zurücksetzen</button>
+	</div>
+	<?php endif; ?>
+
+	<p class="po-jobs__empty-state" hidden>Keine offenen Stellen für die gewählten Filter.</p>
+
 	<div class="po-jobs__grid">
-		<?php foreach ($jobs as $index => $j): ?>
-			<article class="po-job-card">
+		<?php foreach ($jobs as $index => $j):
+			$data_location  = implode(',', $j['locations']  ?? []);
+			$data_bereich   = implode(',', $j['bereiche']   ?? []);
+			$data_stelle    = implode(',', $j['stellen']    ?? []);
+			$data_wochentag = implode(',', $j['wochentage'] ?? []);
+			$data_ab_wann   = $j['abWann'] ?? '';
+		?>
+			<article class="po-job-card"
+				data-location="<?php echo esc_attr($data_location); ?>"
+				data-bereich="<?php echo esc_attr($data_bereich); ?>"
+				data-stelle="<?php echo esc_attr($data_stelle); ?>"
+				data-wochentag="<?php echo esc_attr($data_wochentag); ?>"
+				data-ab-wann="<?php echo esc_attr($data_ab_wann); ?>">
 				<div class="po-job-card__content">
 					<?php if (!empty($j['type'])): ?>
 						<span class="po-job-card__type"><?php echo esc_html($j['type']); ?></span>

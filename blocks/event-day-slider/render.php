@@ -102,8 +102,10 @@ if ($query->have_posts()) {
 		}
 		$age_slug = !empty($age_slugs) ? $age_slugs[0] : '';
 
-		// Ferienkurse überspringen
+		// Ferienkurse, Kurse und Workshops überspringen — dieser Block zeigt nur Probetrainings.
 		if ($offer_slug === 'ferienkurs') continue;
+		if ((int) get_post_meta($event_id, '_event_is_course', true) === 1) continue;
+		if ((int) get_post_meta($event_id, '_event_is_workshop', true) === 1) continue;
 
 		$color = $age_colors[$age_slug] ?? '#0066cc';
 

@@ -34,6 +34,34 @@ function parkourone_register_job_cpt() {
 		'rewrite' => false,
 		'show_in_rest' => true
 	]);
+
+	// Filter-Taxonomien. Keine Vorbefüllung — Terms werden im Admin manuell angelegt.
+	// Der Frontend-Filter zeigt eine Achse nur an, wenn sie mindestens einen Term hat.
+	$taxonomies = [
+		'job_location' => ['Ort', 'Orte', 'Wo?'],
+		'job_bereich'  => ['Bereich', 'Bereiche', 'Was?'],
+		'job_stelle'   => ['Stelle', 'Stellen', 'Stellen-Typ'],
+		'job_wochentag'=> ['Wochentag', 'Wochentage', 'Wann?'],
+	];
+	foreach ($taxonomies as $slug => $labels) {
+		register_taxonomy($slug, 'job', [
+			'labels' => [
+				'name'          => $labels[1],
+				'singular_name' => $labels[0],
+				'menu_name'     => $labels[1],
+				'all_items'     => 'Alle ' . $labels[1],
+				'add_new_item'  => $labels[0] . ' hinzufügen',
+				'edit_item'     => $labels[0] . ' bearbeiten',
+			],
+			'public'            => false,
+			'show_ui'           => true,
+			'show_in_menu'      => true,
+			'show_admin_column' => true,
+			'show_in_rest'      => true,
+			'hierarchical'      => $slug !== 'job_wochentag',
+			'rewrite'           => false,
+		]);
+	}
 }
 add_action('init', 'parkourone_register_job_cpt');
 
@@ -63,6 +91,7 @@ function parkourone_job_meta_box_html($post) {
 	$benefits = get_post_meta($post->ID, '_job_benefits', true);
 	$how_to_apply = get_post_meta($post->ID, '_job_how_to_apply', true);
 	$contact_email = get_post_meta($post->ID, '_job_contact_email', true);
+	$ab_wann = get_post_meta($post->ID, '_job_ab_wann', true);
 	?>
 	<style>
 		.po-job-meta { display: grid; gap: 1.5rem; }
@@ -90,6 +119,12 @@ function parkourone_job_meta_box_html($post) {
 				<input type="email" id="job_contact_email" name="job_contact_email" value="<?php echo esc_attr($contact_email); ?>" placeholder="jobs@parkourone.com">
 				<p class="description">E-Mail für Bewerbungen</p>
 			</div>
+		</div>
+
+		<div class="po-job-meta__field">
+			<label for="job_ab_wann">Ab wann</label>
+			<input type="date" id="job_ab_wann" name="job_ab_wann" value="<?php echo esc_attr($ab_wann); ?>" style="max-width: 200px;">
+			<p class="description">Frühestmöglicher Starttermin — wird für den „Ab wann"-Filter auf der Jobsuche-Seite verwendet. Leer lassen wenn flexibel.</p>
 		</div>
 
 		<div class="po-job-meta__field">
@@ -157,6 +192,15 @@ function parkourone_save_job_meta($post_id) {
 			update_post_meta($post_id, $meta_key, $value);
 		}
 	}
+
+	// Ab-wann-Datum (Filter-Feld)
+	if (isset($_POST['job_ab_wann'])) {
+		$ab_wann = sanitize_text_field($_POST['job_ab_wann']);
+		// Nur gültige YYYY-MM-DD Werte akzeptieren
+		if ($ab_wann === '' || preg_match('/^\d{4}-\d{2}-\d{2}$/', $ab_wann)) {
+			update_post_meta($post_id, '_job_ab_wann', $ab_wann);
+		}
+	}
 }
 add_action('save_post_job', 'parkourone_save_job_meta');
 
@@ -213,6 +257,14 @@ function parkourone_get_jobs($args = []) {
 			$jobs_query->the_post();
 			$post_id = get_the_ID();
 
+			// Filter-Terms als Slug-Arrays laden (für data-Attribute im Frontend)
+			$tax_slugs = ['job_location', 'job_bereich', 'job_stelle', 'job_wochentag'];
+			$tax_data = [];
+			foreach ($tax_slugs as $tax) {
+				$terms = wp_get_post_terms($post_id, $tax, ['fields' => 'slugs']);
+				$tax_data[$tax] = is_wp_error($terms) ? [] : $terms;
+			}
+
 			$jobs[] = [
 				'id' => $post_id,
 				'title' => get_the_title(),
@@ -222,7 +274,12 @@ function parkourone_get_jobs($args = []) {
 				'requirements' => get_post_meta($post_id, '_job_requirements', true),
 				'benefits' => get_post_meta($post_id, '_job_benefits', true),
 				'howToApply' => get_post_meta($post_id, '_job_how_to_apply', true),
-				'contactEmail' => get_post_meta($post_id, '_job_contact_email', true)
+				'contactEmail' => get_post_meta($post_id, '_job_contact_email', true),
+				'locations' => $tax_data['job_location'],
+				'bereiche'  => $tax_data['job_bereich'],
+				'stellen'   => $tax_data['job_stelle'],
+				'wochentage'=> $tax_data['job_wochentag'],
+				'abWann'    => get_post_meta($post_id, '_job_ab_wann', true),
 			];
 		}
 		wp_reset_postdata();

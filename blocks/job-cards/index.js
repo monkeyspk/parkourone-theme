@@ -1,7 +1,7 @@
 (function(wp) {
 	const { registerBlockType } = wp.blocks;
 	const { useBlockProps, InspectorControls, RichText } = wp.blockEditor;
-	const { PanelBody, TextControl, TextareaControl, Button, ColorPalette } = wp.components;
+	const { PanelBody, TextControl, TextareaControl, Button, ColorPalette, ToggleControl } = wp.components;
 	const { createElement: el } = wp.element;
 
 	registerBlockType('parkourone/job-cards', {
@@ -43,6 +43,13 @@
 			return el('div', null, [
 				el(InspectorControls, { key: 'controls' },
 					el(PanelBody, { title: 'Einstellungen' }, [
+						el(ToggleControl, {
+							key: 'showfilter',
+							label: 'Filter anzeigen',
+							help: 'Blendet die Wo/Was/Stelle/Wann-Filterleiste ein. Nur sichtbar wenn Taxonomie-Terms existieren.',
+							checked: attributes.showFilter !== false,
+							onChange: function(val) { setAttributes({ showFilter: val }); }
+						}),
 						el('p', { key: 'colorlabel', style: { marginBottom: '8px' } }, 'Hintergrundfarbe'),
 						el(ColorPalette, {
 							key: 'bgcolor',

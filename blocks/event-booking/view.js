@@ -42,7 +42,10 @@
 		// ========================================
 
 		function buildApiUrl() {
-			var params = ['per_page=-1'];
+			// only_probetraining=1 ist hart verdrahtet: der event-booking-Block rendert
+			// die Probetraining-Buchen-Seite und darf keine Kurse/Workshops/Ferienkurse
+			// zeigen, egal was sonst in der DB publiziert ist.
+			var params = ['per_page=-1', 'only_probetraining=1'];
 			if (preFilterAge) params.push('age=' + encodeURIComponent(preFilterAge));
 			if (preFilterLocation) params.push('location=' + encodeURIComponent(preFilterLocation));
 			if (preFilterOffer) params.push('offer=' + encodeURIComponent(preFilterOffer));
