@@ -1,10 +1,10 @@
 <?php
 /**
- * Title: AGB
- * Slug: parkourone/page-agb
+ * Title: AGB (Schweiz)
+ * Slug: parkourone/page-agb-schweiz
  * Categories: parkourone-seiten
- * Description: Allgemeine Geschäftsbedingungen Vorlage (Schweiz-konform)
- * Keywords: agb, geschäftsbedingungen, legal, terms
+ * Description: Allgemeine Geschäftsbedingungen für ParkourONE Schweiz. Enthält CHF, Schweizer Recht und Schweizer Gerichtsstand — NICHT für deutsche Sites verwenden.
+ * Keywords: agb, geschäftsbedingungen, legal, terms, schweiz, ch
  * Viewport Width: 1200
  * Block Types: core/post-content
  * Post Types: page
