@@ -210,8 +210,46 @@ function parkourone_angebot_termine_metabox($post) {
 	if (!is_array($termine)) {
 		$termine = [];
 	}
+
+	// Single-Produkt-Modus erkennen: alle Termine zeigen auf die gleiche produkt_id,
+	// und diese ist mit _event_single_product=1 markiert. In dem Fall gibt es nicht
+	// pro Termin einen Buchungsstatus, sondern einen Gesamt-Status für den Kurs/Workshop.
+	$single_pid = 0;
+	if (!empty($termine)) {
+		$first_pid = intval($termine[0]['produkt_id'] ?? 0);
+		if ($first_pid && get_post_meta($first_pid, '_event_single_product', true) === '1') {
+			$single_pid = $first_pid;
+		}
+	}
+
+	if ($single_pid && class_exists('WooCommerce')) {
+		$wc_single = wc_get_product($single_pid);
+		if ($wc_single) {
+			$stock_qty = (int) $wc_single->get_stock_quantity();
+			$total_sold = parkourone_get_product_total_sold($single_pid);
+			$initial_stock = $stock_qty + $total_sold;
+			?>
+			<div style="background:#f0f6fc;border:1px solid #c3e0f5;border-radius:6px;padding:12px 16px;margin-bottom:16px;">
+				<strong style="display:block;margin-bottom:6px;">Gesamt-Buchungsstatus (Kurs/Workshop)</strong>
+				<span style="font-size:13px;">
+					<strong style="color:#2271b1;"><?php echo (int) $total_sold; ?></strong> gebucht
+					von <strong><?php echo (int) $initial_stock; ?></strong> Plätzen
+					&mdash; <span class="po-stock-display-<?php echo $single_pid; ?>"><strong style="color:<?php echo $stock_qty > 0 ? '#00a32a' : '#d63638'; ?>;"><?php echo $stock_qty; ?></strong> verfügbar</span>
+				</span>
+				<span class="po-stock-adjust" style="margin-left:12px;">
+					<button type="button" class="button button-small po-stock-btn" data-product-id="<?php echo $single_pid; ?>" data-action="decrease" style="padding:0 6px;min-height:26px;line-height:24px;">−</button>
+					<input type="number" class="po-stock-input" data-product-id="<?php echo $single_pid; ?>" value="<?php echo $stock_qty; ?>" style="width:50px;height:26px;text-align:center;margin:0 2px;" min="0">
+					<button type="button" class="button button-small po-stock-btn" data-product-id="<?php echo $single_pid; ?>" data-action="increase" style="padding:0 6px;min-height:26px;line-height:24px;">+</button>
+					<button type="button" class="button button-small po-stock-save" data-product-id="<?php echo $single_pid; ?>" style="margin-left:4px;min-height:26px;line-height:24px;">Speichern</button>
+					<span class="po-stock-msg-<?php echo $single_pid; ?>" style="margin-left:6px;font-size:12px;"></span>
+				</span>
+				<p class="description" style="margin:8px 0 0;">Dieser Kurs/Workshop wird als Gesamtpaket über alle Termine gebucht. Stock kommt aus AcademyBoard (max. Teilnehmer).</p>
+			</div>
+			<?php
+		}
+	}
 	?>
-	<p class="description">Für buchbare Workshops mit konkreten Terminen. Jeder Termin kann separat gebucht werden.</p>
+	<p class="description">Für buchbare Workshops mit konkreten Terminen. Probetrainings buchen pro Termin, Kurse/Workshops als Gesamtpaket.</p>
 
 	<div id="angebot-termine-container">
 		<?php foreach ($termine as $index => $termin): ?>
@@ -253,8 +291,9 @@ function parkourone_angebot_termine_metabox($post) {
 					</td>
 				</tr>
 				<?php
-				// Live WC-Buchungsstatus anzeigen
-				if ($has_wc_product):
+				// Live WC-Buchungsstatus nur pro Termin anzeigen, wenn es KEIN Single-Product-Kurs ist
+				// (sonst wäre der Status für jeden Termin gleich und redundant zum Gesamt-Status oben).
+				if ($has_wc_product && $pid !== $single_pid):
 					$wc_prod = wc_get_product($pid);
 					$stock_qty = $wc_prod->get_stock_quantity();
 					$total_sold = parkourone_get_product_total_sold($pid);
@@ -1575,8 +1614,14 @@ function parkourone_sync_event_to_angebot($post_id) {
 	$sync_typen = ['ferienkurs', 'workshop', 'kurs'];
 	if (!in_array($angebot_typ, $sync_typen, true)) return;
 
-	// Ferienkurs-Erkennung (Typ oder Titelsuche)
+	// Ferienkurs-Erkennung (Typ oder Titelsuche) — dient nur noch als UI-Label.
 	$is_ferienkurs = ($angebot_typ === 'ferienkurs') || (stripos(get_the_title($post_id), 'ferienkurs') !== false);
+
+	// Single-Product-Modus: Ein gemeinsames WC-Produkt für Kurse/Workshops/Ferienkurse.
+	// Quelle ist das Event-Flag is_course / is_workshop (vom custom-events-plugin aus der API).
+	$event_is_course   = (int) get_post_meta($post_id, '_event_is_course', true) === 1;
+	$event_is_workshop = (int) get_post_meta($post_id, '_event_is_workshop', true) === 1;
+	$is_single_product = $event_is_course || $event_is_workshop;
 
 	// Event-Kategorie → Angebot-Kategorie mappen
 	$kategorie_map = [
@@ -1741,14 +1786,12 @@ function parkourone_sync_event_to_angebot($post_id) {
 			update_post_meta($angebot_id, '_angebot_buchungsart', 'woocommerce');
 		}
 
-		// Ferienkurs-Meta immer aktualisieren
 		if ($is_ferienkurs) {
 			update_post_meta($angebot_id, '_angebot_is_ferienkurs', '1');
-			// Nur WC-Produkt anlegen wenn dieses Angebot tatsächlich über WooCommerce gebucht wird.
-			// Externe Ferienkurse (Link) oder Kontakt-Ferienkurse brauchen kein Phantom-Produkt.
-			if (get_post_meta($angebot_id, '_angebot_buchungsart', true) === 'woocommerce') {
-				parkourone_sync_ferienkurs_wc_product($angebot_id, $post_id, $event_title, $termine);
-			}
+		}
+		// Single-Produkt spiegeln (Kurs/Workshop/Ferienkurs → ein WC-Produkt vom Plugin)
+		if ($is_single_product && get_post_meta($angebot_id, '_angebot_buchungsart', true) === 'woocommerce') {
+			parkourone_sync_ferienkurs_wc_product($angebot_id, $post_id, $event_title, $termine);
 		}
 	} else {
 		// NEU: Draft-Angebot erstellen
@@ -1793,81 +1836,38 @@ function parkourone_sync_event_to_angebot($post_id) {
 		// Kategorie setzen
 		wp_set_object_terms($angebot_id, $angebot_kategorie, 'angebot_kategorie');
 
-		// Ferienkurs-Meta + WC-Produkt
 		if ($is_ferienkurs) {
 			update_post_meta($angebot_id, '_angebot_is_ferienkurs', '1');
-			// Nur WC-Produkt anlegen wenn dieses Angebot tatsächlich über WooCommerce gebucht wird.
-			// Externe Ferienkurse (Link) oder Kontakt-Ferienkurse brauchen kein Phantom-Produkt.
-			if (get_post_meta($angebot_id, '_angebot_buchungsart', true) === 'woocommerce') {
-				parkourone_sync_ferienkurs_wc_product($angebot_id, $post_id, $event_title, $termine);
-			}
+		}
+		if ($is_single_product && get_post_meta($angebot_id, '_angebot_buchungsart', true) === 'woocommerce') {
+			parkourone_sync_ferienkurs_wc_product($angebot_id, $post_id, $event_title, $termine);
 		}
 	}
 }
 add_action('save_post_event', 'parkourone_sync_event_to_angebot', 30);
 
 /**
- * Erstellt/aktualisiert ein einzelnes WC-Produkt für ein Ferienkurs-Paket.
+ * Spiegelt das vom custom-events-plugin angelegte Single-Product für einen
+ * Kurs/Workshop/Ferienkurs in die Angebot-Meta _angebot_ferienkurs_produkt_id,
+ * damit Frontend + Backend die bestehenden Code-Pfade weiter nutzen können.
+ *
+ * Das Theme erstellt KEIN eigenes Paket-Produkt mehr — Stock, Preis und Titel
+ * werden ausschließlich vom Plugin gepflegt.
  */
 function parkourone_sync_ferienkurs_wc_product($angebot_id, $event_post_id, $event_title, $termine) {
-	if (!class_exists('WooCommerce')) return;
+	$single_products = get_posts([
+		'post_type'      => 'product',
+		'post_status'    => 'publish',
+		'posts_per_page' => 1,
+		'fields'         => 'ids',
+		'meta_query'     => [
+			['key' => '_event_id',             'value' => $event_post_id],
+			['key' => '_event_single_product', 'value' => '1'],
+		],
+	]);
 
-	$event_price = get_post_meta($event_post_id, '_event_price', true);
-	$preis = floatval(preg_replace('/[^0-9.,]/', '', str_replace(',', '.', $event_price)));
-
-	// Paket-Stock = knappster Termin (Bottleneck). $termine[*]['kapazitaet'] stammt
-	// vom per-Datum WC-Produkt, das vom custom-events-plugin aus available_seats
-	// (für Kurse/Workshops) befüllt wird. Ein Paket kann nur so oft verkauft werden
-	// wie der Tag mit den wenigsten freien Plätzen.
-	$kapazitaet = 0;
-	if (is_array($termine) && !empty($termine)) {
-		$kaps = array_map(function($t) { return absint($t['kapazitaet'] ?? 0); }, $termine);
-		$kapazitaet = !empty($kaps) ? min($kaps) : 0;
-	}
-
-	$existing_product_id = (int) get_post_meta($angebot_id, '_angebot_ferienkurs_produkt_id', true);
-
-	if ($existing_product_id && get_post($existing_product_id)) {
-		// Update bestehendes Produkt — API ist die Wahrheit, altes protected-Flag ignorieren
-		delete_post_meta($existing_product_id, '_po_stock_protected');
-		$product = wc_get_product($existing_product_id);
-		if ($product) {
-			$product->set_name($event_title);
-			$product->set_price($preis);
-			$product->set_regular_price($preis);
-			$product->set_manage_stock(true);
-			$product->set_stock_quantity($kapazitaet);
-			$product->set_stock_status($kapazitaet > 0 ? 'instock' : 'outofstock');
-			$product->save();
-		}
-	} else {
-		// Neues Produkt erstellen
-		$product = new WC_Product_Simple();
-		$product->set_name($event_title);
-		$product->set_status('publish');
-		$product->set_catalog_visibility('hidden');
-		$product->set_price($preis);
-		$product->set_regular_price($preis);
-		$product->set_manage_stock(true);
-		$product->set_stock_quantity($kapazitaet);
-		$product->set_stock_status($kapazitaet > 0 ? 'instock' : 'outofstock');
-		$product->set_sold_individually(false);
-		$product->set_virtual(true);
-
-		$desc = get_post_meta($angebot_id, '_angebot_kurzbeschreibung', true) ?: $event_title;
-		$product->set_short_description($desc);
-
-		$product_id = $product->save();
-
-		$featured_image_id = get_post_thumbnail_id($angebot_id);
-		if ($featured_image_id) {
-			$product->set_image_id($featured_image_id);
-			$product->save();
-		}
-
-		update_post_meta($product_id, '_angebot_id', $angebot_id);
-		update_post_meta($product_id, '_is_ferienkurs_product', '1');
-		update_post_meta($angebot_id, '_angebot_ferienkurs_produkt_id', $product_id);
+	if (!empty($single_products)) {
+		update_post_meta($angebot_id, '_angebot_ferienkurs_produkt_id', (int) $single_products[0]);
 	}
 }
 
@@ -1913,8 +1913,12 @@ function parkourone_get_event_angebot_typ($event_id) {
 
 /**
  * Baut die Angebot-Termine aus den Event-Daten.
- * Event-Datum (DD-MM-YYYY / DD.MM.YYYY) → Angebot-Datum (YYYY-MM-DD)
- * WC-Produkte werden per _event_id + _event_date gesucht und wiederverwendet.
+ *
+ * Produkt-Zuordnung:
+ *  - Kurs/Workshop (is_course || is_workshop): EIN gemeinsames WC-Produkt für
+ *    das ganze Event (via _event_id + _event_single_product=1). Alle Termin-
+ *    Einträge erhalten dieselbe produkt_id und denselben Stock-Wert.
+ *  - Probetraining: pro Datum ein eigenes WC-Produkt (via _event_id + _event_date).
  */
 function parkourone_build_angebot_termine_from_event($event_id) {
 	$event_dates = get_post_meta($event_id, '_event_dates', true);
@@ -1924,6 +1928,10 @@ function parkourone_build_angebot_termine_from_event($event_id) {
 	$end_time    = get_post_meta($event_id, '_event_end_time', true);
 	$venue       = get_post_meta($event_id, '_event_venue', true);
 	$event_price = get_post_meta($event_id, '_event_price', true);
+
+	$is_workshop = (int) get_post_meta($event_id, '_event_is_workshop', true) === 1;
+	$is_course   = (int) get_post_meta($event_id, '_event_is_course', true) === 1;
+	$single_product_mode = $is_workshop || $is_course;
 
 	// Preis formatieren für Termin-Anzeige
 	$preis_termin = '';
@@ -1937,6 +1945,29 @@ function parkourone_build_angebot_termine_from_event($event_id) {
 		$uhrzeit = $start_time;
 		if ($end_time) {
 			$uhrzeit .= ' - ' . $end_time;
+		}
+	}
+
+	// Single-Produkt-Modus: EIN Produkt einmal auflösen und auf alle Termine anwenden.
+	$single_produkt_id = 0;
+	$single_kapazitaet = 0;
+	if ($single_product_mode) {
+		$single_products = get_posts([
+			'post_type'      => 'product',
+			'post_status'    => 'publish',
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'meta_query'     => [
+				['key' => '_event_id',             'value' => $event_id],
+				['key' => '_event_single_product', 'value' => '1'],
+			],
+		]);
+		if (!empty($single_products) && class_exists('WooCommerce')) {
+			$single_produkt_id = (int) $single_products[0];
+			$wc_product = wc_get_product($single_produkt_id);
+			if ($wc_product) {
+				$single_kapazitaet = (int) $wc_product->get_stock_quantity();
+			}
 		}
 	}
 
@@ -1958,26 +1989,31 @@ function parkourone_build_angebot_termine_from_event($event_id) {
 		// Ort: aus date_entry oder Fallback auf Event-Venue
 		$ort = !empty($date_entry['venue']) ? $date_entry['venue'] : $venue;
 
-		// WC-Produkt suchen (via _event_id + _event_date)
-		$produkt_id  = 0;
-		$kapazitaet  = 0;
-		$event_products = get_posts([
-			'post_type'      => 'product',
-			'posts_per_page' => 1,
-			'post_status'    => 'publish',
-			'meta_query'     => [
-				['key' => '_event_id', 'value' => $event_id],
-				['key' => '_event_date', 'value' => $date_entry['date']],
-			],
-			'fields' => 'ids',
-		]);
+		if ($single_product_mode) {
+			$produkt_id = $single_produkt_id;
+			$kapazitaet = $single_kapazitaet;
+		} else {
+			// Probetraining: per-Datum-Produkt suchen
+			$produkt_id = 0;
+			$kapazitaet = 0;
+			$event_products = get_posts([
+				'post_type'      => 'product',
+				'posts_per_page' => 1,
+				'post_status'    => 'publish',
+				'fields'         => 'ids',
+				'meta_query'     => [
+					['key' => '_event_id',   'value' => $event_id],
+					['key' => '_event_date', 'value' => $date_entry['date']],
+				],
+			]);
 
-		if (!empty($event_products)) {
-			$produkt_id = $event_products[0];
-			if (class_exists('WooCommerce')) {
-				$wc_product = wc_get_product($produkt_id);
-				if ($wc_product) {
-					$kapazitaet = (int) $wc_product->get_stock_quantity();
+			if (!empty($event_products)) {
+				$produkt_id = (int) $event_products[0];
+				if (class_exists('WooCommerce')) {
+					$wc_product = wc_get_product($produkt_id);
+					if ($wc_product) {
+						$kapazitaet = (int) $wc_product->get_stock_quantity();
+					}
 				}
 			}
 		}

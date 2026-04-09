@@ -125,8 +125,10 @@ document.addEventListener('DOMContentLoaded', function() {
 			html += '</div>';
 		}
 
-		// Ferienkurs: Datum-Range, Tages-Liste, Gesamtpreis, ein Buchungsbutton
-		if (data.is_ferienkurs) {
+		// Single-Product-Modus: Kurs/Workshop/Ferienkurs mit EINEM WC-Produkt
+		// über alle Termine. Zeigt Tagesliste + einen Gesamt-Buchungsbutton.
+		var isSingleProduct = !!(data.ferienkurs_produkt_id && data.ferienkurs_produkt_id > 0);
+		if (isSingleProduct) {
 			// Datum-Range
 			if (data.datum_range) {
 				html += '<div class="po-angebote-modal__date-range" style="display:flex;align-items:center;gap:1rem;background:#fff3e6;border:1px solid #ff6b00;border-radius:12px;padding:1rem 1.5rem;margin-bottom:1.5rem;">';
@@ -303,7 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		html += '<button class="po-angebote-modal__booking-back" type="button">&larr; Zurück</button>';
 		html += '<h3 class="po-angebote-modal__booking-title">Buchung: ' + escapeHtml(data.titel) + '</h3>';
 
-		if (data.is_ferienkurs) {
+		if (data.ferienkurs_produkt_id && data.ferienkurs_produkt_id > 0) {
 			html += '<div class="po-angebote-modal__booking-info">';
 			if (data.datum_range) html += '<div><strong>Zeitraum:</strong> ' + escapeHtml(data.datum_range) + '</div>';
 			if (data.preis) html += '<div><strong>Gesamtpreis:</strong> ' + escapeHtml(data.preis) + '</div>';

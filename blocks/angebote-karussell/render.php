@@ -73,13 +73,14 @@ if (empty($angebote)) {
 			$ansprechperson = get_post_meta($id, '_angebot_ansprechperson', true);
 			$bild = parkourone_get_angebot_image($id, 'medium_large');
 
-			// Ferienkurs-Daten
+			// Single-Product-Daten (Kurs/Workshop/Ferienkurs teilen sich EIN WC-Produkt)
 			$is_ferienkurs = get_post_meta($id, '_angebot_is_ferienkurs', true) === '1';
-			$ferienkurs_produkt_id = $is_ferienkurs ? (int) get_post_meta($id, '_angebot_ferienkurs_produkt_id', true) : 0;
+			$ferienkurs_produkt_id = (int) get_post_meta($id, '_angebot_ferienkurs_produkt_id', true);
+			$is_single_product = $ferienkurs_produkt_id > 0;
 
 			$datum_range = '';
 			$alle_termine = get_post_meta($id, '_angebot_termine', true);
-			if ($is_ferienkurs && is_array($alle_termine) && !empty($alle_termine)) {
+			if ($is_single_product && is_array($alle_termine) && !empty($alle_termine)) {
 				$daten = array_filter(array_column($alle_termine, 'datum'));
 				sort($daten);
 				if (count($daten) >= 2) {
@@ -97,7 +98,7 @@ if (empty($angebote)) {
 
 			$ferienkurs_verfuegbar = null;
 			$angebot_buchungsart = get_post_meta($id, '_angebot_buchungsart', true);
-			if ($is_ferienkurs && $ferienkurs_produkt_id && $angebot_buchungsart === 'woocommerce' && function_exists('wc_get_product')) {
+			if ($is_single_product && $angebot_buchungsart === 'woocommerce' && function_exists('wc_get_product')) {
 				$fk_product = wc_get_product($ferienkurs_produkt_id);
 				if ($fk_product && $fk_product->managing_stock()) {
 					$ferienkurs_verfuegbar = (int) $fk_product->get_stock_quantity();
