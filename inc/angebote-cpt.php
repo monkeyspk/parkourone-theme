@@ -1850,7 +1850,7 @@ add_action('save_post_event', 'parkourone_sync_event_to_angebot', 30);
 function parkourone_sync_ferienkurs_wc_product($angebot_id, $event_post_id, $event_title, $termine) {
 	$single_products = get_posts([
 		'post_type'      => 'product',
-		'post_status'    => 'publish',
+		'post_status'    => ['publish', 'private'],
 		'posts_per_page' => 1,
 		'fields'         => 'ids',
 		'meta_query'     => [
@@ -1859,9 +1859,57 @@ function parkourone_sync_ferienkurs_wc_product($angebot_id, $event_post_id, $eve
 		],
 	]);
 
-	if (!empty($single_products)) {
-		update_post_meta($angebot_id, '_angebot_ferienkurs_produkt_id', (int) $single_products[0]);
+	if (empty($single_products)) return;
+
+	$new_pid = (int) $single_products[0];
+	$old_pid = (int) get_post_meta($angebot_id, '_angebot_ferienkurs_produkt_id', true);
+
+	// Alte vom Theme erstellte Ferienkurs-Paket-Produkte deprecaten, wenn sie
+	// durch das neue Plugin-Single-Product abgelöst wurden. Nicht löschen wegen
+	// möglicher Order-Historie — nur auf privat + out-of-stock setzen.
+	if ($old_pid && $old_pid !== $new_pid && get_post($old_pid)) {
+		if (get_post_meta($old_pid, '_is_ferienkurs_product', true) === '1') {
+			wp_update_post(['ID' => $old_pid, 'post_status' => 'private']);
+			update_post_meta($old_pid, '_stock', 0);
+			update_post_meta($old_pid, '_stock_status', 'outofstock');
+			update_post_meta($old_pid, '_deprecated_by_sync', '1');
+			if (function_exists('wc_delete_product_transients')) {
+				wc_delete_product_transients($old_pid);
+			}
+		}
 	}
+
+	update_post_meta($angebot_id, '_angebot_ferienkurs_produkt_id', $new_pid);
+}
+
+/**
+ * Löst das Single-Product für ein Angebot auf — direkt aus dem verknüpften
+ * AB-Event, NICHT aus dem gecachten Meta. So bleibt das Frontend immer
+ * synchron, selbst wenn das _angebot_ferienkurs_produkt_id-Meta veraltet ist.
+ */
+function parkourone_get_angebot_single_product_id($angebot_id) {
+	$event_id = (int) get_post_meta($angebot_id, '_angebot_academyboard_event_id', true);
+	if ($event_id) {
+		$products = get_posts([
+			'post_type'      => 'product',
+			'post_status'    => 'publish',
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'meta_query'     => [
+				['key' => '_event_id',             'value' => $event_id],
+				['key' => '_event_single_product', 'value' => '1'],
+			],
+		]);
+		if (!empty($products)) {
+			return (int) $products[0];
+		}
+	}
+	// Fallback auf gecachtes Meta (nur wenn das Produkt noch gültig und nicht deprecated ist).
+	$cached = (int) get_post_meta($angebot_id, '_angebot_ferienkurs_produkt_id', true);
+	if ($cached && get_post($cached) && get_post_status($cached) === 'publish') {
+		return $cached;
+	}
+	return 0;
 }
 
 /**

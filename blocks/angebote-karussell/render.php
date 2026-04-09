@@ -73,9 +73,13 @@ if (empty($angebote)) {
 			$ansprechperson = get_post_meta($id, '_angebot_ansprechperson', true);
 			$bild = parkourone_get_angebot_image($id, 'medium_large');
 
-			// Single-Product-Daten (Kurs/Workshop/Ferienkurs teilen sich EIN WC-Produkt)
+			// Single-Product-Daten (Kurs/Workshop/Ferienkurs teilen sich EIN WC-Produkt).
+			// Direkt über Event auflösen statt aus gecachtem Meta — so wirkt der Sync
+			// auch ohne dass save_post_event frisch gefeuert hat.
 			$is_ferienkurs = get_post_meta($id, '_angebot_is_ferienkurs', true) === '1';
-			$ferienkurs_produkt_id = (int) get_post_meta($id, '_angebot_ferienkurs_produkt_id', true);
+			$ferienkurs_produkt_id = function_exists('parkourone_get_angebot_single_product_id')
+				? parkourone_get_angebot_single_product_id($id)
+				: (int) get_post_meta($id, '_angebot_ferienkurs_produkt_id', true);
 			$is_single_product = $ferienkurs_produkt_id > 0;
 
 			$datum_range = '';
