@@ -238,17 +238,13 @@ function parkourone_angebot_termine_metabox($post) {
 					<td><input type="text" name="_angebot_termine[<?php echo $index; ?>][preis]" value="<?php echo esc_attr($termin['preis'] ?? ''); ?>" class="regular-text" placeholder="z.B. CHF 60.-"></td>
 				</tr>
 				<?php
+				// Kapazität wird ausschließlich aus AcademyBoard gezogen (available_seats
+				// für Kurse/Workshops, trail_seats für Probetrainings). Der gecachte Wert
+				// bleibt im Hidden-Feld erhalten, damit er beim Speichern nicht verloren geht.
 				$pid = intval($termin['produkt_id'] ?? 0);
 				$has_wc_product = $pid && class_exists('WooCommerce') && wc_get_product($pid);
 				?>
-				<?php if (!$has_wc_product): ?>
-				<tr>
-					<th><label>Kapazität</label></th>
-					<td><input type="number" name="_angebot_termine[<?php echo $index; ?>][kapazitaet]" value="<?php echo esc_attr($termin['kapazitaet'] ?? ''); ?>" class="small-text" placeholder="z.B. 20"></td>
-				</tr>
-				<?php else: ?>
 				<input type="hidden" name="_angebot_termine[<?php echo $index; ?>][kapazitaet]" value="<?php echo esc_attr($termin['kapazitaet'] ?? ''); ?>">
-				<?php endif; ?>
 				<tr>
 					<th><label>WooCommerce Produkt ID</label></th>
 					<td>
@@ -305,7 +301,6 @@ function parkourone_angebot_termine_metabox($post) {
 					'<tr><th><label>Uhrzeit</label></th><td><input type="text" name="_angebot_termine[' + terminIndex + '][uhrzeit]" class="regular-text" placeholder="z.B. 10:00 - 12:00"></td></tr>' +
 					'<tr><th><label>Ort</label></th><td><input type="text" name="_angebot_termine[' + terminIndex + '][ort]" class="large-text" placeholder="z.B. Brig, Zürich"></td></tr>' +
 					'<tr><th><label>Preis</label></th><td><input type="text" name="_angebot_termine[' + terminIndex + '][preis]" class="regular-text" placeholder="z.B. CHF 60.-"></td></tr>' +
-					'<tr><th><label>Kapazität</label></th><td><input type="number" name="_angebot_termine[' + terminIndex + '][kapazitaet]" class="small-text" placeholder="z.B. 20"></td></tr>' +
 					'<tr><th><label>WooCommerce Produkt ID</label></th><td><input type="number" name="_angebot_termine[' + terminIndex + '][produkt_id]" class="small-text"><p class="description">Optional: ID eines bestehenden WooCommerce Produkts.</p></td></tr>' +
 				'</table>' +
 				'<hr style="margin: 20px 0;">' +
@@ -415,33 +410,25 @@ function parkourone_angebot_settings_metabox($post) {
 		<br><span class="description">Wird im Karussell auf der Startseite angezeigt.</span>
 	</p>
 
-	<?php
-	$stock_override = get_post_meta($post->ID, '_angebot_stock_override', true);
-	$is_ab = $quelle === 'academyboard';
-	?>
-	<p id="stock-override-field" style="<?php echo ($buchungsart === 'woocommerce' && $is_ab) ? '' : 'display:none;'; ?>">
-		<label>
-			<input type="checkbox" name="_angebot_stock_override" value="1" <?php checked($stock_override, '1'); ?>>
-			<strong>Stock manuell verwalten</strong>
-		</label>
-		<br><span class="description">API-Import überschreibt den Stock nicht mehr. Du verwaltest die Plätze selbst über den Stock-Editor oben.</span>
-	</p>
-
 	<hr>
 
 	<p>
 		<strong>Quelle:</strong> <?php echo $quelle === 'manual' ? 'Manuell' : 'Academyboard'; ?>
 	</p>
+	<?php if ($quelle === 'academyboard'): ?>
+	<p class="description">
+		Stock wird bei AcademyBoard-Events automatisch aus der API gezogen
+		(max. Teilnehmer für Kurse/Workshops, Trail Seats für Probetrainings).
+	</p>
+	<?php endif; ?>
 
 	<script>
 	jQuery(document).ready(function($) {
-		var isAB = <?php echo $is_ab ? 'true' : 'false'; ?>;
 		$('#_angebot_buchungsart').on('change', function() {
 			var val = $(this).val();
 			$('#cta-url-field').toggle(val === 'extern');
 			$('#teilnehmer-typ-field').toggle(val === 'woocommerce');
 			$('#kontakt-email-field').toggle(val === 'kontakt');
-			$('#stock-override-field').toggle(val === 'woocommerce' && isAB);
 		});
 	});
 	</script>
@@ -496,8 +483,6 @@ function parkourone_angebot_save_meta($post_id) {
 
 	// Checkboxes
 	update_post_meta($post_id, '_angebot_featured', isset($_POST['_angebot_featured']) ? '1' : '0');
-	$stock_override = isset($_POST['_angebot_stock_override']) ? '1' : '0';
-	update_post_meta($post_id, '_angebot_stock_override', $stock_override);
 
 	// Termine (array)
 	if (isset($_POST['_angebot_termine']) && is_array($_POST['_angebot_termine'])) {
@@ -524,74 +509,9 @@ function parkourone_angebot_save_meta($post_id) {
 		update_post_meta($post_id, '_angebot_quelle', 'manual');
 	}
 
-	// Kapazität als Wahrheit auf verknüpfte WC-Produkte schreiben.
-	// Jedes WC-Angebot MUSS eine Kapazität haben — der Wert im Angebot ist
-	// authoritative und überschreibt Termin-Produkt-Stock + Ferienkurs-Paket-Stock.
-	// Geschützt mit _po_stock_protected, damit AB-Re-Sync den Wert in Ruhe lässt.
-	$buchungsart_saved = get_post_meta($post_id, '_angebot_buchungsart', true);
-	if ($buchungsart_saved === 'woocommerce') {
-		$termine_saved = get_post_meta($post_id, '_angebot_termine', true);
-		$kapazitaeten  = [];
-
-		// Verknüpftes AB-Event ermitteln (für Produkt-Lookup falls produkt_id im Cache fehlt)
-		$linked_event_id = (int) get_post_meta($post_id, '_angebot_academyboard_event_id', true);
-
-		if (is_array($termine_saved)) {
-			foreach ($termine_saved as $termin) {
-				$pid = intval($termin['produkt_id'] ?? 0);
-				$kap = isset($termin['kapazitaet']) ? absint($termin['kapazitaet']) : 0;
-				$kapazitaeten[] = $kap;
-
-				// Fallback: WC-Produkt anhand _event_id + _event_date suchen
-				if (!$pid && $linked_event_id && !empty($termin['datum'])) {
-					// Event speichert Datum als DD-MM-YYYY oder DD.MM.YYYY, Angebot als YYYY-MM-DD.
-					$d = DateTime::createFromFormat('Y-m-d', $termin['datum']);
-					if ($d) {
-						$candidates = [$d->format('d-m-Y'), $d->format('d.m.Y')];
-						foreach ($candidates as $cand) {
-							$found = get_posts([
-								'post_type'      => 'product',
-								'posts_per_page' => 1,
-								'post_status'    => 'publish',
-								'fields'         => 'ids',
-								'meta_query'     => [
-									['key' => '_event_id',   'value' => $linked_event_id],
-									['key' => '_event_date', 'value' => $cand],
-								],
-							]);
-							if (!empty($found)) { $pid = (int) $found[0]; break; }
-						}
-					}
-				}
-
-				if ($pid && get_post($pid) && class_exists('WooCommerce')) {
-					$wc_product = wc_get_product($pid);
-					if ($wc_product) {
-						$wc_product->set_manage_stock(true);
-						$wc_product->set_stock_quantity($kap);
-						$wc_product->set_stock_status($kap > 0 ? 'instock' : 'outofstock');
-						$wc_product->save();
-					}
-					update_post_meta($pid, '_po_stock_protected', '1');
-				}
-			}
-		}
-
-		// Ferienkurs-Paket: Stock aus dem KNAPPSTEN Termin (Bottleneck-Logik).
-		$is_ferienkurs       = get_post_meta($post_id, '_angebot_is_ferienkurs', true) === '1';
-		$paket_produkt_id    = (int) get_post_meta($post_id, '_angebot_ferienkurs_produkt_id', true);
-		if ($is_ferienkurs && $paket_produkt_id && get_post($paket_produkt_id) && class_exists('WooCommerce')) {
-			$paket_kap = !empty($kapazitaeten) ? min($kapazitaeten) : 0;
-			$paket_product = wc_get_product($paket_produkt_id);
-			if ($paket_product) {
-				$paket_product->set_manage_stock(true);
-				$paket_product->set_stock_quantity($paket_kap);
-				$paket_product->set_stock_status($paket_kap > 0 ? 'instock' : 'outofstock');
-				$paket_product->save();
-			}
-			update_post_meta($paket_produkt_id, '_po_stock_protected', '1');
-		}
-	}
+	// Stock wird ausschließlich vom custom-events-plugin aus der AcademyBoard-API gepflegt
+	// (available_seats für Kurse/Workshops, trail_seats für Probetrainings). Kein Override
+	// mehr im Angebot-Backend — die API ist die einzige Wahrheit.
 }
 add_action('save_post_angebot', 'parkourone_angebot_save_meta');
 
@@ -1895,24 +1815,29 @@ function parkourone_sync_ferienkurs_wc_product($angebot_id, $event_post_id, $eve
 	$event_price = get_post_meta($event_post_id, '_event_price', true);
 	$preis = floatval(preg_replace('/[^0-9.,]/', '', str_replace(',', '.', $event_price)));
 
-	// Kapazität aus erstem Termin (alle Tage gleich) — 0 ist ein gültiger Wert (= ausgebucht)
+	// Paket-Stock = knappster Termin (Bottleneck). $termine[*]['kapazitaet'] stammt
+	// vom per-Datum WC-Produkt, das vom custom-events-plugin aus available_seats
+	// (für Kurse/Workshops) befüllt wird. Ein Paket kann nur so oft verkauft werden
+	// wie der Tag mit den wenigsten freien Plätzen.
 	$kapazitaet = 0;
 	if (is_array($termine) && !empty($termine)) {
-		$kapazitaet = absint($termine[0]['kapazitaet'] ?? 0);
+		$kaps = array_map(function($t) { return absint($t['kapazitaet'] ?? 0); }, $termine);
+		$kapazitaet = !empty($kaps) ? min($kaps) : 0;
 	}
 
 	$existing_product_id = (int) get_post_meta($angebot_id, '_angebot_ferienkurs_produkt_id', true);
 
 	if ($existing_product_id && get_post($existing_product_id)) {
-		// Update bestehendes Produkt
+		// Update bestehendes Produkt — API ist die Wahrheit, altes protected-Flag ignorieren
+		delete_post_meta($existing_product_id, '_po_stock_protected');
 		$product = wc_get_product($existing_product_id);
 		if ($product) {
 			$product->set_name($event_title);
 			$product->set_price($preis);
 			$product->set_regular_price($preis);
-			if (!get_post_meta($existing_product_id, '_po_stock_protected', true)) {
-				$product->set_stock_quantity($kapazitaet);
-			}
+			$product->set_manage_stock(true);
+			$product->set_stock_quantity($kapazitaet);
+			$product->set_stock_status($kapazitaet > 0 ? 'instock' : 'outofstock');
 			$product->save();
 		}
 	} else {
@@ -1925,7 +1850,7 @@ function parkourone_sync_ferienkurs_wc_product($angebot_id, $event_post_id, $eve
 		$product->set_regular_price($preis);
 		$product->set_manage_stock(true);
 		$product->set_stock_quantity($kapazitaet);
-		$product->set_stock_status('instock');
+		$product->set_stock_status($kapazitaet > 0 ? 'instock' : 'outofstock');
 		$product->set_sold_individually(false);
 		$product->set_virtual(true);
 
