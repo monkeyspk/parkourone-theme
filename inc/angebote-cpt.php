@@ -234,16 +234,9 @@ function parkourone_angebot_termine_metabox($post) {
 				<span style="font-size:13px;">
 					<strong style="color:#2271b1;"><?php echo (int) $total_sold; ?></strong> gebucht
 					von <strong><?php echo (int) $initial_stock; ?></strong> Plätzen
-					&mdash; <span class="po-stock-display-<?php echo $single_pid; ?>"><strong style="color:<?php echo $stock_qty > 0 ? '#00a32a' : '#d63638'; ?>;"><?php echo $stock_qty; ?></strong> verfügbar</span>
+					&mdash; <strong style="color:<?php echo $stock_qty > 0 ? '#00a32a' : '#d63638'; ?>;"><?php echo $stock_qty; ?></strong> verfügbar
 				</span>
-				<span class="po-stock-adjust" style="margin-left:12px;">
-					<button type="button" class="button button-small po-stock-btn" data-product-id="<?php echo $single_pid; ?>" data-action="decrease" style="padding:0 6px;min-height:26px;line-height:24px;">−</button>
-					<input type="number" class="po-stock-input" data-product-id="<?php echo $single_pid; ?>" value="<?php echo $stock_qty; ?>" style="width:50px;height:26px;text-align:center;margin:0 2px;" min="0">
-					<button type="button" class="button button-small po-stock-btn" data-product-id="<?php echo $single_pid; ?>" data-action="increase" style="padding:0 6px;min-height:26px;line-height:24px;">+</button>
-					<button type="button" class="button button-small po-stock-save" data-product-id="<?php echo $single_pid; ?>" style="margin-left:4px;min-height:26px;line-height:24px;">Speichern</button>
-					<span class="po-stock-msg-<?php echo $single_pid; ?>" style="margin-left:6px;font-size:12px;"></span>
-				</span>
-				<p class="description" style="margin:8px 0 0;">Dieser Kurs/Workshop wird als Gesamtpaket über alle Termine gebucht. Stock kommt aus AcademyBoard (max. Teilnehmer).</p>
+				<p class="description" style="margin:8px 0 0;">Dieser Kurs/Workshop wird als Gesamtpaket über alle Termine gebucht. Stock wird automatisch aus AcademyBoard synchronisiert (max. Teilnehmer).</p>
 			</div>
 			<?php
 		}
