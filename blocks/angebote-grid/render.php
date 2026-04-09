@@ -100,12 +100,13 @@ $kategorie_labels = [
 				}
 			}
 
-			// Ferienkurs-Verfügbarkeit
+			// Ferienkurs-Verfügbarkeit — nur wenn tatsächlich über WooCommerce gebucht wird
 			$ferienkurs_verfuegbar = null;
-			if ($is_ferienkurs && $ferienkurs_produkt_id && function_exists('wc_get_product')) {
+			$angebot_buchungsart = get_post_meta($id, '_angebot_buchungsart', true);
+			if ($is_ferienkurs && $ferienkurs_produkt_id && $angebot_buchungsart === 'woocommerce' && function_exists('wc_get_product')) {
 				$fk_product = wc_get_product($ferienkurs_produkt_id);
 				if ($fk_product && $fk_product->managing_stock()) {
-					$ferienkurs_verfuegbar = $fk_product->get_stock_quantity();
+					$ferienkurs_verfuegbar = (int) $fk_product->get_stock_quantity();
 				}
 			}
 

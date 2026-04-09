@@ -524,14 +524,72 @@ function parkourone_angebot_save_meta($post_id) {
 		update_post_meta($post_id, '_angebot_quelle', 'manual');
 	}
 
-	// Stock-Override-Flag auf verknüpfte WC-Produkte propagieren
-	$termine_saved = get_post_meta($post_id, '_angebot_termine', true);
-	if (is_array($termine_saved)) {
-		foreach ($termine_saved as $termin) {
-			$pid = intval($termin['produkt_id'] ?? 0);
-			if ($pid && get_post($pid)) {
-				update_post_meta($pid, '_po_stock_protected', $stock_override);
+	// Kapazität als Wahrheit auf verknüpfte WC-Produkte schreiben.
+	// Jedes WC-Angebot MUSS eine Kapazität haben — der Wert im Angebot ist
+	// authoritative und überschreibt Termin-Produkt-Stock + Ferienkurs-Paket-Stock.
+	// Geschützt mit _po_stock_protected, damit AB-Re-Sync den Wert in Ruhe lässt.
+	$buchungsart_saved = get_post_meta($post_id, '_angebot_buchungsart', true);
+	if ($buchungsart_saved === 'woocommerce') {
+		$termine_saved = get_post_meta($post_id, '_angebot_termine', true);
+		$kapazitaeten  = [];
+
+		// Verknüpftes AB-Event ermitteln (für Produkt-Lookup falls produkt_id im Cache fehlt)
+		$linked_event_id = (int) get_post_meta($post_id, '_angebot_academyboard_event_id', true);
+
+		if (is_array($termine_saved)) {
+			foreach ($termine_saved as $termin) {
+				$pid = intval($termin['produkt_id'] ?? 0);
+				$kap = isset($termin['kapazitaet']) ? absint($termin['kapazitaet']) : 0;
+				$kapazitaeten[] = $kap;
+
+				// Fallback: WC-Produkt anhand _event_id + _event_date suchen
+				if (!$pid && $linked_event_id && !empty($termin['datum'])) {
+					// Event speichert Datum als DD-MM-YYYY oder DD.MM.YYYY, Angebot als YYYY-MM-DD.
+					$d = DateTime::createFromFormat('Y-m-d', $termin['datum']);
+					if ($d) {
+						$candidates = [$d->format('d-m-Y'), $d->format('d.m.Y')];
+						foreach ($candidates as $cand) {
+							$found = get_posts([
+								'post_type'      => 'product',
+								'posts_per_page' => 1,
+								'post_status'    => 'publish',
+								'fields'         => 'ids',
+								'meta_query'     => [
+									['key' => '_event_id',   'value' => $linked_event_id],
+									['key' => '_event_date', 'value' => $cand],
+								],
+							]);
+							if (!empty($found)) { $pid = (int) $found[0]; break; }
+						}
+					}
+				}
+
+				if ($pid && get_post($pid) && class_exists('WooCommerce')) {
+					$wc_product = wc_get_product($pid);
+					if ($wc_product) {
+						$wc_product->set_manage_stock(true);
+						$wc_product->set_stock_quantity($kap);
+						$wc_product->set_stock_status($kap > 0 ? 'instock' : 'outofstock');
+						$wc_product->save();
+					}
+					update_post_meta($pid, '_po_stock_protected', '1');
+				}
 			}
+		}
+
+		// Ferienkurs-Paket: Stock aus dem KNAPPSTEN Termin (Bottleneck-Logik).
+		$is_ferienkurs       = get_post_meta($post_id, '_angebot_is_ferienkurs', true) === '1';
+		$paket_produkt_id    = (int) get_post_meta($post_id, '_angebot_ferienkurs_produkt_id', true);
+		if ($is_ferienkurs && $paket_produkt_id && get_post($paket_produkt_id) && class_exists('WooCommerce')) {
+			$paket_kap = !empty($kapazitaeten) ? min($kapazitaeten) : 0;
+			$paket_product = wc_get_product($paket_produkt_id);
+			if ($paket_product) {
+				$paket_product->set_manage_stock(true);
+				$paket_product->set_stock_quantity($paket_kap);
+				$paket_product->set_stock_status($paket_kap > 0 ? 'instock' : 'outofstock');
+				$paket_product->save();
+			}
+			update_post_meta($paket_produkt_id, '_po_stock_protected', '1');
 		}
 	}
 }
@@ -868,7 +926,7 @@ function parkourone_angebot_create_woo_products($post_id) {
 		$product->set_price($preis);
 		$product->set_regular_price($preis);
 		$product->set_manage_stock(true);
-		$product->set_stock_quantity($termin['kapazitaet'] ?? 20);
+		$product->set_stock_quantity(absint($termin['kapazitaet'] ?? 0));
 		$product->set_stock_status('instock');
 		$product->set_sold_individually(false);
 
@@ -1766,7 +1824,11 @@ function parkourone_sync_event_to_angebot($post_id) {
 		// Ferienkurs-Meta immer aktualisieren
 		if ($is_ferienkurs) {
 			update_post_meta($angebot_id, '_angebot_is_ferienkurs', '1');
-			parkourone_sync_ferienkurs_wc_product($angebot_id, $post_id, $event_title, $termine);
+			// Nur WC-Produkt anlegen wenn dieses Angebot tatsächlich über WooCommerce gebucht wird.
+			// Externe Ferienkurse (Link) oder Kontakt-Ferienkurse brauchen kein Phantom-Produkt.
+			if (get_post_meta($angebot_id, '_angebot_buchungsart', true) === 'woocommerce') {
+				parkourone_sync_ferienkurs_wc_product($angebot_id, $post_id, $event_title, $termine);
+			}
 		}
 	} else {
 		// NEU: Draft-Angebot erstellen
@@ -1814,7 +1876,11 @@ function parkourone_sync_event_to_angebot($post_id) {
 		// Ferienkurs-Meta + WC-Produkt
 		if ($is_ferienkurs) {
 			update_post_meta($angebot_id, '_angebot_is_ferienkurs', '1');
-			parkourone_sync_ferienkurs_wc_product($angebot_id, $post_id, $event_title, $termine);
+			// Nur WC-Produkt anlegen wenn dieses Angebot tatsächlich über WooCommerce gebucht wird.
+			// Externe Ferienkurse (Link) oder Kontakt-Ferienkurse brauchen kein Phantom-Produkt.
+			if (get_post_meta($angebot_id, '_angebot_buchungsart', true) === 'woocommerce') {
+				parkourone_sync_ferienkurs_wc_product($angebot_id, $post_id, $event_title, $termine);
+			}
 		}
 	}
 }
@@ -1829,10 +1895,10 @@ function parkourone_sync_ferienkurs_wc_product($angebot_id, $event_post_id, $eve
 	$event_price = get_post_meta($event_post_id, '_event_price', true);
 	$preis = floatval(preg_replace('/[^0-9.,]/', '', str_replace(',', '.', $event_price)));
 
-	// Kapazität aus erstem Termin (alle Tage gleich)
-	$kapazitaet = 20;
+	// Kapazität aus erstem Termin (alle Tage gleich) — 0 ist ein gültiger Wert (= ausgebucht)
+	$kapazitaet = 0;
 	if (is_array($termine) && !empty($termine)) {
-		$kapazitaet = absint($termine[0]['kapazitaet'] ?? 20) ?: 20;
+		$kapazitaet = absint($termine[0]['kapazitaet'] ?? 0);
 	}
 
 	$existing_product_id = (int) get_post_meta($angebot_id, '_angebot_ferienkurs_produkt_id', true);

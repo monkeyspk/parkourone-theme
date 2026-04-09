@@ -210,13 +210,11 @@ document.addEventListener('DOMContentLoaded', function() {
 			html += '</div>';
 		}
 
-		// CTA je nach Buchungsart (nicht-Ferienkurs)
-		if (!data.is_ferienkurs) {
-			if (data.buchungsart === 'kontakt') {
-				html += renderKontaktForm(data);
-			} else if (data.buchungsart === 'extern' && data.cta_url) {
-				html += '<a href="' + data.cta_url + '" target="_blank" rel="noopener" class="po-angebote-modal__cta">Zur Anmeldung</a>';
-			}
+		// CTA je nach Buchungsart — auch für Ferienkurse mit Kontakt/externem Link
+		if (data.buchungsart === 'kontakt') {
+			html += renderKontaktForm(data);
+		} else if (data.buchungsart === 'extern' && data.cta_url) {
+			html += '<a href="' + data.cta_url + '" target="_blank" rel="noopener" class="po-angebote-modal__cta">Zur Anmeldung</a>';
 		}
 
 		html += '</div>'; // .po-angebote-modal__body
