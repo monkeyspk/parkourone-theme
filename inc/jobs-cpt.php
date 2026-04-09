@@ -65,6 +65,79 @@ function parkourone_register_job_cpt() {
 }
 add_action('init', 'parkourone_register_job_cpt');
 
+/**
+ * Einmaliger Seed der Standard-Terms für die Job-Filter-Taxonomien.
+ *
+ * Wird beim ersten Aufruf nach einem Theme-Update ausgeführt und durch das
+ * Option-Flag _parkourone_jobs_terms_seeded_v1 gegen Mehrfachausführung
+ * geschützt. Schulen können nicht benötigte Terms im Backend einfach löschen
+ * — sie werden NICHT erneut angelegt, weil das Flag dauerhaft gesetzt bleibt.
+ */
+function parkourone_jobs_seed_default_terms() {
+	if (get_option('_parkourone_jobs_terms_seeded_v1') === '1') return;
+	if (!taxonomy_exists('job_location')) return; // Taxonomien noch nicht registriert
+
+	// Hierarchische Orte: Stadt → optionale Untergebiete
+	$locations = [
+		'Bern'       => ['Wankdorf', 'Länggasse'],
+		'Zürich'     => ['Hardau'],
+		'Basel'      => [],
+		'Winterthur' => [],
+		'St. Gallen' => [],
+		'Luzern'     => [],
+		'Genf'       => [],
+		'Lausanne'   => [],
+	];
+	foreach ($locations as $parent_name => $children) {
+		$parent = wp_insert_term($parent_name, 'job_location');
+		$parent_id = is_wp_error($parent)
+			? (term_exists($parent_name, 'job_location')['term_id'] ?? 0)
+			: $parent['term_id'];
+		foreach ($children as $child_name) {
+			if (!term_exists($child_name, 'job_location')) {
+				wp_insert_term($child_name, 'job_location', ['parent' => (int) $parent_id]);
+			}
+		}
+	}
+
+	// Bereiche / Zielgruppen
+	$bereiche = [
+		'Kids (6–12)',
+		'J&A (Jugendliche & Adults)',
+		'Adults',
+		'Leitung',
+	];
+	foreach ($bereiche as $name) {
+		if (!term_exists($name, 'job_bereich')) {
+			wp_insert_term($name, 'job_bereich');
+		}
+	}
+
+	// Stellen-Typen
+	$stellen = [
+		'Klassenleitung',
+		'Co-Leitung',
+		'Regionsleitung',
+		'Hauptleitung',
+	];
+	foreach ($stellen as $name) {
+		if (!term_exists($name, 'job_stelle')) {
+			wp_insert_term($name, 'job_stelle');
+		}
+	}
+
+	// Wochentage
+	$wochentage = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+	foreach ($wochentage as $name) {
+		if (!term_exists($name, 'job_wochentag')) {
+			wp_insert_term($name, 'job_wochentag');
+		}
+	}
+
+	update_option('_parkourone_jobs_terms_seeded_v1', '1');
+}
+add_action('init', 'parkourone_jobs_seed_default_terms', 20);
+
 // =====================================================
 // Meta Box
 // =====================================================
