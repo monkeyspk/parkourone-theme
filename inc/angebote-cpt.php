@@ -992,7 +992,22 @@ function parkourone_angebot_add_to_cart() {
 	$angebot_id = absint($_POST['angebot_id'] ?? 0);
 
 	if (!$product_id) {
-		wp_send_json_error(['message' => 'Produkt nicht gefunden']);
+		wp_send_json_error(['message' => 'Produkt nicht gefunden (keine ID)']);
+	}
+
+	// Produkt-Validierung: existiert, ist published, hat Preis, ist auf Lager?
+	$product = wc_get_product($product_id);
+	if (!$product) {
+		wp_send_json_error(['message' => 'Produkt #' . $product_id . ' existiert nicht']);
+	}
+	if ($product->get_status() !== 'publish') {
+		wp_send_json_error(['message' => 'Produkt #' . $product_id . ' ist nicht veröffentlicht (Status: ' . $product->get_status() . ')']);
+	}
+	if (!$product->is_purchasable()) {
+		wp_send_json_error(['message' => 'Produkt #' . $product_id . ' ist nicht kaufbar (Preis fehlt oder Produkt deaktiviert)']);
+	}
+	if (!$product->is_in_stock()) {
+		wp_send_json_error(['message' => 'Produkt #' . $product_id . ' ist ausverkauft']);
 	}
 
 	// Teilnehmerdaten sammeln
