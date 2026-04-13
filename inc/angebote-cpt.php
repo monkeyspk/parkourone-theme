@@ -1017,7 +1017,21 @@ function parkourone_angebot_add_to_cart() {
 		wp_send_json_error(['message' => 'Produkt #' . $product_id . ' ist nicht veröffentlicht (Status: ' . $product->get_status() . ')']);
 	}
 	if (!$product->is_purchasable()) {
-		wp_send_json_error(['message' => 'Produkt #' . $product_id . ' ist nicht kaufbar (Preis fehlt oder Produkt deaktiviert)']);
+		// Fallback: Preis aus Angebot extrahieren und am Produkt setzen
+		$angebot_preis_text = $angebot_id ? get_post_meta($angebot_id, '_angebot_preis', true) : '';
+		if ($angebot_preis_text && preg_match('/[\d]+(?:[.,]\d+)?/', str_replace("'", '', $angebot_preis_text), $m)) {
+			$numeric_price = floatval(str_replace(',', '.', $m[0]));
+			if ($numeric_price > 0) {
+				update_post_meta($product_id, '_price', $numeric_price);
+				update_post_meta($product_id, '_regular_price', $numeric_price);
+				wc_delete_product_transients($product_id);
+				// Produkt neu laden
+				$product = wc_get_product($product_id);
+			}
+		}
+		if (!$product || !$product->is_purchasable()) {
+			wp_send_json_error(['message' => 'Produkt #' . $product_id . ' ist nicht kaufbar (Preis fehlt oder Produkt deaktiviert)']);
+		}
 	}
 	if (!$product->is_in_stock()) {
 		wp_send_json_error(['message' => 'Produkt #' . $product_id . ' ist ausverkauft']);
