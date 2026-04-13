@@ -609,7 +609,12 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 						<?php foreach ($available_dates as $date): ?>
 						<button type="button" class="po-steps__date po-steps__next" data-product-id="<?php echo esc_attr($date['product_id']); ?>" data-date-text="<?php echo esc_attr($date['date_formatted']); ?>">
 							<span class="po-steps__date-text"><?php echo esc_html($date['date_formatted']); ?></span>
-							<span class="po-steps__date-stock"><?php echo esc_html($date['stock']); ?> <?php echo $date['stock'] === 1 ? 'Platz' : 'Plätze'; ?> frei</span>
+							<span class="po-steps__date-meta">
+								<?php if (!empty($date['venue'])): ?>
+									<span class="po-steps__date-venue"><?php echo esc_html($date['venue']); ?></span>
+								<?php endif; ?>
+								<span class="po-steps__date-stock"><?php echo esc_html($date['stock']); ?> <?php echo $date['stock'] === 1 ? 'Platz' : 'Plätze'; ?> frei</span>
+							</span>
 						</button>
 						<?php endforeach; ?>
 					</div>
