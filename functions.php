@@ -1810,7 +1810,19 @@ function parkourone_get_available_dates_for_event($event_id) {
     
     $available_dates = [];
     $today = date('Y-m-d');
-    
+
+    // Venue pro Datum aus Event-Dates laden
+    $event_dates_meta = get_post_meta($event_id, '_event_dates', true);
+    $venue_by_date = [];
+    $default_venue = get_post_meta($event_id, '_event_venue', true);
+    if (is_array($event_dates_meta)) {
+        foreach ($event_dates_meta as $d) {
+            if (!empty($d['date'])) {
+                $venue_by_date[$d['date']] = !empty($d['venue']) ? $d['venue'] : $default_venue;
+            }
+        }
+    }
+
     foreach ($products as $product) {
         $product_id = $product->ID;
         $event_date = get_post_meta($product_id, '_event_date', true);
@@ -1856,7 +1868,8 @@ function parkourone_get_available_dates_for_event($event_id) {
                 'date_formatted' => date_i18n('l, j. F Y', strtotime($formatted_date)),
                 'stock' => $stock_int,
                 'price' => $price,
-                'price_raw' => $price_raw
+                'price_raw' => $price_raw,
+                'venue' => $venue_by_date[$event_date] ?? $default_venue,
             ];
         }
     }

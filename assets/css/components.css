@@ -335,6 +335,18 @@ body.po-no-scroll {
 	gap: 4px;
 }
 
+.po-steps__date-meta {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 2px;
+}
+
+.po-steps__date-venue {
+	font-size: 13px;
+	color: var(--po-color-text-secondary);
+}
+
 .po-steps__date-stock {
 	font-size: 13px;
 	color: var(--po-color-text-secondary);
