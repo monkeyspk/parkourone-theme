@@ -109,6 +109,26 @@ if ($query->have_posts()) {
 
 		$color = $age_colors[$age_slug] ?? '#0066cc';
 
+		// Wochentag ermitteln
+		$weekday_name = '';
+		$first_date_entry = is_array($event_dates) && !empty($event_dates) ? $event_dates[0] : null;
+		if ($first_date_entry && !empty($first_date_entry['date'])) {
+			$ts = strtotime(str_replace('-', '.', $first_date_entry['date']));
+			if ($ts) {
+				$wd = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+				$weekday_name = $wd[date('w', $ts)];
+			}
+		}
+
+		// Coach-Profil prüfen
+		$coach_has_profile = false;
+		if (!empty($headcoach) && function_exists('parkourone_get_coach_by_name')) {
+			$coach_data = parkourone_get_coach_by_name($headcoach);
+			if ($coach_data && function_exists('parkourone_coach_has_profile') && parkourone_coach_has_profile($coach_data)) {
+				$coach_has_profile = true;
+			}
+		}
+
 		// Event-Daten für Modal merken (nur einmal pro Event-ID)
 		if (!isset($event_data_for_modals[$event_id])) {
 			$event_data_for_modals[$event_id] = [
@@ -117,11 +137,14 @@ if ($query->have_posts()) {
 				'start_time'      => $start_time,
 				'end_time'        => $end_time,
 				'headcoach'       => $headcoach,
+				'coach_has_profile' => $coach_has_profile,
 				'venue'           => $venue,
+				'weekday'         => $weekday_name,
 				'age_slug'        => $age_slug,
 				'color'           => $color,
-			'dropdown_info'   => get_post_meta($event_id, '_event_dropdown_info', true),
-			'min_participants' => get_post_meta($event_id, '_event_min_participants', true),
+				'dropdown_info'   => get_post_meta($event_id, '_event_dropdown_info', true),
+				'min_participants' => get_post_meta($event_id, '_event_min_participants', true),
+				'description'     => get_post_meta($event_id, '_event_description', true),
 			];
 		}
 
@@ -366,6 +389,15 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 			? parkourone_get_available_dates_for_event($event_id) : [];
 		$category = $ev['age_slug'] ?? '';
 		$time_text = $ev['start_time'] ? $ev['start_time'] . ($ev['end_time'] ? ' – ' . $ev['end_time'] . ' Uhr' : ' Uhr') : '';
+		// Coach-Text mit Link wenn Profil vorhanden (wie klassen-slider)
+		$coach_text = '';
+		if (!empty($ev['headcoach'])) {
+			if (!empty($ev['coach_has_profile'])) {
+				$coach_text = ' von <button type="button" class="po-ks__coach-link-inline" data-goto-slide="coach">' . esc_html($ev['headcoach']) . '</button> geleitet und';
+			} else {
+				$coach_text = ' von ' . esc_html($ev['headcoach']) . ' geleitet und';
+			}
+		}
 	?>
 	<div class="po-overlay" id="<?php echo esc_attr($modal_id); ?>" aria-hidden="true" role="dialog" aria-modal="true">
 		<div class="po-overlay__backdrop"></div>
@@ -389,7 +421,7 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 					<?php // Slide 0: Übersicht ?>
 					<div class="po-steps__slide is-active" data-slide="0">
 						<header class="po-steps__header">
-							<span class="po-steps__eyebrow">Probetraining</span>
+							<span class="po-steps__eyebrow"><?php echo esc_html($ev['weekday'] ?: 'Probetraining'); ?></span>
 							<h2 class="po-steps__heading"><?php echo esc_html($ev['title']); ?></h2>
 						</header>
 
@@ -409,7 +441,15 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 						</dl>
 
 						<?php if ($category && isset($mood_texts[$category])): ?>
-						<p class="po-steps__description"><?php echo esc_html($mood_texts[$category]); ?></p>
+						<p class="po-steps__description">
+							Dieses Training wird<?php echo $coach_text; ?> findet wöchentlich <?php echo esc_html($ev['weekday']); ?> von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($ev['venue'])): ?> Treffpunkt ist <?php echo esc_html($ev['venue']); ?>.<?php endif; ?> <?php echo esc_html($mood_texts[$category]); ?>
+						</p>
+						<?php endif; ?>
+
+						<?php if (!empty($ev['description'])): ?>
+						<div class="po-steps__content">
+							<?php echo wp_kses_post($ev['description']); ?>
+						</div>
 						<?php endif; ?>
 
 						<?php if (!empty($ev['dropdown_info'])): ?>
