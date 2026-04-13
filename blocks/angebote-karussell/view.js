@@ -130,8 +130,14 @@ document.addEventListener('DOMContentLoaded', function() {
 			html += '</div>';
 		}
 
+		// CTA für Kontakt/Extern — immer oberhalb der Termine/Kurstage
+		if (data.buchungsart === 'kontakt') {
+			html += renderKontaktForm(data);
+		} else if (data.buchungsart === 'extern' && data.cta_url) {
+			html += '<a href="' + data.cta_url + '" target="_blank" rel="noopener" class="po-angebote-modal__cta" style="display:block;text-align:center;margin-bottom:1.5rem;">Zur Anmeldung</a>';
+		}
+
 		// Single-Product-Modus: Kurs/Workshop/Ferienkurs mit EINEM WC-Produkt
-		// über alle Termine. Zeigt Tagesliste + einen Gesamt-Buchungsbutton.
 		var isSingleProduct = !!(data.ferienkurs_produkt_id && data.ferienkurs_produkt_id > 0);
 		if (isSingleProduct) {
 			// Checkout-Card: Preis, Verfügbarkeit und Button zusammen
@@ -227,13 +233,6 @@ document.addEventListener('DOMContentLoaded', function() {
 				html += '</div>';
 			});
 			html += '</div>';
-		}
-
-		// CTA je nach Buchungsart — auch für Ferienkurse mit Kontakt/externem Link
-		if (data.buchungsart === 'kontakt') {
-			html += renderKontaktForm(data);
-		} else if (data.buchungsart === 'extern' && data.cta_url) {
-			html += '<a href="' + data.cta_url + '" target="_blank" rel="noopener" class="po-angebote-modal__cta">Zur Anmeldung</a>';
 		}
 
 		html += '</div>';
