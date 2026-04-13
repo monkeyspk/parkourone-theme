@@ -988,6 +988,19 @@ function parkourone_angebot_add_to_cart() {
 		wp_send_json_error(['message' => 'WooCommerce nicht aktiv']);
 	}
 
+	// WooCommerce Session sicherstellen (für nicht-eingeloggte User)
+	if (!WC()->session) {
+		WC()->session = new WC_Session_Handler();
+		WC()->session->init();
+	}
+	if (!WC()->cart) {
+		WC()->cart = new WC_Cart();
+		WC()->cart->get_cart();
+	}
+	if (!WC()->customer) {
+		WC()->customer = new WC_Customer(get_current_user_id(), true);
+	}
+
 	$product_id = absint($_POST['product_id'] ?? 0);
 	$angebot_id = absint($_POST['angebot_id'] ?? 0);
 
@@ -1037,6 +1050,9 @@ function parkourone_angebot_add_to_cart() {
 		'angebot_teilnehmer' => $teilnehmer
 	];
 
+	// WC-Notices vorher leeren für saubere Fehlermeldung
+	wc_clear_notices();
+
 	$added = WC()->cart->add_to_cart($product_id, 1, 0, [], $cart_item_data);
 
 	if ($added) {
@@ -1046,7 +1062,17 @@ function parkourone_angebot_add_to_cart() {
 			'cart_count' => WC()->cart->get_cart_contents_count()
 		]);
 	} else {
-		wp_send_json_error(['message' => 'Fehler beim Hinzufügen zum Warenkorb']);
+		// WC-Fehlermeldungen auslesen für bessere Diagnose
+		$errors = wc_get_notices('error');
+		wc_clear_notices();
+		$error_msg = 'Fehler beim Hinzufügen zum Warenkorb';
+		if (!empty($errors)) {
+			$messages = array_map(function($e) {
+				return is_array($e) ? wp_strip_all_tags($e['notice']) : wp_strip_all_tags($e);
+			}, $errors);
+			$error_msg = implode(' ', $messages);
+		}
+		wp_send_json_error(['message' => $error_msg]);
 	}
 }
 add_action('wp_ajax_po_angebot_add_to_cart', 'parkourone_angebot_add_to_cart');

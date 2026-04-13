@@ -188,6 +188,13 @@ if ($query->have_posts()) {
 			$klasse['coach_has_profile'] = true;
 		}
 
+		// Kurse, Workshops und Ferienkurse gehören nicht in den Klassen-Slider —
+		// nur reguläre Klassen (Probetraining) anzeigen.
+		$exclude_offers = ['kurs', 'workshop', 'ferienkurs', 'camp'];
+		if (in_array($klasse['offer'], $exclude_offers)) {
+			continue;
+		}
+
 		$klassen[] = $klasse;
 	}
 	wp_reset_postdata();
