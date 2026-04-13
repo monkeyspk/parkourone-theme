@@ -123,23 +123,19 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 
 		// Single-Product-Modus: Kurs/Workshop/Ferienkurs mit EINEM WC-Produkt
-		// über alle Termine. Zeigt Buchungsbutton OBEN, dann Tagesliste.
 		var isSingleProduct = !!(data.ferienkurs_produkt_id && data.ferienkurs_produkt_id > 0);
 		if (isSingleProduct) {
-			// Datum-Range
-			if (data.datum_range) {
-				html += '<div class="po-angebote-modal__date-range" style="display:flex;align-items:center;gap:1rem;background:#fff3e6;border:1px solid #ff6b00;border-radius:12px;padding:1rem 1.5rem;margin-bottom:1.5rem;">';
-				html += '<div class="po-angebote-modal__date-range-label" style="font-weight:600;font-size:0.875rem;color:#ff6b00;text-transform:uppercase;letter-spacing:0.02em;">Zeitraum</div>';
-				html += '<div class="po-angebote-modal__date-range-value" style="font-size:1.125rem;font-weight:600;">' + escapeHtml(data.datum_range) + '</div>';
-				html += '</div>';
+			// Checkout-Card: Preis, Verfügbarkeit und Button zusammen
+			html += '<div class="po-angebote-modal__checkout-card" style="border:1px solid #e0e0e0;border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;">';
+
+			// Preis gross
+			if (data.preis) {
+				html += '<div style="font-size:1.75rem;font-weight:700;color:#1d1d1f;margin-bottom:0.25rem;">' + escapeHtml(data.preis) + '</div>';
 			}
 
-			// Gesamtpreis
-			if (data.preis) {
-				html += '<div class="po-angebote-modal__ferienkurs-preis" style="display:flex;align-items:center;gap:1rem;background:#f5f5f7;border-radius:12px;padding:1rem 1.5rem;margin-bottom:1.5rem;">';
-				html += '<div style="font-weight:600;font-size:0.875rem;color:#666;">Gesamtpreis</div>';
-				html += '<div style="font-size:1.5rem;font-weight:700;color:#0066cc;">' + escapeHtml(data.preis) + '</div>';
-				html += '</div>';
+			// Zeitraum kompakt
+			if (data.datum_range) {
+				html += '<div style="font-size:0.875rem;color:#86868b;margin-bottom:1rem;">' + escapeHtml(data.datum_range) + '</div>';
 			}
 
 			// Verfügbarkeit
@@ -148,24 +144,26 @@ document.addEventListener('DOMContentLoaded', function() {
 				if (data.ferienkurs_verfuegbar <= 0) {
 					spotColor = '#d63638'; spotText = 'Ausgebucht';
 				} else if (data.ferienkurs_verfuegbar < 4) {
-					spotColor = '#dba617'; spotText = data.ferienkurs_verfuegbar + (data.ferienkurs_verfuegbar === 1 ? ' Platz frei' : ' Plätze frei');
+					spotColor = '#dba617'; spotText = 'Nur noch ' + data.ferienkurs_verfuegbar + (data.ferienkurs_verfuegbar === 1 ? ' Platz frei' : ' Plätze frei');
 				} else {
 					spotColor = '#00a32a'; spotText = 'Verfügbar';
 				}
-				html += '<div style="font-size:0.875rem;color:' + spotColor + ';font-weight:600;margin-bottom:1rem;">' + spotText + '</div>';
+				html += '<div style="font-size:0.8125rem;color:' + spotColor + ';font-weight:600;margin-bottom:1rem;">' + spotText + '</div>';
 			}
 
-			// Buchungsbutton OBEN — vor den Kurstagen
+			// Buchungsbutton (volle Breite)
 			if (data.ferienkurs_produkt_id && data.buchungsart === 'woocommerce') {
 				var btnLabel = data.is_ferienkurs ? 'Ferienkurs buchen' : 'Kurs buchen';
 				if (typeof data.ferienkurs_verfuegbar !== 'undefined' && data.ferienkurs_verfuegbar !== null && data.ferienkurs_verfuegbar <= 0) {
-					html += '<button class="po-angebote-modal__cta" disabled style="opacity:0.5;cursor:not-allowed;">Ausgebucht</button>';
+					html += '<button class="po-angebote-modal__cta" disabled style="width:100%;opacity:0.5;cursor:not-allowed;">Ausgebucht</button>';
 				} else {
-					html += '<button class="po-angebote-modal__cta po-angebote-modal__ferienkurs-book" data-product-id="' + data.ferienkurs_produkt_id + '">' + btnLabel + '</button>';
+					html += '<button class="po-angebote-modal__cta po-angebote-modal__ferienkurs-book" data-product-id="' + data.ferienkurs_produkt_id + '" style="width:100%;">' + btnLabel + '</button>';
 				}
 			}
 
-			// Tages-Liste (unter dem Button)
+			html += '</div>'; // .po-angebote-modal__checkout-card
+
+			// Tages-Liste (unter der Checkout-Card)
 			if (data.termine && data.termine.length > 0) {
 				html += '<div class="po-angebote-modal__days-list" style="margin-bottom:1.5rem;">';
 				html += '<h3 style="font-size:1rem;font-weight:600;margin:0 0 0.75rem 0;">Kurstage</h3>';
