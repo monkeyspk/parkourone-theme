@@ -432,7 +432,12 @@
 .po-angebote-modal__form-row {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	gap: 1rem;
+	gap: 0.75rem 1.25rem;
+	margin-bottom: 0.75rem;
+}
+
+.po-angebote-modal__form-row .po-angebote-modal__form-group {
+	margin-bottom: 0;
 }
 
 .po-angebote-modal__form-group {
