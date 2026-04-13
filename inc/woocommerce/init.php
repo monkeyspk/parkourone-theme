@@ -17,6 +17,21 @@ if (!class_exists('WooCommerce')) {
 }
 
 // =====================================================
+// Shop-Seite und Einzelprodukte auf Probetraining umleiten
+// Die WC-Produkte sind intern (Event-Sync) und nicht für Kunden gedacht.
+// =====================================================
+add_action('template_redirect', function() {
+	if (function_exists('is_shop') && is_shop()) {
+		wp_safe_redirect(home_url('/probetraining-buchen/'), 301);
+		exit;
+	}
+	if (function_exists('is_product') && is_product()) {
+		wp_safe_redirect(home_url('/probetraining-buchen/'), 301);
+		exit;
+	}
+});
+
+// =====================================================
 // Kundenkonto-Erstellung im Checkout deaktivieren
 // Verhindert das "Konto erstellen"-Häkchen und die
 // automatische Kundenkonto-Mail die nirgendwo hinführt
