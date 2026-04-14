@@ -50,9 +50,15 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'po-gutschein']);
         <?php endif; ?>
     </div>
 
-    <?php if (!empty($inspirations)): ?>
+    <?php
+    // Nur sichtbare Karten anzeigen (Default: sichtbar wenn nicht gesetzt)
+    $visible_inspirations = array_filter($inspirations, function($item) {
+        return !isset($item['visible']) || $item['visible'] !== false;
+    });
+    ?>
+    <?php if (!empty($visible_inspirations)): ?>
         <div class="po-gutschein__inspirations">
-            <?php foreach ($inspirations as $item): ?>
+            <?php foreach ($visible_inspirations as $item): ?>
                 <div class="po-gutschein__card">
                     <?php
                     $icon_key = $item['icon'] ?? 'ticket';

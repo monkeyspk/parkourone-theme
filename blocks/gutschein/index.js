@@ -8,6 +8,7 @@
 	var TextControl = wp.components.TextControl;
 	var TextareaControl = wp.components.TextareaControl;
 	var SelectControl = wp.components.SelectControl;
+	var ToggleControl = wp.components.ToggleControl;
 	var Button = wp.components.Button;
 	var el = wp.element.createElement;
 	var useState = wp.element.useState;
@@ -126,10 +127,17 @@
 					]),
 					el(PanelBody, { key: 'inspirations', title: 'Inspirations-Karten', initialOpen: false },
 						attributes.inspirations.map(function(item, i) {
+							var isVisible = item.visible !== false;
 							return el('div', {
 								key: i,
-								style: { marginBottom: '20px', paddingBottom: '16px', borderBottom: '1px solid #e0e0e0' }
+								style: { marginBottom: '20px', paddingBottom: '16px', borderBottom: '1px solid #e0e0e0', opacity: isVisible ? 1 : 0.5 }
 							}, [
+								el(ToggleControl, {
+									key: 'visible-' + i,
+									label: 'Karte anzeigen',
+									checked: isVisible,
+									onChange: function(v) { updateInspiration(i, 'visible', v); }
+								}),
 								el(TextControl, {
 									key: 'title-' + i,
 									label: 'Titel ' + (i + 1),
@@ -184,7 +192,7 @@
 							style: { fontSize: '14px', color: 'rgba(255,255,255,0.6)', margin: '0 0 24px' }
 						}, attributes.subtext),
 						el('div', { key: 'cards', style: { display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' } },
-							attributes.inspirations.map(function(item, i) {
+							attributes.inspirations.filter(function(item) { return item.visible !== false; }).map(function(item, i) {
 								return el('div', {
 									key: i,
 									style: {

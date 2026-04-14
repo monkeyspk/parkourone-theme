@@ -38,17 +38,20 @@
 				{
 					"title": "Probelektion",
 					"description": "Verschenke eine Probelektion in einer unserer regulären Klassen um erste Parkourluft zu schnuppern. Die Stadt wählt der Beschenkte selbst aus.",
-					"icon": "ticket"
+					"icon": "ticket",
+					"visible": true
 				},
 				{
 					"title": "Personal Coaching",
 					"description": "Im Personal Coaching arbeiten wir an individuellen Zielen. Es bringt physisch weiter, fordert mental und bewegt emotional.",
-					"icon": "user"
+					"icon": "user",
+					"visible": true
 				},
 				{
 					"title": "Workshops & Kurse",
 					"description": "Ein Gutschein für einen der vielen Workshops die im Jahr stattfinden. Von Basic & Deep Dive Workshops bis hin zum Familienworkshop.",
-					"icon": "calendar"
+					"icon": "calendar",
+					"visible": true
 				}
 			]
 		},
