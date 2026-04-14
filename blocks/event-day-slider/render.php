@@ -13,16 +13,7 @@ $age_colors = [
 	'masters' => '#ff2d55'
 ];
 
-// Mood-Texte für Modal
-$mood_texts = [
-	'minis'   => 'Erste Bewegungserfahrungen in spielerischer Atmosphäre - hier entdecken die Kleinsten ihre motorischen Fähigkeiten.',
-	'kids'    => 'Spielerisch Bewegungstalente entdecken: Klettern, Springen und Balancieren in einer sicheren Umgebung.',
-	'juniors' => 'Von den Basics bis zu fortgeschrittenen Moves - hier entwickelst du deine Skills in einer motivierenden Gruppe.',
-	'adults'  => 'Den eigenen Körper neu entdecken, Grenzen verschieben und Techniken verfeinern - Training für alle, die mehr wollen.',
-	'women'   => 'In entspannter Atmosphäre unter Frauen trainieren - Kraft, Beweglichkeit und Selbstvertrauen aufbauen.',
-	'seniors' => 'Koordination erhalten, Fitness aufbauen und mit Gleichgesinnten trainieren - beweglich bleiben in jedem Alter.',
-	'masters' => 'Erfahrung trifft Bewegung - Training für alle, die auch mit den Jahren aktiv und beweglich bleiben wollen.',
-];
+// Mood-Texte kommen jetzt aus parkourone_get_mood_text() in functions.php
 
 // Filter-Taxonomie-Terms laden
 $alter_parent = get_term_by('slug', 'alter', 'event_category');
@@ -387,7 +378,9 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 		$modal_id = $unique_id . '-modal-' . $event_id;
 		$available_dates = function_exists('parkourone_get_available_dates_for_event')
 			? parkourone_get_available_dates_for_event($event_id) : [];
-		$category = $ev['age_slug'] ?? '';
+		$mood_text = function_exists('parkourone_get_mood_text')
+			? parkourone_get_mood_text($ev['age_slug'] ?? '')
+			: '';
 		$time_text = $ev['start_time'] ? $ev['start_time'] . ($ev['end_time'] ? ' – ' . $ev['end_time'] . ' Uhr' : ' Uhr') : '';
 		// Coach-Text mit Link wenn Profil vorhanden (wie klassen-slider)
 		$coach_text = '';
@@ -440,9 +433,9 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 							<?php endif; ?>
 						</dl>
 
-						<?php if ($category && isset($mood_texts[$category])): ?>
+						<?php if ($mood_text): ?>
 						<p class="po-steps__description">
-							Dieses Training wird<?php echo $coach_text; ?> findet wöchentlich <?php echo esc_html($ev['weekday']); ?> von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($ev['venue'])): ?> Treffpunkt ist <?php echo esc_html($ev['venue']); ?>.<?php endif; ?> <?php echo esc_html($mood_texts[$category]); ?>
+							Dieses Training wird<?php echo $coach_text; ?> findet wöchentlich <?php echo esc_html($ev['weekday']); ?> von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($ev['venue'])): ?> Treffpunkt ist <?php echo esc_html($ev['venue']); ?>.<?php endif; ?> <?php echo esc_html($mood_text); ?>
 						</p>
 						<?php endif; ?>
 

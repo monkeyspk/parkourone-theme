@@ -382,19 +382,9 @@ $hasFilters = $showAgeFilter || $showLocationFilter;
 <?php foreach ($klassen as $index => $klasse): ?>
 <?php
 $available_dates = function_exists('parkourone_get_available_dates_for_event') ? parkourone_get_available_dates_for_event($klasse['id']) : [];
-$mood_texts = [
-	'minis' => 'Erste Bewegungserfahrungen in spielerischer Atmosphäre - hier entdecken die Kleinsten ihre motorischen Fähigkeiten.',
-	'kids' => 'Spielerisch Bewegungstalente entdecken: Klettern, Springen und Balancieren in einer sicheren Umgebung.',
-	'juniors' => 'Von den Basics bis zu fortgeschrittenen Moves - hier entwickelst du deine Skills in einer motivierenden Gruppe.',
-	'adults' => 'Den eigenen Körper neu entdecken, Grenzen verschieben und Techniken verfeinern - Training für alle, die mehr wollen.',
-	'women' => 'In entspannter Atmosphäre unter Frauen trainieren - Kraft, Beweglichkeit und Selbstvertrauen aufbauen.',
-	'original' => 'Das Original-Training für alle, die Parkour in seiner ursprünglichen Form erleben wollen - authentisch und intensiv.',
-	'masters' => 'Erfahrung trifft Bewegung - Training für alle, die auch mit den Jahren aktiv und beweglich bleiben wollen.',
-	'seniors' => 'Koordination erhalten, Fitness aufbauen und mit Gleichgesinnten trainieren - beweglich bleiben in jedem Alter.',
-	'juniors-adults' => 'Den eigenen Körper kennenlernen, Grenzen austesten und fortgeschrittene Techniken meistern - intensives Training mit der Möglichkeit, an den eigenen Grenzen zu wachsen.',
-	'seniors-masters' => 'Koordination erhalten, Fitness aufbauen und mit Gleichgesinnten trainieren - beweglich bleiben und den Körper langfristig fit halten.'
-];
-$category = $klasse['category'] ?? '';
+$mood_text = function_exists('parkourone_get_mood_text')
+	? parkourone_get_mood_text($klasse['category'] ?? '')
+	: '';
 // Coach-Text mit Link wenn Profil vorhanden
 if (!empty($klasse['headcoach'])) {
 	if ($klasse['coach_has_profile']) {
@@ -447,12 +437,12 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 						<?php endif; ?>
 					</dl>
 
-					<?php if ($category && isset($mood_texts[$category])): ?>
+					<?php if ($mood_text): ?>
 					<p class="po-steps__description">
 						<?php if (($klasse['offer'] ?? '') === 'ferienkurs'): ?>
-						Dieser Ferienkurs wird<?php echo $coach_text; ?> findet von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($klasse['venue'])): ?> Treffpunkt ist <?php echo esc_html($klasse['venue']); ?>.<?php endif; ?> <?php echo esc_html($mood_texts[$category]); ?>
+						Dieser Ferienkurs wird<?php echo $coach_text; ?> findet von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($klasse['venue'])): ?> Treffpunkt ist <?php echo esc_html($klasse['venue']); ?>.<?php endif; ?> <?php echo esc_html($mood_text); ?>
 						<?php else: ?>
-						Dieses Training wird<?php echo $coach_text; ?> findet wöchentlich <?php echo esc_html($klasse['weekday']); ?> von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($klasse['venue'])): ?> Treffpunkt ist <?php echo esc_html($klasse['venue']); ?>.<?php endif; ?> <?php echo esc_html($mood_texts[$category]); ?>
+						Dieses Training wird<?php echo $coach_text; ?> findet wöchentlich <?php echo esc_html($klasse['weekday']); ?> von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($klasse['venue'])): ?> Treffpunkt ist <?php echo esc_html($klasse['venue']); ?>.<?php endif; ?> <?php echo esc_html($mood_text); ?>
 						<?php endif; ?>
 					</p>
 					<?php endif; ?>
