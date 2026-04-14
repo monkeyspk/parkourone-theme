@@ -49,7 +49,7 @@ if (!function_exists('parkourone_get_embed_url')) {
 			<h2 class="po-about__headline"><?php echo wp_kses_post($headline); ?></h2>
 		<?php endif; ?>
 		<?php if ($text): ?>
-			<div class="po-about__content"><?php echo wp_kses_post($text); ?></div>
+			<div class="po-about__content"><?php echo wp_kses_post(wpautop($text)); ?></div>
 		<?php endif; ?>
 		<?php if ($ctaText): ?>
 			<a href="<?php echo esc_url($ctaUrl); ?>" class="po-about__cta"><?php echo esc_html($ctaText); ?></a>

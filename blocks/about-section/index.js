@@ -177,7 +177,7 @@
 							value: attributes.text,
 							onChange: function(val) { setAttributes({ text: val }); },
 							placeholder: 'Text eingeben...',
-							multiline: 'p'
+							allowedFormats: ['core/bold', 'core/italic', 'core/link']
 						}),
 						attributes.ctaText && el('span', {
 							key: 'cta',
