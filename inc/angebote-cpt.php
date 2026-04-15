@@ -1294,9 +1294,10 @@ function parkourone_angebot_kontakt_submit() {
 	$message .= "\nNachricht:\n" . $nachricht . "\n";
 	$message .= "\n---\nGesendet von: " . home_url();
 
+	$reply_name = trim( preg_replace( '/[\r\n<>,":;]+/', ' ', $name ) );
 	$headers = [
 		'Content-Type: text/plain; charset=UTF-8',
-		'Reply-To: ' . $name . ' <' . $email . '>'
+		'Reply-To: ' . $reply_name . ' <' . $email . '>'
 	];
 
 	$sent_admin = wp_mail($to_email, $subject, $message, $headers);

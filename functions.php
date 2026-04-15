@@ -3283,9 +3283,10 @@ function parkourone_inquiry_submit() {
 	$message .= "\nNachricht:\n" . $nachricht . "\n";
 	$message .= "\n---\nGesendet von: " . home_url();
 
+	$reply_name = trim( preg_replace( '/[\r\n<>,":;]+/', ' ', $vorname . ' ' . $nachname ) );
 	$headers = [
 		'Content-Type: text/plain; charset=UTF-8',
-		'Reply-To: ' . $vorname . ' ' . $nachname . ' <' . $email . '>'
+		'Reply-To: ' . $reply_name . ' <' . $email . '>'
 	];
 
 	$sent_admin = wp_mail($to_email, $subject, $message, $headers);
@@ -3468,9 +3469,10 @@ function parkourone_handle_verletzungen_form() {
 	}
 	$message .= "\n---\nGesendet von: " . home_url();
 
+	$reply_name = trim( preg_replace( '/[\r\n<>,":;]+/', ' ', $vorname . ' ' . $name ) );
 	$headers = [
 		'Content-Type: text/plain; charset=UTF-8',
-		'Reply-To: ' . $vorname . ' ' . $name . ' <' . $email . '>'
+		'Reply-To: ' . $reply_name . ' <' . $email . '>'
 	];
 
 	$attachments = $attachment_path ? [$attachment_path] : [];
