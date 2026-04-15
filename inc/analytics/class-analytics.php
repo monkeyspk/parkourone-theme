@@ -1697,8 +1697,12 @@ class PO_Analytics {
 		$page = max(1, intval($_GET['paged'] ?? 1));
 		$per = 50;
 		$offset = ($page - 1) * $per;
-		$total = (int) $wpdb->get_var("SELECT COUNT(*) FROM $table");
-		$events = $wpdb->get_results("SELECT * FROM $table ORDER BY created_at DESC LIMIT $per OFFSET $offset");
+		$total = (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$table}`");
+		$events = $wpdb->get_results( $wpdb->prepare(
+			"SELECT * FROM `{$table}` ORDER BY created_at DESC LIMIT %d OFFSET %d",
+			$per,
+			$offset
+		) );
 		?>
 		<div class="wrap">
 			<h1>Analytics Rohdaten</h1>
