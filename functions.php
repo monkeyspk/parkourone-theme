@@ -2976,43 +2976,28 @@ function parkourone_find_coach_by_email($email) {
 function parkourone_send_coach_magic_link($coach_id) {
 	$email = get_post_meta($coach_id, '_coach_email', true);
 	if (empty($email)) {
-		error_log('PO Debug: No email found for coach ID ' . $coach_id);
 		return false;
 	}
-	
+
 	$token = parkourone_generate_coach_token($coach_id);
 	$coach = get_post($coach_id);
 	$link = home_url('/mein-coach-profil/' . $token . '/');
-	
-	error_log('PO Debug: Coach ID ' . $coach_id . ', Email: ' . $email . ', Link: ' . $link);
-	
+
 	$subject = 'Dein ParkourONE Coach-Profil';
 	$message = "Hallo " . $coach->post_title . ",\n\n";
 	$message .= "Hier ist dein persönlicher Link um dein Coach-Profil zu bearbeiten:\n\n";
 	$message .= $link . "\n\n";
 	$message .= "Der Link ist 7 Tage gültig.\n\n";
 	$message .= "Liebe Grüsse\nDein ParkourONE Team";
-	
+
 	$admin_email = get_option('admin_email');
 	$site_name = get_bloginfo('name');
 	$headers = [
 		'Content-Type: text/plain; charset=UTF-8',
 		'From: ' . $site_name . ' <' . $admin_email . '>'
 	];
-	
-	error_log('PO Debug: Headers: ' . print_r($headers, true));
-	
-	$result = wp_mail($email, $subject, $message, $headers);
-	error_log('PO Debug: wp_mail result: ' . ($result ? 'true' : 'false'));
-	
-	if (!$result) {
-		global $phpmailer;
-		if (isset($phpmailer) && is_object($phpmailer)) {
-			error_log('PO Debug: PHPMailer error: ' . $phpmailer->ErrorInfo);
-		}
-	}
-	
-	return $result;
+
+	return wp_mail($email, $subject, $message, $headers);
 }
 
 function parkourone_coach_profile_request_ajax() {
