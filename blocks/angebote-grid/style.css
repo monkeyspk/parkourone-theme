@@ -150,6 +150,14 @@
 	overflow: hidden;
 }
 
+.po-angebote-grid__card-termin {
+	font-size: 0.8125rem;
+	font-weight: 500;
+	color: #1d1d1f;
+	margin: 0 0 0.75rem 0;
+	line-height: 1.4;
+}
+
 .po-angebote-grid__card-cta {
 	font-size: 0.875rem;
 	font-weight: 500;

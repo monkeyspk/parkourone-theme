@@ -170,6 +170,14 @@
 	overflow: hidden;
 }
 
+.po-angebote-karussell__card-termin {
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 1.4;
+	color: rgba(255, 255, 255, 0.9);
+	margin: 0.5rem 0 0 0;
+}
+
 /* Footer */
 .po-angebote-karussell__footer {
 	text-align: center;

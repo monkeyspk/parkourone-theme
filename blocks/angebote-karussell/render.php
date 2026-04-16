@@ -109,11 +109,35 @@ if (empty($angebote)) {
 				}
 			}
 
+			// Beschreibung fürs Modal: post_content bevorzugt, sonst Fallback auf Kurzbeschreibung.
+			$modal_beschreibung = apply_filters('the_content', $angebot->post_content);
+			if (empty(trim(strip_tags($modal_beschreibung))) && !empty($kurzbeschreibung)) {
+				$modal_beschreibung = wpautop($kurzbeschreibung);
+			}
+
+			// Termin-Label für die Card: Datum-Range (multi-day) oder nächstes Datum (buchbare Workshops).
+			$card_termin_label = '';
+			if ($datum_range) {
+				$card_termin_label = $datum_range;
+			} elseif (is_array($alle_termine) && !empty($alle_termine)) {
+				$filtered_termine = parkourone_filter_vergangene_termine($alle_termine);
+				if (!empty($filtered_termine)) {
+					$first_termin = reset($filtered_termine);
+					if (!empty($first_termin['datum'])) {
+						$ts = strtotime($first_termin['datum']);
+						if ($ts) {
+							$card_termin_label = date_i18n('j. F Y', $ts);
+						}
+					}
+				}
+			}
+			$show_card_termin = $card_termin_label && in_array($kategorie_slug, ['kurs', 'workshop', 'ferienkurs', 'camp'], true);
+
 			// Modal-Daten
 			$modal_data = [
 				'id' => $id,
 				'titel' => $angebot->post_title,
-				'beschreibung' => apply_filters('the_content', $angebot->post_content),
+				'beschreibung' => $modal_beschreibung,
 				'bild' => parkourone_get_angebot_image($id, 'large'),
 				'kategorie' => $kategorie_name,
 				'kategorie_slug' => $kategorie_slug,
@@ -154,6 +178,13 @@ if (empty($angebote)) {
 				<h3 class="po-angebote-karussell__card-title"><?php echo esc_html($angebot->post_title); ?></h3>
 				<?php if ($kurzbeschreibung): ?>
 					<p class="po-angebote-karussell__card-desc"><?php echo esc_html($kurzbeschreibung); ?></p>
+				<?php endif; ?>
+				<?php if ($show_card_termin): ?>
+					<p class="po-angebote-karussell__card-termin"><?php
+						echo $datum_range
+							? esc_html($card_termin_label)
+							: esc_html('Nächster Termin: ' . $card_termin_label);
+					?></p>
 				<?php endif; ?>
 			</div>
 		</article>
