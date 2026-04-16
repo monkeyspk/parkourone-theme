@@ -140,43 +140,44 @@ document.addEventListener('DOMContentLoaded', function() {
 		// Single-Product-Modus: Kurs/Workshop/Ferienkurs mit EINEM WC-Produkt
 		var isSingleProduct = !!(data.ferienkurs_produkt_id && data.ferienkurs_produkt_id > 0);
 		if (isSingleProduct) {
-			// Checkout-Card: Preis, Verfügbarkeit und Button zusammen
-			html += '<div class="po-angebote-modal__checkout-card" style="border:1px solid #e0e0e0;border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;">';
+			// Checkout-Card nur bei WooCommerce-Buchung. Bei extern/kontakt wird
+			// der CTA oben bereits angezeigt — die Preis/Datum/Button-Box wäre redundant.
+			if (data.buchungsart === 'woocommerce') {
+				html += '<div class="po-angebote-modal__checkout-card" style="border:1px solid #e0e0e0;border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;">';
 
-			// Preis gross
-			if (data.preis) {
-				html += '<div style="font-size:1.75rem;font-weight:700;color:#1d1d1f;margin-bottom:0.25rem;">' + escapeHtml(data.preis) + '</div>';
-			}
-
-			// Zeitraum kompakt
-			if (data.datum_range) {
-				html += '<div style="font-size:0.875rem;color:#86868b;margin-bottom:1rem;">' + escapeHtml(data.datum_range) + '</div>';
-			}
-
-			// Verfügbarkeit
-			if (typeof data.ferienkurs_verfuegbar !== 'undefined' && data.ferienkurs_verfuegbar !== null) {
-				var spotColor, spotText;
-				if (data.ferienkurs_verfuegbar <= 0) {
-					spotColor = '#d63638'; spotText = 'Ausgebucht';
-				} else if (data.ferienkurs_verfuegbar < 4) {
-					spotColor = '#dba617'; spotText = 'Nur noch ' + data.ferienkurs_verfuegbar + (data.ferienkurs_verfuegbar === 1 ? ' Platz frei' : ' Plätze frei');
-				} else {
-					spotColor = '#00a32a'; spotText = 'Verfügbar';
+				// Preis gross
+				if (data.preis) {
+					html += '<div style="font-size:1.75rem;font-weight:700;color:#1d1d1f;margin-bottom:0.25rem;">' + escapeHtml(data.preis) + '</div>';
 				}
-				html += '<div style="font-size:0.8125rem;color:' + spotColor + ';font-weight:600;margin-bottom:1rem;">' + spotText + '</div>';
-			}
 
-			// Buchungsbutton (volle Breite)
-			if (data.ferienkurs_produkt_id && data.buchungsart === 'woocommerce') {
+				// Zeitraum kompakt
+				if (data.datum_range) {
+					html += '<div style="font-size:0.875rem;color:#86868b;margin-bottom:1rem;">' + escapeHtml(data.datum_range) + '</div>';
+				}
+
+				// Verfügbarkeit
+				if (typeof data.ferienkurs_verfuegbar !== 'undefined' && data.ferienkurs_verfuegbar !== null) {
+					var spotColor, spotText;
+					if (data.ferienkurs_verfuegbar <= 0) {
+						spotColor = '#d63638'; spotText = 'Ausgebucht';
+					} else if (data.ferienkurs_verfuegbar < 4) {
+						spotColor = '#dba617'; spotText = 'Nur noch ' + data.ferienkurs_verfuegbar + (data.ferienkurs_verfuegbar === 1 ? ' Platz frei' : ' Plätze frei');
+					} else {
+						spotColor = '#00a32a'; spotText = 'Verfügbar';
+					}
+					html += '<div style="font-size:0.8125rem;color:' + spotColor + ';font-weight:600;margin-bottom:1rem;">' + spotText + '</div>';
+				}
+
+				// Buchungsbutton (volle Breite)
 				var btnLabel = data.is_ferienkurs ? 'Ferienkurs buchen' : 'Kurs buchen';
 				if (typeof data.ferienkurs_verfuegbar !== 'undefined' && data.ferienkurs_verfuegbar !== null && data.ferienkurs_verfuegbar <= 0) {
 					html += '<button class="po-angebote-modal__cta" disabled style="width:100%;opacity:0.5;cursor:not-allowed;">Ausgebucht</button>';
 				} else {
 					html += '<button class="po-angebote-modal__cta po-angebote-modal__ferienkurs-book" data-product-id="' + data.ferienkurs_produkt_id + '" style="width:100%;">' + btnLabel + '</button>';
 				}
-			}
 
-			html += '</div>'; // .po-angebote-modal__checkout-card
+				html += '</div>'; // .po-angebote-modal__checkout-card
+			}
 
 			// Tages-Liste (unter der Checkout-Card)
 			if (data.termine && data.termine.length > 0) {
