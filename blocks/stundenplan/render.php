@@ -175,6 +175,11 @@ if ($query->have_posts()) {
 			'start_time' => $start_time,
 			'end_time' => $end_time,
 			'venue' => get_post_meta($event_id, '_event_venue', true),
+			'venue_maps_url' => (function() use ($event_id) {
+				$lat = get_post_meta($event_id, '_event_venue_lat', true);
+				$lng = get_post_meta($event_id, '_event_venue_lng', true);
+				return ($lat && $lng) ? 'https://www.google.com/maps?q=' . urlencode($lat . ',' . $lng) : '';
+			})(),
 			'weekday' => $weekday_name,
 			'age_slug' => $age_slug_str,
 			'age_name' => $age_name_str,
@@ -436,7 +441,11 @@ $used_age_slugs = array_unique($used_age_slugs);
 								<span class="po-sp__card-coach"><?php echo esc_html($klasse['headcoach']); ?></span>
 								<?php endif; ?>
 								<?php if ($klasse['venue']): ?>
+								<?php if (!empty($klasse['venue_maps_url'])): ?>
+								<a href="<?php echo esc_url($klasse['venue_maps_url']); ?>" target="_blank" rel="noopener" class="po-sp__card-venue" onclick="event.stopPropagation();"><?php echo esc_html($klasse['venue']); ?></a>
+								<?php else: ?>
 								<span class="po-sp__card-venue"><?php echo esc_html($klasse['venue']); ?></span>
+								<?php endif; ?>
 								<?php endif; ?>
 							</div>
 						</button>
@@ -547,14 +556,18 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 						<?php if (!empty($klasse['venue'])): ?>
 						<div class="po-steps__meta-item">
 							<dt><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></dt>
-							<dd><?php echo esc_html($klasse['venue']); ?></dd>
+							<dd><?php if (!empty($klasse['venue_maps_url'])): ?>
+								<a href="<?php echo esc_url($klasse['venue_maps_url']); ?>" target="_blank" rel="noopener"><?php echo esc_html($klasse['venue']); ?></a>
+							<?php else: ?>
+								<?php echo esc_html($klasse['venue']); ?>
+							<?php endif; ?></dd>
 						</div>
 						<?php endif; ?>
 					</dl>
 
 					<?php if ($mood_text): ?>
 					<p class="po-steps__description">
-						Dieses Training wird<?php echo $coach_text; ?> findet wöchentlich <?php echo esc_html($klasse['weekday']); ?> von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($klasse['venue'])): ?> Treffpunkt ist <?php echo esc_html($klasse['venue']); ?>.<?php endif; ?> <?php echo esc_html($mood_text); ?>
+						Dieses Training wird<?php echo $coach_text; ?> findet wöchentlich <?php echo esc_html($klasse['weekday']); ?> von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($klasse['venue'])): ?> Treffpunkt ist <?php if (!empty($klasse['venue_maps_url'])): ?><a href="<?php echo esc_url($klasse['venue_maps_url']); ?>" target="_blank" rel="noopener"><?php echo esc_html($klasse['venue']); ?></a><?php else: ?><?php echo esc_html($klasse['venue']); ?><?php endif; ?>.<?php endif; ?> <?php echo esc_html($mood_text); ?>
 					</p>
 					<?php endif; ?>
 
@@ -590,7 +603,11 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 							<span class="po-steps__date-text"><?php echo esc_html($date['date_formatted']); ?></span>
 							<span class="po-steps__date-meta">
 								<?php if (!empty($date['venue'])): ?>
-									<span class="po-steps__date-venue"><?php echo esc_html($date['venue']); ?></span>
+									<?php if (!empty($date['venue_maps_url'])): ?>
+										<a href="<?php echo esc_url($date['venue_maps_url']); ?>" target="_blank" rel="noopener" class="po-steps__date-venue" onclick="event.stopPropagation();"><?php echo esc_html($date['venue']); ?></a>
+									<?php else: ?>
+										<span class="po-steps__date-venue"><?php echo esc_html($date['venue']); ?></span>
+									<?php endif; ?>
 								<?php endif; ?>
 								<span class="po-steps__date-stock"><?php echo esc_html($date['stock']); ?> <?php echo $date['stock'] === 1 ? 'Platz' : 'Plätze'; ?> frei</span>
 							</span>

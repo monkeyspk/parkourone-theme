@@ -74,6 +74,11 @@ if ($query->have_posts()) {
 			? parkourone_get_coach_display_image_by_name($headcoach, '80x80', get_post_meta($event_id, '_event_headcoach_image_url', true))
 			: get_post_meta($event_id, '_event_headcoach_image_url', true);
 		$venue      = get_post_meta($event_id, '_event_venue', true);
+		$venue_lat  = get_post_meta($event_id, '_event_venue_lat', true);
+		$venue_lng  = get_post_meta($event_id, '_event_venue_lng', true);
+		$venue_maps_url = ($venue_lat && $venue_lng)
+			? 'https://www.google.com/maps?q=' . urlencode($venue_lat . ',' . $venue_lng)
+			: '';
 
 		// Taxonomien ermitteln
 		$terms = wp_get_post_terms($event_id, 'event_category', ['fields' => 'all']);
@@ -130,6 +135,7 @@ if ($query->have_posts()) {
 				'headcoach'       => $headcoach,
 				'coach_has_profile' => $coach_has_profile,
 				'venue'           => $venue,
+				'venue_maps_url'  => $venue_maps_url,
 				'weekday'         => $weekday_name,
 				'age_slug'        => $age_slug,
 				'color'           => $color,
@@ -353,7 +359,11 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 					<span class="po-eds__card-coach"><?php echo esc_html($ev['headcoach']); ?></span>
 					<?php endif; ?>
 					<?php if ($ev['venue']): ?>
+					<?php if (!empty($ev['venue_maps_url'])): ?>
+					<a href="<?php echo esc_url($ev['venue_maps_url']); ?>" target="_blank" rel="noopener" class="po-eds__card-venue" onclick="event.stopPropagation();"><?php echo esc_html($ev['venue']); ?></a>
+					<?php else: ?>
 					<span class="po-eds__card-venue"><?php echo esc_html($ev['venue']); ?></span>
+					<?php endif; ?>
 					<?php endif; ?>
 				</div>
 				<?php echo $stock_html; ?>
@@ -428,14 +438,18 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 							<?php if (!empty($ev['venue'])): ?>
 							<div class="po-steps__meta-item">
 								<dt><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></dt>
-								<dd><?php echo esc_html($ev['venue']); ?></dd>
+								<dd><?php if (!empty($ev['venue_maps_url'])): ?>
+									<a href="<?php echo esc_url($ev['venue_maps_url']); ?>" target="_blank" rel="noopener"><?php echo esc_html($ev['venue']); ?></a>
+								<?php else: ?>
+									<?php echo esc_html($ev['venue']); ?>
+								<?php endif; ?></dd>
 							</div>
 							<?php endif; ?>
 						</dl>
 
 						<?php if ($mood_text): ?>
 						<p class="po-steps__description">
-							Dieses Training wird<?php echo $coach_text; ?> findet wöchentlich <?php echo esc_html($ev['weekday']); ?> von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($ev['venue'])): ?> Treffpunkt ist <?php echo esc_html($ev['venue']); ?>.<?php endif; ?> <?php echo esc_html($mood_text); ?>
+							Dieses Training wird<?php echo $coach_text; ?> findet wöchentlich <?php echo esc_html($ev['weekday']); ?> von <?php echo esc_html($time_text); ?> statt.<?php if (!empty($ev['venue'])): ?> Treffpunkt ist <?php if (!empty($ev['venue_maps_url'])): ?><a href="<?php echo esc_url($ev['venue_maps_url']); ?>" target="_blank" rel="noopener"><?php echo esc_html($ev['venue']); ?></a><?php else: ?><?php echo esc_html($ev['venue']); ?><?php endif; ?>.<?php endif; ?> <?php echo esc_html($mood_text); ?>
 						</p>
 						<?php endif; ?>
 
@@ -478,7 +492,11 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 								<span class="po-steps__date-text"><?php echo esc_html($date['date_formatted']); ?></span>
 								<span class="po-steps__date-meta">
 									<?php if (!empty($date['venue'])): ?>
-										<span class="po-steps__date-venue"><?php echo esc_html($date['venue']); ?></span>
+										<?php if (!empty($date['venue_maps_url'])): ?>
+											<a href="<?php echo esc_url($date['venue_maps_url']); ?>" target="_blank" rel="noopener" class="po-steps__date-venue" onclick="event.stopPropagation();"><?php echo esc_html($date['venue']); ?></a>
+										<?php else: ?>
+											<span class="po-steps__date-venue"><?php echo esc_html($date['venue']); ?></span>
+										<?php endif; ?>
 									<?php endif; ?>
 									<span class="po-steps__date-stock"><?php echo esc_html($date['stock']); ?> <?php echo $date['stock'] === 1 ? 'Platz' : 'Plätze'; ?> frei</span>
 								</span>
