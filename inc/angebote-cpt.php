@@ -35,16 +35,16 @@ function parkourone_register_angebot_cpt() {
 	// CPT: Angebot
 	register_post_type('angebot', [
 		'labels' => [
-			'name' => 'Angebote',
-			'singular_name' => 'Angebot',
-			'add_new' => 'Neues Angebot',
-			'add_new_item' => 'Neues Angebot hinzufügen',
-			'edit_item' => 'Angebot bearbeiten',
-			'new_item' => 'Neues Angebot',
-			'view_item' => 'Angebot ansehen',
-			'search_items' => 'Angebote suchen',
-			'not_found' => 'Keine Angebote gefunden',
-			'not_found_in_trash' => 'Keine Angebote im Papierkorb'
+			'name' => 'Kurse & Workshops',
+			'singular_name' => 'Kurs / Workshop',
+			'add_new' => 'Neuer Kurs / Workshop',
+			'add_new_item' => 'Neuen Kurs / Workshop hinzufügen',
+			'edit_item' => 'Kurs / Workshop bearbeiten',
+			'new_item' => 'Neuer Kurs / Workshop',
+			'view_item' => 'Kurs / Workshop ansehen',
+			'search_items' => 'Kurse & Workshops suchen',
+			'not_found' => 'Keine Kurse & Workshops gefunden',
+			'not_found_in_trash' => 'Keine Kurse & Workshops im Papierkorb'
 		],
 		'public' => false,
 		'show_ui' => true,
