@@ -58,7 +58,10 @@
 			"enum": [
 				"white",
 				"light",
-				"gradient"
+				"dark",
+				"black",
+				"gradient",
+				"blue"
 			]
 		}
 	},
