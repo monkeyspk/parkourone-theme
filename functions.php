@@ -1868,11 +1868,19 @@ function parkourone_get_available_dates_for_event($event_id) {
     // Venue pro Datum aus Event-Dates laden
     $event_dates_meta = get_post_meta($event_id, '_event_dates', true);
     $venue_by_date = [];
+    $venue_maps_by_date = [];
     $default_venue = get_post_meta($event_id, '_event_venue', true);
+    $default_lat = get_post_meta($event_id, '_event_venue_lat', true);
+    $default_lng = get_post_meta($event_id, '_event_venue_lng', true);
     if (is_array($event_dates_meta)) {
         foreach ($event_dates_meta as $d) {
             if (!empty($d['date'])) {
                 $venue_by_date[$d['date']] = !empty($d['venue']) ? $d['venue'] : $default_venue;
+                $lat = !empty($d['venue_lat']) ? $d['venue_lat'] : $default_lat;
+                $lng = !empty($d['venue_lng']) ? $d['venue_lng'] : $default_lng;
+                $venue_maps_by_date[$d['date']] = ($lat && $lng)
+                    ? 'https://www.google.com/maps?q=' . urlencode($lat . ',' . $lng)
+                    : '';
             }
         }
     }
@@ -1924,6 +1932,7 @@ function parkourone_get_available_dates_for_event($event_id) {
                 'price' => $price,
                 'price_raw' => $price_raw,
                 'venue' => $venue_by_date[$event_date] ?? $default_venue,
+                'venue_maps_url' => $venue_maps_by_date[$event_date] ?? (($default_lat && $default_lng) ? 'https://www.google.com/maps?q=' . urlencode($default_lat . ',' . $default_lng) : ''),
             ];
         }
     }

@@ -432,6 +432,12 @@ body.po-no-scroll {
 	color: var(--po-color-text);
 }
 
+.po-steps__meta-item dd a {
+	color: var(--po-color-link);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
 /* Coach mit Profilbild */
 .po-steps__meta-item--coach dt {
 	width: 36px;
