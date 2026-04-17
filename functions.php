@@ -1814,6 +1814,7 @@ function parkourone_get_mood_text($age_slug) {
         'seniors'         => 'Koordination erhalten, Fitness aufbauen und mit Gleichgesinnten trainieren - beweglich bleiben in jedem Alter.',
         'juniors-adults'  => 'Den eigenen Körper kennenlernen, Grenzen austesten und fortgeschrittene Techniken meistern - intensives Training mit der Möglichkeit, an den eigenen Grenzen zu wachsen.',
         'seniors-masters' => 'Koordination erhalten, Fitness aufbauen und mit Gleichgesinnten trainieren - beweglich bleiben und den Körper langfristig fit halten.',
+        'eltern-kind'     => 'Gemeinsam als Familie Parkour erleben - Bewegung, Vertrauen und Spass als Team. Für Eltern mit Kindern ab 4 Jahren.',
     ];
 
     $fallback = 'Ein abwechslungsreiches Training, bei dem du in einer motivierenden Atmosphäre deine Skills weiterentwickeln kannst.';
