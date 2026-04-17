@@ -1801,7 +1801,12 @@ add_action('wp_enqueue_scripts', 'parkourone_enqueue_block_view_scripts');
  * und space-getrennte Mehrfach-Slugs ('juniors adults').
  * Fällt auf einen generischen Text zurück wenn kein spezifischer passt.
  */
-function parkourone_get_mood_text($age_slug) {
+function parkourone_get_mood_text($age_slug, $title = '') {
+    // Titel-basierte Erkennung (Priorität vor Kategorie)
+    if (!empty($title) && stripos($title, 'eltern-kind') !== false) {
+        return 'Gemeinsam als Familie Parkour erleben - Bewegung, Vertrauen und Spass als Team. Für Eltern mit Kindern ab 4 Jahren.';
+    }
+
     $mood_texts = [
         'minis'           => 'Erste Bewegungserfahrungen in spielerischer Atmosphäre - hier entdecken die Kleinsten ihre motorischen Fähigkeiten.',
         'kids'            => 'Spielerisch Bewegungstalente entdecken: Klettern, Springen und Balancieren in einer sicheren Umgebung.',

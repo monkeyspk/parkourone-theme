@@ -507,7 +507,7 @@ $used_age_slugs = array_unique($used_age_slugs);
 <?php
 $available_dates = function_exists('parkourone_get_available_dates_for_event') ? parkourone_get_available_dates_for_event($klasse['id']) : [];
 $mood_text = function_exists('parkourone_get_mood_text')
-	? parkourone_get_mood_text($klasse['age_slug'] ?? '')
+	? parkourone_get_mood_text($klasse['age_slug'] ?? '', $klasse['title'] ?? '')
 	: '';
 // Coach-Text mit Link wenn Profil vorhanden
 if (!empty($klasse['headcoach'])) {

@@ -390,7 +390,7 @@ $hasFilters = $showAgeFilter || $showLocationFilter;
 <?php
 $available_dates = function_exists('parkourone_get_available_dates_for_event') ? parkourone_get_available_dates_for_event($klasse['id']) : [];
 $mood_text = function_exists('parkourone_get_mood_text')
-	? parkourone_get_mood_text($klasse['category'] ?? '')
+	? parkourone_get_mood_text($klasse['category'] ?? '', $klasse['title'] ?? '')
 	: '';
 // Coach-Text mit Link wenn Profil vorhanden
 if (!empty($klasse['headcoach'])) {

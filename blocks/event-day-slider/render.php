@@ -389,7 +389,7 @@ function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key
 		$available_dates = function_exists('parkourone_get_available_dates_for_event')
 			? parkourone_get_available_dates_for_event($event_id) : [];
 		$mood_text = function_exists('parkourone_get_mood_text')
-			? parkourone_get_mood_text($ev['age_slug'] ?? '')
+			? parkourone_get_mood_text($ev['age_slug'] ?? '', $ev['title'] ?? '')
 			: '';
 		$time_text = $ev['start_time'] ? $ev['start_time'] . ($ev['end_time'] ? ' – ' . $ev['end_time'] . ' Uhr' : ' Uhr') : '';
 		// Coach-Text mit Link wenn Profil vorhanden (wie klassen-slider)
