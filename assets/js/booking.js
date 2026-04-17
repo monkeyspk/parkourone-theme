@@ -68,6 +68,12 @@
             geburtsdatum: $form.find('[name="geburtsdatum"]').val()
         };
 
+        if ($form.data('eltern-kind')) {
+            data.kind_vorname = $form.find('[name="kind_vorname"]').val();
+            data.kind_name = $form.find('[name="kind_name"]').val();
+            data.kind_geburtsdatum = $form.find('[name="kind_geburtsdatum"]').val();
+        }
+
         $btn.prop('disabled', true).text('Wird hinzugefügt...');
 
         fetch(poBooking.restUrl || poBooking.ajaxUrl, {

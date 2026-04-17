@@ -517,6 +517,7 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 					<button type="button" class="po-steps__back-link">← Zurück zur Übersicht</button>
 				</div>
 
+				<?php $is_eltern_kind = stripos($klasse['title'], 'eltern-kind') !== false; ?>
 				<div class="po-steps__slide is-next" data-slide="2">
 					<header class="po-steps__header">
 						<span class="po-steps__eyebrow">Schritt 2 von 2</span>
@@ -524,9 +525,13 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 						<p class="po-steps__subheading po-steps__selected-date"></p>
 					</header>
 
-					<form class="po-steps__form">
+					<form class="po-steps__form"<?php if ($is_eltern_kind): ?> data-eltern-kind="1"<?php endif; ?>>
 						<input type="hidden" name="product_id" value="">
 						<input type="hidden" name="event_id" value="<?php echo esc_attr($klasse['id']); ?>">
+
+						<?php if ($is_eltern_kind): ?>
+						<p style="font-weight:600;margin:0 0 0.5rem;font-size:0.875rem;color:#86868b;text-transform:uppercase;letter-spacing:0.5px;">Elternteil</p>
+						<?php endif; ?>
 
 						<div class="po-steps__field">
 							<label for="vorname-<?php echo esc_attr($unique_id . '-' . $index); ?>">Vorname</label>
@@ -542,6 +547,26 @@ $time_text = $klasse['start_time'] ? $klasse['start_time'] . ($klasse['end_time'
 							<label for="geburtsdatum-<?php echo esc_attr($unique_id . '-' . $index); ?>">Geburtsdatum</label>
 							<input type="date" id="geburtsdatum-<?php echo esc_attr($unique_id . '-' . $index); ?>" name="geburtsdatum" required>
 						</div>
+
+						<?php if ($is_eltern_kind): ?>
+						<hr style="border:0;border-top:1px solid #e0e0e0;margin:1.5rem 0;">
+						<p style="font-weight:600;margin:0 0 0.5rem;font-size:0.875rem;color:#86868b;text-transform:uppercase;letter-spacing:0.5px;">Kind</p>
+
+						<div class="po-steps__field">
+							<label for="kind-vorname-<?php echo esc_attr($unique_id . '-' . $index); ?>">Vorname</label>
+							<input type="text" id="kind-vorname-<?php echo esc_attr($unique_id . '-' . $index); ?>" name="kind_vorname" required>
+						</div>
+
+						<div class="po-steps__field">
+							<label for="kind-name-<?php echo esc_attr($unique_id . '-' . $index); ?>">Nachname</label>
+							<input type="text" id="kind-name-<?php echo esc_attr($unique_id . '-' . $index); ?>" name="kind_name" required>
+						</div>
+
+						<div class="po-steps__field">
+							<label for="kind-geburtsdatum-<?php echo esc_attr($unique_id . '-' . $index); ?>">Geburtsdatum</label>
+							<input type="date" id="kind-geburtsdatum-<?php echo esc_attr($unique_id . '-' . $index); ?>" name="kind_geburtsdatum" required>
+						</div>
+						<?php endif; ?>
 
 						<button type="submit" class="po-steps__cta po-steps__submit">Zum Warenkorb hinzufügen</button>
 					</form>

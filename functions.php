@@ -2028,6 +2028,16 @@ function parkourone_rest_add_to_cart($request) {
     $_POST['event_participant_vorname']       = [$vorname];
     $_POST['event_participant_geburtsdatum']  = [$geburtsdatum];
 
+    // Eltern-Kind: zweiter Teilnehmer (Kind)
+    $kind_vorname = sanitize_text_field($params['kind_vorname'] ?? '');
+    $kind_name    = sanitize_text_field($params['kind_name'] ?? '');
+    $kind_geb     = sanitize_text_field($params['kind_geburtsdatum'] ?? '');
+    if ($kind_vorname && $kind_name && $kind_geb) {
+        $_POST['event_participant_name'][]          = $kind_name;
+        $_POST['event_participant_vorname'][]        = $kind_vorname;
+        $_POST['event_participant_geburtsdatum'][]   = $kind_geb;
+    }
+
     $added = WC()->cart->add_to_cart($product_id, 1);
 
     if ($added) {
