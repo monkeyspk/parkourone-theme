@@ -1,6 +1,13 @@
 (function($) {
 	'use strict';
 
+	// Single-Booking-Gate: WC-Cookie prüft ob bereits ein Item im Warenkorb liegt.
+	// Server-Backstop in parkourone_rest_add_to_cart() (functions.php) blockt zusätzlich.
+	function poCartHasItems() {
+		return /(?:^|;\s*)woocommerce_items_in_cart=1(?:;|$)/.test(document.cookie);
+	}
+	var PO_SINGLE_BOOKING_NOTICE = 'Sorry, mehrere Buchungen gleichzeitig sind technisch gerade nicht möglich. Wir arbeiten daran. Bitte schliesse die aktuelle Buchung erst ab und starte dann eine neue für die weitere Person.';
+
 	var sections = document.querySelectorAll('.po-eb');
 	if (!sections.length) return;
 
@@ -267,6 +274,10 @@
 			listContainer.querySelectorAll('.po-eb__termin-btn').forEach(function(btn) {
 				btn.addEventListener('click', function(e) {
 					e.stopPropagation();
+					if (poCartHasItems()) {
+						window.alert(PO_SINGLE_BOOKING_NOTICE);
+						return;
+					}
 					openBookingForm(btn);
 				});
 			});

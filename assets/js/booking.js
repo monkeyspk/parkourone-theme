@@ -1,6 +1,13 @@
 (function($) {
     'use strict';
-    
+
+    // Single-Booking-Gate: WC-Cookie prüft ob bereits ein Item im Warenkorb liegt.
+    // Server-Backstop in parkourone_rest_add_to_cart() (functions.php) blockt zusätzlich.
+    function poCartHasItems() {
+        return /(?:^|;\s*)woocommerce_items_in_cart=1(?:;|$)/.test(document.cookie);
+    }
+    var PO_SINGLE_BOOKING_NOTICE = 'Sorry, mehrere Buchungen gleichzeitig sind technisch gerade nicht möglich. Wir arbeiten daran. Bitte schliesse die aktuelle Buchung erst ab und starte dann eine neue für die weitere Person.';
+
     function goToStep($steps, step) {
         var $slides = $steps.find('.po-steps__slide');
         
@@ -24,11 +31,18 @@
     $(document).on('click', '.po-steps__next', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        
+
         var $this = $(this);
         var $steps = $this.closest('.po-steps');
         var currentStep = parseInt($steps.attr('data-step')) || 0;
-        
+
+        // Single-Booking-Gate: nur am Einstieg (Slide 0 → Slide 1) blocken,
+        // damit Step-back-Navigation in laufender Buchung nicht stört.
+        if (currentStep === 0 && poCartHasItems()) {
+            window.alert(PO_SINGLE_BOOKING_NOTICE);
+            return;
+        }
+
         if ($this.hasClass('po-steps__date')) {
             var productId = $this.data('product-id');
             var dateText = $this.data('date-text');

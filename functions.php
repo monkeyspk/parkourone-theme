@@ -2032,6 +2032,16 @@ function parkourone_rest_add_to_cart($request) {
         WC()->customer = new WC_Customer(get_current_user_id(), true);
     }
 
+    // Single-Booking-Gate: blockt jeden 2. Add-to-Cart früh im REST-Handler, bevor
+    // Participant-Daten in $_POST geschrieben werden. Backstop für Plugin-Hook
+    // validate_single_booking_per_cart in custom-events-plugin/ commit ced37d5.
+    if (WC()->cart->get_cart_contents_count() > 0) {
+        return new WP_REST_Response([
+            'success' => false,
+            'data'    => ['message' => parkourone_cart_single_booking_message()],
+        ], 400);
+    }
+
     // Participant-Daten in $_POST setzen (für Event-Plugins die darauf zugreifen)
     $_POST['event_id']                       = $event_id;
     $_POST['event_participant_name']          = [$name];
