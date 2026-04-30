@@ -1001,6 +1001,11 @@ function parkourone_angebot_add_to_cart() {
 		WC()->customer = new WC_Customer(get_current_user_id(), true);
 	}
 
+	// Cart-Limit: nur 1 Buchung gleichzeitig (Backstop in custom-events-plugin ced37d5).
+	if (WC()->cart->get_cart_contents_count() > 0) {
+		wp_send_json_error(['message' => parkourone_cart_single_booking_message()]);
+	}
+
 	$product_id = absint($_POST['product_id'] ?? 0);
 	$angebot_id = absint($_POST['angebot_id'] ?? 0);
 

@@ -9,6 +9,14 @@ document.addEventListener('DOMContentLoaded', function() {
 	const modalClose = modal?.querySelector('.po-angebote-modal__close');
 	const modalBackdrop = modal?.querySelector('.po-angebote-modal__backdrop');
 
+	// Roger-Notice — wörtlich identisch zu custom-events-plugin commit ced37d5.
+	const PO_SINGLE_BOOKING_MSG = 'Sorry, mehrere Buchungen gleichzeitig sind technisch gerade nicht möglich. Wir arbeiten daran. Bitte schliesse die aktuelle Buchung erst ab und starte dann eine neue für die weitere Person.';
+
+	// Cookie-Pre-Check: WooCommerce setzt diesen Cookie bei nicht-leerem Cart.
+	function poCartHasItems() {
+		return /(?:^|;\s*)woocommerce_items_in_cart=1(?:;|$)/.test(document.cookie);
+	}
+
 	// AJAX Config
 	var ajaxConfig = window.poAngebotBooking || {};
 
@@ -36,6 +44,23 @@ document.addEventListener('DOMContentLoaded', function() {
 	// Modal öffnen
 	cards.forEach(function(card) {
 		card.addEventListener('click', function() {
+			// Pre-Check: bei nicht-leerem Cart sofort Roger-Notice statt Booking-Modal.
+			if (poCartHasItems()) {
+				if (modal && modalContent) {
+					currentAngebot = null;
+					modalContent.innerHTML =
+						'<div class="po-angebote-modal__body">' +
+							'<h2 class="po-angebote-modal__title">Nur eine Buchung gleichzeitig</h2>' +
+							'<p>' + PO_SINGLE_BOOKING_MSG + '</p>' +
+							'<button type="button" class="po-angebote-modal__cta" data-po-single-booking-ack style="width:100%;margin-top:1rem;">Verstanden</button>' +
+						'</div>';
+					modal.setAttribute('aria-hidden', 'false');
+					document.body.style.overflow = 'hidden';
+					const ackBtn = modalContent.querySelector('[data-po-single-booking-ack]');
+					if (ackBtn) ackBtn.addEventListener('click', closeModal);
+				}
+				return;
+			}
 			const data = JSON.parse(this.dataset.modal);
 			openModal(data);
 		});

@@ -2,6 +2,16 @@
 defined('ABSPATH') || exit;
 
 /**
+ * Single-Source-of-Truth für die Roger-Notice bei Mehrfach-Buchungen.
+ * Wörtlich identisch zu custom-events-plugin commit ced37d5.
+ *
+ * @return string
+ */
+function parkourone_cart_single_booking_message() {
+	return 'Sorry, mehrere Buchungen gleichzeitig sind technisch gerade nicht möglich. Wir arbeiten daran. Bitte schliesse die aktuelle Buchung erst ab und starte dann eine neue für die weitere Person.';
+}
+
+/**
  * ============================================
  * DIVI SHORTCODE CLEANUP (einmalig)
  * Entfernt alte Divi Builder Shortcodes aus allen Seiten.
@@ -2092,6 +2102,11 @@ function parkourone_produkt_showcase_add_to_cart() {
 		WC()->initialize_cart();
 	}
 
+	// Cart-Limit: nur 1 Buchung gleichzeitig (Backstop in custom-events-plugin ced37d5).
+	if (WC()->cart->get_cart_contents_count() > 0) {
+		wp_send_json_error(['message' => parkourone_cart_single_booking_message()]);
+	}
+
 	$product_id   = isset($_POST['product_id'])   ? absint($_POST['product_id'])   : 0;
 	$variation_id = isset($_POST['variation_id'])  ? absint($_POST['variation_id']) : 0;
 
@@ -2172,6 +2187,11 @@ function parkourone_pt_add_to_cart() {
 	}
 	if (is_null(WC()->cart)) {
 		WC()->initialize_cart();
+	}
+
+	// Cart-Limit: nur 1 Buchung gleichzeitig (Backstop in custom-events-plugin ced37d5).
+	if (WC()->cart->get_cart_contents_count() > 0) {
+		wp_send_json_error(['message' => parkourone_cart_single_booking_message()]);
 	}
 
 	$product_id    = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;

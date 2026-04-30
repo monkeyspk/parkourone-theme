@@ -2,6 +2,37 @@
     var roots = document.querySelectorAll('.po-produkt-showcase');
     if (!roots.length) return;
 
+    // Roger-Notice — wörtlich identisch zu custom-events-plugin commit ced37d5.
+    var PO_SINGLE_BOOKING_MSG = 'Sorry, mehrere Buchungen gleichzeitig sind technisch gerade nicht möglich. Wir arbeiten daran. Bitte schliesse die aktuelle Buchung erst ab und starte dann eine neue für die weitere Person.';
+
+    // Cookie-Pre-Check: WooCommerce setzt diesen Cookie bei nicht-leerem Cart.
+    function poCartHasItems() {
+        return /(?:^|;\s*)woocommerce_items_in_cart=1(?:;|$)/.test(document.cookie);
+    }
+
+    // Render Inline-Alert nahe dem geklickten Item (kein Modal in diesem Block).
+    function poShowSingleBookingAlert(item) {
+        // Existierenden Alert in diesem Item entfernen, falls schon einer da ist.
+        var existing = item.querySelector('.po-produkt-showcase-alert');
+        if (existing) existing.remove();
+
+        var alert = document.createElement('div');
+        alert.className = 'po-produkt-showcase-alert';
+        alert.setAttribute('role', 'alert');
+        alert.style.cssText = 'border:1px solid #d63638;background:#fff5f5;border-radius:12px;padding:1.25rem;margin:1rem 0;';
+        alert.innerHTML =
+            '<h3 style="margin:0 0 0.5rem 0;font-size:1.125rem;font-weight:600;">Nur eine Buchung gleichzeitig</h3>' +
+            '<p style="margin:0 0 0.75rem 0;">' + PO_SINGLE_BOOKING_MSG + '</p>' +
+            '<button type="button" class="po-produkt-showcase-alert__close" data-po-single-booking-ack>Verstanden</button>';
+
+        item.appendChild(alert);
+
+        var ackBtn = alert.querySelector('[data-po-single-booking-ack]');
+        if (ackBtn) {
+            ackBtn.addEventListener('click', function() { alert.remove(); });
+        }
+    }
+
     roots.forEach(function(root) {
         var nonce   = root.dataset.nonce;
         var ajaxUrl = root.dataset.ajaxUrl;
@@ -74,6 +105,12 @@
 
             // ── Add-to-cart click ──
             cta.addEventListener('click', function() {
+                // Pre-Check: bei nicht-leerem Cart sofort Roger-Notice statt AJAX.
+                if (poCartHasItems()) {
+                    poShowSingleBookingAlert(item);
+                    return;
+                }
+
                 if (cta.disabled) return;
 
                 cta.disabled = true;

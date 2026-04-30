@@ -12,6 +12,42 @@
     var nonce        = root.querySelector('.po-pt__nonce');
     var ajaxUrl      = root.querySelector('.po-pt__ajax-url');
 
+    // Roger-Notice — wörtlich identisch zu custom-events-plugin commit ced37d5.
+    var PO_SINGLE_BOOKING_MSG = 'Sorry, mehrere Buchungen gleichzeitig sind technisch gerade nicht möglich. Wir arbeiten daran. Bitte schliesse die aktuelle Buchung erst ab und starte dann eine neue für die weitere Person.';
+
+    // Cookie-Pre-Check: WooCommerce setzt diesen Cookie bei nicht-leerem Cart.
+    function poCartHasItems() {
+        return /(?:^|;\s*)woocommerce_items_in_cart=1(?:;|$)/.test(document.cookie);
+    }
+
+    // Render Inline-Alert (kein Modal vorhanden in diesem Block).
+    function poShowSingleBookingAlert() {
+        // Existierenden Alert entfernen, falls schon einer da ist (Idempotency).
+        var existing = root.querySelector('.po-pt-alert');
+        if (existing) existing.remove();
+
+        var alert = document.createElement('div');
+        alert.className = 'po-pt-alert';
+        alert.setAttribute('role', 'alert');
+        alert.style.cssText = 'border:1px solid #d63638;background:#fff5f5;border-radius:12px;padding:1.25rem;margin:1rem 0;';
+        alert.innerHTML =
+            '<h3 style="margin:0 0 0.5rem 0;font-size:1.125rem;font-weight:600;">Nur eine Buchung gleichzeitig</h3>' +
+            '<p style="margin:0 0 0.75rem 0;">' + PO_SINGLE_BOOKING_MSG + '</p>' +
+            '<button type="button" class="po-pt-alert__close" data-po-single-booking-ack>Verstanden</button>';
+
+        // Vor das CTA einfügen, damit es im Sichtfeld erscheint.
+        if (cta && cta.parentNode) {
+            cta.parentNode.insertBefore(alert, cta);
+        } else {
+            root.appendChild(alert);
+        }
+
+        var ackBtn = alert.querySelector('[data-po-single-booking-ack]');
+        if (ackBtn) {
+            ackBtn.addEventListener('click', function() { alert.remove(); });
+        }
+    }
+
     var selectedPackage = null;
     var ctaLabel = cta.textContent.trim();
     var currency = root.dataset.currency || '€';
@@ -84,6 +120,12 @@
     // ── CTA Click ──
 
     cta.addEventListener('click', function() {
+        // Pre-Check: bei nicht-leerem Cart sofort Roger-Notice statt AJAX.
+        if (poCartHasItems()) {
+            poShowSingleBookingAlert();
+            return;
+        }
+
         if (cta.disabled || !selectedPackage) return;
 
         // Validate
