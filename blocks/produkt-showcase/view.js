@@ -2,8 +2,8 @@
     var roots = document.querySelectorAll('.po-produkt-showcase');
     if (!roots.length) return;
 
-    // Roger-Notice — wörtlich identisch zu custom-events-plugin commit ced37d5.
-    var PO_SINGLE_BOOKING_MSG = 'Sorry, mehrere Buchungen gleichzeitig sind technisch gerade nicht möglich. Wir arbeiten daran. Bitte schliesse die aktuelle Buchung erst ab und starte dann eine neue für die weitere Person.';
+    // Single-Booking-Notice — identisch zu parkourone_cart_single_booking_message() in functions.php.
+    var PO_SINGLE_BOOKING_MSG = 'Danke, dass du gleich mehrere Buchungen bei uns machen möchtest. Leider ist das aktuell technisch nicht möglich, aber wir arbeiten dran. Bitte schliesse die aktuelle Buchung erst ab und starte dann eine neue für die weitere Person. Danke für dein Verständnis und wir bitten für die Umstände um Entschuldigung.';
 
     // Cookie-Pre-Check: WooCommerce setzt diesen Cookie bei nicht-leerem Cart.
     function poCartHasItems() {

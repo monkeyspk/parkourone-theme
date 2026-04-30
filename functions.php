@@ -8,7 +8,7 @@ defined('ABSPATH') || exit;
  * @return string
  */
 function parkourone_cart_single_booking_message() {
-	return 'Sorry, mehrere Buchungen gleichzeitig sind technisch gerade nicht möglich. Wir arbeiten daran. Bitte schliesse die aktuelle Buchung erst ab und starte dann eine neue für die weitere Person.';
+	return 'Danke, dass du gleich mehrere Buchungen bei uns machen möchtest. Leider ist das aktuell technisch nicht möglich, aber wir arbeiten dran. Bitte schliesse die aktuelle Buchung erst ab und starte dann eine neue für die weitere Person. Danke für dein Verständnis und wir bitten für die Umstände um Entschuldigung.';
 }
 
 /**

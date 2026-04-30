@@ -6,7 +6,7 @@
 	function poCartHasItems() {
 		return /(?:^|;\s*)woocommerce_items_in_cart=1(?:;|$)/.test(document.cookie);
 	}
-	var PO_SINGLE_BOOKING_NOTICE = 'Sorry, mehrere Buchungen gleichzeitig sind technisch gerade nicht möglich. Wir arbeiten daran. Bitte schliesse die aktuelle Buchung erst ab und starte dann eine neue für die weitere Person.';
+	var PO_SINGLE_BOOKING_NOTICE = 'Danke, dass du gleich mehrere Buchungen bei uns machen möchtest. Leider ist das aktuell technisch nicht möglich, aber wir arbeiten dran. Bitte schliesse die aktuelle Buchung erst ab und starte dann eine neue für die weitere Person. Danke für dein Verständnis und wir bitten für die Umstände um Entschuldigung.';
 
 	var sections = document.querySelectorAll('.po-eb');
 	if (!sections.length) return;
