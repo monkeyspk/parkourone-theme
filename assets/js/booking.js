@@ -18,7 +18,8 @@
         dialog.className = 'po-dialog';
         dialog.setAttribute('role', 'dialog');
         dialog.setAttribute('aria-modal', 'true');
-        dialog.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;animation:poDialogFade 180ms ease-out;';
+        // z-index: 2147483647 (max int32) — must stack above .po-overlay (999999) and toast (1000000) in components.css
+        dialog.style.cssText = 'position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;animation:poDialogFade 180ms ease-out;';
 
         var backdrop = document.createElement('div');
         backdrop.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);';
