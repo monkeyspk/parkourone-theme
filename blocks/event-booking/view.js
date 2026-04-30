@@ -275,7 +275,7 @@
 				btn.addEventListener('click', function(e) {
 					e.stopPropagation();
 					if (poCartHasItems()) {
-						window.alert(PO_SINGLE_BOOKING_NOTICE);
+						(window.poShowDialog || window.alert)(PO_SINGLE_BOOKING_NOTICE);
 						return;
 					}
 					openBookingForm(btn);
@@ -407,13 +407,13 @@
 						$(document.body).trigger('added_to_cart');
 					}, 2000);
 				} else {
-					alert(response.data && response.data.message ? response.data.message : 'Ein Fehler ist aufgetreten');
+					(window.poShowDialog || window.alert)(response.data && response.data.message ? response.data.message : 'Ein Fehler ist aufgetreten');
 					submitBtn.disabled = false;
 					submitBtn.textContent = 'Zum Warenkorb hinzuf\u00fcgen';
 				}
 			})
 			.catch(function() {
-				alert('Ein Fehler ist aufgetreten. Bitte versuche es erneut.');
+				(window.poShowDialog || window.alert)('Ein Fehler ist aufgetreten. Bitte versuche es erneut.');
 				submitBtn.disabled = false;
 				submitBtn.textContent = 'Zum Warenkorb hinzuf\u00fcgen';
 			});

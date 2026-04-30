@@ -8,6 +8,55 @@
     }
     var PO_SINGLE_BOOKING_NOTICE = 'Sorry, mehrere Buchungen gleichzeitig sind technisch gerade nicht möglich. Wir arbeiten daran. Bitte schliesse die aktuelle Buchung erst ab und starte dann eine neue für die weitere Person.';
 
+    // Schicker Modal-Dialog statt nativem alert(). Apple-Style: Backdrop mit blur,
+    // weiße Card, Brand-Blau CTA. Idempotent, ESC + Backdrop schliessen, Focus auf Button.
+    function poShowDialog(message) {
+        var existing = document.querySelector('.po-dialog');
+        if (existing) { existing.remove(); }
+
+        var dialog = document.createElement('div');
+        dialog.className = 'po-dialog';
+        dialog.setAttribute('role', 'dialog');
+        dialog.setAttribute('aria-modal', 'true');
+        dialog.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;animation:poDialogFade 180ms ease-out;';
+
+        var backdrop = document.createElement('div');
+        backdrop.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);';
+
+        var panel = document.createElement('div');
+        panel.style.cssText = 'position:relative;background:#fff;border-radius:18px;padding:1.75rem 1.5rem 1.25rem;max-width:420px;width:calc(100% - 2rem);box-shadow:0 25px 50px -12px rgba(0,0,0,0.35);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;';
+
+        var msg = document.createElement('p');
+        msg.textContent = message;
+        msg.style.cssText = 'margin:0 0 1.25rem;color:#1a1a1a;font-size:1rem;line-height:1.5;';
+
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = 'Verstanden';
+        btn.style.cssText = 'display:block;width:100%;padding:0.875rem 1.25rem;border:0;border-radius:12px;background:#0066cc;color:#fff;font-size:0.9375rem;font-weight:600;cursor:pointer;-webkit-appearance:none;transition:background 120ms ease;';
+        btn.addEventListener('mouseenter', function() { btn.style.background = '#0052a3'; });
+        btn.addEventListener('mouseleave', function() { btn.style.background = '#0066cc'; });
+
+        function close() {
+            dialog.remove();
+            document.removeEventListener('keydown', onKey);
+        }
+        function onKey(e) { if (e.key === 'Escape') { close(); } }
+
+        btn.addEventListener('click', close);
+        backdrop.addEventListener('click', close);
+        document.addEventListener('keydown', onKey);
+
+        panel.appendChild(msg);
+        panel.appendChild(btn);
+        dialog.appendChild(backdrop);
+        dialog.appendChild(panel);
+        document.body.appendChild(dialog);
+
+        setTimeout(function() { btn.focus(); }, 0);
+    }
+    window.poShowDialog = poShowDialog;
+
     function goToStep($steps, step) {
         var $slides = $steps.find('.po-steps__slide');
         
@@ -39,7 +88,7 @@
         // Single-Booking-Gate: nur am Einstieg (Slide 0 → Slide 1) blocken,
         // damit Step-back-Navigation in laufender Buchung nicht stört.
         if (currentStep === 0 && poCartHasItems()) {
-            window.alert(PO_SINGLE_BOOKING_NOTICE);
+            poShowDialog(PO_SINGLE_BOOKING_NOTICE);
             return;
         }
 
@@ -119,13 +168,13 @@
                     }, 300);
                 }, 1500);
             } else {
-                alert(response.data && response.data.message ? response.data.message : 'Ein Fehler ist aufgetreten');
+                poShowDialog(response.data && response.data.message ? response.data.message : 'Ein Fehler ist aufgetreten');
             }
 
             $btn.prop('disabled', false).text('Zum Warenkorb hinzufügen');
         })
         .catch(function() {
-            alert('Ein Fehler ist aufgetreten. Bitte versuche es erneut.');
+            poShowDialog('Ein Fehler ist aufgetreten. Bitte versuche es erneut.');
             $btn.prop('disabled', false).text('Zum Warenkorb hinzufügen');
         });
     });
