@@ -41,6 +41,18 @@
         function close() {
             dialog.remove();
             document.removeEventListener('keydown', onKey);
+
+            // Wenn Cart Items hat: Booking-Modal schliessen + Side-Cart öffnen.
+            // Sinnvoller Folge-Step für den User — er sieht direkt was schon drin ist.
+            if (poCartHasItems()) {
+                var $activeOverlay = $('.po-overlay.is-active');
+                if ($activeOverlay.length) {
+                    $activeOverlay.find('.po-overlay__close').first().trigger('click');
+                }
+                if (window.poSideCartInstance && typeof window.poSideCartInstance.open === 'function') {
+                    setTimeout(function() { window.poSideCartInstance.open(); }, 120);
+                }
+            }
         }
         function onKey(e) { if (e.key === 'Escape') { close(); } }
 
