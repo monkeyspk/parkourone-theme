@@ -166,18 +166,59 @@ function parkourone_webhook_do_update($repo_full_name, $repo_name, $target_dir, 
         return new WP_Error('extract_missing', 'Extrahierter Ordner nicht gefunden');
     }
 
-    // Zielverzeichnis erstellen falls nötig (neues Plugin)
-    if (!is_dir($target_dir)) {
-        @mkdir($target_dir, 0755, true);
+    // Sanity-Check: kritische Datei muss im Extract vorhanden sein, sonst ist der
+    // Download unvollständig und wir würden nur "kaputt" deployen.
+    $critical_file = $repo_full_name === 'monkeyspk/parkourone-theme'
+        ? 'style.css'
+        : $repo_name . '.php';
+    if (!file_exists($extracted_dir . '/' . $critical_file)) {
+        parkourone_webhook_remove_dir($temp_dir);
+        return new WP_Error('extract_incomplete', "Kritische Datei {$critical_file} fehlt im ZIP — Deploy abgebrochen");
     }
 
-    // Alte Dateien löschen (.git-version behalten)
-    parkourone_webhook_clean_dir($target_dir);
+    // ATOMIC SWAP statt clean-then-copy: Staging → Rename. Wenn irgendwas zwischen
+    // clean_dir() und copy_dir() schiefgeht (Memory/Timeout/Permission), bleibt das
+    // Zielverzeichnis leer und WP findet style.css/plugin.php nicht mehr ("Stylesheet
+    // is missing" auf allen Sites). Atomic rename eliminiert dieses Fenster.
+    $staging_dir = $target_dir . '.staging-' . time();
+    parkourone_webhook_copy_dir($extracted_dir, $staging_dir);
 
-    // Neue Dateien kopieren
-    parkourone_webhook_copy_dir($extracted_dir, $target_dir);
+    // .git-version aus dem alten Ziel ins Staging übernehmen (falls vorhanden)
+    if (is_dir($target_dir) && file_exists($target_dir . '/.git-version')) {
+        @copy($target_dir . '/.git-version', $staging_dir . '/.git-version');
+    }
 
-    // Temp aufräumen
+    // Staging muss die kritische Datei haben — sonst Copy unvollständig
+    if (!file_exists($staging_dir . '/' . $critical_file)) {
+        parkourone_webhook_remove_dir($staging_dir);
+        parkourone_webhook_remove_dir($temp_dir);
+        return new WP_Error('staging_incomplete', "Copy nach Staging unvollständig — Deploy abgebrochen");
+    }
+
+    // Atomic Swap: target → backup, staging → target
+    $backup_dir = $target_dir . '.bak-' . time();
+    if (is_dir($target_dir)) {
+        if (!@rename($target_dir, $backup_dir)) {
+            parkourone_webhook_remove_dir($staging_dir);
+            parkourone_webhook_remove_dir($temp_dir);
+            return new WP_Error('backup_rename_failed', 'Konnte altes Verzeichnis nicht in Backup umbenennen');
+        }
+    }
+
+    if (!@rename($staging_dir, $target_dir)) {
+        // Rollback
+        if (is_dir($backup_dir)) {
+            @rename($backup_dir, $target_dir);
+        }
+        parkourone_webhook_remove_dir($staging_dir);
+        parkourone_webhook_remove_dir($temp_dir);
+        return new WP_Error('swap_rename_failed', 'Konnte Staging nicht in Ziel umbenennen — Rollback durchgeführt');
+    }
+
+    // Erfolg: Backup + Temp aufräumen
+    if (is_dir($backup_dir)) {
+        parkourone_webhook_remove_dir($backup_dir);
+    }
     parkourone_webhook_remove_dir($temp_dir);
 
     // .git-version aktualisieren
