@@ -1245,6 +1245,9 @@ function parkourone_angebot_order_item_meta($item, $cart_item_key, $values, $ord
 		}
 		if (isset($values['angebot_id'])) {
 			$item->add_meta_data('Angebot', get_the_title($values['angebot_id']));
+			// Strukturierte Hidden-Meta für Status-Routing im AB-Plugin
+			// (unterstrich-prefixed = im Order-Admin nicht sichtbar)
+			$item->add_meta_data('_angebot_id', (int) $values['angebot_id'], true);
 		}
 	}
 }
