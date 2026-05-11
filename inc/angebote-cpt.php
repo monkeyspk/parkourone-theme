@@ -1236,19 +1236,103 @@ function parkourone_get_cart_item_source_title($cart_item) {
 	return get_the_title($product_id);
 }
 
-// Teilnehmerdaten in Bestellung speichern
+// Teilnehmerdaten + reiche Event-Meta in Bestellung speichern.
+// Spiegelt die gleiche Datenstruktur wie custom-events-plugin's `add_full_event_info_to_order()`
+// damit Angebot-Buchungen für AB-Sync, Order-Admin-Anzeige und Thank-You-Page identisch
+// zu Probetraining-Buchungen verarbeitet werden (gleiche `_event_*`-Keys, `_event_participant_data`-Shape,
+// `_ab_contract_data`-Objekt).
 function parkourone_angebot_order_item_meta($item, $cart_item_key, $values, $order) {
-	if (isset($values['angebot_teilnehmer'])) {
-		foreach ($values['angebot_teilnehmer'] as $i => $teilnehmer) {
-			$label = count($values['angebot_teilnehmer']) > 1 ? 'Teilnehmer ' . ($i + 1) : 'Teilnehmer';
-			$item->add_meta_data($label, $teilnehmer['vorname'] . ' ' . $teilnehmer['name'] . ' (' . $teilnehmer['geburtsdatum'] . ')');
+	if (!isset($values['angebot_teilnehmer']) || !isset($values['angebot_id'])) {
+		return;
+	}
+
+	$angebot_id = (int) $values['angebot_id'];
+	$product_id = (int) ($values['product_id'] ?? 0);
+
+	// --- Menschenlesbare Labels (Order-Admin-Anzeige) ---
+	foreach ($values['angebot_teilnehmer'] as $i => $teilnehmer) {
+		$label = count($values['angebot_teilnehmer']) > 1 ? 'Teilnehmer ' . ($i + 1) : 'Teilnehmer';
+		$item->add_meta_data($label, $teilnehmer['vorname'] . ' ' . $teilnehmer['name'] . ' (' . $teilnehmer['geburtsdatum'] . ')');
+	}
+	$item->add_meta_data('Angebot', get_the_title($angebot_id));
+
+	// --- Strukturierte Hidden-Meta für Status-Routing + AB-Sync ---
+	$item->add_meta_data('_angebot_id', $angebot_id, true);
+
+	// Termin-Daten kommen vom Produkt (pro Termin ein Produkt)
+	$event_date  = $product_id ? get_post_meta($product_id, '_angebot_termin_datum', true) : '';
+	$event_venue = $product_id ? get_post_meta($product_id, '_angebot_termin_ort', true) : '';
+	if (empty($event_venue)) {
+		$event_venue = get_post_meta($angebot_id, '_angebot_wo', true);
+	}
+
+	// Stamm-Daten vom Angebot
+	$event_title       = get_the_title($angebot_id);
+	$event_title_clean = preg_replace('/\s+/', ' ', trim(wp_strip_all_tags($event_title)));
+	$event_time        = get_post_meta($angebot_id, '_angebot_wann', true);
+	$event_coach       = get_post_meta($angebot_id, '_angebot_ansprechperson', true);
+	$event_coach_email = get_post_meta($angebot_id, '_angebot_kontakt_email', true);
+	$event_description = get_post_meta($angebot_id, '_angebot_kurzbeschreibung', true);
+	$event_course_id   = get_post_meta($angebot_id, '_angebot_course_id', true);
+	$event_maps_link   = get_post_meta($angebot_id, '_angebot_maps_link', true);
+	$is_workshop_meta  = get_post_meta($angebot_id, '_angebot_is_workshop', true) === '1' ? '1' : '0';
+
+	// Coach-Bild/Telefon via Coach-Profile-Lookup (falls vorhanden)
+	$event_coach_image = '';
+	$event_coach_phone = '';
+	if (!empty($event_coach) && function_exists('parkourone_get_coach_by_name')) {
+		$coach_data = parkourone_get_coach_by_name($event_coach);
+		if (!empty($coach_data) && is_array($coach_data)) {
+			if (!empty($coach_data['id']) && function_exists('parkourone_get_coach_display_image')) {
+				$event_coach_image = parkourone_get_coach_display_image($coach_data['id']);
+			}
+			if (!empty($coach_data['phone']))      $event_coach_phone = $coach_data['phone'];
+			if (empty($event_coach_email) && !empty($coach_data['email'])) $event_coach_email = $coach_data['email'];
 		}
-		if (isset($values['angebot_id'])) {
-			$item->add_meta_data('Angebot', get_the_title($values['angebot_id']));
-			// Strukturierte Hidden-Meta für Status-Routing im AB-Plugin
-			// (unterstrich-prefixed = im Order-Admin nicht sichtbar)
-			$item->add_meta_data('_angebot_id', (int) $values['angebot_id'], true);
-		}
+	}
+
+	// Basis-Event-Meta (gleiche Keys wie Probetraining)
+	$item->add_meta_data('_event_title', $event_title);
+	$item->add_meta_data('_event_title_clean', $event_title_clean);
+	if (!empty($event_date))        $item->add_meta_data('_event_date', $event_date);
+	if (!empty($event_time))        $item->add_meta_data('_event_time', $event_time);
+	if (!empty($event_venue))       $item->add_meta_data('_event_venue', $event_venue);
+	if (!empty($event_coach))       $item->add_meta_data('_event_coach', $event_coach);
+	if (!empty($event_coach_image)) $item->add_meta_data('_event_coach_image', $event_coach_image);
+	if (!empty($event_coach_phone)) $item->add_meta_data('_event_coach_phone', $event_coach_phone);
+	if (!empty($event_coach_email)) $item->add_meta_data('_event_coach_email', $event_coach_email);
+	if (!empty($event_description)) $item->add_meta_data('_event_description', $event_description);
+	if (!empty($event_course_id))   $item->add_meta_data('_event_course_id', $event_course_id);
+	if (!empty($event_maps_link))   $item->add_meta_data('_event_whatsapp_link', $event_maps_link); // best-effort, sonst leer
+	$item->add_meta_data('_event_is_workshop', $is_workshop_meta);
+	if ($product_id) $item->add_meta_data('_event_product_id', $product_id);
+
+	// Strukturiertes Participant-Array (gleiche Shape wie custom-events-plugin)
+	$participant_data = [];
+	foreach ($values['angebot_teilnehmer'] as $teilnehmer) {
+		$participant_data[] = [
+			'vorname'      => $teilnehmer['vorname'],
+			'name'         => $teilnehmer['name'],
+			'geburtsdatum' => $teilnehmer['geburtsdatum'],
+		];
+	}
+	$item->add_meta_data('_event_participant_data', $participant_data);
+
+	// AB-Contract-Data für AcademyBoard-Sync (gleiche Shape wie Probetraining)
+	if (!empty($participant_data)) {
+		$first = $participant_data[0];
+		$item->add_meta_data('_ab_contract_data', (object) [
+			'vorname'                    => $first['vorname'],
+			'nachname'                   => $first['name'],
+			'geburtsdatum'               => $first['geburtsdatum'],
+			'erziehungsberechtigter_name' => trim($order->get_billing_first_name() . ' ' . $order->get_billing_last_name()),
+			'strasse'                    => $order->get_billing_address_1(),
+			'hausnummer'                 => '',
+			'plz'                        => $order->get_billing_postcode(),
+			'ort'                        => $order->get_billing_city(),
+			'email'                      => $order->get_billing_email(),
+			'telefon'                    => $order->get_billing_phone(),
+		]);
 	}
 }
 add_action('woocommerce_checkout_create_order_line_item', 'parkourone_angebot_order_item_meta', 10, 4);
