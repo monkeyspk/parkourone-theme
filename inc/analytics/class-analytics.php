@@ -1296,7 +1296,7 @@ class PO_Analytics {
 				['label' => 'Warenkorb', 'value' => $add_to_cart, 'sub' => 'Sessions mit add_to_cart'],
 				['label' => 'Checkout', 'value' => $checkout, 'sub' => $cart_to_checkout . '% vom Warenkorb'],
 				['label' => 'Käufe', 'value' => $purchases, 'sub' => $checkout_to_purchase . '% vom Checkout'],
-				['label' => 'Umsatz', 'value' => 'CHF ' . number_format($revenue, 0, '.', "'"), 'sub' => $overall_conversion . '% Gesamt-Conversion', 'highlight' => true],
+				['label' => 'Umsatz', 'value' => (function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol() : 'CHF') . ' ' . number_format($revenue, 0, '.', "'"), 'sub' => $overall_conversion . '% Gesamt-Conversion', 'highlight' => true],
 			];
 			foreach ($funnel as $f):
 				$bg = !empty($f['highlight']) ? 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)' : '#fff';
@@ -1380,7 +1380,7 @@ class PO_Analytics {
 						<tr style="border-bottom: 1px solid #eee;">
 							<td style="padding: 8px 8px 8px 0;"><?php echo esc_html($r->source); ?></td>
 							<td style="padding: 8px; text-align: right;"><?php echo number_format($r->purchases); ?></td>
-							<td style="padding: 8px 0 8px 8px; text-align: right; font-weight: 600;">CHF <?php echo number_format($r->revenue, 2, '.', "'"); ?></td>
+							<td style="padding: 8px 0 8px 8px; text-align: right; font-weight: 600;"><?php echo esc_html(function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol() : 'CHF'); ?> <?php echo number_format($r->revenue, 2, '.', "'"); ?></td>
 						</tr>
 						<?php endforeach; ?>
 					</tbody>
@@ -2106,7 +2106,7 @@ class PO_Analytics {
 						</td>
 						<td width="12"></td>
 						<td style="text-align: center; padding: 16px; background: linear-gradient(135deg, #059669 0%, #10b981 100%); border-radius: 12px;">
-							<div style="font-size: 28px; font-weight: 700; color: #fff;">CHF <?php echo number_format($revenue, 0, '.', "'"); ?></div>
+							<div style="font-size: 28px; font-weight: 700; color: #fff;"><?php echo esc_html(function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol() : 'CHF'); ?> <?php echo number_format($revenue, 0, '.', "'"); ?></div>
 							<div style="font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 4px;">Umsatz</div>
 						</td>
 					</tr>

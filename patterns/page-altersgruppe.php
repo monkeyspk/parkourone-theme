@@ -23,7 +23,7 @@
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
 <!-- /wp:spacer -->
 
-<!-- wp:parkourone/intro-section {"headline":"Wie unser Probetraining funktioniert","layout":"default","showBenefits":true,"benefitsHeadline":"So einfach geht's:","benefits":["Wähle einen Standort aus, an dem du trainieren möchtest.","Wähle den Kurs basierend auf der Altersgruppe aus.","Das Probetraining dient auch dazu, dein aktuelles Können zu bewerten.","Das Probetraining kostet 15 CHF.","Nach dem Probetraining kannst du entscheiden, ob du Mitglied werden möchtest."],"backgroundColor":"light","align":"full"} /-->
+<!-- wp:parkourone/intro-section {"headline":"Wie unser Probetraining funktioniert","layout":"default","showBenefits":true,"benefitsHeadline":"So einfach geht's:","benefits":["Wähle einen Standort aus, an dem du trainieren möchtest.","Wähle den Kurs basierend auf der Altersgruppe aus.","Das Probetraining dient auch dazu, dein aktuelles Können zu bewerten.","Das Probetraining kostet 15 <?php echo function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol() : 'CHF'; ?>.","Nach dem Probetraining kannst du entscheiden, ob du Mitglied werden möchtest."],"backgroundColor":"light","align":"full"} /-->
 
 <!-- wp:spacer {"height":"60px"} -->
 <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>

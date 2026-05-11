@@ -249,19 +249,14 @@ function parkourone_get_site_location() {
  * Gibt formatierten Preis mit Währung zurück
  */
 function parkourone_get_probetraining_price() {
-	$site_location = parkourone_get_site_location();
-	$slug = $site_location['slug'];
+	// Währung aus WooCommerce-Settings — sicherer als Slug-Heuristik.
+	$currency = function_exists('get_woocommerce_currency') ? get_woocommerce_currency() : 'CHF';
+	$symbol   = function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol() : 'CHF';
 
-	// Schweizer Standorte: CHF 25
-	$swiss_locations = ['schweiz', 'zürich', 'zurich', 'bern', 'basel'];
-	if (in_array($slug, $swiss_locations)) {
-		return 'CHF 25';
-	}
+	// Schweizer Schulen: CHF 25, deutsche: € 15 (Default)
+	$amount = $currency === 'CHF' ? 25 : 15;
 
-	// Deutsche Standorte: € 15 (Standard)
-	// Hier können bei Bedarf Ausnahmen hinzugefügt werden
-	// z.B. 'muenchen' => '€ 20'
-	return '€ 15';
+	return $symbol . ' ' . $amount;
 }
 
 // =====================================================

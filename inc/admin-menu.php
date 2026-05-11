@@ -879,7 +879,7 @@ function parkourone_probetraining_steps_page($embedded = false) {
 		$steps = [
 			['title' => 'Standort wählen', 'description' => 'Wähle einen Standort aus, an dem du trainieren möchtest.', 'icon' => 'location'],
 			['title' => 'Klasse wählen', 'description' => 'Wähle die passende Klasse basierend auf der Altersgruppe aus.', 'icon' => 'users'],
-			['title' => 'Termin buchen', 'description' => 'Das Probetraining kostet 15 CHF und ist dafür gedacht, dass du die Gruppendynamik und das Training kennenlernst.', 'icon' => 'calendar'],
+			['title' => 'Termin buchen', 'description' => 'Das Probetraining kostet 15 ' . (function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol() : 'CHF') . ' und ist dafür gedacht, dass du die Gruppendynamik und das Training kennenlernst.', 'icon' => 'calendar'],
 			['title' => 'Loslegen', 'description' => 'Nach dem Probetraining kannst du entscheiden, ob du Mitglied werden möchtest.', 'icon' => 'check'],
 		];
 	}
@@ -1025,7 +1025,7 @@ function parkourone_get_global_steps() {
 	return [
 		['title' => 'Standort wählen', 'description' => 'Wähle einen Standort aus, an dem du trainieren möchtest.', 'icon' => 'location'],
 		['title' => 'Klasse wählen', 'description' => 'Wähle die passende Klasse basierend auf der Altersgruppe aus.', 'icon' => 'users'],
-		['title' => 'Termin buchen', 'description' => 'Das Probetraining kostet 15 CHF und ist dafür gedacht, dass du die Gruppendynamik und das Training kennenlernst.', 'icon' => 'calendar'],
+		['title' => 'Termin buchen', 'description' => 'Das Probetraining kostet 15 ' . (function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol() : 'CHF') . ' und ist dafür gedacht, dass du die Gruppendynamik und das Training kennenlernst.', 'icon' => 'calendar'],
 		['title' => 'Loslegen', 'description' => 'Nach dem Probetraining kannst du entscheiden, ob du Mitglied werden möchtest.', 'icon' => 'check'],
 	];
 }

@@ -181,7 +181,8 @@ function parkourone_angebot_details_metabox($post) {
 		<tr>
 			<th><label for="_angebot_preis">Preis</label></th>
 			<td>
-				<input type="text" id="_angebot_preis" name="_angebot_preis" value="<?php echo esc_attr($preis); ?>" class="regular-text" placeholder="z.B. CHF 60.- oder 220€">
+				<?php $po_curr = function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol() : 'CHF'; ?>
+				<input type="text" id="_angebot_preis" name="_angebot_preis" value="<?php echo esc_attr($preis); ?>" class="regular-text" placeholder="<?php echo esc_attr('z.B. ' . $po_curr . ' 60.- oder 220 ' . $po_curr); ?>">
 				<p class="description">Leer lassen für kostenlose Angebote.</p>
 			</td>
 		</tr>
@@ -266,7 +267,7 @@ function parkourone_angebot_termine_metabox($post) {
 				</tr>
 				<tr>
 					<th><label>Preis</label></th>
-					<td><input type="text" name="_angebot_termine[<?php echo $index; ?>][preis]" value="<?php echo esc_attr($termin['preis'] ?? ''); ?>" class="regular-text" placeholder="z.B. CHF 60.-"></td>
+					<td><input type="text" name="_angebot_termine[<?php echo $index; ?>][preis]" value="<?php echo esc_attr($termin['preis'] ?? ''); ?>" class="regular-text" placeholder="<?php echo esc_attr('z.B. ' . (function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol() : 'CHF') . ' 60.-'); ?>"></td>
 				</tr>
 				<?php
 				// Kapazität wird ausschließlich aus AcademyBoard gezogen (available_seats
@@ -332,7 +333,7 @@ function parkourone_angebot_termine_metabox($post) {
 					'<tr><th><label>Datum</label></th><td><input type="date" name="_angebot_termine[' + terminIndex + '][datum]" class="regular-text"></td></tr>' +
 					'<tr><th><label>Uhrzeit</label></th><td><input type="text" name="_angebot_termine[' + terminIndex + '][uhrzeit]" class="regular-text" placeholder="z.B. 10:00 - 12:00"></td></tr>' +
 					'<tr><th><label>Ort</label></th><td><input type="text" name="_angebot_termine[' + terminIndex + '][ort]" class="large-text" placeholder="z.B. Brig, Zürich"></td></tr>' +
-					'<tr><th><label>Preis</label></th><td><input type="text" name="_angebot_termine[' + terminIndex + '][preis]" class="regular-text" placeholder="z.B. CHF 60.-"></td></tr>' +
+					'<tr><th><label>Preis</label></th><td><input type="text" name="_angebot_termine[' + terminIndex + '][preis]" class="regular-text" placeholder="<?php echo esc_js('z.B. ' . (function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol() : 'CHF') . ' 60.-'); ?>"></td></tr>' +
 					'<tr><th><label>WooCommerce Produkt ID</label></th><td><input type="number" name="_angebot_termine[' + terminIndex + '][produkt_id]" class="small-text"><p class="description">Optional: ID eines bestehenden WooCommerce Produkts.</p></td></tr>' +
 				'</table>' +
 				'<hr style="margin: 20px 0;">' +

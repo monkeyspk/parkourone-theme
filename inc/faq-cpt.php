@@ -561,7 +561,7 @@ function parkourone_get_default_faqs() {
 		],
 		[
 			'question' => 'Was kostet das Probetraining?',
-			'answer' => '<p>Das Probetraining kostet 15 CHF bzw. 15 €. Dieser Betrag wird einmalig beim Buchen fällig.</p>',
+			'answer' => '<p>Das Probetraining kostet 15 ' . (function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol() : 'CHF') . '. Dieser Betrag wird einmalig beim Buchen fällig.</p>',
 			'category' => 'probetraining',
 			'order' => 2
 		],
