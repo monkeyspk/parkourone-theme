@@ -424,36 +424,22 @@ class ParkourONE_GitHub_Updater {
     }
     
     /**
-     * Prüft und führt Auto-Update durch
+     * Prüft und führt Auto-Update durch.
+     *
+     * DEAKTIVIERT seit 2026-05-12: der hourly Self-Updater hat wiederholt mit
+     * clean-then-copy-Pattern White-Screens ausgelöst (PHP-Timeout während des
+     * Copy bei 133MB-Theme, Theme blieb halbkopiert ohne style.css → "Stylesheet
+     * is missing"). Beweis: parkourone-theme-temp-*-Ordner im themes-Verzeichnis.
+     *
+     * Deploy läuft jetzt AUSSCHLIESSLICH via mu-plugins/parkourone-github-webhook.php
+     * — der ist seit ce945a1 atomic (Canary-Check + Staging + atomic-rename + Rollback)
+     * und kann den Theme-Folder nicht mehr leeren. Manueller Update via "Jetzt prüfen
+     * & aktualisieren" funktioniert weiterhin (separater handle_manual_check-Hook).
      */
     public function maybe_auto_update() {
-        // Bei jedem Check alte Temp-Ordner aufräumen
+        // Nur Temp-Ordner aufräumen — kein eigener Update mehr.
         $this->cleanup_old_temp_dirs();
-
-        // Nur prüfen wenn Interval abgelaufen
-        $last_check = get_transient($this->transient_key);
-        
-        if ($last_check !== false) {
-            return; // Noch nicht Zeit für neue Prüfung
-        }
-        
-        // Transient setzen für nächstes Interval
-        set_transient($this->transient_key, time(), $this->check_interval);
-        
-        // GitHub Version holen
-        $remote_version = $this->get_remote_version();
-        
-        if (!$remote_version) {
-            return; // Konnte GitHub nicht erreichen
-        }
-        
-        // Lokale Version holen
-        $local_version = $this->get_local_version();
-        
-        // Vergleichen und updaten
-        if ($remote_version !== $local_version) {
-            $this->do_update();
-        }
+        return;
     }
     
     /**
