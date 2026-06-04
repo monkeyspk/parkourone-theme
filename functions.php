@@ -305,6 +305,7 @@ require_once get_template_directory() . '/inc/link-checker.php';
 require_once get_template_directory() . '/inc/share.php';
 require_once get_template_directory() . '/inc/redirects.php';
 require_once get_template_directory() . '/inc/probetraining-links.php';
+require_once get_template_directory() . '/inc/page-duplicate.php';
 require_once get_template_directory() . '/inc/webp-converter.php';
 require_once get_template_directory() . '/inc/coach-avatar-cache.php';
 
