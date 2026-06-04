@@ -30,8 +30,11 @@ foreach ($categories as $index => $cat) {
 		$categories[$index]['imageUrl'] = $fallback_images[$label_lower];
 	}
 
-	// Fester Link für bekannte Kategorien
-	if (isset($category_links[$label_lower])) {
+	// Fester Link NUR als Fallback, wenn im Editor kein (gültiger) Link gesetzt wurde.
+	// Ein im Editor gesetzter Link (z.B. /juniors-2, wenn die Kategorieseite einen
+	// abweichenden Slug hat) darf NICHT überschrieben werden – sonst 404/Redirect.
+	$current_link = trim((string)($cat['linkUrl'] ?? ''));
+	if (($current_link === '' || $current_link === '#') && isset($category_links[$label_lower])) {
 		$categories[$index]['linkUrl'] = $category_links[$label_lower];
 	}
 }
