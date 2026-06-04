@@ -2499,22 +2499,14 @@ function parkourone_coach_save_meta($post_id) {
 add_action('save_post_coach', 'parkourone_coach_save_meta');
 
 /**
- * Coaches immer auf "publish" erzwingen — keine Entwürfe erlaubt
+ * Hinweis: Früher erzwang ein Filter (parkourone_force_coach_publish) bei jedem
+ * Speichern eines Coaches den Status "publish" (ausser auto-draft/trash). Das
+ * machte "Auf Entwurf setzen" im wp-admin unmöglich (der Entwurf-Status wurde
+ * sofort wieder auf publish überschrieben). Der Filter wurde entfernt, damit
+ * Redakteur_innen Coaches wieder als Entwurf speichern bzw. ausblenden können.
+ * Neu aus der API/Events angelegte Coaches werden weiterhin in
+ * parkourone_sync_coaches_from_events() explizit auf "publish" gesetzt.
  */
-function parkourone_force_coach_publish($data, $postarr) {
-	if ($data['post_type'] !== 'coach') {
-		return $data;
-	}
-
-	// Auto-Drafts und Papierkorb nicht anfassen
-	if (in_array($data['post_status'], ['auto-draft', 'trash'], true)) {
-		return $data;
-	}
-
-	$data['post_status'] = 'publish';
-	return $data;
-}
-add_filter('wp_insert_post_data', 'parkourone_force_coach_publish', 10, 2);
 
 function parkourone_coach_admin_scripts($hook) {
 	global $post_type;
@@ -2608,11 +2600,15 @@ function parkourone_sync_coaches_from_events() {
 	// Bestehende Coaches EINMAL laden und nach normalisiertem Namen indexieren,
 	// damit Format-/Gross-/Kleinschreibungs-/Leerzeichen-Unterschiede zwischen
 	// AcademyBoard-Name und manuell angelegtem coach-Post-Title nicht zu Duplikaten führen.
+	// WICHTIG: "trash" MUSS hier enthalten sein. Sonst werden im Papierkorb
+	// liegende Coaches nicht erkannt und bei jedem Sync (current_screen auf der
+	// Coach-Liste) als frische publish-Duplikate neu angelegt – das Profil
+	// "kommt wieder", obwohl es in den Papierkorb verschoben wurde.
 	$existing_by_name = [];
 	$existing_coaches = get_posts([
 		'post_type'      => 'coach',
 		'posts_per_page' => -1,
-		'post_status'    => ['publish', 'draft']
+		'post_status'    => ['publish', 'draft', 'trash']
 	]);
 	foreach ($existing_coaches as $ec) {
 		$ekey = parkourone_normalize_coach_name($ec->post_title);
@@ -2672,14 +2668,11 @@ function parkourone_sync_coaches_from_events() {
 				update_post_meta($coach_id, '_coach_email', $data['email']);
 			}
 
-			// Source NICHT ändern wenn manual oder preset (damit bleibt geschützt)
-			// Nur bei draft auf publish setzen
-			if ($existing[0]->post_status === 'draft') {
-				wp_update_post([
-					'ID' => $coach_id,
-					'post_status' => 'publish'
-				]);
-			}
+			// Status des bestehenden Coaches NICHT verändern: Ein bewusst auf
+			// "Entwurf" gesetzter (= ausgeblendeter) oder im Papierkorb liegender
+			// Coach darf vom Sync nicht wieder veröffentlicht werden – sonst lässt
+			// sich ein Coach trotz Events nicht ausblenden ("Entwurf kommt zurück").
+			// Neu angelegte Coaches werden im insert-Zweig oben explizit publiziert.
 		}
 	}
 
