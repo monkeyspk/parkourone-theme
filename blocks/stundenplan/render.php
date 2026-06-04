@@ -327,6 +327,20 @@ foreach ($klassen as $k) {
 	}
 }
 $used_age_slugs = array_unique($used_age_slugs);
+
+// Standort-Filter NUR auf Standorte mit tatsächlich angezeigten Trainings einschränken.
+// Sonst erscheinen Ortschaften ohne Training im Filter (z.B. Berlin "Treptow-Köpenick"),
+// obwohl sie auf der Startseite/"Alle Klassen" nicht auftauchen (Feedback Ben Scheffler).
+$used_location_slugs = [];
+foreach ($klassen as $k) {
+	if (!empty($k['location_slug'])) {
+		$used_location_slugs[] = $k['location_slug'];
+	}
+}
+$used_location_slugs = array_unique($used_location_slugs);
+$filter_ortschaft_terms = array_values(array_filter($filter_ortschaft_terms, function ($t) use ($used_location_slugs) {
+	return in_array($t->slug, $used_location_slugs, true);
+}));
 ?>
 
 <?php if (!empty($klassen)): ?>
