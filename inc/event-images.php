@@ -74,6 +74,16 @@ function parkourone_map_age_category($category_slug) {
 		'juniors-adults' => 'adults',
 	];
 
+	// Slug-Normalisierung: minis_5-8 → minis, kids_9-12 → kids, juniors_12-18 → juniors, etc.
+	if (!isset($mapping[$slug])) {
+		foreach (array_keys($mapping) as $known) {
+			if (strpos($slug, $known) === 0) {
+				$slug = $known;
+				break;
+			}
+		}
+	}
+
 	return $mapping[$slug] ?? 'adults'; // Default: Adults
 }
 
