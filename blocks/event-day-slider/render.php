@@ -237,14 +237,16 @@ $today_key     = date('Y-m-d', $today);
 $tomorrow_key  = date('Y-m-d', strtotime('+1 day', $today));
 $day_after_key = date('Y-m-d', strtotime('+2 days', $today));
 
-function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key, $day_names_short, $month_names) {
-	$ts = strtotime($date_key);
-	if ($date_key === $today_key) {
-		return 'Heute, ' . $day_names_short[date('w', $ts)] . '. ' . date('j', $ts) . '. ' . $month_names[date('n', $ts) - 1];
-	} elseif ($date_key === $tomorrow_key) {
-		return 'Morgen, ' . $day_names_short[date('w', $ts)] . '. ' . date('j', $ts) . '. ' . $month_names[date('n', $ts) - 1];
+if (!function_exists('po_eds_format_date')) {
+	function po_eds_format_date($date_key, $today_key, $tomorrow_key, $day_after_key, $day_names_short, $month_names) {
+		$ts = strtotime($date_key);
+		if ($date_key === $today_key) {
+			return 'Heute, ' . $day_names_short[date('w', $ts)] . '. ' . date('j', $ts) . '. ' . $month_names[date('n', $ts) - 1];
+		} elseif ($date_key === $tomorrow_key) {
+			return 'Morgen, ' . $day_names_short[date('w', $ts)] . '. ' . date('j', $ts) . '. ' . $month_names[date('n', $ts) - 1];
+		}
+		return $day_names_short[date('w', $ts)] . '. ' . date('j', $ts) . '. ' . $month_names[date('n', $ts) - 1];
 	}
-	return $day_names_short[date('w', $ts)] . '. ' . date('j', $ts) . '. ' . $month_names[date('n', $ts) - 1];
 }
 ?>
 
