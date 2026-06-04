@@ -493,7 +493,25 @@ function parkourone_get_preset_testimonials($school = 'schweiz') {
 		// MÜNSTER - Google Reviews
 		// =====================================================
 		'muenster' => [
-			// Hier Münster Reviews einfügen
+			// Kids
+			['name' => 'Lena Fischer', 'stars' => 5, 'text' => 'Das Probetraining hat einen super Eindruck gemacht. Ein aufgeschlossener, motivierter Trainer mit toller Ansprache an die Jungs. Mein Sohn war begeistert und möchte weiter machen. Wir sind gespannt auf diese interessante Sportart und hoffen dass die Motivation anhält!', 'source' => 'Google Review', 'age_group' => 'kids'],
+			// Adults
+			['name' => 'Kamaneh Gharehdaghi', 'stars' => 5, 'text' => 'Ich habe immer nach einer Sportart gesucht, mit der ich wirklich eine Verbindung aufbauen kann und die ich viele Jahre lang ausüben kann. Dann habe ich Parkour gefunden und schließlich ParkourONE in Münster entdeckt. Jeden Dienstag gehe ich voller Freude und Begeisterung dorthin und warte die ganze Woche sehnsüchtig darauf, dass endlich Dienstag wird und ich trainieren kann. Was Parkour und diese zwei Stunden Training in mir auslösen, kann ich kaum in Worte fassen. Es war eine der schönsten und richtigsten Entscheidungen meines Lebens.', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Julia Laakmann', 'stars' => 5, 'text' => 'Macht Bock, ist super abwechslungsreich, tolle Leute – ich bin happy und kann nur jedem empfehlen, ParkourONE auszuprobieren.', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Justus Common Dreads', 'stars' => 5, 'text' => 'Wenn ihr aus Münster oder Umgebung kommt und nach einer Parkourgruppe sucht oder einfach nur Spaß an Bewegung/Sport habt, dann ist ParkourONE Münster sehr zu empfehlen. Hab schon an allerhand Trainings teilgenommen und die sportliche Philosophie, die man dort mitnimmt, ist ne feine Sache.', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Gerrit', 'stars' => 5, 'text' => 'Ich habe an einem Einsteiger Workshop teilgenommen. Hat mir sehr gut gefallen. Kompetente Kursleitung, tolle Atmosphäre und viel Spaß. Habe ich in meinem Freundeskreis weiterempfohlen.', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Spacend', 'stars' => 5, 'text' => 'Eine wunderbare Möglichkeit Bewegung auf neue Arten zu erkunden! Ein Team aus mehreren ausgebildeten Parkour Coaches gibt eine gute Einleitung in die Welt des Parkour. Für Anfänger ist genau so etwas dabei wie für alte Fitnesshasen.', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Lea Mishra', 'stars' => 5, 'text' => 'Johannes ist ehrlich gesagt einer der coolsten Menschen, die ich je getroffen habe. Ich liebe, wie leidenschaftlich er für Parkour ist und wie er diese Leidenschaft in den Unterricht einbringt. Im POHA House hat er einen Workshop für unsere Bewohner gemacht, der großartig war!', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Jonas Jung', 'stars' => 5, 'text' => 'Super sympathische Coaches mit jeder Menge Erfahrung und Fachwissen dass sie immer gern teilen. Für Parkour DIE Anlaufstelle in Münster!', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Moritz Kemme', 'stars' => 5, 'text' => 'Mega Trainer, persönliche und angenehme Atmosphäre. Der richtige Ansprechpartner, egal ob Anfänger oder Fortgeschrittener.', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'ETREFORT Clothing', 'stars' => 5, 'text' => 'ParkourONE Münster, sehr empfehlenswert! Schaut rein und lasst euch von der Vielfalt von Parkour begeistern. Hammer Team und super Vermittlung von Parkour!', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'MrUndercity', 'stars' => 5, 'text' => 'Weiß nicht ob die Coaches inflationsgemäße Gehaltserhöhungen bekommen, hätten sie aber verdient.', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Angela Gjorgjijoska', 'stars' => 5, 'text' => 'Bestes Parkour-Team. Professionell, bezahlbar und mit den besten Trainern!', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Deniz Bozkurtan', 'stars' => 5, 'text' => 'Sehr nette und erfahrene Parkourlehrer, die gut auf die Bedürfnisse der Trainingsteilnehmer eingehen.', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Sven F', 'stars' => 5, 'text' => 'Mach lange mit, sehr nette Leute und gute Atmosphäre.', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Nils Kittner', 'stars' => 5, 'text' => 'Sehr coole Truppe. Alle nett und Training macht bock.', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Ben-Said Sharif Samani', 'stars' => 5, 'text' => 'Super motivierte Leute, produktives Mindset!', 'source' => 'Google Review', 'age_group' => 'adults'],
+			['name' => 'Sandra Stöckli', 'stars' => 5, 'text' => 'Die Adresse für Parkour in Münster!', 'source' => 'Google Review', 'age_group' => 'adults'],
 		],
 
 		// =====================================================
