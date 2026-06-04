@@ -3,6 +3,16 @@ $headline = $attributes['headline'] ?? 'Unser Team';
 $intro = $attributes['intro'] ?? 'Das sind wir. Ob draussen vor den Klassen oder im Büro hinter den Kulissen – lerne unser Team kennen.';
 $anchor = $attributes['anchor'] ?? '';
 
+// Normalisiert Coach-Namen für den Abgleich zwischen coach-Post-Title und _event_headcoach:
+// trim + interne Mehrfach-Leerzeichen auf ein Leerzeichen reduzieren (AcademyBoard liefert
+// teils doppelte Leerzeichen). Ohne diese Normalisierung greift der Vergleich nur, wenn
+// beide Seiten zufällig identische Whitespace-Formatierung haben.
+if (!function_exists('parkourone_normalize_coach_name')) {
+	function parkourone_normalize_coach_name($name) {
+		return preg_replace('/\s+/', ' ', trim((string) $name));
+	}
+}
+
 $all_coaches = get_posts([
 	'post_type' => 'coach',
 	'posts_per_page' => -1,
@@ -25,7 +35,7 @@ foreach ($all_events as $event) {
 		if ($term->parent) {
 			$parent = get_term($term->parent, 'event_category');
 			if ($parent && !is_wp_error($parent) && $parent->slug === 'ortschaft') {
-				$coach_key = strtolower(trim($headcoach));
+				$coach_key = strtolower(parkourone_normalize_coach_name($headcoach));
 				if (!isset($coach_locations[$coach_key])) {
 					$coach_locations[$coach_key] = [];
 				}
@@ -61,7 +71,7 @@ foreach ($all_coaches as $coach) {
 		: (get_post_meta($coach_id, '_coach_profile_image', true) ?: get_post_meta($coach_id, '_coach_api_image', true));
 	$api_image = $card_image; // Für Modal-Avatar gleiche Quelle
 	
-	$coach_key = strtolower(trim($coach->post_title));
+	$coach_key = strtolower(parkourone_normalize_coach_name($coach->post_title));
 	$locations = $coach_locations[$coach_key] ?? [];
 	
 	$coach_data = [
@@ -132,7 +142,7 @@ if (!function_exists('parkourone_get_coach_trainings_with_dates')) {
 		$trainings = [];
 		foreach ($events as $event) {
 			$headcoach = get_post_meta($event->ID, '_event_headcoach', true);
-			if (strcasecmp(trim($headcoach), trim($coach_name)) === 0) {
+			if (strcasecmp(parkourone_normalize_coach_name($headcoach), parkourone_normalize_coach_name($coach_name)) === 0) {
 				$event_dates = get_post_meta($event->ID, '_event_dates', true);
 				$first_date = is_array($event_dates) && !empty($event_dates) ? $event_dates[0] : null;
 				
