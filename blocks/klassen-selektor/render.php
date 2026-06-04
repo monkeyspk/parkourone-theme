@@ -171,7 +171,7 @@ if ($group_by === 'weekday') {
 							<article class="po-klassen-item"
 								data-event-id="<?php echo $event['id']; ?>"
 								data-event-title="<?php echo esc_attr($event['title']); ?>"
-								data-event-dates='<?php echo json_encode($event['available_dates']); ?>'>
+								data-event-dates="<?php echo esc_attr(json_encode($event['available_dates'])); ?>">
 								<div class="po-klassen-item__main">
 									<?php if ($event['headcoach_image']): ?>
 									<div class="po-klassen-item__avatar">

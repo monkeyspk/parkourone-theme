@@ -3,12 +3,39 @@ $headline = $attributes['headline'] ?? 'Stundenplan';
 $buttonText = $attributes['buttonText'] ?? 'Probetraining buchen';
 $filterLayout = $attributes['filterLayout'] ?? 'fab';
 $anchor = $attributes['anchor'] ?? '';
+$filterAge = $attributes['filterAge'] ?? '';
+$filterLocation = $attributes['filterLocation'] ?? '';
 
 $args = [
 	'post_type' => 'event',
 	'posts_per_page' => -1,
 	'post_status' => 'publish'
 ];
+
+// Im Backend voreingestellte Filter (Altersgruppe/Standort) als harte
+// Vorfilterung auf die Query anwenden, damit gespeicherte Voreinstellungen
+// im Frontend wirken (Modus A: voreingestellte Filterung).
+$sp_tax_query = [];
+if ($filterAge !== '') {
+	$sp_tax_query[] = [
+		'taxonomy' => 'event_category',
+		'field' => 'slug',
+		'terms' => array_filter(array_map('trim', explode(',', $filterAge)))
+	];
+}
+if ($filterLocation !== '') {
+	$sp_tax_query[] = [
+		'taxonomy' => 'event_category',
+		'field' => 'slug',
+		'terms' => array_filter(array_map('trim', explode(',', $filterLocation)))
+	];
+}
+if (!empty($sp_tax_query)) {
+	if (count($sp_tax_query) > 1) {
+		$sp_tax_query['relation'] = 'AND';
+	}
+	$args['tax_query'] = $sp_tax_query;
+}
 
 $query = new WP_Query($args);
 $klassen = [];
