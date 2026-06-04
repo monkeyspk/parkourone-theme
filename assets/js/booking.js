@@ -155,8 +155,13 @@
         fetch(poBooking.restUrl || poBooking.ajaxUrl, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'X-WP-Nonce': poBooking.nonce
+                // Kein X-WP-Nonce: Die /add-to-cart-Route ist bewusst oeffentlich
+                // (permission_callback __return_true) und prueft die Nonce intern nicht.
+                // Ein in die WP-Optimize-gecachte Seite eingebetteter Nonce laeuft nach
+                // der Nonce-Lifetime (24h) ab, waehrend die Seite bis zu 24h gecacht bleibt.
+                // WP-Core wirft dann 403 rest_cookie_invalid_nonce. Ohne Header behandelt
+                // WP-Core den Request als unauthentifiziert und laesst ihn durch.
+                'Content-Type': 'application/json'
             },
             credentials: 'same-origin',
             body: JSON.stringify(data)
