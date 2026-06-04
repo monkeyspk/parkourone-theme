@@ -123,6 +123,17 @@ if ($site_location && $site_location['detected'] && !empty($ortschaft_terms)) {
 
 $auto_filter_active = !empty($local_ortschaft_slugs);
 
+// Standorte-Filter-Terme: Bei aktivem Auto-Standortfilter (Subdomain-Seiten) nur die
+// Ortschaften DIESER Schule (z.B. Augsburg + Friedberg), sonst alle. Ab 2 Standorten
+// wird der Standort-Filter angezeigt (inline- UND fab-Layout) – vorher war er bei
+// Auto-Filter komplett ausgeblendet, sodass Mehrstandort-Schulen ihn nie sahen.
+$filter_ortschaft_terms = $ortschaft_terms;
+if ($auto_filter_active) {
+	$filter_ortschaft_terms = array_values(array_filter($ortschaft_terms, function ($t) use ($local_ortschaft_slugs) {
+		return in_array($t->slug, $local_ortschaft_slugs, true);
+	}));
+}
+
 $age_colors = [
 	'minis' => '#ff9500',
 	'kids' => '#34c759',
@@ -347,7 +358,8 @@ $used_age_slugs = array_unique($used_age_slugs);
 		</div>
 		<?php endif; ?>
 
-		<?php if (!empty($ortschaft_terms) && !$auto_filter_active): ?>
+		<?php // Standorte-Filter ($filter_ortschaft_terms oben berechnet): ab 2 Standorten zeigen ?>
+		<?php if (count($filter_ortschaft_terms) >= 2): ?>
 		<div class="po-sp__custom-dropdown" data-filter-type="location">
 			<button type="button" class="po-sp__dropdown-trigger" aria-expanded="false">
 				<span class="po-sp__dropdown-value">Alle Standorte</span>
@@ -357,7 +369,7 @@ $used_age_slugs = array_unique($used_age_slugs);
 				<button type="button" class="po-sp__dropdown-option is-selected" data-value="all">
 					Alle Standorte
 				</button>
-				<?php foreach ($ortschaft_terms as $term): ?>
+				<?php foreach ($filter_ortschaft_terms as $term): ?>
 				<button type="button" class="po-sp__dropdown-option" data-value="<?php echo esc_attr($term->slug); ?>">
 					<?php echo esc_html($term->name); ?>
 				</button>
@@ -522,10 +534,10 @@ $used_age_slugs = array_unique($used_age_slugs);
 				<?php endforeach; ?>
 			</div>
 			<?php endif; ?>
-			<?php if (!empty($ortschaft_terms) && !$auto_filter_active): ?>
+			<?php if (count($filter_ortschaft_terms) >= 2): ?>
 			<div class="po-sp__filter-group">
 				<span class="po-sp__filter-group-label">Nach Standort</span>
-				<?php foreach ($ortschaft_terms as $term): ?>
+				<?php foreach ($filter_ortschaft_terms as $term): ?>
 				<button type="button" class="po-sp__filter-option" data-filter="<?php echo esc_attr($term->slug); ?>"><?php echo esc_html($term->name); ?></button>
 				<?php endforeach; ?>
 			</div>
