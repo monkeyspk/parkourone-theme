@@ -79,6 +79,19 @@ if ($site_location && $site_location['detected'] && !empty($ortschaft_terms)) {
 			}
 		}
 	}
+
+	// Regionale Standorte einschliessen: Jede Subdomain-Installation enthält
+	// ausschliesslich eigene Events, daher gehört jede Ortschaft mit Events zu
+	// diesem Standort – auch wenn ihr Slug nicht dem Subdomain-Schema folgt
+	// (z.B. "friedberg" unter augsburg.parkourone.com).
+	if (!empty($local_ortschaft_slugs)) {
+		foreach ($ortschaft_terms as $term) {
+			if ((int) $term->count > 0
+				&& !in_array($term->slug, $local_ortschaft_slugs, true)) {
+				$local_ortschaft_slugs[] = $term->slug;
+			}
+		}
+	}
 }
 
 $auto_filter_active = !empty($local_ortschaft_slugs);
