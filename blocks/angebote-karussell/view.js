@@ -102,7 +102,15 @@ document.addEventListener('DOMContentLoaded', function() {
 		const details = [];
 		if (data.wann) details.push({ label: 'Wann', value: data.wann });
 		// Saison bewusst nicht anzeigen — irrelevant für Kunden
-		if (data.wo) {
+		// Mehrere Termine an verschiedenen Orten: alle eindeutigen Orte im Wo-Feld
+		// auflisten statt nur das einzelne _angebot_wo-Uebersichts-Meta. Der maps_link
+		// zeigt nur auf einen Ort und waere bei mehreren Standorten irrefuehrend.
+		var woOrte = (data.termine || [])
+			.map(function(t) { return t && t.ort ? String(t.ort).trim() : ''; })
+			.filter(function(o, i, arr) { return o && arr.indexOf(o) === i; });
+		if (woOrte.length > 1) {
+			details.push({ label: 'Wo', value: woOrte.map(escapeHtml).join(', '), raw: true });
+		} else if (data.wo) {
 			let woValue = escapeHtml(data.wo);
 			if (data.maps_link) {
 				woValue += ' <a href="' + data.maps_link + '" target="_blank" rel="noopener">(Karte)</a>';
