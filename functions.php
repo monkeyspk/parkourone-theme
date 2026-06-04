@@ -2525,6 +2525,38 @@ function parkourone_coach_admin_scripts($hook) {
 }
 add_action('admin_enqueue_scripts', 'parkourone_coach_admin_scripts');
 
+/**
+ * Normalisiert einen Coach-Namen für den Duplikat-Abgleich.
+ *
+ * Tolerant gegenüber Gross-/Kleinschreibung, mehrfachen/umschliessenden
+ * Leerzeichen sowie unterschiedlicher Namensreihenfolge ("Nachname Vorname"
+ * vs. "Vorname Nachname"): die Namens-Tokens werden alphabetisch sortiert.
+ * Dadurch matchen z.B. "widmer nyah" und "Nyah Widmer" oder "Roger  Widmer"
+ * (doppeltes Leerzeichen) und "Roger Widmer" auf denselben Schlüssel.
+ *
+ * Mittel-/Zweitnamen ("Till Janosch Gafner" vs. "Till Gafner") werden bewusst
+ * NICHT zusammengeführt, da ein Teil-Token-Abgleich echte verschiedene Personen
+ * fälschlich verschmelzen könnte – diese Fälle bleiben für manuelle Bereinigung.
+ *
+ * @param string $name
+ * @return string Normalisierter Schlüssel (leerer String, wenn kein Name).
+ */
+function parkourone_normalize_coach_name($name) {
+	$name = trim((string) $name);
+	if ($name === '') {
+		return '';
+	}
+	// Diakritika-tolerant ist hier bewusst NICHT gewünscht (Loïc != Loic wäre
+	// riskant); wir folden nur Gross-/Kleinschreibung und Whitespace.
+	$name = function_exists('mb_strtolower') ? mb_strtolower($name, 'UTF-8') : strtolower($name);
+	$tokens = preg_split('/\s+/u', $name, -1, PREG_SPLIT_NO_EMPTY);
+	if (empty($tokens)) {
+		return '';
+	}
+	sort($tokens, SORT_STRING);
+	return implode(' ', $tokens);
+}
+
 function parkourone_sync_coaches_from_events() {
 	$events = get_posts([
 		'post_type' => 'event',
@@ -2540,11 +2572,15 @@ function parkourone_sync_coaches_from_events() {
 		$image = get_post_meta($event->ID, '_event_headcoach_image_url', true);
 		$email = get_post_meta($event->ID, '_event_headcoach_email', true);
 
-		if (!empty($name) && !isset($api_coaches[$name])) {
-			$api_coaches[$name] = [
-				'image' => $image,
-				'email' => $email
-			];
+		if (!empty($name)) {
+			$nkey = parkourone_normalize_coach_name($name);
+			if ($nkey !== '' && !isset($api_coaches[$nkey])) {
+				$api_coaches[$nkey] = [
+					'name'  => $name,
+					'image' => $image,
+					'email' => $email
+				];
+			}
 		}
 
 		// Assistenz-Coaches aus AcademyBoard (Format: [{"name": "...", "image_url": "..."}, ...])
@@ -2554,25 +2590,42 @@ function parkourone_sync_coaches_from_events() {
 			if (is_array($coaches_list)) {
 				foreach ($coaches_list as $coach) {
 					$coach_name = $coach['name'] ?? '';
-					if (!empty($coach_name) && !isset($api_coaches[$coach_name])) {
-						$api_coaches[$coach_name] = [
-							'image' => $coach['image_url'] ?? '',
-							'email' => ''
-						];
+					if (!empty($coach_name)) {
+						$nkey = parkourone_normalize_coach_name($coach_name);
+						if ($nkey !== '' && !isset($api_coaches[$nkey])) {
+							$api_coaches[$nkey] = [
+								'name'  => $coach_name,
+								'image' => $coach['image_url'] ?? '',
+								'email' => ''
+							];
+						}
 					}
 				}
 			}
 		}
 	}
 
-	foreach ($api_coaches as $name => $data) {
-		// Zuerst nach Name suchen
-		$existing = get_posts([
-			'post_type' => 'coach',
-			'title' => $name,
-			'posts_per_page' => 1,
-			'post_status' => ['publish', 'draft']
-		]);
+	// Bestehende Coaches EINMAL laden und nach normalisiertem Namen indexieren,
+	// damit Format-/Gross-/Kleinschreibungs-/Leerzeichen-Unterschiede zwischen
+	// AcademyBoard-Name und manuell angelegtem coach-Post-Title nicht zu Duplikaten führen.
+	$existing_by_name = [];
+	$existing_coaches = get_posts([
+		'post_type'      => 'coach',
+		'posts_per_page' => -1,
+		'post_status'    => ['publish', 'draft']
+	]);
+	foreach ($existing_coaches as $ec) {
+		$ekey = parkourone_normalize_coach_name($ec->post_title);
+		if ($ekey !== '' && !isset($existing_by_name[$ekey])) {
+			$existing_by_name[$ekey] = $ec;
+		}
+	}
+
+	foreach ($api_coaches as $nkey => $data) {
+		$name = $data['name'];
+
+		// Zuerst über normalisierten Namen abgleichen (case-/whitespace-/reihenfolge-tolerant)
+		$existing = isset($existing_by_name[$nkey]) ? [$existing_by_name[$nkey]] : [];
 
 		// Wenn nicht gefunden, nach E-Mail suchen
 		if (empty($existing) && !empty($data['email'])) {
@@ -2600,6 +2653,9 @@ function parkourone_sync_coaches_from_events() {
 				if (!empty($data['email'])) {
 					update_post_meta($coach_id, '_coach_email', $data['email']);
 				}
+				// Neu angelegten Coach in den Index aufnehmen, damit ein zweiter
+				// API-Name mit gleichem normalisierten Key kein weiteres Duplikat erzeugt.
+				$existing_by_name[$nkey] = get_post($coach_id);
 			}
 		} else {
 			// Existierenden Coach aktualisieren
