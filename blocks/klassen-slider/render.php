@@ -87,7 +87,6 @@ if ($query->have_posts()) {
 		$age_terms = [];
 		$offer_term = '';
 		$location_term = '';
-		$location_slugs = [];
 
 		foreach ($terms as $term) {
 			if ($term->parent) {
@@ -100,15 +99,12 @@ if ($query->have_posts()) {
 					if ($parent->slug === 'angebot') $offer_term = $term->slug;
 					if ($parent->slug === 'ortschaft') {
 						$location_term = $term->slug;
-						$location_slugs[] = $term->slug;
 						$used_location_slugs[] = $term->slug;
 					}
 				}
 			}
 		}
 		$age_term = !empty($age_terms) ? $age_terms[0] : '';
-		// Anzahl Standorte dieser Klasse (Ortschaft-Terme).
-		$location_count = count(array_unique($location_slugs));
 
 		// Zentrale Bildlogik mit automatischem Fallback (Event-spezifisch > Featured > Kategorie-Fallback)
 		$event_image = function_exists('parkourone_get_event_image')
@@ -152,14 +148,6 @@ if ($query->have_posts()) {
 			'coach_id' => null,
 			'coach_has_profile' => false
 		];
-
-		// Mehrere Standorte → der einzelne _event_venue-Wert ist irreführend.
-		// Top-Level-Ort ausblenden; der konkrete Ort bleibt pro Termin in der
-		// Buchungsliste ($date['venue']) sichtbar.
-		if ($location_count > 1) {
-			$klasse['venue'] = '';
-			$klasse['venue_maps_url'] = '';
-		}
 
 		// Coach-Profile sammeln wenn vorhanden
 		if (!empty($headcoach_name) && !isset($coach_profiles[$headcoach_name])) {
@@ -230,6 +218,26 @@ usort($klassen, function($a, $b) {
 	if ($a_order !== $b_order) return $a_order - $b_order;
 	return strcmp($a['start_time'], $b['start_time']);
 });
+
+// Termine je Klasse einmal laden (Cache) und den Top-Level-Ort ausblenden, wenn
+// die Klasse Termine an MEHREREN Venues hat (z.B. Park + Velodrom). Der einzelne
+// _event_venue-Wert wäre dann irreführend; der konkrete Ort steht pro Termin in
+// der Buchungsliste ($date['venue']).
+$po_dates_by_id = [];
+foreach ($klassen as $po_i => $po_k) {
+	$po_ad = function_exists('parkourone_get_available_dates_for_event')
+		? parkourone_get_available_dates_for_event($po_k['id'])
+		: [];
+	$po_dates_by_id[$po_k['id']] = $po_ad;
+	$po_venues = [];
+	foreach ($po_ad as $po_d) {
+		if (!empty($po_d['venue'])) $po_venues[] = $po_d['venue'];
+	}
+	if (count(array_unique($po_venues)) > 1) {
+		$klassen[$po_i]['venue'] = '';
+		$klassen[$po_i]['venue_maps_url'] = '';
+	}
+}
 
 static $po_klassen_instance = 0; $po_klassen_instance++;
 $anchor = $attributes['anchor'] ?? '';$unique_id = 'klassen-slider-' . $po_klassen_instance;
@@ -400,7 +408,7 @@ $hasFilters = $showAgeFilter || $showLocationFilter;
 
 <?php foreach ($klassen as $index => $klasse): ?>
 <?php
-$available_dates = function_exists('parkourone_get_available_dates_for_event') ? parkourone_get_available_dates_for_event($klasse['id']) : [];
+$available_dates = $po_dates_by_id[$klasse['id']] ?? [];
 $mood_text = function_exists('parkourone_get_mood_text')
 	? parkourone_get_mood_text($klasse['category'] ?? '', $klasse['title'] ?? '')
 	: '';

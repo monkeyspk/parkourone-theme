@@ -170,7 +170,6 @@ if ($query->have_posts()) {
 		$age_term_slugs = [];
 		$age_term_names = [];
 		$location_term_slug = '';
-		$location_slugs = [];
 		$offer_term_slug = '';
 
 		foreach ($terms as $term) {
@@ -183,7 +182,6 @@ if ($query->have_posts()) {
 					}
 					if ($parent->slug === 'ortschaft') {
 						$location_term_slug = $term->slug;
-						$location_slugs[] = $term->slug;
 					}
 					if ($parent->slug === 'angebot') {
 						$offer_term_slug = $term->slug;
@@ -191,8 +189,6 @@ if ($query->have_posts()) {
 				}
 			}
 		}
-		// Anzahl Standorte dieser Klasse (Ortschaft-Terme).
-		$location_count = count(array_unique($location_slugs));
 
 		$age_slug_str = implode(' ', $age_term_slugs);
 		$age_name_str = implode(' / ', $age_term_names);
@@ -246,14 +242,6 @@ if ($query->have_posts()) {
 			'coach_id' => null,
 			'coach_has_profile' => false
 		];
-
-		// Mehrere Standorte → der einzelne _event_venue-Wert ist irreführend.
-		// Top-Level-Ort ausblenden; der konkrete Ort bleibt pro Termin in der
-		// Buchungsliste ($date['venue']) sichtbar. location_slug (Filter) bleibt.
-		if ($location_count > 1) {
-			$klasse['venue'] = '';
-			$klasse['venue_maps_url'] = '';
-		}
 
 		// Coach-Profile sammeln wenn vorhanden
 		if (!empty($headcoach_name) && !isset($coach_profiles[$headcoach_name])) {
@@ -314,6 +302,39 @@ foreach ($klassen_by_day as $day => $day_klassen) {
 	usort($klassen_by_day[$day], function($a, $b) {
 		return strcmp($a['start_time'], $b['start_time']);
 	});
+}
+
+// Termine je Klasse einmal laden (Cache) und den Top-Level-Ort ausblenden, wenn
+// die Klasse Termine an MEHREREN Venues hat (z.B. Park + Velodrom). Der einzelne
+// _event_venue-Wert wäre dann irreführend; der konkrete Ort steht pro Termin in der
+// Buchungsliste ($date['venue']). Gilt für Wochenraster-Card ($klassen_by_day) UND
+// Sheet-Modal ($klassen) — beide Render-Quellen werden bereinigt.
+$po_dates_by_id = [];
+$po_multi_venue = [];
+foreach ($klassen as $po_k) {
+	$po_ad = function_exists('parkourone_get_available_dates_for_event')
+		? parkourone_get_available_dates_for_event($po_k['id'])
+		: [];
+	$po_dates_by_id[$po_k['id']] = $po_ad;
+	$po_venues = [];
+	foreach ($po_ad as $po_d) {
+		if (!empty($po_d['venue'])) $po_venues[] = $po_d['venue'];
+	}
+	$po_multi_venue[$po_k['id']] = (count(array_unique($po_venues)) > 1);
+}
+foreach ($klassen as $po_i => $po_k) {
+	if (!empty($po_multi_venue[$po_k['id']])) {
+		$klassen[$po_i]['venue'] = '';
+		$klassen[$po_i]['venue_maps_url'] = '';
+	}
+}
+foreach ($klassen_by_day as $po_day => $po_list) {
+	foreach ($po_list as $po_i => $po_k) {
+		if (!empty($po_multi_venue[$po_k['id']])) {
+			$klassen_by_day[$po_day][$po_i]['venue'] = '';
+			$klassen_by_day[$po_day][$po_i]['venue_maps_url'] = '';
+		}
+	}
 }
 
 static $po_stundenplan_instance = 0; $po_stundenplan_instance++;
@@ -583,7 +604,7 @@ $filter_ortschaft_terms = array_values(array_filter($filter_ortschaft_terms, fun
 
 <?php foreach ($klassen as $klasse): ?>
 <?php
-$available_dates = function_exists('parkourone_get_available_dates_for_event') ? parkourone_get_available_dates_for_event($klasse['id']) : [];
+$available_dates = $po_dates_by_id[$klasse['id']] ?? [];
 $mood_text = function_exists('parkourone_get_mood_text')
 	? parkourone_get_mood_text($klasse['age_slug'] ?? '', $klasse['title'] ?? '')
 	: '';
