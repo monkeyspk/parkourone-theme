@@ -170,6 +170,7 @@ if ($query->have_posts()) {
 		$age_term_slugs = [];
 		$age_term_names = [];
 		$location_term_slug = '';
+		$location_slugs = [];
 		$offer_term_slug = '';
 
 		foreach ($terms as $term) {
@@ -182,6 +183,7 @@ if ($query->have_posts()) {
 					}
 					if ($parent->slug === 'ortschaft') {
 						$location_term_slug = $term->slug;
+						$location_slugs[] = $term->slug;
 					}
 					if ($parent->slug === 'angebot') {
 						$offer_term_slug = $term->slug;
@@ -189,6 +191,8 @@ if ($query->have_posts()) {
 				}
 			}
 		}
+		// Anzahl Standorte dieser Klasse (Ortschaft-Terme).
+		$location_count = count(array_unique($location_slugs));
 
 		$age_slug_str = implode(' ', $age_term_slugs);
 		$age_name_str = implode(' / ', $age_term_names);
@@ -242,6 +246,14 @@ if ($query->have_posts()) {
 			'coach_id' => null,
 			'coach_has_profile' => false
 		];
+
+		// Mehrere Standorte → der einzelne _event_venue-Wert ist irreführend.
+		// Top-Level-Ort ausblenden; der konkrete Ort bleibt pro Termin in der
+		// Buchungsliste ($date['venue']) sichtbar. location_slug (Filter) bleibt.
+		if ($location_count > 1) {
+			$klasse['venue'] = '';
+			$klasse['venue_maps_url'] = '';
+		}
 
 		// Coach-Profile sammeln wenn vorhanden
 		if (!empty($headcoach_name) && !isset($coach_profiles[$headcoach_name])) {

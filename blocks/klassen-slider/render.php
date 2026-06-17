@@ -87,6 +87,7 @@ if ($query->have_posts()) {
 		$age_terms = [];
 		$offer_term = '';
 		$location_term = '';
+		$location_slugs = [];
 
 		foreach ($terms as $term) {
 			if ($term->parent) {
@@ -99,12 +100,15 @@ if ($query->have_posts()) {
 					if ($parent->slug === 'angebot') $offer_term = $term->slug;
 					if ($parent->slug === 'ortschaft') {
 						$location_term = $term->slug;
+						$location_slugs[] = $term->slug;
 						$used_location_slugs[] = $term->slug;
 					}
 				}
 			}
 		}
 		$age_term = !empty($age_terms) ? $age_terms[0] : '';
+		// Anzahl Standorte dieser Klasse (Ortschaft-Terme).
+		$location_count = count(array_unique($location_slugs));
 
 		// Zentrale Bildlogik mit automatischem Fallback (Event-spezifisch > Featured > Kategorie-Fallback)
 		$event_image = function_exists('parkourone_get_event_image')
@@ -148,6 +152,14 @@ if ($query->have_posts()) {
 			'coach_id' => null,
 			'coach_has_profile' => false
 		];
+
+		// Mehrere Standorte → der einzelne _event_venue-Wert ist irreführend.
+		// Top-Level-Ort ausblenden; der konkrete Ort bleibt pro Termin in der
+		// Buchungsliste ($date['venue']) sichtbar.
+		if ($location_count > 1) {
+			$klasse['venue'] = '';
+			$klasse['venue_maps_url'] = '';
+		}
 
 		// Coach-Profile sammeln wenn vorhanden
 		if (!empty($headcoach_name) && !isset($coach_profiles[$headcoach_name])) {

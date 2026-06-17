@@ -107,16 +107,19 @@ foreach ($events as $event) {
 	$start_time = get_post_meta($event_id, '_event_start_time', true);
 	$end_time = get_post_meta($event_id, '_event_end_time', true);
 
-	// Get location
-	$location_name = '';
+	// Get location(s) — alle Ortschaft-Terme sammeln. Ort nur anzeigen, wenn die
+	// Klasse genau EINEN Standort hat; bei mehreren Standorten ausblenden (der
+	// konkrete Ort erscheint dann pro Termin in der Buchungsliste).
+	$location_names = [];
 	$categories = wp_get_post_terms($event_id, 'event_category', ['fields' => 'all']);
 	foreach ($categories as $cat) {
 		$cat_parent = $cat->parent ? get_term($cat->parent, 'event_category') : null;
 		if ($cat_parent && $cat_parent->slug === 'ortschaft') {
-			$location_name = $cat->name;
-			break;
+			$location_names[] = $cat->name;
 		}
 	}
+	$location_names = array_values(array_unique($location_names));
+	$location_name  = (count($location_names) === 1) ? $location_names[0] : '';
 
 	// Get available dates for booking
 	$available_dates = [];
