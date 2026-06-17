@@ -506,6 +506,12 @@ function parkourone_angebot_save_meta($post_id) {
 		}
 	}
 
+	// Manuell gesetzte Buchungsart als Override markieren, damit der
+	// AcademyBoard-Import (custom-events-plugin) sie nicht wieder ueberschreibt.
+	if (isset($_POST['_angebot_buchungsart']) && $_POST['_angebot_buchungsart'] !== '') {
+		update_post_meta($post_id, '_angebot_buchungsart_manual', '1');
+	}
+
 	// URL fields
 	if (isset($_POST['_angebot_maps_link'])) {
 		update_post_meta($post_id, '_angebot_maps_link', esc_url_raw($_POST['_angebot_maps_link']));
