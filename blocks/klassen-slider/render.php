@@ -183,7 +183,9 @@ if ($query->have_posts()) {
 						'hero_bild' => $hero_bild,
 						'philosophie_bild' => $philosophie_bild,
 						'moment_bild' => $moment_bild,
-						'card_image' => $hero_bild ?: $philosophie_bild ?: $moment_bild ?: $cached_avatar
+						// Avatar = Profilbild (display_image: Profilbild → Cache → API),
+						// NICHT das Hero/Action-Bild. hero_bild bleibt fürs grosse Training-Bild.
+						'card_image' => $cached_avatar ?: $philosophie_bild ?: $moment_bild
 					];
 				}
 			}
