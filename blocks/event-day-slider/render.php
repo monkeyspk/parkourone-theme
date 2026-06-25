@@ -208,6 +208,15 @@ if ($query->have_posts()) {
 	wp_reset_postdata();
 }
 
+// Ausgebuchte Termine (genau 0 freie Probetrainings-Plaetze) auf der
+// Buchungsseite gar nicht mehr anzeigen. Hinweis: stock === -1 bedeutet
+// "kein WooCommerce-Bestand gemappt" (unbekannt), NICHT ausgebucht -> diese
+// Termine bleiben sichtbar. Der Stundenplan ist davon nicht betroffen
+// (eigene Datenquelle, eigener Verfuegbarkeits-Helper).
+$all_events = array_values(array_filter($all_events, function ($ev) {
+	return (int) $ev['stock'] !== 0;
+}));
+
 // Pro Event-ID prüfen ob IRGENDEIN zukünftiges Datum noch Plätze hat
 $event_has_availability = [];
 foreach ($all_events as $ev) {
